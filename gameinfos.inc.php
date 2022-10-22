@@ -10,35 +10,35 @@
 
 */
 
-$gameinfos = array( 
+$gameinfos = [
 
 // Name of the game in English (will serve as the basis for translation) 
-'game_name' => "My Great Game",
+'game_name' => "Lumen",
 
 // Game designer (or game designers, separated by commas)
-'designer' => 'John Doe',       
+'designer' => 'Bruno Cathala, Corentin Lebrat',       
 
 // Game artist (or game artists, separated by commas)
-'artist' => 'Jane Doe',         
+'artist' => 'TODO',         
 
 // Year of FIRST publication of this game. Can be negative.
-'year' => 2000,                 
+'year' => 2023,                 
 
 // Game publisher (use empty string if there is no publisher)
-'publisher' => 'My Publishing Company',                     
+'publisher' => 'Lumberjacks Studio',                     
 
 // Url of game publisher website
-'publisher_website' => 'http://www.mypublishingcompany.com/',   
+'publisher_website' => 'http://www.lumberjacks-studio.com/',   
 
 // Board Game Geek ID of the publisher
-'publisher_bgg_id' => 1234,
+'publisher_bgg_id' => 36884,
 
 // Board game geek ID of the game
-'bgg_id' => 0,
+'bgg_id' => 0, // TODO
 
 
 // Players configuration that can be played (ex: 2 to 4 players)
-'players' => array( 2,3,4 ),    
+'players' => [2],    
 
 // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
 // NB: the automatic lobby will try first the lowest number of players if this is not specified. So you _have to_ specify this parameter if the lowest player number is not compatible with the default options.
@@ -67,7 +67,7 @@ $gameinfos = array(
 // Note: if you are NOT using any tie breaker, leave the empty string.
 //
 // Example: 'tie_breaker_description' => totranslate( "Number of remaining cards in hand" ),
-'tie_breaker_description' => "",
+'tie_breaker_description' => totranslate("En cas d’égalité, le joueur qui contrôle le territoire avec le marqueur initiative en fin de partie est déclaré vainqueur."), // TODO
 
 // If in the game, all losers are equal (no score to rank them or explicit in the rules that losers are not ranked between them), set this to true 
 // The game end result will display "Winner" for the 1st player and "Loser" for all other players
@@ -100,7 +100,7 @@ $gameinfos = array(
 'diplomacy' => 3,    
 
 // Colors attributed to players
-'player_colors' => array( "ff0000", "008000", "0000ff", "ffa500", "773300" ),
+'player_colors' => ["f28700", "1f3067"],
 
 // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
 // NB: this parameter is used only to flag games supporting this feature; you must use (or not use) reattributeColorsBasedOnPreferences PHP method to actually enable or disable the feature.
@@ -112,7 +112,7 @@ $gameinfos = array(
 
 // Game interface width range (pixels)
 // Note: game interface = space on the left side, without the column on the right
-'game_interface_width' => array(
+'game_interface_width' => [
 
     // Minimum width
     //  default: 740
@@ -125,17 +125,17 @@ $gameinfos = array(
     //  maximum possible value: unlimited
     //  minimum possible value: 740
     'max' => null
-),
+],
 
 // Game presentation
 // Short game presentation text that will appear on the game description page, structured as an array of paragraphs.
 // Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
 // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
-'presentation' => array(
+'presentation' => [
 //    totranslate("This wonderful game is about geometric shapes!"),
 //    totranslate("It was awarded best triangle game of the year in 2005 and nominated for the Spiel des Jahres."),
 //    ...
-),
+], // TODO
 
 // Games tags (categories)
 //  You can attribute a maximum of ten "tags" for your game.
@@ -145,7 +145,7 @@ $gameinfos = array(
 //  IMPORTANT: this list should be ORDERED, with the most important tag first.
 //  NOTE: tags are only read during the first deploy from the file gameinfos.inc.php; afterwards, BGA is responsible for setting tags for a game.
 
-'tags' => array( 2 ),
+'tags' => array( 2 ), // TODO
 
 
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
@@ -157,4 +157,4 @@ $gameinfos = array(
 'turnControl' => 'simple'
 
 ////////
-);
+];

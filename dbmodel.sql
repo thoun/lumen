@@ -29,6 +29,40 @@
 --   PRIMARY KEY (`card_id`)
 -- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+ CREATE TABLE IF NOT EXISTS `link` ( 
+   `link_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+   `player_id` int(11) NOT NULL,
+   `index1` int(5) NOT NULL,
+   `index2` int(5) NOT NULL,
+   `middle` int(5) NOT NULL DEFAULT '-1',
+   PRIMARY KEY (`link_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  
+ CREATE TABLE IF NOT EXISTS `circle` (
+   `id` int(10) unsigned NOT NULL AUTO_INCREMENT, 
+   `circle_id` int(10) NOT NULL,
+   `player_id` int(11) NOT NULL,
+   `value` int(5) NOT NULL,
+   `zone` int(5) DEFAULT '-1' NOT NULL,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+ 
+ CREATE TABLE IF NOT EXISTS `operation` ( 
+   `operation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+   `player_id` int(11) NOT NULL,
+   `operation` int(5) NOT NULL,
+   `nb` int(5) NOT NULL,
+   `gray` smallint(1) NOT NULL DEFAULT '0',
+   PRIMARY KEY (`operation_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  
+ CREATE TABLE IF NOT EXISTS `dice` ( 
+   `turn` int(5) unsigned NOT NULL AUTO_INCREMENT,
+   `value1` int(5) NOT NULL,
+   `value2` int(5) NOT NULL,
+   PRIMARY KEY (`turn`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 
 -- Example 2: add a custom field to the standard "player" table
 -- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
