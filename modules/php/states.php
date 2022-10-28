@@ -40,7 +40,7 @@ trait StateTrait {
     } 
 
     function stChooseOperation() {
-        // TODO choose operation if only one available
+        // TODO choose operation if only one available ?
     }
 
     function stNextPlayer() {

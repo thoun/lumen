@@ -1,0 +1,21 @@
+{
+    "rootDir": ".", 
+    "compilerOptions": {
+      "target": "es5",
+      "module": "none",
+      "lib": ["dom", "esnext"],  
+      "sourceMap": false,
+      "outFile": "lumen.js",
+    },
+    "files": [
+        "src/framework.d.ts",
+        "src/counter.d.ts",
+        "src/lumen.d.ts",
+        "src/slide-utils.ts",
+        "src/cards.ts",
+        "src/stacks.ts",
+        "src/player-table.ts",
+        "src/lumen.ts",
+        "src/define.ts"
+    ]
+}
