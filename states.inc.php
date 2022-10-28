@@ -127,8 +127,8 @@ $playerActionsGameStates = [
 
     ST_PLAYER_CHOOSE_CELL => [
         "name" => "chooseCell",
-        "description" => clienttranslate('${actplayer} must choose a cell'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a cell'),
+        "description" => clienttranslate('${actplayer} must report ${number} in an eligible circle'),
+        "descriptionmyturn" => clienttranslate('${you} must report ${number} in an eligible circle'),
         "type" => "activeplayer",    
         "args" => "argChooseCell",     
         "action" => "stChooseCell",

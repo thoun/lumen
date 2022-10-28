@@ -44,9 +44,10 @@ class Lumen extends Table {
         
         self::initGameStateLabels([
             FIRST_PLAYER => FIRST_PLAYER,
-            FIRST_PLAYER_OPERATION => FIRST_PLAYER_OPERATION,
             DIE1 => DIE1,
             DIE2 => DIE2,
+            PLAYER_OPERATION => PLAYER_OPERATION,
+            PLAYER_NUMBER => PLAYER_NUMBER,
             REMAINING_FIGHTERS_TO_PLACE => REMAINING_FIGHTERS_TO_PLACE,
             REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE => REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE,
         ]);        

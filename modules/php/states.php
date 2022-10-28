@@ -24,7 +24,7 @@ trait StateTrait {
         $die2 = bga_rand(1,6);
 
         $this->setGameStateValue(DIE1, $die1);
-        $this->setGameStateValue(DIE1, $die2);
+        $this->setGameStateValue(DIE2, $die2);
 
         // TODO log dice
         $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
@@ -41,6 +41,10 @@ trait StateTrait {
 
     function stChooseOperation() {
         // TODO choose operation if only one available ?
+    }
+
+    function stChooseCell() {
+        // TODO choose cell if only one available ?
     }
 
     function stNextPlayer() {

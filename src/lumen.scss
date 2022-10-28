@@ -19,9 +19,13 @@ html, .mode_3d #game_play_area_background {
 #page-title {
   .action-button {
     .operation {
-      width: 48px;
-      height: 48px;
+      width: 20px;
+      height: 20px;
       background: url('img/operations.png');
+      background-size: auto 100%;
+      margin-right: 5px;
+      display: inline-block;
+      vertical-align: middle;
 
       @for $index from 1 through 5 {
         &[data-type="#{$index}"] {

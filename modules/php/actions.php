@@ -11,30 +11,29 @@ trait ActionTrait {
         (note: each method below must match an input method in nicodemus.action.php)
     */
 
-    public function takeCardsFromDeck() {
-        $this->checkAction('takeCardsFromDeck'); 
+    public function chooseOperation(int $type) {
+        $this->checkAction('chooseOperation'); 
 
-        $canTakeFromDeck = intval($this->cards->countCardInLocation('deck')) > 0;
-        if (!$canTakeFromDeck) {
-            throw new BgaUserException("No card in deck");
+        $args = $this->argChooseOperation();
+        $operation = $args['operations'][$type];
+        if (!$operation || !$operation['possible']) {
+            throw new BgaUserException("This operation is impossible at the moment");
         }
         
         $playerId = intval($this->getActivePlayerId());
+        $this->setGameStateValue(PLAYER_OPERATION, $type);
+        $this->setGameStateValue(PLAYER_NUMBER, $operation['value']);
 
-        $cards = $this->getCardsFromDb($this->cards->pickCardsForLocation(2, 'deck', 'pick'));
-
-        self::notifyAllPlayers('log', clienttranslate('${player_name} picks ${number} cards from the deck'), [
-            'playerId' => $playerId,
+        self::notifyAllPlayers('log', clienttranslate('${player_name} chooses value ${number} (operation ${operation})'), [
             'player_name' => $this->getPlayerName($playerId),
-            'number' => count($cards),
-            'preserve' => ['actionPlayerId'],
-            'actionPlayerId' => $playerId,
+            'number' => $operation['value'],
+            'operation' => $type,
         ]);
 
-        $this->incStat(1, 'takeCardFromDeck');
-        $this->incStat(1, 'takeCardFromDeck', $playerId);
+        /* TODO $this->incStat(1, 'operation'.$type);
+        $this->incStat(1, 'operation'.$type, $playerId); */
 
-        $this->gamestate->nextState('chooseCard');
+        $this->gamestate->nextState('chooseCell');
     }
 
     public function takeCardFromDiscard(int $discardNumber) {

@@ -515,73 +515,9 @@
   font-size: 28pt;
 }
 
-#color-help-button {
-  position: fixed;
-  bottom: 12px;
-  left: 65px;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  box-shadow: 3px 5px 5px 0px rgb(0, 0, 0);
-  cursor: pointer;
-  z-index: 949;
-  overflow: hidden;
-  background-size: contain;
-  transition: width 0.5s, height 0.5s, border-radius 0.5s, background-image 0.5s;
-}
-#color-help-button .label {
-  position: absolute;
-  color: white;
-  font-size: 10pt;
-  opacity: 0;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 69px;
-  height: 42px;
-  word-break: break-word;
-}
-#color-help-button .label[data-row="0"] {
-  top: 11px;
-}
-#color-help-button .label[data-row="1"] {
-  top: 60.8px;
-}
-#color-help-button .label[data-row="2"] {
-  top: 110.6px;
-}
-#color-help-button .label[data-row="3"] {
-  top: 160.4px;
-}
-#color-help-button .label[data-row="4"] {
-  top: 210.2px;
-}
-#color-help-button .label[data-row="5"] {
-  top: 260px;
-}
-#color-help-button .label[data-column="0"] {
-  left: 38px;
-}
-#color-help-button .label[data-column="1"] {
-  left: 143px;
-}
-#color-help-button[data-folded=true] {
-  background-image: url("img/logo-coloradd.svg");
-}
-#color-help-button[data-folded=false] {
-  background-image: url("img/color-legend.jpg");
-  width: 223px;
-  height: 312px;
-  border-radius: 10px;
-}
-#color-help-button[data-folded=false] .label {
-  opacity: 1;
-}
-
 /* we show help button if user has no mouse ( = no tooltips) */
 @media (hover: hover) {
-  #lumen-help-button, #color-help-button {
+  #lumen-help-button {
     bottom: 5px;
   }
 }
@@ -637,9 +573,13 @@ html, .mode_3d #game_play_area_background {
 }
 
 #page-title .action-button .operation {
-  width: 48px;
-  height: 48px;
+  width: 20px;
+  height: 20px;
   background: url("img/operations.png");
+  background-size: auto 100%;
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: middle;
 }
 #page-title .action-button .operation[data-type="1"] {
   background-position-x: 0%;

@@ -77,7 +77,10 @@ interface EnteringChooseCardArgs {
 }
 
 interface EnteringChooseOperationArgs {
-    possibleOperations: number[];
+    operations: { [operation: number]: {
+        value: number;
+        possible: boolean;
+    } };
 }
 
 interface EnteringChooseOpponentArgs {

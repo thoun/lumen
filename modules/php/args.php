@@ -15,44 +15,48 @@ trait ArgsTrait {
     function argChooseOperation() {
         $playerId = intval($this->getActivePlayerId());
 
-        $possibleOperations = [];
+        $die1 = intval($this->getGameStateValue(DIE1));
+        $die2 = intval($this->getGameStateValue(DIE2));
 
+        $operations = [];
+
+        $possibleOperationsCount = 0;
         for ($type=1; $type<=5; $type++) {
             $max = $this->getOpMax($type);
             $current = self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type");
-            
-            if ($current < $max) {
-                $possibleOperations[] = $type;
+
+            $possible = $current < $max;
+            if ($possible) {
+                $possibleOperationsCount++;
             }
+
+            $operations[$type] = [
+                'value' => $this->getValue($die1, $die2, $type),
+                'possible' => $possible,
+            ];
         }
 
-        if (count($possibleOperations) > 1) {
+        if ($possibleOperationsCount > 1) {
             $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
             if ($playerId != $firstPlayer) {
-                $firstPlayerOperation = intval($this->getGameStateValue(FIRST_PLAYER_OPERATION));
-                $possibleOperations = array_values(array_filter($possibleOperations, fn($possibleOperation) => $possibleOperation != $firstPlayerOperation));
+                $firstPlayerOperation = intval($this->getGameStateValue(PLAYER_OPERATION));
+                $operations[$firstPlayerOperation]['possible'] = false;
             }
         }
     
         return [
-           'possibleOperations' => $possibleOperations,
+           'operations' => $operations,
         ];
     }
 
-    function argChooseCard() {        
+    function argChooseCell() {        
         $playerId = intval($this->getActivePlayerId());
 
-        $cards = $this->getCardsFromDb($this->cards->getCardsInLocation('pick'));
-        $maskedCards = Card::onlyIds($cards);
+        $number = intval($this->getGameStateValue(PLAYER_NUMBER));
     
         return [
-            '_private' => [
-                $playerId => [
-                    'cards' => $cards,
-                ]
-            ],
-            'cards' => $maskedCards,
-            'remainingCardsInDeck' => $this->getRemainingCardsInDeck(),
+            // TODO return possible cells
+            'number' => $number,
         ];
     }
    

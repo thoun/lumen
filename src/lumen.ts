@@ -244,9 +244,10 @@ class Lumen implements LumenGame {
             switch (stateName) {
                 case 'chooseOperation':
                     const chooseOperationArgs = args as EnteringChooseOperationArgs;
-                    [1, 2, 3, 4, 5].forEach(type => {
-                        (this as any).addActionButton(`chooseOperation${type}_button`, `<div class="operation" data-type="${type}"></div>`, () => this.chooseOperation(type), null, null, 'gray');
-                        if (!chooseOperationArgs.possibleOperations.includes(type)) {
+                    Object.keys(chooseOperationArgs.operations).forEach((type: any) => {
+                        const operation = chooseOperationArgs.operations[type];
+                        (this as any).addActionButton(`chooseOperation${type}_button`, `<div class="operation" data-type="${type}"></div> ${operation.value}`, () => this.chooseOperation(type), null, null, 'gray');
+                        if (!operation.possible) {
                             document.getElementById(`chooseOperation${type}_button`).classList.add('disabled');
                         }    
                     });
@@ -476,26 +477,10 @@ class Lumen implements LumenGame {
     }
 
     private addHelp() {
-        let labels = [
-            _('Dark blue'),
-            _('Light blue'),
-            _('Black'),
-            _('Yellow'),
-            _('Green'),
-            _('White'),
-            _('Purple'),
-            _('Gray'),
-            _('Light orange'),
-            _('Pink'),
-            _('Orange'),
-        ].map((label, index) => `<span class="label" data-row="${Math.floor(index / 2)}"  data-column="${Math.floor(index % 2)}">${label}</span>`).join('');
         dojo.place(`
             <button id="lumen-help-button">?</button>
-            <button id="color-help-button" data-folded="true">${labels}</button>
         `, 'left-side');
         document.getElementById('lumen-help-button').addEventListener('click', () => this.showHelp());
-        const helpButton = document.getElementById('color-help-button');
-        helpButton.addEventListener('click', () => helpButton.dataset.folded = helpButton.dataset.folded == 'true' ? 'false' : 'true');
     }
 
     private showHelp() {

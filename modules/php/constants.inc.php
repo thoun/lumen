@@ -47,13 +47,16 @@ define('END_SCORE', 100);
  * Constants
  */
 define('FIRST_PLAYER', 10);
-define('FIRST_PLAYER_OPERATION', 11);
+
 
 define('DIE1', 20);
 define('DIE2', 21);
 
-define('REMAINING_FIGHTERS_TO_PLACE', 30);
+define('PLAYER_OPERATION', 30);
+define('PLAYER_NUMBER', 31);
 
-define('REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE', 40);
+define('REMAINING_FIGHTERS_TO_PLACE', 40);
+
+define('REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE', 50);
 
 ?>

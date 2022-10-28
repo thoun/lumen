@@ -69,5 +69,28 @@ trait UtilTrait {
     function getOpMax(int $type) {
         return $type > 2 ? 4 : 3;
     }
+    
+    function getValue(int $val1, int $val2, int $type) {        
+        $value = 0;
+        switch($type)
+        {
+            case 1:
+                $value = min($val1, $val2);
+                break;
+            case 2:
+                $value = max($val1, $val2);
+                break;
+            case 3:
+                $value = abs($val1-$val2);
+                break;
+            case 4:
+                $value = $val1+$val2;
+                break;
+            case 5:
+                $value = $val1*$val2;
+                break;
+        }
+        return $value;
+    }
 
 }

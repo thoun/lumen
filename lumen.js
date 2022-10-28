@@ -532,9 +532,10 @@ var Lumen = /** @class */ (function () {
             switch (stateName) {
                 case 'chooseOperation':
                     var chooseOperationArgs_1 = args;
-                    [1, 2, 3, 4, 5].forEach(function (type) {
-                        _this.addActionButton("chooseOperation".concat(type, "_button"), "<div class=\"operation\" data-type=\"".concat(type, "\"></div>"), function () { return _this.chooseOperation(type); }, null, null, 'gray');
-                        if (!chooseOperationArgs_1.possibleOperations.includes(type)) {
+                    Object.keys(chooseOperationArgs_1.operations).forEach(function (type) {
+                        var operation = chooseOperationArgs_1.operations[type];
+                        _this.addActionButton("chooseOperation".concat(type, "_button"), "<div class=\"operation\" data-type=\"".concat(type, "\"></div> ").concat(operation.value), function () { return _this.chooseOperation(type); }, null, null, 'gray');
+                        if (!operation.possible) {
                             document.getElementById("chooseOperation".concat(type, "_button")).classList.add('disabled');
                         }
                     });
@@ -730,23 +731,8 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.addHelp = function () {
         var _this = this;
-        var labels = [
-            _('Dark blue'),
-            _('Light blue'),
-            _('Black'),
-            _('Yellow'),
-            _('Green'),
-            _('White'),
-            _('Purple'),
-            _('Gray'),
-            _('Light orange'),
-            _('Pink'),
-            _('Orange'),
-        ].map(function (label, index) { return "<span class=\"label\" data-row=\"".concat(Math.floor(index / 2), "\"  data-column=\"").concat(Math.floor(index % 2), "\">").concat(label, "</span>"); }).join('');
-        dojo.place("\n            <button id=\"lumen-help-button\">?</button>\n            <button id=\"color-help-button\" data-folded=\"true\">".concat(labels, "</button>\n        "), 'left-side');
+        dojo.place("\n            <button id=\"lumen-help-button\">?</button>\n        ", 'left-side');
         document.getElementById('lumen-help-button').addEventListener('click', function () { return _this.showHelp(); });
-        var helpButton = document.getElementById('color-help-button');
-        helpButton.addEventListener('click', function () { return helpButton.dataset.folded = helpButton.dataset.folded == 'true' ? 'false' : 'true'; });
     };
     Lumen.prototype.showHelp = function () {
         var _this = this;
