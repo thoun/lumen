@@ -11,37 +11,6 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->debugSetMermaids();
-        $this->debugSetMermaidOnDeckTop();
-    }
-
-    function debugSetMermaids() {
-        $playerId = 2343492;
-        $number = 4;
-        $cards = array_slice($this->getCardsFromDb(array_values($this->cards->getCardsOfType(10))), 0, $number);
-        $this->cards->moveCards(array_map(fn($card) => $card->id, $cards), 'hand'.$playerId, 99);
-    }
-
-    function debugSetMermaidOnDeckTop() {
-        $this->DbQuery("UPDATE card SET card_location_arg=1000 WHERE card_type = 10 AND card_location = 'deck' LIMIT 1" );
-    }
-
-    function debugSetMermaidsOnDeckTop() {
-        $this->DbQuery("UPDATE card SET card_location_arg=1000 WHERE card_type = 10 AND card_location = 'deck'" );
-    }
-
-    function debugEmptyDeck() {
-        $leave = 2;
-        $move = intval($this->cards->countCardInLocation('deck')) - $leave;
-        $this->cards->pickCardsForLocation($move, 'deck', 'discard');
-    }
-
-    function debugFillHands() {
-        $number = 20;
-        $playersIds = $this->getPlayersIds();
-        foreach($playersIds as $playerId) {
-            $this->cards->pickCardsForLocation($number, 'deck', 'hand'.$playerId);
-        }
     }
 
     public function debugReplacePlayersIds() {

@@ -42,18 +42,17 @@ class Lumen extends Table {
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels( array( 
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
-        ) );        
+        self::initGameStateLabels([
+            FIRST_PLAYER => FIRST_PLAYER,
+            FIRST_PLAYER_OPERATION => FIRST_PLAYER_OPERATION,
+            DIE1 => DIE1,
+            DIE2 => DIE2,
+            REMAINING_FIGHTERS_TO_PLACE => REMAINING_FIGHTERS_TO_PLACE,
+            REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE => REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE,
+        ]);        
 	}
 	
-    protected function getGameName( )
-    {
+    protected function getGameName() {
 		// Used for translations and stuff. Please do not modify.
         return "lumen";
     }	
@@ -65,8 +64,7 @@ class Lumen extends Table {
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame( $players, $options = array() )
-    {    
+    protected function setupNewGame($players, $options = []) {    
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
@@ -76,14 +74,32 @@ class Lumen extends Table {
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
         $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
-        $values = array();
-        foreach( $players as $player_id => $player )
-        {
+        $values = [];
+        $firstPlayerSet = false;
+        foreach ($players as $playerId => $player) {
+            if (!$firstPlayerSet) {
+                $this->setGameStateValue(FIRST_PLAYER, $playerId);
+                $firstPlayerSet = true;
+            }
             $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+            $values[] = "('".$playerId."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        $sql .= implode( $values, ',' );
-        self::DbQuery( $sql );
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
+
+
+
+        $sql = "INSERT INTO operation (player_id, operation, nb) VALUES ";
+        $values = [];        
+        foreach ($players as $playerId => $player) {
+            for ($i = 1; $i <= 5 ; $i++) {
+                $values[] = "('$playerId','$i',0)";
+            }
+        }
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
+
+
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
         

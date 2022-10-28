@@ -55,13 +55,6 @@
    `gray` smallint(1) NOT NULL DEFAULT '0',
    PRIMARY KEY (`operation_id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-  
- CREATE TABLE IF NOT EXISTS `dice` ( 
-   `turn` int(5) unsigned NOT NULL AUTO_INCREMENT,
-   `value1` int(5) NOT NULL,
-   `value2` int(5) NOT NULL,
-   PRIMARY KEY (`turn`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 
 -- Example 2: add a custom field to the standard "player" table

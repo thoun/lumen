@@ -12,20 +12,30 @@ trait ArgsTrait {
         game state.
     */
    
-    function argTakeCards() {
-        $canTakeFromDeck = intval($this->cards->countCardInLocation('deck')) > 0;
-        $canTakeFromDiscard = [];
-        foreach([1, 2] as $discardNumber) {
-            if (intval($this->cards->countCardInLocation('discard'.$discardNumber)) > 0) {
-                $canTakeFromDiscard[] = $discardNumber;
+    function argChooseOperation() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $possibleOperations = [];
+
+        for ($type=1; $type<=5; $type++) {
+            $max = $this->getOpMax($type);
+            $current = self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type");
+            
+            if ($current < $max) {
+                $possibleOperations[] = $type;
             }
         }
-        $endRound = intval($this->getGameStateValue(END_ROUND_TYPE));
+
+        if (count($possibleOperations) > 1) {
+            $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
+            if ($playerId != $firstPlayer) {
+                $firstPlayerOperation = intval($this->getGameStateValue(FIRST_PLAYER_OPERATION));
+                $possibleOperations = array_values(array_filter($possibleOperations, fn($possibleOperation) => $possibleOperation != $firstPlayerOperation));
+            }
+        }
     
         return [
-            'canTakeFromDeck' => $canTakeFromDeck,
-            'canTakeFromDiscard' => $canTakeFromDiscard,
-            'call' => in_array($endRound, [LAST_CHANCE, STOP]) ? $this->ANNOUNCEMENTS[$endRound] : '',
+           'possibleOperations' => $possibleOperations,
         ];
     }
 

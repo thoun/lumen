@@ -49,63 +49,289 @@
 
 //    !! It is not a good idea to modify this file when a game is running !!
 
- 
-$machinestates = array(
+require_once("modules/php/constants.inc.php");
+
+$basicGameStates = [
 
     // The initial state. Please do not modify.
-    1 => array(
+    ST_BGA_GAME_SETUP => [
         "name" => "gameSetup",
-        "description" => "",
+        "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
-    ),
-    
-    // Note: ID=2 => your first state
-
-    2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
-    ),
-    
-/*
-    Examples:
-    
-    2 => array(
-        "name" => "nextPlayer",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "updateGameProgression" => true,   
-        "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
-    ),
-    
-    10 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
-    ), 
-
-*/    
+        "transitions" => [ "" => ST_NEW_ROUND ]
+    ],
    
     // Final state.
-    // Please do not modify (and do not overload action/args methods).
-    99 => array(
+    // Please do not modify.
+    ST_END_GAME => [
         "name" => "gameEnd",
         "description" => clienttranslate("End of game"),
         "type" => "manager",
         "action" => "stGameEnd",
-        "args" => "argGameEnd"
-    )
-
-);
-
+        "args" => "argGameEnd",
+    ],
+];
 
 
+$chooseCellTransitions = [
+    "chooseNewFighter" => ST_PLAYER_CHOOSE_NEW_FIGHTER,
+    "chooseFighterToMove" => ST_PLAYER_CHOOSE_FIGHTER,
+    "chooseFighterToActivate" => ST_PLAYER_CHOOSE_FIGHTER_POWER,
+];
+
+$playerActionsGameStates = [
+
+    ST_PLAYER_ASK_ACTIVATE_PLANIFICATION => [
+        "name" => "askActivatePlanification",
+        "description" => clienttranslate('${actplayer} can activate Planification'),
+        "descriptionmyturn" => clienttranslate('${you} can activate Planification'),
+        "type" => "activeplayer",
+        "possibleactions" => [ 
+            "activatePlanification",
+            "passPlanification",
+        ],
+        "transitions" => [
+            "activate" => ST_PLAYER_PLANIFICATION_CHOOSE_FACES,
+            "pass" => ST_ROLL_DICE,
+        ]
+    ],
+
+    ST_PLAYER_PLANIFICATION_CHOOSE_FACES => [
+        "name" => "planificationChooseFaces",
+        "description" => clienttranslate('${actplayer} must choose dice faces'),
+        "descriptionmyturn" => clienttranslate('${you} must choose dice faces'),
+        "type" => "activeplayer",
+        "possibleactions" => [ 
+            "chooseDiceFaces",
+        ],
+        "transitions" => [
+            "chooseOperation" => ST_PLAYER_CHOOSE_OPERATION,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_OPERATION => [
+        "name" => "chooseOperation",
+        "description" => clienttranslate('${actplayer} must choose an operation'),
+        "descriptionmyturn" => clienttranslate('${you} must choose an operation'),
+        "type" => "activeplayer",
+        "args" => "argChooseOperation",     
+        "action" => "stChooseOperation",
+        "possibleactions" => [ 
+            "chooseOperation",
+        ],
+        "transitions" => [
+            "chooseCell" => ST_PLAYER_CHOOSE_CELL,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_CELL => [
+        "name" => "chooseCell",
+        "description" => clienttranslate('${actplayer} must choose a cell'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a cell'),
+        "type" => "activeplayer",    
+        "args" => "argChooseCell",     
+        "action" => "stChooseCell",
+        "possibleactions" => [ 
+            "chooseCell",
+        ],
+        "transitions" => $chooseCellTransitions + [
+            "chooseCellLink" => ST_PLAYER_CHOOSE_CELL_LINK,
+        ],
+    ],
+
+    ST_PLAYER_CHOOSE_CELL_LINK => [
+        "name" => "chooseCellLink",
+        "description" => clienttranslate('${actplayer} must choose a cell link'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a cell link'),
+        "type" => "activeplayer",    
+        "args" => "argChooseCellLink",
+        "possibleactions" => [ 
+            "chooseCellLink",
+        ],
+        "transitions" => $chooseCellTransitions,
+    ],
+
+    ST_PLAYER_CHOOSE_NEW_FIGHTER => [
+        "name" => "chooseNewFighter",
+        "description" => clienttranslate('${actplayer} must choose a discard pile'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a discard pile'),
+        "type" => "activeplayer",
+        "args" => "argChooseNewFighter", 
+        "possibleactions" => [ 
+            "chooseNewFighter",
+        ],
+        "transitions" => [
+            "chooseTerritory" => ST_PLAYER_CHOOSE_NEW_FIGHTER_TERRITORY,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_NEW_FIGHTER_TERRITORY => [
+        "name" => "chooseNewFighterTerritory",
+        "description" => clienttranslate('${actplayer} must choose a card'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a card'),
+        "type" => "activeplayer", 
+        "args" => "argChooseNewFighterTerritory", 
+        "possibleactions" => [ 
+            "chooseNewFighterTerritory",
+        ],
+        "transitions" => [
+            "nextMove" => ST_NEXT_MOVE,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_FIGHTER => [
+        "name" => "chooseFighter",
+        "description" => clienttranslate('${actplayer} must choose a discard pile'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a discard pile'),
+        "type" => "activeplayer",
+        "args" => "argChooseFighter", 
+        "possibleactions" => [ 
+            "chooseFighter",
+        ],
+        "transitions" => [
+            "chooseNewTerritory" => ST_PLAYER_CHOOSE_FIGHTER_TERRITORY,
+            "chooseNewTerritory" => ST_PLAYER_CHOOSE_FIGHTER_TERRITORY,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_FIGHTER_TERRITORY => [
+        "name" => "chooseFighterTerritory",
+        "description" => clienttranslate('${actplayer} must choose a card'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a card'),
+        "type" => "activeplayer", 
+        "args" => "argChooseFighterTerritory", 
+        "possibleactions" => [ 
+            "chooseFighterTerritory",
+        ],
+        "transitions" => [
+            //"playCards" => ST_PLAYER_PLAY_CARDS,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_FIGHTER_POWER => [
+        "name" => "chooseFighterPower",
+        "description" => clienttranslate('${actplayer} must choose a discard pile'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a discard pile'),
+        "type" => "activeplayer",
+        "args" => "argChooseFighterPower", 
+        "possibleactions" => [ 
+            "chooseFighter",
+        ],
+        "transitions" => [
+            "nextMove" => ST_NEXT_MOVE,
+        ]
+    ],
+
+    ST_PLAYER_ACTION_CHOOSE_TERRITORY => [
+        "name" => "actionChooseTerritory",
+        "description" => clienttranslate('${actplayer} must choose a card'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a card'),
+        "type" => "activeplayer", 
+        "args" => "argActionChooseTerritory", 
+        "possibleactions" => [ 
+            "actionChooseTerritory",
+        ],
+        "transitions" => [
+            //"playCards" => ST_PLAYER_PLAY_CARDS,
+        ]
+    ],
+
+    ST_PLAYER_ACTION_CHOOSE_FIGHTER => [
+        "name" => "actionChooseFighter",
+        "description" => clienttranslate('${actplayer} must choose a discard pile'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a discard pile'),
+        "type" => "activeplayer",
+        "args" => "argActionChooseFighter", 
+        "possibleactions" => [ 
+            "actionChooseFighter",
+        ],
+        "transitions" => [
+            //"chooseCard" => ST_PLAYER_CHOOSE_DISCARD_CARD,
+        ]
+    ],
+
+    ST_PLAYER_ACTION_CHOOSE_FIGHTER_TERRITORY => [
+        "name" => "actionChooseFighterTerritory",
+        "description" => clienttranslate('${actplayer} must choose a card'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a card'),
+        "type" => "activeplayer", 
+        "args" => "argActionChooseFighterTerritory", 
+        "possibleactions" => [ 
+            "actionChooseFighterTerritory",
+        ],
+        "transitions" => [
+            //"playCards" => ST_PLAYER_PLAY_CARDS,
+        ]
+    ],
+];
+
+$gameGameStates = [
+
+    ST_NEW_ROUND => [
+        "name" => "newRound",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNewRound",
+        "updateGameProgression" => true,
+        "transitions" => [
+            "askActivatePlanification" => ST_PLAYER_ASK_ACTIVATE_PLANIFICATION,
+            "rollDice" => ST_ROLL_DICE,
+        ],
+    ],
+
+    ST_ROLL_DICE => [
+        "name" => "rollDice",
+        "description" => "",
+        "type" => "game",
+        "action" => "stRollDice",
+        "transitions" => [
+            "chooseOperation" => ST_PLAYER_CHOOSE_OPERATION,
+        ],
+    ],
+
+    ST_NEXT_MOVE => [
+        "name" => "nextMove",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNextMove",
+        "transitions" => $chooseCellTransitions + [
+            "nextPlayer" => ST_NEXT_PLAYER,
+        ],
+    ],
+
+    ST_NEXT_PLAYER => [
+        "name" => "nextPlayer",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNextPlayer",
+        "transitions" => [
+            "nextPlayer" => ST_PLAYER_CHOOSE_OPERATION,
+            "endRound" => ST_END_ROUND,
+        ],
+    ],
+
+    ST_END_ROUND => [
+        "name" => "endRound",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndRound",
+        "updateGameProgression" => true,
+        "transitions" => [
+            "newRound" => ST_NEW_ROUND,
+            "endScore" => ST_END_SCORE,
+        ],
+    ],
+
+    ST_END_SCORE => [
+        "name" => "endScore",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndScore",
+        "transitions" => [
+            "endGame" => ST_END_GAME,
+        ],
+    ],
+];
+ 
+$machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
