@@ -50,7 +50,12 @@ class Lumen extends Table {
             PLAYER_NUMBER => PLAYER_NUMBER,
             REMAINING_FIGHTERS_TO_PLACE => REMAINING_FIGHTERS_TO_PLACE,
             REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE => REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE,
-        ]);        
+
+            SCENARIO_OPTION => SCENARIO_OPTION,
+        ]); 
+		
+        $this->cards = $this->getNew("module.common.deck");
+        $this->cards->init("card");    
 	}
 	
     protected function getGameName() {
@@ -114,8 +119,10 @@ class Lumen extends Table {
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
-        // TODO: setup the initial game situation here
-       
+        $this->setupCards(array_keys($players));
+        $this->setupDiscoverTiles();
+        $this->initScenario();
+        $this->initPlayersCards();
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();

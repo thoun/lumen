@@ -28,12 +28,12 @@ trait StateTrait {
 
         // TODO log dice
         $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
-        self::notifyAllPlayers('diceRoll', clienttranslate('${player_name} rolled ${whiteDieFace} and ${blackDieFace}'), [
+        self::notifyAllPlayers('diceRoll', clienttranslate('${player_name} rolled ${whiteDieFace} ${blackDieFace}'), [
             'player_name' => $this->getPlayerName($firstPlayer),
             'die1' => $die1,
             'die2' => $die2,
-            'whiteDieFace' => $die1, // TODO or the opposite ?
-            'blackDieFace' => $die2, // TODO or the opposite ?
+            'whiteDieFace' => $die1,
+            'blackDieFace' => $die2,
         ]);
 
         $this->gamestate->nextState('chooseOperation');

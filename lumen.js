@@ -534,7 +534,7 @@ var Lumen = /** @class */ (function () {
                     var chooseOperationArgs_1 = args;
                     Object.keys(chooseOperationArgs_1.operations).forEach(function (type) {
                         var operation = chooseOperationArgs_1.operations[type];
-                        _this.addActionButton("chooseOperation".concat(type, "_button"), "<div class=\"operation\" data-type=\"".concat(type, "\"></div> ").concat(operation.value), function () { return _this.chooseOperation(type); }, null, null, 'gray');
+                        _this.addActionButton("chooseOperation".concat(type, "_button"), "<div class=\"operation-icon\" data-type=\"".concat(type, "\"></div> ").concat(operation.value), function () { return _this.chooseOperation(type); }, null, null, 'gray');
                         if (!operation.possible) {
                             document.getElementById("chooseOperation".concat(type, "_button")).classList.add('disabled');
                         }
@@ -1111,11 +1111,14 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.format_string_recursive = function (log, args) {
         try {
             if (log && args && !args.processed) {
-                if (args.announcement && args.announcement[0] != '<') {
-                    args.announcement = "<strong style=\"color: darkred;\">".concat(_(args.announcement), "</strong>");
+                if (args.whiteDieFace && args.whiteDieFace[0] != '<') {
+                    args.whiteDieFace = "<div class=\"die-icon\" data-color=\"white\" data-value=\"".concat(args.whiteDieFace, "\"></div>");
                 }
-                if (args.call && args.call.length && args.call[0] != '<') {
-                    args.call = "<strong class=\"title-bar-call\">".concat(_(args.call), "</strong>");
+                if (args.blackDieFace && args.blackDieFace[0] != '<') {
+                    args.blackDieFace = "<div class=\"die-icon\" data-color=\"black\" data-value=\"".concat(args.blackDieFace, "\"></div>");
+                }
+                if (args.operation && args.operation[0] != '<') {
+                    args.operation = "<div class=\"operation-icon\" data-type=\"".concat(args.operation, "\"></div>");
                 }
                 ['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(function (field) {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {

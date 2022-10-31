@@ -35,13 +35,23 @@
   	} 
 
     public function chooseOperation() {
-        self::setAjaxMode();     
+      self::setAjaxMode();
 
-        $operation = self::getArg("operation", AT_posint, true);
+      $operation = self::getArg("operation", AT_posint, true);
 
-        $this->game->chooseOperation($operation);
+      $this->game->chooseOperation($operation);
 
-        self::ajaxResponse();
+      self::ajaxResponse();
+    }
+
+    public function chooseCell() {
+      self::setAjaxMode();
+
+      $cell = self::getArg("cell", AT_posint, true);
+
+      $this->game->chooseCell($cell);
+
+      self::ajaxResponse();
     }
 
   }

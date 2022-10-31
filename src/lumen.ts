@@ -246,7 +246,7 @@ class Lumen implements LumenGame {
                     const chooseOperationArgs = args as EnteringChooseOperationArgs;
                     Object.keys(chooseOperationArgs.operations).forEach((type: any) => {
                         const operation = chooseOperationArgs.operations[type];
-                        (this as any).addActionButton(`chooseOperation${type}_button`, `<div class="operation" data-type="${type}"></div> ${operation.value}`, () => this.chooseOperation(type), null, null, 'gray');
+                        (this as any).addActionButton(`chooseOperation${type}_button`, `<div class="operation-icon" data-type="${type}"></div> ${operation.value}`, () => this.chooseOperation(type), null, null, 'gray');
                         if (!operation.possible) {
                             document.getElementById(`chooseOperation${type}_button`).classList.add('disabled');
                         }    
@@ -954,11 +954,14 @@ class Lumen implements LumenGame {
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
-                if (args.announcement && args.announcement[0] != '<') {
-                    args.announcement = `<strong style="color: darkred;">${_(args.announcement)}</strong>`;
+                if (args.whiteDieFace && args.whiteDieFace[0] != '<') {
+                    args.whiteDieFace = `<div class="die-icon" data-color="white" data-value="${args.whiteDieFace}"></div>`;
                 }
-                if (args.call && args.call.length && args.call[0] != '<') {
-                    args.call = `<strong class="title-bar-call">${_(args.call)}</strong>`;
+                if (args.blackDieFace && args.blackDieFace[0] != '<') {
+                    args.blackDieFace = `<div class="die-icon" data-color="black" data-value="${args.blackDieFace}"></div>`;
+                }
+                if (args.operation && args.operation[0] != '<') {
+                    args.operation = `<div class="operation-icon" data-type="${args.operation}"></div>`;
                 }
 
                 ['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(field => {

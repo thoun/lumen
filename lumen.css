@@ -572,34 +572,37 @@ html, .mode_3d #game_play_area_background {
   background: url("img/background.jpg");
 }
 
-#page-title .action-button .operation {
-  width: 20px;
-  height: 20px;
+.operation-icon {
   background: url("img/operations.png");
   background-size: auto 100%;
-  margin-right: 5px;
-  display: inline-block;
   vertical-align: middle;
+  display: inline-block;
 }
-#page-title .action-button .operation[data-type="1"] {
+.operation-icon[data-type="1"] {
   background-position-x: 0%;
   background-position-y: 0%;
 }
-#page-title .action-button .operation[data-type="2"] {
+.operation-icon[data-type="2"] {
   background-position-x: 25%;
   background-position-y: 0%;
 }
-#page-title .action-button .operation[data-type="3"] {
+.operation-icon[data-type="3"] {
   background-position-x: 50%;
   background-position-y: 0%;
 }
-#page-title .action-button .operation[data-type="4"] {
+.operation-icon[data-type="4"] {
   background-position-x: 75%;
   background-position-y: 0%;
 }
-#page-title .action-button .operation[data-type="5"] {
+.operation-icon[data-type="5"] {
   background-position-x: 100%;
   background-position-y: 0%;
+}
+
+#page-title .action-button .operation-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
 }
 
 #zoom-wrapper {
@@ -657,4 +660,65 @@ html, .mode_3d #game_play_area_background {
   #tables-and-center {
     flex-wrap: wrap;
   }
+}
+.die-icon {
+  background-size: auto 100%;
+  display: inline-block;
+  vertical-align: middle;
+}
+.die-icon[data-color=white] {
+  background-image: url("img/white-die.png");
+}
+.die-icon[data-color=white][data-value="0"] {
+  background-position-x: 0%;
+}
+.die-icon[data-color=white][data-value="1"] {
+  background-position-x: 20%;
+}
+.die-icon[data-color=white][data-value="2"] {
+  background-position-x: 40%;
+}
+.die-icon[data-color=white][data-value="3"] {
+  background-position-x: 60%;
+}
+.die-icon[data-color=white][data-value="4"] {
+  background-position-x: 80%;
+}
+.die-icon[data-color=white][data-value="5"] {
+  background-position-x: 100%;
+}
+.die-icon[data-color=black] {
+  background-image: url("img/black-die.png");
+}
+.die-icon[data-color=black][data-value="1"] {
+  background-position-x: 0%;
+}
+.die-icon[data-color=black][data-value="2"] {
+  background-position-x: 20%;
+}
+.die-icon[data-color=black][data-value="3"] {
+  background-position-x: 40%;
+}
+.die-icon[data-color=black][data-value="4"] {
+  background-position-x: 60%;
+}
+.die-icon[data-color=black][data-value="5"] {
+  background-position-x: 80%;
+}
+.die-icon[data-color=black][data-value="6"] {
+  background-position-x: 100%;
+}
+
+.log .die-icon, .gamelogreview .die-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 2px;
+  margin-right: 2px;
+  border-radius: 3px;
+}
+.log .operation-icon, .gamelogreview .operation-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 2px;
+  margin-right: 2px;
 }

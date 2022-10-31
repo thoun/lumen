@@ -16,23 +16,26 @@ html, .mode_3d #game_play_area_background {
   background: url('img/background.jpg');
 }
 
+.operation-icon {
+  background: url('img/operations.png');
+  background-size: auto 100%;
+  vertical-align: middle;
+  display: inline-block;
+
+  @for $index from 1 through 5 {
+    &[data-type="#{$index}"] {
+        background-position-x: #{($index - 1) * 25%};
+        background-position-y: 0%;
+    }
+  }
+}
+
 #page-title {
   .action-button {
-    .operation {
+    .operation-icon {
       width: 20px;
       height: 20px;
-      background: url('img/operations.png');
-      background-size: auto 100%;
       margin-right: 5px;
-      display: inline-block;
-      vertical-align: middle;
-
-      @for $index from 1 through 5 {
-        &[data-type="#{$index}"] {
-            background-position-x: #{($index - 1) * 25%};
-            background-position-y: 0%;
-        }
-    }
     }
   }
 }
@@ -100,5 +103,45 @@ html, .mode_3d #game_play_area_background {
 @media (max-width: 1165px) { 
   #tables-and-center {
     flex-wrap: wrap;
+  }
+}
+
+.die-icon {
+  background-size: auto 100%;
+  display: inline-block;
+  vertical-align: middle;
+
+  &[data-color="white"] {
+    background-image: url('img/white-die.png');
+    @for $value from 0 through 5 {
+      &[data-value="#{$value}"] {
+          background-position-x: #{$value * 20%};
+      }
+    }
+  }
+  &[data-color="black"] {
+    background-image: url('img/black-die.png');
+    @for $value from 1 through 6 {
+      &[data-value="#{$value}"] {
+          background-position-x: #{($value - 1) * 20%};
+      }
+    }
+  }
+}
+
+.log, .gamelogreview {
+  .die-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 2px;
+    margin-right: 2px;
+    border-radius: 3px;
+  }
+
+  .operation-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 2px;
+    margin-right: 2px;
   }
 }

@@ -48,7 +48,6 @@ define('END_SCORE', 100);
  */
 define('FIRST_PLAYER', 10);
 
-
 define('DIE1', 20);
 define('DIE2', 21);
 
@@ -58,5 +57,36 @@ define('PLAYER_NUMBER', 31);
 define('REMAINING_FIGHTERS_TO_PLACE', 40);
 
 define('REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE', 50);
+
+/*
+ * Options
+ */
+define('SCENARIO_OPTION', 100);
+
+/*
+ * Powers
+ */
+define('POWER_BAVEUX', 1);
+define('POWER_REANIMATRICE', 2);
+define('POWER_PUSHER', 3);
+define('POWER_ASSASSIN', 4);
+define('POWER_EMPLUME', 5);
+
+//define('POWER_PUSHER', 11);
+//define('POWER_ASSASSIN', 12);
+define('POWER_IMPATIENT', 13);
+define('POWER_BOMBARDE', 14);
+define('POWER_TISSEUSE', 15);
+define('POWER_ROOTED', 16);
+define('POWER_PACIFICATEUR', 17);
+define('POWER_METAMORPH', 18);
+
+define('ACTION_FURY', 21); 
+define('ACTION_RESET', 22);
+define('ACTION_TELEPORT', 23);
+
+define('MISSION_COFFRE', 31); 
+define('MISSION_WINTER', 32); 
+define('MISSION_FRELUQUETS', 33); 
 
 ?>

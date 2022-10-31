@@ -24,6 +24,8 @@ trait ActionTrait {
         $this->setGameStateValue(PLAYER_OPERATION, $type);
         $this->setGameStateValue(PLAYER_NUMBER, $operation['value']);
 
+        self::DbQuery("update operation set nb = nb + 1 where player_id = $playerId and operation = $type");        
+
         self::notifyAllPlayers('log', clienttranslate('${player_name} chooses value ${number} (operation ${operation})'), [
             'player_name' => $this->getPlayerName($playerId),
             'number' => $operation['value'],
@@ -36,8 +38,8 @@ trait ActionTrait {
         $this->gamestate->nextState('chooseCell');
     }
 
-    public function takeCardFromDiscard(int $discardNumber) {
-        $this->checkAction('takeCardFromDiscard'); 
+    public function chooseCell(int $cellId) {
+        $this->checkAction('chooseCell'); 
         
         $playerId = intval($this->getActivePlayerId());
         
@@ -49,6 +51,9 @@ trait ActionTrait {
         if ($card == null) {
             throw new BgaUserException("No card in that discard");
         }
+
+        $value = intval($this->getGameStateValue(PLAYER_NUMBER));
+        self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($playerId, $cellId, $value)");
 
         $this->cards->moveCard($card->id, 'hand'.$playerId);
         $this->cardCollected($playerId, $card);

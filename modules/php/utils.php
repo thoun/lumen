@@ -64,7 +64,9 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
-    
+    function getScenario() {
+        return intval($this->getGameStateValue(SCENARIO_OPTION));
+    }
     
     function getOpMax(int $type) {
         return $type > 2 ? 4 : 3;
@@ -91,6 +93,79 @@ trait UtilTrait {
                 break;
         }
         return $value;
+    }
+
+    function getCardFromDb(/*array|null*/ $dbCard) {
+        if ($dbCard == null) {
+            return null;
+        }
+        return new CARD($dbCard, $this->CARDS);
+    }
+
+    function getCardsFromDb(array $dbCards) {
+        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbCards));
+    }
+
+    function setupCards(array $playersIds) {
+        $bags = [
+            0 => [],
+        ];
+
+        foreach($playersIds as $playerId) {
+            $bags[$playerId] = [];
+        }
+
+        foreach($bags as $playerId => &$bag) {
+            $cards = [];
+            foreach ($this->CARDS as $subType => $cardType) {
+                if ($cardType->type === 1 && $playerId > 0 || $cardType->type !== 1 && $playerId === 0) {
+                    $cards[] = [ 'type' => $cardType->type, 'type_arg' => $subType, 'nbr' => $cardType->number ];
+                }
+            }
+            $this->cards->createCards($cards, 'bag'.$playerId);
+            $this->cards->shuffle('bag'.$playerId);
+        }
+    }
+
+    function setupDiscoverTiles() {
+        // TODO
+    }
+
+    function initScenario() {
+        // TODO
+    }
+
+    function initPlayersCards() {
+        // TODO
+    }
+
+    function getTerritoryNeighbours(int $territoryId, int $scenarioId) {
+        $scenario = $this->SCENARIOS[$scenarioId];
+
+        $neighboursId = [];
+
+        foreach ($scenario->battlefieldsIds as $battlefieldId) {
+            $battlefield = $this->BATTLEFIELDS[$battlefieldId];
+            foreach ($battlefield->territoriesLinks as $from => $tos) {
+                if ($from == $territoryId) {
+                    $neighboursId = array_merge($neighboursId, $tos);
+                }
+                if (in_array($territoryId, $tos)) {
+                    $neighboursId = $from;
+                }
+            }
+        }
+
+        foreach ($scenario->territoriesLinks as $from => $tos) {
+            if ($from == $territoryId) {
+                $neighboursId = array_merge($neighboursId, $tos);
+            }
+            if (in_array($territoryId, $tos)) {
+                $neighboursId = $from;
+            }
+        }
+
+        return array_values(array_unique($neighboursId));
     }
 
 }
