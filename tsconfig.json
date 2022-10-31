@@ -13,7 +13,7 @@
         "src/lumen.d.ts",
         "src/slide-utils.ts",
         "src/cards.ts",
-        "src/stacks.ts",
+        "src/table-center.ts",
         "src/player-table.ts",
         "src/lumen.ts",
         "src/define.ts"

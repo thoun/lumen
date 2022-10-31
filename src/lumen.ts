@@ -12,14 +12,12 @@ const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1];
 const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0];
 const LOCAL_STORAGE_ZOOM_KEY = 'Lumen-zoom';
 
-const POINTS_FOR_PLAYERS = [null, null, 40, 35, 30];
-
 class Lumen implements LumenGame {
     public zoom: number = 1;
     public cards: Cards;
 
     private gamedatas: LumenGamedatas;
-    private stacks: Stacks;
+    private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     private selectedCards: number[];
     private lastNotif: any;
@@ -55,7 +53,7 @@ class Lumen implements LumenGame {
         log('gamedatas', gamedatas);
 
         this.cards = new Cards(this);
-        this.stacks = new Stacks(this, this.gamedatas);
+        this.tableCenter = new TableCenter(this, this.gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
 
@@ -128,35 +126,35 @@ class Lumen implements LumenGame {
         }
 
         if ((this as any).isCurrentPlayerActive()) {
-            this.stacks.makeDeckSelectable(args.canTakeFromDeck);
-            this.stacks.makeDiscardSelectable(true);
+            this.tableCenter.makeDeckSelectable(args.canTakeFromDeck);
+            this.tableCenter.makeDiscardSelectable(true);
         }
     }
     
     private onEnteringChooseCard(args: EnteringChooseCardArgs) {
-        this.stacks.showPickCards(true, args._private?.cards ?? args.cards);
+        this.tableCenter.showPickCards(true, args._private?.cards ?? args.cards);
         if ((this as any).isCurrentPlayerActive()) {
-            setTimeout(() => this.stacks.makePickSelectable(true), 500);
+            setTimeout(() => this.tableCenter.makePickSelectable(true), 500);
         } else {
-            this.stacks.makePickSelectable(false);
+            this.tableCenter.makePickSelectable(false);
         }        
-        this.stacks.setDeckCount(args.remainingCardsInDeck);
+        this.tableCenter.setDeckCount(args.remainingCardsInDeck);
     }
     
     private onEnteringPutDiscardPile(args: EnteringChooseCardArgs) {
-        this.stacks.showPickCards(true, args._private?.cards ?? args.cards);
-        this.stacks.makeDiscardSelectable((this as any).isCurrentPlayerActive());
+        this.tableCenter.showPickCards(true, args._private?.cards ?? args.cards);
+        this.tableCenter.makeDiscardSelectable((this as any).isCurrentPlayerActive());
     }
 
     private onEnteringPlayCards() {
-        this.stacks.showPickCards(false);
+        this.tableCenter.showPickCards(false);
         this.selectedCards = [];
 
         this.updateDisabledPlayCards();
     }
     
     private onEnteringChooseDiscardPile() {
-        this.stacks.makeDiscardSelectable((this as any).isCurrentPlayerActive());
+        this.tableCenter.makeDiscardSelectable((this as any).isCurrentPlayerActive());
     }
     
     private onEnteringChooseDiscardCard(args: EnteringChooseCardArgs) {
@@ -209,16 +207,16 @@ class Lumen implements LumenGame {
     }
 
     private onLeavingTakeCards() {
-        this.stacks.makeDeckSelectable(false);
-        this.stacks.makeDiscardSelectable(false);
+        this.tableCenter.makeDeckSelectable(false);
+        this.tableCenter.makeDiscardSelectable(false);
     }
     
     private onLeavingChooseCard() {
-        this.stacks.makePickSelectable(false);
+        this.tableCenter.makePickSelectable(false);
     }
 
     private onLeavingPutDiscardPile() {
-        this.stacks.makeDiscardSelectable(false);
+        this.tableCenter.makeDiscardSelectable(false);
     }
 
     private onLeavingPlayCards() {
@@ -330,7 +328,7 @@ class Lumen implements LumenGame {
     }
 
     private onTableCenterSizeChange() {
-        const maxWidth = document.getElementById('full-table').clientWidth;
+        /*const maxWidth = document.getElementById('full-table').clientWidth;
         const tableCenterWidth = document.getElementById('table-center').clientWidth + 20;
         const playerTableWidth = 650 + 20;
         const tablesMaxWidth = maxWidth - tableCenterWidth;
@@ -342,7 +340,7 @@ class Lumen implements LumenGame {
                 width = `${reduced}px`;
             }
         }
-        document.getElementById('tables').style.width = width;
+        document.getElementById('tables').style.width = width;*/
     }
 
     private setupPreferences() {
@@ -379,8 +377,7 @@ class Lumen implements LumenGame {
         Object.values(gamedatas.players).forEach(player => {
             const playerId = Number(player.id);   
 
-            // show end game points
-            dojo.place(`<span class="end-game-points">&nbsp;/&nbsp;${POINTS_FOR_PLAYERS[Object.keys(gamedatas.players).length]}</span>`, `player_score_${playerId}`, 'after');
+            document.getElementById(`overall_player_board_${playerId}`).style.background = `#${player.color}`;
 
             // hand cards counter
             dojo.place(`<div class="counters">
@@ -791,8 +788,8 @@ class Lumen implements LumenGame {
 
     notif_cardInDiscardFromDeck(notif: Notif<NotifCardInDiscardFromDeckArgs>) {
         this.cards.createMoveOrUpdateCard(notif.args.card, `discard${notif.args.discardId}`, false, 'deck');
-        this.stacks.discardCounters[notif.args.discardId].setValue(1);
-        this.stacks.setDeckCount(notif.args.remainingCardsInDeck);
+        this.tableCenter.discardCounters[notif.args.discardId].setValue(1);
+        this.tableCenter.setDeckCount(notif.args.remainingCardsInDeck);
         this.updateTableHeight();
     } 
 
@@ -807,7 +804,7 @@ class Lumen implements LumenGame {
         if (notif.args.newDiscardTopCard) {
             this.cards.createMoveOrUpdateCard(notif.args.newDiscardTopCard, `discard${discardNumber}`, true);
         }
-        this.stacks.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
+        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
         this.updateTableHeight();
     } 
 
@@ -822,7 +819,7 @@ class Lumen implements LumenGame {
         if (notif.args.newDiscardTopCard) {
             this.cards.createMoveOrUpdateCard(notif.args.newDiscardTopCard, `discard${discardNumber}`, true);
         }
-        this.stacks.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
+        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
         this.updateTableHeight();
     } 
 
@@ -843,14 +840,14 @@ class Lumen implements LumenGame {
     }   
 
     notif_cardInDiscardFromPick(notif: Notif<NotifCardInDiscardFromPickArgs>) {
-        const currentCardDiv = this.stacks.getDiscardCard(notif.args.discardId);
+        const currentCardDiv = this.tableCenter.getDiscardCard(notif.args.discardId);
         const discardNumber = notif.args.discardId;
         this.cards.createMoveOrUpdateCard(notif.args.card, `discard${discardNumber}`);
         
         if (currentCardDiv) {
             setTimeout(() => this.cards.removeCard(currentCardDiv), 500);
         }
-        this.stacks.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
+        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
         this.updateTableHeight();
     }
 
@@ -907,12 +904,12 @@ class Lumen implements LumenGame {
         
         this.getCurrentPlayerTable()?.setHandPoints(0);
         [1, 2].forEach(discardNumber => {
-            const currentCardDiv = this.stacks.getDiscardCard(discardNumber);
+            const currentCardDiv = this.tableCenter.getDiscardCard(discardNumber);
             this.cards.removeCard(currentCardDiv); // animate cards to deck?
         });
 
-        [1, 2].forEach(discardNumber => this.stacks.discardCounters[discardNumber].setValue(0));
-        this.stacks.setDeckCount(58);
+        [1, 2].forEach(discardNumber => this.tableCenter.discardCounters[discardNumber].setValue(0));
+        this.tableCenter.setDeckCount(58);
     }
 
     notif_updateCardsPoints(notif: Notif<NotifUpdateCardsPointsArgs>) {
@@ -954,11 +951,11 @@ class Lumen implements LumenGame {
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
-                if (args.whiteDieFace && args.whiteDieFace[0] != '<') {
-                    args.whiteDieFace = `<div class="die-icon" data-color="white" data-value="${args.whiteDieFace}"></div>`;
+                if (args.whiteDieFace !== undefined && args.whiteDieFace[0] != '<') {
+                    args.whiteDieFace = `<div class="die-icon" data-color="white">${args.whiteDieFace}</div>`;
                 }
-                if (args.blackDieFace && args.blackDieFace[0] != '<') {
-                    args.blackDieFace = `<div class="die-icon" data-color="black" data-value="${args.blackDieFace}"></div>`;
+                if (args.blackDieFace !== undefined && args.blackDieFace[0] != '<') {
+                    args.blackDieFace = `<div class="die-icon" data-color="black">${args.blackDieFace}</div>`;
                 }
                 if (args.operation && args.operation[0] != '<') {
                     args.operation = `<div class="operation-icon" data-type="${args.operation}"></div>`;

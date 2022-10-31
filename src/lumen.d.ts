@@ -17,16 +17,9 @@ interface ScoreDetails {
 
 interface LumenPlayer extends Player {
     playerNo: number;
-    handCards: Card[];
-    tableCards: Card[];
-    cardsPoints?: number;
-    endCall?: {
-        announcement: string;
-        cardsPoints: number;
-        betResult?: string;
-    };
-    endRoundPoints?: NotifUpdateCardsPointsArgs;
-    scoringDetail?: ScoreDetails;
+    checks: number;
+    reserve: Card[];
+    highCommand: Card[];
 }
 
 interface LumenGamedatas {
@@ -42,11 +35,7 @@ interface LumenGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
-    remainingCardsInDeck: number;
-    discardTopCard1: Card;
-    discardTopCard2: Card;
-    remainingCardsInDiscard1: number;
-    remainingCardsInDiscard2: number;
+    fightersOnTerritories: Card[];
 }
 
 interface LumenGame extends Game {

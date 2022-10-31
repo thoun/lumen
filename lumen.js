@@ -228,75 +228,11 @@ var Cards = /** @class */ (function () {
     };
     return Cards;
 }());
-var Stacks = /** @class */ (function () {
-    function Stacks(game, gamedatas) {
-        var _this = this;
+var TableCenter = /** @class */ (function () {
+    function TableCenter(game, gamedatas) {
         this.game = game;
-        this.discardCounters = [];
-        this.deckDiv.addEventListener('click', function () { return _this.game.takeCardsFromDeck(); });
-        this.deckCounter = new ebg.counter();
-        this.deckCounter.create("deck-counter");
-        this.setDeckCount(gamedatas.remainingCardsInDeck);
-        [1, 2].forEach(function (number) {
-            if (gamedatas["discardTopCard".concat(number)]) {
-                game.cards.createMoveOrUpdateCard(gamedatas["discardTopCard".concat(number)], "discard".concat(number));
-            }
-            document.getElementById("discard".concat(number)).addEventListener('click', function () { return _this.game.onDiscardPileClick(number); });
-            _this.discardCounters[number] = new ebg.counter();
-            _this.discardCounters[number].create("discard".concat(number, "-counter"));
-            _this.discardCounters[number].setValue(gamedatas["remainingCardsInDiscard".concat(number)]);
-        });
     }
-    Object.defineProperty(Stacks.prototype, "deckDiv", {
-        get: function () {
-            return document.getElementById('deck');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Stacks.prototype, "pickDiv", {
-        get: function () {
-            return document.getElementById('pick');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Stacks.prototype.makeDeckSelectable = function (selectable) {
-        this.deckDiv.classList.toggle('selectable', selectable);
-    };
-    Stacks.prototype.makeDiscardSelectable = function (selectable) {
-        var _this = this;
-        [1, 2].forEach(function (number) { var _a; return (_a = _this.getDiscardCard(number)) === null || _a === void 0 ? void 0 : _a.classList.toggle('selectable', selectable); });
-    };
-    Stacks.prototype.makePickSelectable = function (selectable) {
-        var cards = Array.from(this.pickDiv.getElementsByClassName('card'));
-        cards.forEach(function (card) { return card.classList.toggle('selectable', selectable); });
-    };
-    Stacks.prototype.showPickCards = function (show, cards) {
-        var _this = this;
-        this.pickDiv.dataset.visible = show.toString();
-        cards === null || cards === void 0 ? void 0 : cards.forEach(function (card) {
-            var _a, _b;
-            if (((_b = (_a = document.getElementById("card-".concat(card.id))) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.id) !== 'pick') {
-                // start hidden
-                _this.game.cards.createMoveOrUpdateCard({
-                    id: card.id
-                }, "pick", true, 'deck');
-                // set card informations
-                setTimeout(function () { return _this.game.cards.updateCard(card); }, 1);
-            }
-        });
-        this.game.updateTableHeight();
-    };
-    Stacks.prototype.getDiscardCard = function (discardNumber) {
-        var currentCardDivs = Array.from(document.getElementById("discard".concat(discardNumber)).getElementsByClassName('card'));
-        return currentCardDivs.length > 0 ? currentCardDivs[0] : null;
-    };
-    Stacks.prototype.setDeckCount = function (number) {
-        this.deckCounter.setValue(number);
-        document.getElementById("deck").classList.toggle('hidden', number == 0);
-    };
-    return Stacks;
+    return TableCenter;
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 ;
@@ -306,17 +242,8 @@ var PlayerTable = /** @class */ (function () {
         this.game = game;
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\">\n            <div id=\"player-table-").concat(this.playerId, "-hand-cards\" class=\"hand cards\" data-player-id=\"").concat(this.playerId, "\" data-current-player=\"").concat(this.currentPlayer.toString(), "\" data-my-hand=\"").concat(this.currentPlayer.toString(), "\"></div>\n            <div class=\"name-wrapper\">\n                <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n                <div class=\"bubble-wrapper\">\n                    <div id=\"player-table-").concat(this.playerId, "-discussion-bubble\" class=\"discussion_bubble\" data-visible=\"false\"></div>\n                </div>\n        ");
-        if (this.currentPlayer) {
-            html += "<span class=\"counter\">\n                    (".concat(_('Cards points:'), "&nbsp;<span id=\"cards-points-counter\"></span>)\n                </span>");
-        }
-        html += "</div>\n            <div id=\"player-table-".concat(this.playerId, "-table-cards\" class=\"table cards\">\n            </div>\n        </div>\n        ");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\">\n            <div id=\"player-table-").concat(this.playerId, "-hand-cards\" class=\"hand cards\" data-player-id=\"").concat(this.playerId, "\" data-current-player=\"").concat(this.currentPlayer.toString(), "\" data-my-hand=\"").concat(this.currentPlayer.toString(), "\"></div>\n            <div class=\"name-wrapper\">\n                <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-table-cards\" class=\"table cards\">\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
-        if (this.currentPlayer) {
-            this.cardsPointsCounter = new ebg.counter();
-            this.cardsPointsCounter.create("cards-points-counter");
-            this.cardsPointsCounter.setValue(player.cardsPoints);
-        }
     }
     return PlayerTable;
 }());
@@ -334,7 +261,6 @@ var ACTION_TIMER_DURATION = 5;
 var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1];
 var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0];
 var LOCAL_STORAGE_ZOOM_KEY = 'Lumen-zoom';
-var POINTS_FOR_PLAYERS = [null, null, 40, 35, 30];
 var Lumen = /** @class */ (function () {
     function Lumen() {
         this.zoom = 1;
@@ -364,7 +290,7 @@ var Lumen = /** @class */ (function () {
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
         this.cards = new Cards(this);
-        this.stacks = new Stacks(this, this.gamedatas);
+        this.tableCenter = new TableCenter(this, this.gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
         this.setupNotifications();
@@ -426,34 +352,34 @@ var Lumen = /** @class */ (function () {
             this.setGamestateDescription('NoDiscard');
         }
         if (this.isCurrentPlayerActive()) {
-            this.stacks.makeDeckSelectable(args.canTakeFromDeck);
-            this.stacks.makeDiscardSelectable(true);
+            this.tableCenter.makeDeckSelectable(args.canTakeFromDeck);
+            this.tableCenter.makeDiscardSelectable(true);
         }
     };
     Lumen.prototype.onEnteringChooseCard = function (args) {
         var _this = this;
         var _a, _b;
-        this.stacks.showPickCards(true, (_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.cards) !== null && _b !== void 0 ? _b : args.cards);
+        this.tableCenter.showPickCards(true, (_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.cards) !== null && _b !== void 0 ? _b : args.cards);
         if (this.isCurrentPlayerActive()) {
-            setTimeout(function () { return _this.stacks.makePickSelectable(true); }, 500);
+            setTimeout(function () { return _this.tableCenter.makePickSelectable(true); }, 500);
         }
         else {
-            this.stacks.makePickSelectable(false);
+            this.tableCenter.makePickSelectable(false);
         }
-        this.stacks.setDeckCount(args.remainingCardsInDeck);
+        this.tableCenter.setDeckCount(args.remainingCardsInDeck);
     };
     Lumen.prototype.onEnteringPutDiscardPile = function (args) {
         var _a, _b;
-        this.stacks.showPickCards(true, (_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.cards) !== null && _b !== void 0 ? _b : args.cards);
-        this.stacks.makeDiscardSelectable(this.isCurrentPlayerActive());
+        this.tableCenter.showPickCards(true, (_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.cards) !== null && _b !== void 0 ? _b : args.cards);
+        this.tableCenter.makeDiscardSelectable(this.isCurrentPlayerActive());
     };
     Lumen.prototype.onEnteringPlayCards = function () {
-        this.stacks.showPickCards(false);
+        this.tableCenter.showPickCards(false);
         this.selectedCards = [];
         this.updateDisabledPlayCards();
     };
     Lumen.prototype.onEnteringChooseDiscardPile = function () {
-        this.stacks.makeDiscardSelectable(this.isCurrentPlayerActive());
+        this.tableCenter.makeDiscardSelectable(this.isCurrentPlayerActive());
     };
     Lumen.prototype.onEnteringChooseDiscardCard = function (args) {
         var _this = this;
@@ -501,14 +427,14 @@ var Lumen = /** @class */ (function () {
         }
     };
     Lumen.prototype.onLeavingTakeCards = function () {
-        this.stacks.makeDeckSelectable(false);
-        this.stacks.makeDiscardSelectable(false);
+        this.tableCenter.makeDeckSelectable(false);
+        this.tableCenter.makeDiscardSelectable(false);
     };
     Lumen.prototype.onLeavingChooseCard = function () {
-        this.stacks.makePickSelectable(false);
+        this.tableCenter.makePickSelectable(false);
     };
     Lumen.prototype.onLeavingPutDiscardPile = function () {
-        this.stacks.makeDiscardSelectable(false);
+        this.tableCenter.makeDiscardSelectable(false);
     };
     Lumen.prototype.onLeavingPlayCards = function () {
         var _a;
@@ -605,18 +531,19 @@ var Lumen = /** @class */ (function () {
         setTimeout(function () { return document.getElementById('zoom-wrapper').style.height = "".concat(document.getElementById('full-table').getBoundingClientRect().height, "px"); }, 600);
     };
     Lumen.prototype.onTableCenterSizeChange = function () {
-        var maxWidth = document.getElementById('full-table').clientWidth;
-        var tableCenterWidth = document.getElementById('table-center').clientWidth + 20;
-        var playerTableWidth = 650 + 20;
-        var tablesMaxWidth = maxWidth - tableCenterWidth;
-        var width = 'unset';
+        /*const maxWidth = document.getElementById('full-table').clientWidth;
+        const tableCenterWidth = document.getElementById('table-center').clientWidth + 20;
+        const playerTableWidth = 650 + 20;
+        const tablesMaxWidth = maxWidth - tableCenterWidth;
+     
+        let width = 'unset';
         if (tablesMaxWidth < playerTableWidth * this.gamedatas.playerorder.length) {
-            var reduced = (Math.floor(tablesMaxWidth / playerTableWidth) * playerTableWidth);
+            const reduced = (Math.floor(tablesMaxWidth / playerTableWidth) * playerTableWidth);
             if (reduced > 0) {
-                width = "".concat(reduced, "px");
+                width = `${reduced}px`;
             }
         }
-        document.getElementById('tables').style.width = width;
+        document.getElementById('tables').style.width = width;*/
     };
     Lumen.prototype.setupPreferences = function () {
         var _this = this;
@@ -646,8 +573,7 @@ var Lumen = /** @class */ (function () {
         var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
-            // show end game points
-            dojo.place("<span class=\"end-game-points\">&nbsp;/&nbsp;".concat(POINTS_FOR_PLAYERS[Object.keys(gamedatas.players).length], "</span>"), "player_score_".concat(playerId), 'after');
+            document.getElementById("overall_player_board_".concat(playerId)).style.background = "#".concat(player.color);
             // hand cards counter
             dojo.place("<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>"), "player_board_".concat(player.id));
             var handCounter = new ebg.counter();
@@ -964,8 +890,8 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_cardInDiscardFromDeck = function (notif) {
         this.cards.createMoveOrUpdateCard(notif.args.card, "discard".concat(notif.args.discardId), false, 'deck');
-        this.stacks.discardCounters[notif.args.discardId].setValue(1);
-        this.stacks.setDeckCount(notif.args.remainingCardsInDeck);
+        this.tableCenter.discardCounters[notif.args.discardId].setValue(1);
+        this.tableCenter.setDeckCount(notif.args.remainingCardsInDeck);
         this.updateTableHeight();
     };
     Lumen.prototype.notif_cardInHandFromDiscard = function (notif) {
@@ -978,7 +904,7 @@ var Lumen = /** @class */ (function () {
         if (notif.args.newDiscardTopCard) {
             this.cards.createMoveOrUpdateCard(notif.args.newDiscardTopCard, "discard".concat(discardNumber), true);
         }
-        this.stacks.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
+        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
         this.updateTableHeight();
     };
     Lumen.prototype.notif_cardInHandFromDiscardCrab = function (notif) {
@@ -991,7 +917,7 @@ var Lumen = /** @class */ (function () {
         if (notif.args.newDiscardTopCard) {
             this.cards.createMoveOrUpdateCard(notif.args.newDiscardTopCard, "discard".concat(discardNumber), true);
         }
-        this.stacks.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
+        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
         this.updateTableHeight();
     };
     Lumen.prototype.notif_cardInHandFromPick = function (notif) {
@@ -1010,13 +936,13 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_cardInDiscardFromPick = function (notif) {
         var _this = this;
-        var currentCardDiv = this.stacks.getDiscardCard(notif.args.discardId);
+        var currentCardDiv = this.tableCenter.getDiscardCard(notif.args.discardId);
         var discardNumber = notif.args.discardId;
         this.cards.createMoveOrUpdateCard(notif.args.card, "discard".concat(discardNumber));
         if (currentCardDiv) {
             setTimeout(function () { return _this.cards.removeCard(currentCardDiv); }, 500);
         }
-        this.stacks.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
+        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
         this.updateTableHeight();
     };
     Lumen.prototype.notif_score = function (notif) {
@@ -1066,11 +992,11 @@ var Lumen = /** @class */ (function () {
         });
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setHandPoints(0);
         [1, 2].forEach(function (discardNumber) {
-            var currentCardDiv = _this.stacks.getDiscardCard(discardNumber);
+            var currentCardDiv = _this.tableCenter.getDiscardCard(discardNumber);
             _this.cards.removeCard(currentCardDiv); // animate cards to deck?
         });
-        [1, 2].forEach(function (discardNumber) { return _this.stacks.discardCounters[discardNumber].setValue(0); });
-        this.stacks.setDeckCount(58);
+        [1, 2].forEach(function (discardNumber) { return _this.tableCenter.discardCounters[discardNumber].setValue(0); });
+        this.tableCenter.setDeckCount(58);
     };
     Lumen.prototype.notif_updateCardsPoints = function (notif) {
         var _a;
@@ -1111,11 +1037,11 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.format_string_recursive = function (log, args) {
         try {
             if (log && args && !args.processed) {
-                if (args.whiteDieFace && args.whiteDieFace[0] != '<') {
-                    args.whiteDieFace = "<div class=\"die-icon\" data-color=\"white\" data-value=\"".concat(args.whiteDieFace, "\"></div>");
+                if (args.whiteDieFace !== undefined && args.whiteDieFace[0] != '<') {
+                    args.whiteDieFace = "<div class=\"die-icon\" data-color=\"white\">".concat(args.whiteDieFace, "</div>");
                 }
-                if (args.blackDieFace && args.blackDieFace[0] != '<') {
-                    args.blackDieFace = "<div class=\"die-icon\" data-color=\"black\" data-value=\"".concat(args.blackDieFace, "\"></div>");
+                if (args.blackDieFace !== undefined && args.blackDieFace[0] != '<') {
+                    args.blackDieFace = "<div class=\"die-icon\" data-color=\"black\">".concat(args.blackDieFace, "</div>");
                 }
                 if (args.operation && args.operation[0] != '<') {
                     args.operation = "<div class=\"operation-icon\" data-type=\"".concat(args.operation, "\"></div>");

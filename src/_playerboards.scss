@@ -1,7 +1,13 @@
 
 
 .player-board {
-  background-color: white;
+  color: white;
+
+  .player-name {
+    a {
+      color: white !important;
+    }
+  }
 
   &.spectator-mode {
     * {

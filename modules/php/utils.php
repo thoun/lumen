@@ -64,8 +64,12 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
-    function getScenario() {
+    function getScenarioId() {
         return intval($this->getGameStateValue(SCENARIO_OPTION));
+    }
+
+    function getScenario() {
+    return $this->SCENARIOS[/* TODO $this->getScenarioId()*/ 1];
     }
     
     function getOpMax(int $type) {
@@ -95,48 +99,71 @@ trait UtilTrait {
         return $value;
     }
 
-    function getCardFromDb(/*array|null*/ $dbCard) {
-        if ($dbCard == null) {
-            return null;
+    function getCardsByLocation(string $location, /*int|null*/ $location_arg = null, /*int|null*/ $type = null, /*int|null*/ $subType = null) {
+        $sql = "SELECT * FROM `card` WHERE `card_location` = '$location'";
+        if ($location_arg !== null) {
+            $sql .= " AND `card_location_arg` = $location_arg";
         }
-        return new CARD($dbCard, $this->CARDS);
+        if ($type !== null) {
+            $sql .= " AND `card_type` = $type";
+        }
+        if ($subType !== null) {
+            $sql .= " AND `card_type_arg` = $type";
+        }
+        $sql .= " ORDER BY `card_location_arg`";
+        $dbResults = $this->getCollectionFromDb($sql);
+        return array_map(fn($dbCard) => new Card($dbCard, $this->CARDS), array_values($dbResults));
     }
 
-    function getCardsFromDb(array $dbCards) {
-        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbCards));
-    }
-
-    function setupCards(array $playersIds) {
-        $bags = [
-            0 => [],
-        ];
-
-        foreach($playersIds as $playerId) {
-            $bags[$playerId] = [];
-        }
-
-        foreach($bags as $playerId => &$bag) {
+    function setupCards(array $players) {
+        foreach($players as $playerId => $player) {
             $cards = [];
             foreach ($this->CARDS as $subType => $cardType) {
-                if ($cardType->type === 1 && $playerId > 0 || $cardType->type !== 1 && $playerId === 0) {
-                    $cards[] = [ 'type' => $cardType->type, 'type_arg' => $subType, 'nbr' => $cardType->number ];
+                if ($cardType->type === 1) {
+                    $cards[] = [ 'type' => intval($player['player_table_order']), 'type_arg' => $subType, 'nbr' => $cardType->number ];
                 }
             }
             $this->cards->createCards($cards, 'bag'.$playerId);
             $this->cards->shuffle('bag'.$playerId);
         }
+
+        $cards = [];
+        foreach ($this->CARDS as $subType => $cardType) {
+            if ($cardType->type !== 1) {
+                $cards[] = [ 'type' => $cardType->type, 'type_arg' => $subType, 'nbr' => $cardType->number ];
+            }
+        }
+        $this->cards->createCards($cards, 'bag0');
+        $this->cards->shuffle('bag0');
     }
 
     function setupDiscoverTiles() {
         // TODO
     }
 
-    function initScenario() {
-        // TODO
+    function initScenario(array $players) {
+        $scenario = $this->getScenario();
+        $playersIdsByPlayerNo = [];
+        foreach($players as $playerId => $player) {
+            $playersIdsByPlayerNo[intval($player['player_table_order'])] = intval($playerId);
+        }
+
+        foreach ($scenario->initialFighters as $territoryId => $playerFighters) {
+            foreach ($playerFighters as $playerNo => $fightersSubType) {
+                foreach($fightersSubType as $fighterSubType) {
+                    $card = array_values($this->cards->getCardsOfTypeInLocation($playerNo, $fighterSubType, 'bag'.$playersIdsByPlayerNo[$playerNo]))[0];
+                    $this->cards->moveCard($card['id'], 'territory', $territoryId);
+                }
+            }
+        }
     }
 
-    function initPlayersCards() {
-        // TODO
+    function initPlayersCards(array $players) {
+        foreach($players as $playerId => $player) {
+            for ($i=1; $i<=3; $i++) {
+                $this->cards->pickCardForLocation('bag'.$playerId, 'reserve'.$playerId, $i); // TODO check translation
+            }
+        }
     }
 
     function getTerritoryNeighbours(int $territoryId, int $scenarioId) {

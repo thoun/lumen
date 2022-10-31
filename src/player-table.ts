@@ -16,26 +16,11 @@ class PlayerTable {
             <div id="player-table-${this.playerId}-hand-cards" class="hand cards" data-player-id="${this.playerId}" data-current-player="${this.currentPlayer.toString()}" data-my-hand="${this.currentPlayer.toString()}"></div>
             <div class="name-wrapper">
                 <span class="name" style="color: #${player.color};">${player.name}</span>
-                <div class="bubble-wrapper">
-                    <div id="player-table-${this.playerId}-discussion-bubble" class="discussion_bubble" data-visible="false"></div>
-                </div>
-        `;
-        if (this.currentPlayer) {
-            html += `<span class="counter">
-                    (${_('Cards points:')}&nbsp;<span id="cards-points-counter"></span>)
-                </span>`;
-        }
-        html += `</div>
+            </div>
             <div id="player-table-${this.playerId}-table-cards" class="table cards">
             </div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));
-
-        if (this.currentPlayer) {
-            this.cardsPointsCounter = new ebg.counter();
-            this.cardsPointsCounter.create(`cards-points-counter`);
-            this.cardsPointsCounter.setValue(player.cardsPoints);
-        }
     }
 }

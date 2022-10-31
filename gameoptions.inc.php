@@ -24,17 +24,16 @@
  *
  */
 
+require_once("modules/php/constants.inc.php");
+
 $game_options = [
 
     SCENARIO_OPTION => [
-        'name' => totranslate('“Halloween” event (Costume cards)'),
+        'name' => totranslate('Scenario'),
         'values' => [
             1 => [
-                'name' => totranslate('Disabled'),
-            ],
-            2 => [
-                'name' => totranslate('Enabled'),
-                'tmdisplay' => totranslate('“Halloween” event (Costume cards)'),
+                'name' => totranslate('A : First Contact'),
+                'tmdisplay' => totranslate('A : First Contact'),
             ],
         ],
         'default' => 1,

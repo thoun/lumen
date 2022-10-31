@@ -119,10 +119,10 @@ class Lumen extends Table {
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
-        $this->setupCards(array_keys($players));
+        $this->setupCards($players);
         $this->setupDiscoverTiles();
-        $this->initScenario();
-        $this->initPlayersCards();
+        $this->initScenario($players);
+        $this->initPlayersCards($players);
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -139,18 +139,25 @@ class Lumen extends Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas()
-    {
-        $result = array();
+    protected function getAllDatas() {
+        $result = [];
     
-        $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $currentPlayerId = $this->getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, checks FROM player ";
+        $result['players'] = self::getCollectionFromDb($sql);
   
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        // Gather all information about current game situation (visible by player $current_player_id).
+        foreach($result['players'] as $playerId => &$player) {
+            $player['playerNo'] = intval($player['playerNo']);
+            $player['checks'] = intval($player['checks']);
+            $player['reserve'] = $this->getCardsByLocation('reserve'.$playerId);
+            $player['highCommand'] = $this->getCardsByLocation('highCommand'.$playerId);
+        }
+
+        $result['fightersOnTerritories'] = $this->getCardsByLocation('territory');
   
         return $result;
     }
@@ -165,8 +172,7 @@ class Lumen extends Table {
         This method is called each time we are in a game state with the "updateGameProgression" property set to true 
         (see states.inc.php)
     */
-    function getGameProgression()
-    {
+    function getGameProgression() {
         // TODO: compute and return the game progression
 
         return 0;

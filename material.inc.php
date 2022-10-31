@@ -23,31 +23,31 @@ require_once('modules/php/objects/card.php');
 require_once('modules/php/objects/scenario.php');
 
 $this->CARDS = [
-  1 => new CardType(1, 6, 2), // freluquet // TODO TRANSLATE POWERS
+  1 => new CardType(1, 6, 2),
   2 => new CardType(1, 2, 3, POWER_BAVEUX),
   3 => new CardType(1, 2, 1, POWER_REANIMATRICE),
   4 => new CardType(1, 2, 1, POWER_PUSHER),
   5 => new CardType(1, 2, 1, POWER_ASSASSIN),
   6 => new CardType(1, 2, 2, POWER_EMPLUME),
   
-  11 => new CardType(2, 1, 1, POWER_PUSHER),
-  12 => new CardType(2, 1, 1, POWER_ASSASSIN),
-  13 => new CardType(2, 1, 2, POWER_IMPATIENT),
-  14 => new CardType(2, 1, 2, POWER_BOMBARDE),
-  15 => new CardType(2, 1, 2, POWER_TISSEUSE),
-  16 => new CardType(2, 1, 2, POWER_ROOTED),
-  17 => new CardType(2, 1, 2, POWER_PACIFICATEUR),
-  18 => new CardType(2, 1, 1, POWER_METAMORPH),
+  11 => new CardType(10, 1, 1, POWER_PUSHER),
+  12 => new CardType(10, 1, 1, POWER_ASSASSIN),
+  13 => new CardType(10, 1, 2, POWER_IMPATIENT),
+  14 => new CardType(10, 1, 2, POWER_BOMBARDE),
+  15 => new CardType(10, 1, 2, POWER_TISSEUSE),
+  16 => new CardType(10, 1, 2, POWER_ROOTED),
+  17 => new CardType(10, 1, 2, POWER_PACIFICATEUR),
+  18 => new CardType(10, 1, 1, POWER_METAMORPH),
 
   // TODO check quantity
-  21 => new CardType(3, 1, 0, ACTION_FURY), 
-  22 => new CardType(3, 1, 0, ACTION_RESET),
-  23 => new CardType(3, 1, 0, ACTION_TELEPORT),
+  21 => new CardType(20, 1, 0, ACTION_FURY), 
+  22 => new CardType(20, 1, 0, ACTION_RESET),
+  23 => new CardType(20, 1, 0, ACTION_TELEPORT),
   
   // TODO check quantity
-  31 => new CardType(4, 1, 0, MISSION_COFFRE), 
-  32 => new CardType(4, 1, 0, MISSION_WINTER), 
-  33 => new CardType(4, 1, 0, MISSION_FRELUQUETS), 
+  31 => new CardType(30, 1, 0, MISSION_COFFRE), 
+  32 => new CardType(30, 1, 0, MISSION_WINTER), 
+  33 => new CardType(30, 1, 0, MISSION_FRELUQUETS), 
 ];
 
 $this->DISCOVER_TILES = [
@@ -120,5 +120,19 @@ $this->SCENARIOS = [
     41 => [73],
     45 => [71, 73],
     51 => [63, 65],
+  ],
+  [
+    15 => [
+      1 => [4],
+    ],
+    31 => [
+      2 => [3],
+    ],
+    45 => [
+      2 => [4],
+    ],
+    51 => [
+      1 => [3],
+    ],
   ]),
 ];

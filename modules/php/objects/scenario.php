@@ -25,10 +25,12 @@ class Battlefield {
 class Scenario {
     public array $battlefieldsIds;
     public array $territoriesLinks;
+    public array $initialFighters; // first level index is territory. second is player_no (1,2), value is array of fighters
 
-    public function __construct(array $battlefieldsIds, array $territoriesLinks) {
+    public function __construct(array $battlefieldsIds, array $territoriesLinks, array $initialFighters) {
         $this->battlefieldsIds = $battlefieldsIds;
         $this->territoriesLinks = $territoriesLinks;
+        $this->initialFighters = $initialFighters;
     }
 }
 ?>

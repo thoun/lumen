@@ -301,110 +301,18 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: 2px solid #60c2cb;
+  border: 2px solid #1f3067;
   padding: 5px;
   border-radius: 15px;
-  background: rgba(96, 194, 203, 0.4);
+  background: rgba(31, 48, 103, 0.4);
   min-width: 505px;
-}
-#table-center #deck-and-discards {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#table-center #deck-and-discards #deck {
-  display: inline-block;
-  position: relative;
-  width: 149px;
-  height: 208px;
-  margin: 5px;
-  border-radius: 10px;
-  background-image: url("img/card-back.jpg");
-  background-size: auto 100%;
-  box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
-}
-#table-center #deck-and-discards #deck.selectable {
-  cursor: pointer;
-  animation: selectable-card-animation 1s alternate infinite ease-in-out;
-}
-#table-center #deck-and-discards #deck.hidden {
-  background: rgba(96, 194, 203, 0.4);
-  box-shadow: 5px 5px 3px rgba(96, 194, 203, 0.4);
-}
-#table-center #deck-and-discards .discard-stack {
-  display: inline-block;
-  position: relative;
-  width: 159px;
-  height: 218px;
-  margin: 5px;
-  border-radius: 10px;
-  border: 1px solid white;
-  background-color: rgba(255, 255, 255, 0.4);
-}
-#table-center #pick {
-  position: relative;
-  background-color: #60c2cb;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 350px;
-  height: 230px;
-  margin-top: 10px;
-  transition: background-color 0.5s;
-}
-#table-center #pick[data-visible=false] {
-  background-color: transparent;
-}
-#table-center #pick[data-visible=false]::before {
-  border-color: transparent;
-}
-#table-center #pick::before {
-  transition: border-color 0.5s;
-  top: -12px;
-  border-width: 0 12px 12px 12px;
-  border-color: #60c2cb transparent;
-  border-style: solid;
-  content: "";
-  display: block;
-  left: 7px;
-  position: absolute;
-  width: 0;
-}
-
-#discard-pick {
-  background: rgba(255, 255, 255, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-  padding: 5px;
-}
-#discard-pick[data-visible=false] {
-  display: none;
-}
-
-.cards-stack {
-  position: relative;
-}
-.cards-stack .card {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-.cards-stack .pile-counter {
-  position: absolute;
-  bottom: -18px;
-  right: 0;
-  left: 0;
-  font-size: 80%;
-  text-align: center;
-  color: lightcyan;
 }
 
 .player-board {
-  background-color: white;
+  color: white;
+}
+.player-board .player-name a {
+  color: white !important;
 }
 .player-board.spectator-mode * {
   background: white !important;
@@ -452,51 +360,11 @@
   font-size: 20pt;
   font-weight: bold;
 }
-.player-table .name-wrapper .bubble-wrapper {
-  position: absolute;
-  bottom: 110%;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  pointer-events: none;
-}
-.player-table .name-wrapper .bubble-wrapper .discussion_bubble {
-  position: unset;
-  white-space: nowrap;
-  display: unset;
-  opacity: 0;
-  transition: opacity 0.5s;
-  bottom: 110%;
-}
-.player-table .name-wrapper .bubble-wrapper .discussion_bubble[data-visible=true] {
-  opacity: 1;
-}
-.player-table .name-wrapper .bubble-wrapper .discussion_bubble .bubble-score {
-  margin-top: 8px;
-}
-.player-table .name-wrapper .bubble-wrapper .discussion_bubble::after {
-  left: calc(50% - 15px);
-}
-.player-table .name-wrapper .counter {
-  margin-left: 8px;
-}
 .player-table .cards {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   min-height: 218px;
-}
-.player-table .cards.hand[data-current-player=false] {
-  min-height: 45px;
-  max-height: 45px;
-  overflow: hidden;
-}
-.player-table .cards.hand[data-current-player=false] .card:not(:first-child) {
-  margin-left: -120px;
-}
-.player-table .cards.hand[data-can-steal=true] .card {
-  cursor: pointer;
-  animation: selectable-card-animation 1s alternate infinite ease-in-out;
 }
 
 #lumen-help-button {
@@ -505,7 +373,7 @@
   left: 5px;
   width: 50px;
   height: 50px;
-  background: #60c2cb;
+  background: #1f3067;
   font-weight: bold;
   color: white;
   border-radius: 25px;
@@ -572,6 +440,10 @@ html, .mode_3d #game_play_area_background {
   background: url("img/background.jpg");
 }
 
+@font-face {
+  font-family: "Dice";
+  src: url("img/Sketch_Block.ttf");
+}
 .operation-icon {
   background: url("img/operations.png");
   background-size: auto 100%;
@@ -663,50 +535,19 @@ html, .mode_3d #game_play_area_background {
 }
 .die-icon {
   background-size: auto 100%;
-  display: inline-block;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   vertical-align: middle;
+  font-family: "Dice";
 }
 .die-icon[data-color=white] {
-  background-image: url("img/white-die.png");
-}
-.die-icon[data-color=white][data-value="0"] {
-  background-position-x: 0%;
-}
-.die-icon[data-color=white][data-value="1"] {
-  background-position-x: 20%;
-}
-.die-icon[data-color=white][data-value="2"] {
-  background-position-x: 40%;
-}
-.die-icon[data-color=white][data-value="3"] {
-  background-position-x: 60%;
-}
-.die-icon[data-color=white][data-value="4"] {
-  background-position-x: 80%;
-}
-.die-icon[data-color=white][data-value="5"] {
-  background-position-x: 100%;
+  background: white;
+  color: #212322;
 }
 .die-icon[data-color=black] {
-  background-image: url("img/black-die.png");
-}
-.die-icon[data-color=black][data-value="1"] {
-  background-position-x: 0%;
-}
-.die-icon[data-color=black][data-value="2"] {
-  background-position-x: 20%;
-}
-.die-icon[data-color=black][data-value="3"] {
-  background-position-x: 40%;
-}
-.die-icon[data-color=black][data-value="4"] {
-  background-position-x: 60%;
-}
-.die-icon[data-color=black][data-value="5"] {
-  background-position-x: 80%;
-}
-.die-icon[data-color=black][data-value="6"] {
-  background-position-x: 100%;
+  background: #212322;
+  color: white;
 }
 
 .log .die-icon, .gamelogreview .die-icon {
@@ -715,6 +556,7 @@ html, .mode_3d #game_play_area_background {
   margin-left: 2px;
   margin-right: 2px;
   border-radius: 3px;
+  font-size: 16pt;
 }
 .log .operation-icon, .gamelogreview .operation-icon {
   width: 20px;

@@ -19,13 +19,15 @@ class Card extends CardType {
     public string $location;
     public int $locationArg;
     public int $subType;
+    public bool $played;
 
     public function __construct($dbCard, $CARDS_TYPE) {
-        $this->id = intval($dbCard['id']);
-        $this->location = $dbCard['location'];
-        $this->locationArg = intval($dbCard['location_arg']);
-        $this->type = intval($dbCard['type']);
-        $this->subType = intval($dbCard['type_arg']);
+        $this->id = intval($dbCard['card_id']);
+        $this->location = $dbCard['card_location'];
+        $this->locationArg = intval($dbCard['card_location_arg']);
+        $this->type = intval($dbCard['card_type']);
+        $this->subType = intval($dbCard['card_type_arg']);
+        $this->played = boolval($dbCard['played']);
         $this->strength = $CARDS_TYPE[$this->subType]->strength;
         $this->power = $CARDS_TYPE[$this->subType]->power;
     } 
