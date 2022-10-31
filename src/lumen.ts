@@ -716,235 +716,29 @@ class Lumen implements LumenGame {
     setupNotifications() {
         //log( 'notifications subscriptions setup' );
 
-        dojo.connect((this as any).notifqueue, 'addToLog', () => this.addLogClass());
-
         const notifs = [
-            ['cardInDiscardFromDeck', ANIMATION_MS],
-            ['cardInHandFromDiscard', ANIMATION_MS],
-            ['cardInHandFromDiscardCrab', ANIMATION_MS],
-            ['cardInHandFromPick', ANIMATION_MS],
-            ['cardInHandFromDeck', ANIMATION_MS],
-            ['cardInDiscardFromPick', ANIMATION_MS],
-            ['playCards', ANIMATION_MS],
-            ['stealCard', ANIMATION_MS],
-            ['revealHand', ANIMATION_MS * 2],
-            ['announceEndRound', ANIMATION_MS * 2],
-            ['betResult', ANIMATION_MS * 2],
-            ['endRound', ANIMATION_MS * 2],
-            ['score', ANIMATION_MS * 3],
-            ['newRound', 1],
-            ['updateCardsPoints', 1],
-            ['emptyDeck', 1],
+            ['addCheck', 1],
+            ['addHighCommandCard', ANIMATION_MS],
+            ['newFirstPlayer', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
             dojo.subscribe(notif[0], this, `notif_${notif[0]}`);
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
-
-        (this as any).notifqueue.setIgnoreNotificationCheck('cardInHandFromPick', (notif: Notif<NotifCardInHandFromPickArgs>) => 
-            notif.args.playerId == this.getPlayerId() && !notif.args.card.category
-        );
-        (this as any).notifqueue.setIgnoreNotificationCheck('cardInHandFromDeck', (notif: Notif<NotifCardInHandFromPickArgs>) => 
-            notif.args.playerId == this.getPlayerId() && !notif.args.card.category
-        );
-        (this as any).notifqueue.setIgnoreNotificationCheck('cardInHandFromDiscardCrab', (notif: Notif<NotifCardInHandFromDiscardArgs>) => 
-            notif.args.playerId == this.getPlayerId() && !notif.args.card.category
-        );
-        (this as any).notifqueue.setIgnoreNotificationCheck('stealCard', (notif: Notif<NotifStealCardArgs>) => 
-            [notif.args.playerId, notif.args.opponentId].includes(this.getPlayerId()) && !(notif.args as any).cardName
-        );
-
-        this.addLogClass();
-        this.clearLogsInit(this.gamedatas.gamestate.active_player);
     }
 
-    onPlaceLogOnChannel(msg) {
-        var currentLogId = (this as any).notifqueue.next_log_id;
-        var res = (this as any).inherited(arguments);
-        this.lastNotif = {
-          logId: currentLogId,
-          msg,
-        };
-        return res;
-    }
-  
-    addLogClass() {
-        if (this.lastNotif == null) {
-            return;
-        }
-  
-        let notif = this.lastNotif;
-        const elem = document.getElementById(`log_${notif.logId}`);
-        if (elem) {
-            let type = notif.msg.type;
-            if (type == 'history_history') type = notif.msg.args.originalType;
-    
-            if (notif.msg.args.actionPlayerId) {
-                elem.dataset.playerId = ''+notif.msg.args.actionPlayerId;
-            }
-        }
-    }
-
-    notif_cardInDiscardFromDeck(notif: Notif<NotifCardInDiscardFromDeckArgs>) {
-        this.cards.createMoveOrUpdateCard(notif.args.card, `discard${notif.args.discardId}`, false, 'deck');
-        this.tableCenter.discardCounters[notif.args.discardId].setValue(1);
-        this.tableCenter.setDeckCount(notif.args.remainingCardsInDeck);
-        this.updateTableHeight();
+    notif_addCheck(notif: Notif<NotifAddCheckArgs>) {
+        this.getPlayerTable(notif.args.playerId).addCheck(notif.args.checks);
     } 
 
-    notif_cardInHandFromDiscard(notif: Notif<NotifCardInHandFromDiscardArgs>) {
-        const card = notif.args.card;
-        const playerId = notif.args.playerId;
-        const discardNumber = notif.args.discardId;
-        const maskedCard = playerId == this.getPlayerId() ? card : { id: card.id } as Card;
-        this.getPlayerTable(playerId).addCardsToHand([maskedCard]);
-        this.handCounters[playerId].incValue(1);
+    notif_addHighCommandCard(notif: Notif<NotifAddHighCommandCardArgs>) {
+        this.getPlayerTable(notif.args.playerId).addHighCommandCard(notif.args.card);
+    }
 
-        if (notif.args.newDiscardTopCard) {
-            this.cards.createMoveOrUpdateCard(notif.args.newDiscardTopCard, `discard${discardNumber}`, true);
-        }
-        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
-        this.updateTableHeight();
+    notif_newFirstPlayer(notif: Notif<NotifNewFirstPlayerArgs>) {
+        // TODO
     } 
-
-    notif_cardInHandFromDiscardCrab(notif: Notif<NotifCardInHandFromDiscardArgs>) {
-        const card = notif.args.card;
-        const playerId = notif.args.playerId;
-        const discardNumber = notif.args.discardId;
-        const maskedCard = playerId == this.getPlayerId() ? card : { id: card.id } as Card;
-        this.getPlayerTable(playerId).addCardsToHand([maskedCard]);
-        this.handCounters[playerId].incValue(1);
-
-        if (notif.args.newDiscardTopCard) {
-            this.cards.createMoveOrUpdateCard(notif.args.newDiscardTopCard, `discard${discardNumber}`, true);
-        }
-        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
-        this.updateTableHeight();
-    } 
-
-    notif_cardInHandFromPick(notif: Notif<NotifCardInHandFromPickArgs>) {
-        const playerId = notif.args.playerId;
-        this.getPlayerTable(playerId).addCardsToHand([notif.args.card]);
-        this.handCounters[playerId].incValue(1);
-    }
-
-    notif_cardInHandFromDeck(notif: Notif<NotifCardInHandFromPickArgs>) {
-        const playerId = notif.args.playerId;
-        // start hidden
-        this.cards.createMoveOrUpdateCard({
-            id: notif.args.card.id
-        } as Card, `pick`, true, 'deck');
-        this.getPlayerTable(playerId).addCardsToHand([notif.args.card], 'deck');
-        this.handCounters[playerId].incValue(1);
-    }   
-
-    notif_cardInDiscardFromPick(notif: Notif<NotifCardInDiscardFromPickArgs>) {
-        const currentCardDiv = this.tableCenter.getDiscardCard(notif.args.discardId);
-        const discardNumber = notif.args.discardId;
-        this.cards.createMoveOrUpdateCard(notif.args.card, `discard${discardNumber}`);
-        
-        if (currentCardDiv) {
-            setTimeout(() => this.cards.removeCard(currentCardDiv), 500);
-        }
-        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
-        this.updateTableHeight();
-    }
-
-    notif_score(notif: Notif<NotifScoreArgs>) {
-        const playerId = notif.args.playerId;
-        (this as any).scoreCtrl[playerId]?.toValue(notif.args.newScore);
-
-        const incScore = notif.args.incScore;
-        if (incScore != null && incScore !== undefined) {
-            (this as any).displayScoring(`player-table-${playerId}-table-cards`, this.getPlayerColor(playerId), incScore, ANIMATION_MS * 3);
-        }
-
-        if (notif.args.details) {
-            this.getPlayerTable(notif.args.playerId).showScoreDetails(notif.args.details);
-        }
-    }
-    notif_newRound() {}
-
-    notif_playCards(notif: Notif<NotifPlayCardsArgs>) {
-        const playerId = notif.args.playerId;
-        const cards = notif.args.cards;
-        const playerTable = this.getPlayerTable(playerId);
-        playerTable.addCardsToTable(cards);
-        this.handCounters[playerId].incValue(-cards.length);
-    }
-
-    notif_revealHand(notif: Notif<NotifRevealHandArgs>) {
-        const playerId = notif.args.playerId;
-        const playerPoints = notif.args.playerPoints;
-        const playerTable = this.getPlayerTable(playerId);
-        playerTable.showAnnouncementPoints(playerPoints);
-
-        this.notif_playCards(notif);
-        this.handCounters[playerId].toValue(0);
-    }
-
-    notif_stealCard(notif: Notif<NotifStealCardArgs>) {
-        const stealerId = notif.args.playerId;
-        const card = notif.args.card;
-        this.getPlayerTable(stealerId).addCardsToHand([card]);
-        this.handCounters[notif.args.opponentId].incValue(-1);
-        this.handCounters[stealerId].incValue(1);
-    }
-
-    notif_announceEndRound(notif: Notif<NotifAnnounceEndRoundArgs>) {
-        this.getPlayerTable(notif.args.playerId).showAnnouncement(notif.args.announcement);
-    }
-
-    notif_endRound() {
-        this.playersTables.forEach(playerTable => {
-            playerTable.cleanTable();
-            this.handCounters[playerTable.playerId].setValue(0);
-        });
-        
-        this.getCurrentPlayerTable()?.setHandPoints(0);
-        [1, 2].forEach(discardNumber => {
-            const currentCardDiv = this.tableCenter.getDiscardCard(discardNumber);
-            this.cards.removeCard(currentCardDiv); // animate cards to deck?
-        });
-
-        [1, 2].forEach(discardNumber => this.tableCenter.discardCounters[discardNumber].setValue(0));
-        this.tableCenter.setDeckCount(58);
-    }
-
-    notif_updateCardsPoints(notif: Notif<NotifUpdateCardsPointsArgs>) {
-        this.getCurrentPlayerTable()?.setHandPoints(notif.args.cardsPoints);
-    }
-
-    notif_betResult(notif: Notif<NotifBetResultArgs>) {
-        this.getPlayerTable(notif.args.playerId).showAnnouncementBetResult(notif.args.result);
-    }
-
-    notif_emptyDeck() {
-        this.playersTables.forEach(playerTable => playerTable.showEmptyDeck());
-    }
-
-    private clearLogs(activePlayer: string) {
-        const logDivs = Array.from(document.getElementById('logs').getElementsByClassName('log')) as HTMLElement[];
-        let hide = false;
-        logDivs.forEach(logDiv => {
-            if (!hide && logDiv.dataset.playerId == activePlayer) {
-                hide = true;
-            }
-            if (hide) {
-                logDiv.style.display = 'none';
-                document.querySelector(`#chatwindowlogs_zone_tablelog_${(this as any).table_id} #docked${logDiv.id}`)?.classList.add('hidden-log-action');
-            }
-        });
-    }
-
-    private clearLogsInit(activePlayer: string) {
-        if ((this as any).log_history_loading_status.downloaded && (this as any).log_history_loading_status.loaded >= (this as any).log_history_loading_status.total) {
-            this.clearLogs(activePlayer);
-        } else {
-            setTimeout(() => this.clearLogsInit(activePlayer), 100);
-        }
-    }
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

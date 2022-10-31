@@ -44,6 +44,7 @@ class Lumen extends Table {
         
         self::initGameStateLabels([
             FIRST_PLAYER => FIRST_PLAYER,
+            INITIATIVE_MARKER_TERRITORY => INITIATIVE_MARKER_TERRITORY, // TODO quand et où est-il placé ?
             DIE1 => DIE1,
             DIE2 => DIE2,
             PLAYER_OPERATION => PLAYER_OPERATION,
@@ -158,6 +159,7 @@ class Lumen extends Table {
         }
 
         $result['fightersOnTerritories'] = $this->getCardsByLocation('territory');
+        $result['firstPlayer'] = intval($this->getGameStateValue(FIRST_PLAYER));
   
         return $result;
     }
@@ -173,9 +175,8 @@ class Lumen extends Table {
         (see states.inc.php)
     */
     function getGameProgression() {
-        // TODO: compute and return the game progression
-
-        return 0;
+        // compute and return the game progression
+        return intval($this->getStat('turnNumber')) * 100 / 17;
     }
 
 

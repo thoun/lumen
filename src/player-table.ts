@@ -23,4 +23,12 @@ class PlayerTable {
         `;
         dojo.place(html, document.getElementById('tables'));
     }
+
+    public addHighCommandCard(card: Card) {
+        throw new Error("Method not implemented.");
+    }
+
+    public addCheck(checks: number) {
+        throw new Error("Method not implemented.");
+    }
 }

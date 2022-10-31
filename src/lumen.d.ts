@@ -36,6 +36,7 @@ interface LumenGamedatas {
 
     // Add here variables you set up in getAllDatas
     fightersOnTerritories: Card[];
+    firstPlayer: number;
 }
 
 interface LumenGame extends Game {
@@ -76,64 +77,16 @@ interface EnteringChooseOpponentArgs {
     playersIds: number[];
 }
 
-interface NotifCardInDiscardFromDeckArgs {
-    card: Card;
-    discardId: number;
-    remainingCardsInDeck: number;
+interface NotifAddCheckArgs {
+    playerId: number;
+    checks: number;
 }
 
-interface NotifCardInHandFromDiscardArgs {
+interface NotifAddHighCommandCardArgs {
     playerId: number;
     card: Card;
-    discardId: number;
-    newDiscardTopCard: Card | null;
-    remainingCardsInDiscard: number;
 }
 
-interface NotifCardInHandFromPickArgs {
+interface NotifNewFirstPlayerArgs {
     playerId: number;
-    card?: Card;
-}
-
-interface NotifCardInDiscardFromPickArgs {
-    playerId: number;
-    card: Card;
-    discardId: number;
-    remainingCardsInDiscard: number;
-}
-
-interface NotifScoreArgs {
-    playerId: number;
-    newScore: number;
-    incScore: number;
-    details: ScoreDetails;
-}
-
-interface NotifPlayCardsArgs {
-    playerId: number;
-    cards: Card[];
-}
-
-interface NotifRevealHandArgs extends NotifPlayCardsArgs {
-    playerPoints: number;
-}
-
-interface NotifAnnounceEndRoundArgs {
-    playerId: number;
-    announcement: string;
-}
-
-interface NotifBetResultArgs {
-    playerId: number;
-    result: string;
-}
-
-interface NotifUpdateCardsPointsArgs {
-    cardsPoints: number;
-}
-
-interface NotifStealCardArgs {
-    playerId: number;
-    opponentId: number;
-    card: Card;
 }

@@ -48,6 +48,8 @@ define('END_SCORE', 100);
  */
 define('FIRST_PLAYER', 10);
 
+define('INITIATIVE_MARKER_TERRITORY', 15);
+
 define('DIE1', 20);
 define('DIE2', 21);
 

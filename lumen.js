@@ -245,6 +245,12 @@ var PlayerTable = /** @class */ (function () {
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\">\n            <div id=\"player-table-").concat(this.playerId, "-hand-cards\" class=\"hand cards\" data-player-id=\"").concat(this.playerId, "\" data-current-player=\"").concat(this.currentPlayer.toString(), "\" data-my-hand=\"").concat(this.currentPlayer.toString(), "\"></div>\n            <div class=\"name-wrapper\">\n                <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-table-cards\" class=\"table cards\">\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
     }
+    PlayerTable.prototype.addHighCommandCard = function (card) {
+        throw new Error("Method not implemented.");
+    };
+    PlayerTable.prototype.addCheck = function (checks) {
+        throw new Error("Method not implemented.");
+    };
     return PlayerTable;
 }());
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
@@ -826,211 +832,24 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.setupNotifications = function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
-        dojo.connect(this.notifqueue, 'addToLog', function () { return _this.addLogClass(); });
         var notifs = [
-            ['cardInDiscardFromDeck', ANIMATION_MS],
-            ['cardInHandFromDiscard', ANIMATION_MS],
-            ['cardInHandFromDiscardCrab', ANIMATION_MS],
-            ['cardInHandFromPick', ANIMATION_MS],
-            ['cardInHandFromDeck', ANIMATION_MS],
-            ['cardInDiscardFromPick', ANIMATION_MS],
-            ['playCards', ANIMATION_MS],
-            ['stealCard', ANIMATION_MS],
-            ['revealHand', ANIMATION_MS * 2],
-            ['announceEndRound', ANIMATION_MS * 2],
-            ['betResult', ANIMATION_MS * 2],
-            ['endRound', ANIMATION_MS * 2],
-            ['score', ANIMATION_MS * 3],
-            ['newRound', 1],
-            ['updateCardsPoints', 1],
-            ['emptyDeck', 1],
+            ['addCheck', 1],
+            ['addHighCommandCard', ANIMATION_MS],
+            ['newFirstPlayer', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
-        this.notifqueue.setIgnoreNotificationCheck('cardInHandFromPick', function (notif) {
-            return notif.args.playerId == _this.getPlayerId() && !notif.args.card.category;
-        });
-        this.notifqueue.setIgnoreNotificationCheck('cardInHandFromDeck', function (notif) {
-            return notif.args.playerId == _this.getPlayerId() && !notif.args.card.category;
-        });
-        this.notifqueue.setIgnoreNotificationCheck('cardInHandFromDiscardCrab', function (notif) {
-            return notif.args.playerId == _this.getPlayerId() && !notif.args.card.category;
-        });
-        this.notifqueue.setIgnoreNotificationCheck('stealCard', function (notif) {
-            return [notif.args.playerId, notif.args.opponentId].includes(_this.getPlayerId()) && !notif.args.cardName;
-        });
-        this.addLogClass();
-        this.clearLogsInit(this.gamedatas.gamestate.active_player);
     };
-    Lumen.prototype.onPlaceLogOnChannel = function (msg) {
-        var currentLogId = this.notifqueue.next_log_id;
-        var res = this.inherited(arguments);
-        this.lastNotif = {
-            logId: currentLogId,
-            msg: msg,
-        };
-        return res;
+    Lumen.prototype.notif_addCheck = function (notif) {
+        this.getPlayerTable(notif.args.playerId).addCheck(notif.args.checks);
     };
-    Lumen.prototype.addLogClass = function () {
-        if (this.lastNotif == null) {
-            return;
-        }
-        var notif = this.lastNotif;
-        var elem = document.getElementById("log_".concat(notif.logId));
-        if (elem) {
-            var type = notif.msg.type;
-            if (type == 'history_history')
-                type = notif.msg.args.originalType;
-            if (notif.msg.args.actionPlayerId) {
-                elem.dataset.playerId = '' + notif.msg.args.actionPlayerId;
-            }
-        }
+    Lumen.prototype.notif_addHighCommandCard = function (notif) {
+        this.getPlayerTable(notif.args.playerId).addHighCommandCard(notif.args.card);
     };
-    Lumen.prototype.notif_cardInDiscardFromDeck = function (notif) {
-        this.cards.createMoveOrUpdateCard(notif.args.card, "discard".concat(notif.args.discardId), false, 'deck');
-        this.tableCenter.discardCounters[notif.args.discardId].setValue(1);
-        this.tableCenter.setDeckCount(notif.args.remainingCardsInDeck);
-        this.updateTableHeight();
-    };
-    Lumen.prototype.notif_cardInHandFromDiscard = function (notif) {
-        var card = notif.args.card;
-        var playerId = notif.args.playerId;
-        var discardNumber = notif.args.discardId;
-        var maskedCard = playerId == this.getPlayerId() ? card : { id: card.id };
-        this.getPlayerTable(playerId).addCardsToHand([maskedCard]);
-        this.handCounters[playerId].incValue(1);
-        if (notif.args.newDiscardTopCard) {
-            this.cards.createMoveOrUpdateCard(notif.args.newDiscardTopCard, "discard".concat(discardNumber), true);
-        }
-        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
-        this.updateTableHeight();
-    };
-    Lumen.prototype.notif_cardInHandFromDiscardCrab = function (notif) {
-        var card = notif.args.card;
-        var playerId = notif.args.playerId;
-        var discardNumber = notif.args.discardId;
-        var maskedCard = playerId == this.getPlayerId() ? card : { id: card.id };
-        this.getPlayerTable(playerId).addCardsToHand([maskedCard]);
-        this.handCounters[playerId].incValue(1);
-        if (notif.args.newDiscardTopCard) {
-            this.cards.createMoveOrUpdateCard(notif.args.newDiscardTopCard, "discard".concat(discardNumber), true);
-        }
-        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
-        this.updateTableHeight();
-    };
-    Lumen.prototype.notif_cardInHandFromPick = function (notif) {
-        var playerId = notif.args.playerId;
-        this.getPlayerTable(playerId).addCardsToHand([notif.args.card]);
-        this.handCounters[playerId].incValue(1);
-    };
-    Lumen.prototype.notif_cardInHandFromDeck = function (notif) {
-        var playerId = notif.args.playerId;
-        // start hidden
-        this.cards.createMoveOrUpdateCard({
-            id: notif.args.card.id
-        }, "pick", true, 'deck');
-        this.getPlayerTable(playerId).addCardsToHand([notif.args.card], 'deck');
-        this.handCounters[playerId].incValue(1);
-    };
-    Lumen.prototype.notif_cardInDiscardFromPick = function (notif) {
-        var _this = this;
-        var currentCardDiv = this.tableCenter.getDiscardCard(notif.args.discardId);
-        var discardNumber = notif.args.discardId;
-        this.cards.createMoveOrUpdateCard(notif.args.card, "discard".concat(discardNumber));
-        if (currentCardDiv) {
-            setTimeout(function () { return _this.cards.removeCard(currentCardDiv); }, 500);
-        }
-        this.tableCenter.discardCounters[discardNumber].setValue(notif.args.remainingCardsInDiscard);
-        this.updateTableHeight();
-    };
-    Lumen.prototype.notif_score = function (notif) {
-        var _a;
-        var playerId = notif.args.playerId;
-        (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(notif.args.newScore);
-        var incScore = notif.args.incScore;
-        if (incScore != null && incScore !== undefined) {
-            this.displayScoring("player-table-".concat(playerId, "-table-cards"), this.getPlayerColor(playerId), incScore, ANIMATION_MS * 3);
-        }
-        if (notif.args.details) {
-            this.getPlayerTable(notif.args.playerId).showScoreDetails(notif.args.details);
-        }
-    };
-    Lumen.prototype.notif_newRound = function () { };
-    Lumen.prototype.notif_playCards = function (notif) {
-        var playerId = notif.args.playerId;
-        var cards = notif.args.cards;
-        var playerTable = this.getPlayerTable(playerId);
-        playerTable.addCardsToTable(cards);
-        this.handCounters[playerId].incValue(-cards.length);
-    };
-    Lumen.prototype.notif_revealHand = function (notif) {
-        var playerId = notif.args.playerId;
-        var playerPoints = notif.args.playerPoints;
-        var playerTable = this.getPlayerTable(playerId);
-        playerTable.showAnnouncementPoints(playerPoints);
-        this.notif_playCards(notif);
-        this.handCounters[playerId].toValue(0);
-    };
-    Lumen.prototype.notif_stealCard = function (notif) {
-        var stealerId = notif.args.playerId;
-        var card = notif.args.card;
-        this.getPlayerTable(stealerId).addCardsToHand([card]);
-        this.handCounters[notif.args.opponentId].incValue(-1);
-        this.handCounters[stealerId].incValue(1);
-    };
-    Lumen.prototype.notif_announceEndRound = function (notif) {
-        this.getPlayerTable(notif.args.playerId).showAnnouncement(notif.args.announcement);
-    };
-    Lumen.prototype.notif_endRound = function () {
-        var _this = this;
-        var _a;
-        this.playersTables.forEach(function (playerTable) {
-            playerTable.cleanTable();
-            _this.handCounters[playerTable.playerId].setValue(0);
-        });
-        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setHandPoints(0);
-        [1, 2].forEach(function (discardNumber) {
-            var currentCardDiv = _this.tableCenter.getDiscardCard(discardNumber);
-            _this.cards.removeCard(currentCardDiv); // animate cards to deck?
-        });
-        [1, 2].forEach(function (discardNumber) { return _this.tableCenter.discardCounters[discardNumber].setValue(0); });
-        this.tableCenter.setDeckCount(58);
-    };
-    Lumen.prototype.notif_updateCardsPoints = function (notif) {
-        var _a;
-        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setHandPoints(notif.args.cardsPoints);
-    };
-    Lumen.prototype.notif_betResult = function (notif) {
-        this.getPlayerTable(notif.args.playerId).showAnnouncementBetResult(notif.args.result);
-    };
-    Lumen.prototype.notif_emptyDeck = function () {
-        this.playersTables.forEach(function (playerTable) { return playerTable.showEmptyDeck(); });
-    };
-    Lumen.prototype.clearLogs = function (activePlayer) {
-        var _this = this;
-        var logDivs = Array.from(document.getElementById('logs').getElementsByClassName('log'));
-        var hide = false;
-        logDivs.forEach(function (logDiv) {
-            var _a;
-            if (!hide && logDiv.dataset.playerId == activePlayer) {
-                hide = true;
-            }
-            if (hide) {
-                logDiv.style.display = 'none';
-                (_a = document.querySelector("#chatwindowlogs_zone_tablelog_".concat(_this.table_id, " #docked").concat(logDiv.id))) === null || _a === void 0 ? void 0 : _a.classList.add('hidden-log-action');
-            }
-        });
-    };
-    Lumen.prototype.clearLogsInit = function (activePlayer) {
-        var _this = this;
-        if (this.log_history_loading_status.downloaded && this.log_history_loading_status.loaded >= this.log_history_loading_status.total) {
-            this.clearLogs(activePlayer);
-        }
-        else {
-            setTimeout(function () { return _this.clearLogsInit(activePlayer); }, 100);
-        }
+    Lumen.prototype.notif_newFirstPlayer = function (notif) {
+        // TODO
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

@@ -58,13 +58,25 @@ trait StateTrait {
     }
 
     function stEndRound() {
-        $lastRound = $this->isLastRound();
-        if (!$lastRound) {
-            $this->cards->moveAllCardsInLocation(null, 'deck');
-            $this->cards->shuffle('deck');
-        }
+        $this->incStat(1, 'turnNumber');
 
-        self::notifyAllPlayers('endRound', '', []);
+        $lastRound = intval($this->getStat('turnNumber')) >= 17;
+
+        if (!$lastRound) {
+            $initiativeMarkerControlledPlayer = null;
+            // TODO
+            /*d À la fin du tour, on vérifie si un joueur contrôle le territoire dans lequel est
+présent le marqueur initiative.
+On dit qu’un joueur contrôle un territoire lorsque ses combattants possèdent une force totale
+strictement supérieure à celle des combattants adverses dans ce territoire.*/ 
+
+        $firstPlayerId = $this->getFirstPlayerId();
+        if ($initiativeMarkerControlledPlayer === null) {
+            $newFirstPlayerId = $this->getOpponentId($firstPlayerId);
+            $this->setFirstPlayer($newFirstPlayerId);
+        } else if ($initiativeMarkerControlledPlayer != $firstPlayerId) {
+            $this->setFirstPlayer($initiativeMarkerControlledPlayer);
+        }
 
         $this->gamestate->nextState($lastRound ? 'endScore' : 'newRound');
     }

@@ -22,6 +22,16 @@
 require_once('modules/php/objects/card.php');
 require_once('modules/php/objects/scenario.php');
 
+$this->SLOTS_BY_CHECKS = [
+  1 => 0,
+  2 => 1,
+  3 => 0,
+  4 => 2,
+  5 => 3,
+  6 => 4,
+  7 => 5,
+];
+
 $this->CARDS = [
   1 => new CardType(1, 6, 2),
   2 => new CardType(1, 2, 3, POWER_BAVEUX),

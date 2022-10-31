@@ -55,6 +55,10 @@ trait ActionTrait {
         $value = intval($this->getGameStateValue(PLAYER_NUMBER));
         self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($playerId, $cellId, $value)");
 
+        if ($value >= 7) {
+            $this->addCheck($playerId);
+        }
+
         $this->cards->moveCard($card->id, 'hand'.$playerId);
         $this->cardCollected($playerId, $card);
 

@@ -64,6 +64,17 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
+    function getPlayerChecks(int $playerId) {
+        return intval(self::getUniqueValueFromDB("SELECT checks FROM player WHERE player_id = $playerId"));
+    }
+
+    function getFirstPlayerId() {
+        return intval(self::getGameStateValue(FIRST_PLAYER));
+    }
+    function getOpponentId(int $playerId) {
+        return intval(self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id <> $playerId"));
+    }
+
     function getScenarioId() {
         return intval($this->getGameStateValue(SCENARIO_OPTION));
     }
@@ -193,6 +204,41 @@ trait UtilTrait {
         }
 
         return array_values(array_unique($neighboursId));
+    }
+
+    function addCheck(int $playerId) {
+        $checks = $this->getPlayerChecks($playerId);
+
+        if ($checks > 7) {
+            return;
+        }
+        self::DbQuery("update player set checks = checks + 1 where player_id = $playerId");
+        $checks++;
+        self::notifyAllPlayers('addCheck', clienttranslate('${player_name} checks a box in the high command section'), [ // TODO check translation
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'checks' => $checks,
+        ]);
+
+        $slot = $this->SLOTS_BY_CHECKS[$checks];
+
+        if ($slot > 0) {
+            $this->cards->pickCardForLocation('bag'.$playerId, 'highCommand'.$playerId, $slot); // TODO check translation
+            $card = $this->getCardsByLocation('highCommand'.$playerId, $slot)[0];
+            self::notifyAllPlayers('addHighCommandCard', clienttranslate('${player_name} get a new high command card'), [ // TODO check translation
+                'playerId' => $playerId,
+                'player_name' => $this->getPlayerName($playerId),
+                'card' => $card,
+            ]);
+        }
+    }
+
+    function setFirstPlayer(int $playerId) {
+        $this->setGameStateValue(FIRST_PLAYER, $playerId);
+
+        self::notifyAllPlayers('newFirstPlayer', clienttranslate('${player_name} is the new first player'), [
+            'playerId' => $playerId,
+        ]);
     }
 
 }
