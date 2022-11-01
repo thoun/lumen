@@ -43,13 +43,9 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
         
-        if (!in_array($discardNumber, [1, 2])) {
-            throw new BgaUserException("Invalid discard number");
-        }
-
-        $card = $this->getCardFromDb($this->cards->getCardOnTop('discard'.$discardNumber));
-        if ($card == null) {
-            throw new BgaUserException("No card in that discard");
+        $args = $this->argChooseCell();
+        if (!in_array($cellId, $args['possibleCircles'])) {
+            throw new BgaUserException("Invalid cell");
         }
 
         $value = intval($this->getGameStateValue(PLAYER_NUMBER));
@@ -59,29 +55,18 @@ trait ActionTrait {
             $this->addCheck($playerId);
         }
 
-        $this->cards->moveCard($card->id, 'hand'.$playerId);
-        $this->cardCollected($playerId, $card);
-
-        self::notifyAllPlayers('cardInHandFromDiscard', clienttranslate('${player_name} takes ${cardColor} ${cardName} from discard pile ${discardNumber}'), [
+        self::notifyAllPlayers('setCircleValue', '', [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
-            'card' => $card,
-            'cardName' => $this->getCardName($card),
-            'cardColor' => $this->COLORS[$card->color],
-            'i18n' => ['cardName', 'cardColor'],
-            'discardId' => $discardNumber,
-            'discardNumber' => $discardNumber,
-            'newDiscardTopCard' => $this->getCardFromDb($this->cards->getCardOnTop('discard'.$discardNumber)),
-            'remainingCardsInDiscard' => $this->getRemainingCardsInDiscard($discardNumber),
-            'preserve' => ['actionPlayerId'],
-            'actionPlayerId' => $playerId,
+            'circleId' => $cellId,
+            'value' => $value,
         ]);
 
-        $this->incStat(1, 'takeFromDiscard');
+        /*$this->incStat(1, 'takeFromDiscard');
         $this->incStat(1, 'takeFromDiscard', $playerId);
-
-        $this->updateCardsPoints($playerId);
-        $this->gamestate->nextState('playCards');
+        TODO update zones and links
+        $this->updateCardsPoints($playerId);*/
+        $this->gamestate->nextState('nextPlayer');
     }
 
     public function chooseCard(int $cardId) {

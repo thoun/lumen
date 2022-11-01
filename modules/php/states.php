@@ -18,15 +18,12 @@ trait StateTrait {
     }    
 
     function stRollDice() {
-        // TODO roll dice
-
         $die1 = bga_rand(0,5);
         $die2 = bga_rand(1,6);
 
         $this->setGameStateValue(DIE1, $die1);
         $this->setGameStateValue(DIE2, $die2);
 
-        // TODO log dice
         $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
         self::notifyAllPlayers('diceRoll', clienttranslate('${player_name} rolled ${whiteDieFace} ${blackDieFace}'), [
             'player_name' => $this->getPlayerName($firstPlayer),
@@ -51,6 +48,7 @@ trait StateTrait {
         $playerId = intval($this->getActivePlayerId());
 
         $this->giveExtraTime($playerId);
+        $playerId = $this->activeNextPlayer();
         
         $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
 
@@ -63,19 +61,14 @@ trait StateTrait {
         $lastRound = intval($this->getStat('turnNumber')) >= 17;
 
         if (!$lastRound) {
-            $initiativeMarkerControlledPlayer = null;
-            // TODO
-            /*d À la fin du tour, on vérifie si un joueur contrôle le territoire dans lequel est
-présent le marqueur initiative.
-On dit qu’un joueur contrôle un territoire lorsque ses combattants possèdent une force totale
-strictement supérieure à celle des combattants adverses dans ce territoire.*/ 
-
-        $firstPlayerId = $this->getFirstPlayerId();
-        if ($initiativeMarkerControlledPlayer === null) {
-            $newFirstPlayerId = $this->getOpponentId($firstPlayerId);
-            $this->setFirstPlayer($newFirstPlayerId);
-        } else if ($initiativeMarkerControlledPlayer != $firstPlayerId) {
-            $this->setFirstPlayer($initiativeMarkerControlledPlayer);
+            $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+            $firstPlayerId = $this->getFirstPlayerId();
+            if ($initiativeMarkerControlledPlayer === null) {
+                $newFirstPlayerId = $this->getOpponentId($firstPlayerId);
+                $this->setFirstPlayer($newFirstPlayerId);
+            } else if ($initiativeMarkerControlledPlayer != $firstPlayerId) {
+                $this->setFirstPlayer($initiativeMarkerControlledPlayer);
+            }
         }
 
         $this->gamestate->nextState($lastRound ? 'endScore' : 'newRound');

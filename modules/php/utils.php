@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__.'/objects/cards-points.php');
+require_once(__DIR__.'/objects/circle.php');
 
 trait UtilTrait {
 
@@ -239,6 +239,42 @@ trait UtilTrait {
         self::notifyAllPlayers('newFirstPlayer', clienttranslate('${player_name} is the new first player'), [
             'playerId' => $playerId,
         ]);
+    }
+
+    function getTerritoryControlledPlayer(int $territoryId) {
+        $territoryControlledPlayer = null;
+        $players = $this->loadPlayersBasicInfos();
+        $fightersOnTerritory = $this->getCardsByLocation('territory', $territoryId);
+        $strengthByPlayer = [];
+        foreach ($players as $playerId => $player) {
+            $playerFighters = array_values(array_filter($fightersOnTerritory, fn($fighter) => $fighter->type == intval($player['player_no'])));
+            $playerFightersStrengthes = array_map(fn($fighter) => $fighter->strength, $playerFighters);
+            $strengthByPlayer[$playerId] = array_reduce($playerFightersStrengthes, fn($a, $b) => $a + $b, 0);
+        }
+
+        if ($strengthByPlayer[array_keys($strengthByPlayer)[0]] > $strengthByPlayer[array_keys($strengthByPlayer)[1]]) {
+            $territoryControlledPlayer = array_keys($strengthByPlayer)[0];
+        } else if ($strengthByPlayer[array_keys($strengthByPlayer)[1]] > $strengthByPlayer[array_keys($strengthByPlayer)[0]]) {
+            $territoryControlledPlayer = array_keys($strengthByPlayer)[1];
+        }
+
+        return $territoryControlledPlayer;
+    }
+
+    function getCircles(int $playerId) {
+        $dbCircles = $this->getCollectionFromDb( "SELECT * FROM `circle` WHERE player_id = $playerId ORDER BY `circle_id`");
+        $circles = [];
+        foreach ($this->CIRCLE_NEIGHBOURS as $circleId => $neighbours) {
+            $dbCircle = $this->array_find($dbCircles, fn($dbCircle) => intval($dbCircle['circle_id']) == $circleId);
+            if ($dbCircle !== null) {
+                $circle = new Circle($circleId, intval($dbCircle['value']), intval($dbCircle['zone']));
+            } else {
+                $circle = new Circle($circleId);
+            }
+            $circle->neighbours = $neighbours;
+            $circles[] = $circle;
+        }
+        return $circles;
     }
 
 }

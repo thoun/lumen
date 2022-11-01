@@ -156,6 +156,11 @@ class Lumen extends Table {
             $player['checks'] = intval($player['checks']);
             $player['reserve'] = $this->getCardsByLocation('reserve'.$playerId);
             $player['highCommand'] = $this->getCardsByLocation('highCommand'.$playerId);
+
+            $operations = $this->getCollectionFromDb("SELECT * FROM `operation` WHERE player_id = $playerId ORDER BY `operation`");
+            $player['operations'] = array_map(fn($operation) => intval($operation['nb']), $operations);
+            $player['circles'] = $this->getCircles($playerId);
+            $player['links'] = $this->getCollectionFromDb("SELECT * FROM `link` WHERE player_id = $playerId");
         }
 
         $result['fightersOnTerritories'] = $this->getCardsByLocation('territory');

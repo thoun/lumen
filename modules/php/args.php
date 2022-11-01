@@ -53,10 +53,30 @@ trait ArgsTrait {
         $playerId = intval($this->getActivePlayerId());
 
         $number = intval($this->getGameStateValue(PLAYER_NUMBER));
+
+        $circles = $this->getCircles($playerId);
+        $allEmpty = $this->array_every($circles, fn($circle) => $circle->value === null || $circle->value === -1);
+
+        $possibleCircles = [];
+        if ($allEmpty) {
+            $possibleCircles = array_map(fn($circle) => $circle->circleId, $circles);
+        } else {
+            foreach ($circles as $circle) {
+                if ($circle->value !== null && $circle->value !== -1) {
+                    foreach ($circle->neighbours as $neighbourId) {
+                        $neighbour = $this->array_find($circles, fn($c) => $c->circleId === $neighbourId);
+                        if ($neighbour->value === null && !in_array($neighbourId, $possibleCircles)) {
+                            $possibleCircles[] = $neighbourId;
+                        }
+                    }              
+                }
+            }
+        }
     
         return [
-            // TODO return possible cells
-            'number' => $number,
+            'possibleCircles' => $possibleCircles,
+            'value' => $number,
+            'number' => $number, // for title bar
         ];
     }
    

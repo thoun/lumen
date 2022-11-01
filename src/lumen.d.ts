@@ -10,9 +10,10 @@ interface Card {
     index: number;
 }
 
-interface ScoreDetails {
-    cardsPoints: number | null;
-    colorBonus: number | null;
+interface Circle {
+    circleId: number;
+    value: number | null;
+    zone: number;
 }
 
 interface LumenPlayer extends Player {
@@ -20,6 +21,8 @@ interface LumenPlayer extends Player {
     checks: number;
     reserve: Card[];
     highCommand: Card[];
+    operations: { [type: number]: number };
+    circles: Circle[];
 }
 
 interface LumenGamedatas {
@@ -45,27 +48,9 @@ interface LumenGame extends Game {
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
 
-    updateTableHeight(): void;
     setTooltip(id: string, html: string): void;
-    takeCardsFromDeck(): void;
-    onCardClick(card: Card): void;
-    onDiscardPileClick(discardNumber: number): void;
+    chooseCell(cell: number): void;
 }
-
-interface EnteringTakeCardsArgs {
-    canTakeFromDeck: boolean;
-    canTakeFromDiscard: number[];
-}
-
-interface EnteringChooseCardArgs {
-    _private?: {
-        cards: Card[];
-    }
-    cards: Card[];
-    discardNumber?: number;
-    remainingCardsInDeck: number;
-}
-
 interface EnteringChooseOperationArgs {
     operations: { [operation: number]: {
         value: number;
@@ -73,8 +58,15 @@ interface EnteringChooseOperationArgs {
     } };
 }
 
-interface EnteringChooseOpponentArgs {
-    playersIds: number[];
+interface EnteringChooseCellArgs {
+    possibleCircles: number[];
+    value: number;
+}
+
+interface NotifSetCircleValueArgs {
+    playerId: number;
+    circleId: number;
+    value: number;
 }
 
 interface NotifAddCheckArgs {

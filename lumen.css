@@ -360,11 +360,27 @@
   font-size: 20pt;
   font-weight: bold;
 }
-.player-table .cards {
+.player-table .operations {
+  display: flex;
+  flex-wrap: wrap;
+}
+.player-table .circles {
+  display: flex;
+  flex-wrap: wrap;
+}
+.player-table .circles .circle {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  min-height: 218px;
+  align-items: center;
+  border: 2px solid black;
+}
+.player-table .circles .circle.ghost {
+  opacity: 0.6;
+  cursor: pointer;
 }
 
 #lumen-help-button {

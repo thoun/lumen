@@ -30,30 +30,27 @@ CREATE TABLE IF NOT EXISTS `card` (
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
- CREATE TABLE IF NOT EXISTS `link` ( 
-   `link_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ CREATE TABLE IF NOT EXISTS `link` (
    `player_id` int(11) NOT NULL,
    `index1` int(5) NOT NULL,
    `index2` int(5) NOT NULL,
    `middle` int(5) NOT NULL DEFAULT '-1',
-   PRIMARY KEY (`link_id`)
+   PRIMARY KEY (`player_id`, `index1`, `index2`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
   
  CREATE TABLE IF NOT EXISTS `circle` (
-   `id` int(10) unsigned NOT NULL AUTO_INCREMENT, 
-   `circle_id` int(10) NOT NULL,
+   `circle_id` tinyint(2) NOT NULL,
    `player_id` int(11) NOT NULL,
    `value` int(5) NOT NULL,
    `zone` int(5) DEFAULT '-1' NOT NULL,
-   PRIMARY KEY (`id`)
+   PRIMARY KEY (`circle_id`, `player_id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
  
  CREATE TABLE IF NOT EXISTS `operation` ( 
-   `operation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
    `player_id` int(11) NOT NULL,
-   `operation` int(5) NOT NULL,
-   `nb` int(5) NOT NULL,
-   PRIMARY KEY (`operation_id`)
+   `operation` tinyint(1) NOT NULL,
+   `nb` tinyint(1) NOT NULL,
+   PRIMARY KEY (`player_id`, `operation`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 

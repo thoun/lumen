@@ -85,99 +85,24 @@ class Lumen implements LumenGame {
         log('Entering state: ' + stateName, args.args);
 
         switch (stateName) {
-            case 'takeCards':
-                this.onEnteringTakeCards(args);
+            case 'chooseOperation':
+                this.onEnteringChooseOperation(args.args);
                 break;
-            case 'chooseCard':
-                this.onEnteringChooseCard(args.args);
-                break;
-            case 'putDiscardPile':
-                this.onEnteringPutDiscardPile(args.args);
-                break;
-            case 'playCards':
-                this.onEnteringPlayCards();
-                break;
-            case 'chooseDiscardPile':
-                this.onEnteringChooseDiscardPile();
-                break;
-            case 'chooseDiscardCard':
-                this.onEnteringChooseDiscardCard(args.args);
-                break;
-            case 'chooseOpponent':
-                this.onEnteringChooseOpponent(args.args);
+            case 'chooseCell':
+                this.onEnteringChooseCell(args.args);
                 break;
         }
     }
     
-    private setGamestateDescription(property: string = '') {
-        const originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
-        this.gamedatas.gamestate.description = `${originalState['description' + property]}`; 
-        this.gamedatas.gamestate.descriptionmyturn = `${originalState['descriptionmyturn' + property]}`;
-        (this as any).updatePageTitle();
-    }
-    
-    private onEnteringTakeCards(argsRoot: { args: EnteringTakeCardsArgs, active_player: string }) {
-        const args = argsRoot.args;
-
-        this.clearLogs(argsRoot.active_player);
-
-        if (!args.canTakeFromDiscard.length) {
-            this.setGamestateDescription('NoDiscard');
-        }
-
+    private onEnteringChooseOperation(args: EnteringChooseOperationArgs) {
         if ((this as any).isCurrentPlayerActive()) {
-            this.tableCenter.makeDeckSelectable(args.canTakeFromDeck);
-            this.tableCenter.makeDiscardSelectable(true);
+            this.getCurrentPlayerTable()?.setPossibleOperations(args.operations);
         }
     }
     
-    private onEnteringChooseCard(args: EnteringChooseCardArgs) {
-        this.tableCenter.showPickCards(true, args._private?.cards ?? args.cards);
+    private onEnteringChooseCell(args: EnteringChooseCellArgs) {
         if ((this as any).isCurrentPlayerActive()) {
-            setTimeout(() => this.tableCenter.makePickSelectable(true), 500);
-        } else {
-            this.tableCenter.makePickSelectable(false);
-        }        
-        this.tableCenter.setDeckCount(args.remainingCardsInDeck);
-    }
-    
-    private onEnteringPutDiscardPile(args: EnteringChooseCardArgs) {
-        this.tableCenter.showPickCards(true, args._private?.cards ?? args.cards);
-        this.tableCenter.makeDiscardSelectable((this as any).isCurrentPlayerActive());
-    }
-
-    private onEnteringPlayCards() {
-        this.tableCenter.showPickCards(false);
-        this.selectedCards = [];
-
-        this.updateDisabledPlayCards();
-    }
-    
-    private onEnteringChooseDiscardPile() {
-        this.tableCenter.makeDiscardSelectable((this as any).isCurrentPlayerActive());
-    }
-    
-    private onEnteringChooseDiscardCard(args: EnteringChooseCardArgs) {
-        const cards = args._private?.cards || args.cards;
-        const pickDiv = document.getElementById('discard-pick');
-        pickDiv.innerHTML = '';
-        pickDiv.dataset.visible = 'true';
-
-        cards?.forEach(card => {
-            this.cards.createMoveOrUpdateCard(card, `discard-pick`, false, 'discard'+args.discardNumber);
-            if ((this as any).isCurrentPlayerActive()) {
-                document.getElementById(`card-${card.id}`).classList.add('selectable');
-            }
-        });
-
-        this.updateTableHeight();
-    }
-    
-    private onEnteringChooseOpponent(args: EnteringChooseOpponentArgs) {
-        if ((this as any).isCurrentPlayerActive()) {
-            args.playersIds.forEach(playerId => 
-                document.getElementById(`player-table-${playerId}-hand-cards`).dataset.canSteal = 'true'
-            );
+            this.getCurrentPlayerTable()?.setPossibleCells(args.possibleCircles, args.value);
         }
     }
 
@@ -185,53 +110,20 @@ class Lumen implements LumenGame {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
-            case 'takeCards':
-                this.onLeavingTakeCards();
+            case 'chooseOperation':
+                this.onLeavingGhostMark('operation');
                 break;
-            case 'chooseCard':
-                this.onLeavingChooseCard();
-                break;
-            case 'putDiscardPile':
-                this.onLeavingPutDiscardPile();
-                break;
-            case 'playCards':
-                this.onLeavingPlayCards();
-                break;
-            case 'chooseDiscardCard':
-                this.onLeavingChooseDiscardCard();
-                break;
-            case 'chooseOpponent':
-                this.onLeavingChooseOpponent();
+            case 'chooseCell':
+                this.onLeavingGhostMark('circle');
                 break;
         }
     }
 
-    private onLeavingTakeCards() {
-        this.tableCenter.makeDeckSelectable(false);
-        this.tableCenter.makeDiscardSelectable(false);
-    }
-    
-    private onLeavingChooseCard() {
-        this.tableCenter.makePickSelectable(false);
-    }
-
-    private onLeavingPutDiscardPile() {
-        this.tableCenter.makeDiscardSelectable(false);
-    }
-
-    private onLeavingPlayCards() {
-        this.selectedCards = null;
-        this.getCurrentPlayerTable()?.setSelectable(false);
-    }
-
-    private onLeavingChooseDiscardCard() {
-        const pickDiv = document.getElementById('discard-pick');
-        pickDiv.dataset.visible = 'false';
-        this.updateTableHeight();
-    }
-
-    private onLeavingChooseOpponent() {
-        (Array.from(document.querySelectorAll('[data-can-steal]')) as HTMLElement[]).forEach(elem => elem.dataset.canSteal = 'false');
+    private onLeavingGhostMark(className: string) {
+        (Array.from(document.querySelectorAll(`.${className}.ghost`)) as HTMLElement[]).forEach(elem => {
+            elem.classList.remove('ghost');
+            elem.innerHTML = '';
+        });
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -610,13 +502,13 @@ class Lumen implements LumenGame {
         });
     }
 
-    public chooseDiscardCard(id: number) {
-        if(!(this as any).checkAction('chooseDiscardCard')) {
+    public chooseCell(cell: number) {
+        if(!(this as any).checkAction('chooseCell')) {
             return;
         }
 
-        this.takeAction('chooseDiscardCard', {
-            id
+        this.takeAction('chooseCell', {
+            cell
         });
     }
 
@@ -717,6 +609,7 @@ class Lumen implements LumenGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
+            ['setCircleValue', ANIMATION_MS],
             ['addCheck', 1],
             ['addHighCommandCard', ANIMATION_MS],
             ['newFirstPlayer', ANIMATION_MS],
@@ -727,6 +620,10 @@ class Lumen implements LumenGame {
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
     }
+
+    notif_setCircleValue(notif: Notif<NotifSetCircleValueArgs>) {
+        this.getPlayerTable(notif.args.playerId).setCircleValue(notif.args.circleId, notif.args.value);
+    } 
 
     notif_addCheck(notif: Notif<NotifAddCheckArgs>) {
         this.getPlayerTable(notif.args.playerId).addCheck(notif.args.checks);

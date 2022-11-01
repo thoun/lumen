@@ -78,6 +78,7 @@ $chooseCellTransitions = [
     "chooseNewFighter" => ST_PLAYER_CHOOSE_NEW_FIGHTER,
     "chooseFighterToMove" => ST_PLAYER_CHOOSE_FIGHTER,
     "chooseFighterToActivate" => ST_PLAYER_CHOOSE_FIGHTER_POWER,
+    "nextPlayer" => ST_NEXT_PLAYER,
 ];
 
 $playerActionsGameStates = [
