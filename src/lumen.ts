@@ -141,6 +141,9 @@ class Lumen implements LumenGame {
                         }    
                     });
                     break;
+                case 'chooseCell':
+                    (this as any).addActionButton(`cancelOperation_button`, _('Cancel'), () => this.cancelOperation(), null, null, 'gray');
+                    break;
             }
         }
     }
@@ -227,6 +230,7 @@ class Lumen implements LumenGame {
           var prefId = +match[1];
           var prefValue = +e.target.value;
           (this as any).prefs[prefId].value = prefValue;
+          this.onPreferenceChange(prefId, prefValue);
         }
         
         // Call onPreferenceChange() when any value changes
@@ -237,6 +241,14 @@ class Lumen implements LumenGame {
           dojo.query("#ingame_menu_content .preference_control"),
           el => onchange({ target: el })
         );
+    }
+      
+    private onPreferenceChange(prefId: number, prefValue: number) {
+        switch (prefId) {
+            case 200: 
+                (document.getElementsByTagName('html')[0] as HTMLHtmlElement).dataset.fillingPattern = (prefValue == 2).toString();
+                break;
+        }
     }
 
     private getOrderedPlayers(gamedatas: LumenGamedatas) {
@@ -419,6 +431,14 @@ class Lumen implements LumenGame {
         });
     }
 
+    public cancelOperation() {
+        if(!(this as any).checkAction('cancelOperation')) {
+            return;
+        }
+
+        this.takeAction('cancelOperation');
+    }
+
     public chooseCell(cell: number) {
         if(!(this as any).checkAction('chooseCell')) {
             return;
@@ -452,9 +472,11 @@ class Lumen implements LumenGame {
 
         const notifs = [
             ['setPlayedOperation', ANIMATION_MS],
+            ['setCancelledOperation', 1],
             ['setCircleValue', ANIMATION_MS],
             ['addCheck', 1],
             ['addHighCommandCard', ANIMATION_MS],
+            ['zone', 1],
             ['newFirstPlayer', ANIMATION_MS],
         ];
     
@@ -468,6 +490,10 @@ class Lumen implements LumenGame {
         this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number);
     } 
 
+    notif_setCancelledOperation(notif: Notif<NotifSetPlayedOperationArgs>) {
+        this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.number);
+    } 
+
     notif_setCircleValue(notif: Notif<NotifSetCircleValueArgs>) {
         this.getPlayerTable(notif.args.playerId).setCircleValue(notif.args.circleId, notif.args.value);
     } 
@@ -478,6 +504,11 @@ class Lumen implements LumenGame {
 
     notif_addHighCommandCard(notif: Notif<NotifAddHighCommandCardArgs>) {
         this.getPlayerTable(notif.args.playerId).addHighCommandCard(notif.args.card);
+    }
+        
+
+    notif_zone(notif: Notif<NotifZoneArgs>) {
+        this.getPlayerTable(notif.args.playerId).setZone(notif.args.circlesIds, notif.args.zoneId);
     }
 
     notif_newFirstPlayer(notif: Notif<NotifNewFirstPlayerArgs>) {

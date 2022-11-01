@@ -47,6 +47,7 @@ define('END_SCORE', 100);
  * Constants
  */
 define('FIRST_PLAYER', 10);
+define('FIRST_PLAYER_OPERATION', 11);
 
 define('INITIATIVE_MARKER_TERRITORY', 15);
 

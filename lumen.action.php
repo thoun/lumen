@@ -44,6 +44,14 @@
       self::ajaxResponse();
     }
 
+    public function cancelOperation() {
+      self::setAjaxMode();
+
+      $this->game->cancelOperation();
+
+      self::ajaxResponse();
+    }
+
     public function chooseCell() {
       self::setAjaxMode();
 

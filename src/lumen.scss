@@ -21,6 +21,11 @@ html, .mode_3d #game_play_area_background {
  src: url('img/Sketch_Block.ttf');
 }
 
+@font-face {
+ font-family: "Messy";
+ src: url("img/KGLifeisMessy.ttf")
+}
+
 .operation-icon {
   background: url('img/operations.png');
   background-size: auto 100%;

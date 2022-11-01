@@ -87,6 +87,12 @@ interface NotifAddHighCommandCardArgs {
     card: Card;
 }
 
+interface NotifZoneArgs {
+    playerId: number;
+    circlesIds: number[];
+    zoneId: number;
+}
+
 interface NotifNewFirstPlayerArgs {
     playerId: number;
 }

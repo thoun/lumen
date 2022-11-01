@@ -39,3 +39,25 @@ $game_options = [
         'default' => 1,
     ],
 ];
+
+$game_preferences = [
+    200 => [
+        'name' => totranslate('Zone filling'),
+        'needReload' => false,
+        'values' => [
+            1 => [ 'name' => totranslate( 'Color' ) ],
+            2 => [ 'name' => totranslate( 'Pattern' ) ],
+        ],
+        'default' => 1,
+    ],
+    201 => [
+        'name' => totranslate('Writing animation'),
+        'needReload' => false,
+        'values' => [
+            1 => [ 'name' => totranslate( 'Enabled' ) ],
+            2 => [ 'name' => totranslate( 'Disabled' ) ],
+        ],
+        'default' => 1,
+    ],
+];
+

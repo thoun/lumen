@@ -78,6 +78,7 @@ $chooseCellTransitions = [
     "chooseNewFighter" => ST_PLAYER_CHOOSE_NEW_FIGHTER,
     "chooseFighterToMove" => ST_PLAYER_CHOOSE_FIGHTER,
     "chooseFighterToActivate" => ST_PLAYER_CHOOSE_FIGHTER_POWER,
+    "cancel" => ST_PLAYER_CHOOSE_OPERATION,
     "nextPlayer" => ST_NEXT_PLAYER,
 ];
 
@@ -135,6 +136,7 @@ $playerActionsGameStates = [
         "action" => "stChooseCell",
         "possibleactions" => [ 
             "chooseCell",
+            "cancelOperation",
         ],
         "transitions" => $chooseCellTransitions + [
             "chooseCellLink" => ST_PLAYER_CHOOSE_CELL_LINK,
@@ -149,6 +151,7 @@ $playerActionsGameStates = [
         "args" => "argChooseCellLink",
         "possibleactions" => [ 
             "chooseCellLink",
+            "cancelOperation",
         ],
         "transitions" => $chooseCellTransitions,
     ],

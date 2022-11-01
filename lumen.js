@@ -808,7 +808,7 @@ var PlayerTable = /** @class */ (function () {
                 var div = document.createElement('div');
                 div.id = "player-table-".concat(_this.playerId, "-operation").concat(operation, "-number").concat(number);
                 div.classList.add('operation-number');
-                div.innerHTML = "".concat(player.operations[operation] >= number ? 'X' : '');
+                div.innerHTML = "".concat(player.operations[operation] >= number ? "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>") : '');
                 document.getElementById("player-table-".concat(_this.playerId, "-operations")).appendChild(div);
             });
         });
@@ -833,14 +833,18 @@ var PlayerTable = /** @class */ (function () {
             if (operation.possible) {
                 var operationNumberDiv = document.getElementById("player-table-".concat(_this.playerId, "-operation").concat(key, "-number").concat(operation.currentNumber + 1));
                 operationNumberDiv.classList.add('ghost');
-                operationNumberDiv.innerHTML = 'X';
+                operationNumberDiv.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
             }
         });
     };
     PlayerTable.prototype.setPlayedOperation = function (type, number) {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-operation").concat(type, "-number").concat(number));
         circleDiv.classList.remove('ghost');
-        circleDiv.innerHTML = 'X';
+        circleDiv.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
+    };
+    PlayerTable.prototype.setCancelledOperation = function (type, number) {
+        var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-operation").concat(type, "-number").concat(number + 1));
+        circleDiv.innerHTML = '';
     };
     PlayerTable.prototype.setPossibleCells = function (possibleCircles, value) {
         var _this = this;
@@ -860,6 +864,10 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.addCheck = function (checks) {
         // TODO throw new Error("Method not implemented.");
+    };
+    PlayerTable.prototype.setZone = function (circlesIds, zoneId) {
+        var _this = this;
+        circlesIds.forEach(function (circleId) { return document.getElementById("player-table-".concat(_this.playerId, "-circle").concat(circleId)).dataset.zone = '' + zoneId; });
     };
     return PlayerTable;
 }());
@@ -975,6 +983,9 @@ var Lumen = /** @class */ (function () {
                         }
                     });
                     break;
+                case 'chooseCell':
+                    this.addActionButton("cancelOperation_button", _('Cancel'), function () { return _this.cancelOperation(); }, null, null, 'gray');
+                    break;
             }
         }
     };
@@ -1049,11 +1060,19 @@ var Lumen = /** @class */ (function () {
             var prefId = +match[1];
             var prefValue = +e.target.value;
             _this.prefs[prefId].value = prefValue;
+            _this.onPreferenceChange(prefId, prefValue);
         };
         // Call onPreferenceChange() when any value changes
         dojo.query(".preference_control").connect("onchange", onchange);
         // Call onPreferenceChange() now
         dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
+    };
+    Lumen.prototype.onPreferenceChange = function (prefId, prefValue) {
+        switch (prefId) {
+            case 200:
+                document.getElementsByTagName('html')[0].dataset.fillingPattern = (prefValue == 2).toString();
+                break;
+        }
     };
     Lumen.prototype.getOrderedPlayers = function (gamedatas) {
         var _this = this;
@@ -1179,6 +1198,12 @@ var Lumen = /** @class */ (function () {
             operation: operation
         });
     };
+    Lumen.prototype.cancelOperation = function () {
+        if (!this.checkAction('cancelOperation')) {
+            return;
+        }
+        this.takeAction('cancelOperation');
+    };
     Lumen.prototype.chooseCell = function (cell) {
         if (!this.checkAction('chooseCell')) {
             return;
@@ -1208,9 +1233,11 @@ var Lumen = /** @class */ (function () {
         var _this = this;
         var notifs = [
             ['setPlayedOperation', ANIMATION_MS],
+            ['setCancelledOperation', 1],
             ['setCircleValue', ANIMATION_MS],
             ['addCheck', 1],
             ['addHighCommandCard', ANIMATION_MS],
+            ['zone', 1],
             ['newFirstPlayer', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
@@ -1221,6 +1248,9 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.notif_setPlayedOperation = function (notif) {
         this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number);
     };
+    Lumen.prototype.notif_setCancelledOperation = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.number);
+    };
     Lumen.prototype.notif_setCircleValue = function (notif) {
         this.getPlayerTable(notif.args.playerId).setCircleValue(notif.args.circleId, notif.args.value);
     };
@@ -1229,6 +1259,9 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_addHighCommandCard = function (notif) {
         this.getPlayerTable(notif.args.playerId).addHighCommandCard(notif.args.card);
+    };
+    Lumen.prototype.notif_zone = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setZone(notif.args.circlesIds, notif.args.zoneId);
     };
     Lumen.prototype.notif_newFirstPlayer = function (notif) {
         // TODO

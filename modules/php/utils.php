@@ -277,4 +277,56 @@ trait UtilTrait {
         return $circles;
     }
 
+    function refreshZones(int $playerId, int $circleId) {
+        $circle = self::getObjectFromDB("SELECT * FROM circle where player_id = ".$playerId." and circle_id = ".$circleId);
+      
+        $neighbors = $this->CIRCLE_NEIGHBOURS[$circleId];
+        $neighttxt = implode(',', $neighbors);
+        
+        $list = [];
+        $zid = -1;
+        
+        $zones = self::getObjectListFromDB('SELECT distinct(zone) FROM `circle` WHERE value = '.$circle['value'].' and player_id = '.$playerId.' and circle_id in ('.$neighttxt.')', true);
+        if(count($zones) == 1 && intval($zones[0]) == -1) {
+            //new zones
+            $zid = self::getUniqueValueFromDB( "SELECT max(zone) from circle where player_id = ".$playerId) + 1;
+            self::DbQuery("update circle set zone = ".$zid.' where value = '.$circle['value'].' and player_id = '.$playerId.' and circle_id in ('.$neighttxt.', '.$circleId.')');
+        } else if(count($zones) == 1 && $zones[0] > -1) {
+            self::DbQuery("update circle set zone = ".$zones[0].' where player_id = '.$playerId.' and circle_id = '.$circleId);
+            $zid = $zones[0];            
+        } else if(count($zones) > 1) {
+            $zid = -1;              
+            for($i=0;$i<count($zones);$i++) {
+                if ($zones[$i] != -1) {
+                    $zid = $zones[$i];
+                }
+            }
+            
+            if($zid == -1) {
+                //new zones resulting from 3 merges
+                $zid = self::getUniqueValueFromDB( "SELECT max(zone) from circle where player_id = ".$playerId) + 1;
+            }
+            
+            //merge adjacent value
+            self::DbQuery("update circle set zone = ".$zid.' where value = '.$circle['value'].' and player_id = '.$playerId.' and circle_id in ('.$neighttxt.', '.$circleId.')');
+            
+            //then merge if necessary              
+            for($i=0;$i<count($zones);$i++) {
+                if($zones[$i] != -1) {
+                    self::DbQuery("update circle set zone = ".$zid.' where player_id = '.$playerId.' and zone = '.$zones[$i]);
+                }
+            }
+        }
+                
+        if ($zid >= 0) {
+            $list = self::getObjectListFromDB('SELECT circle_id FROM `circle` WHERE player_id = '.$playerId.' and zone = '.$zid, true);
+            
+            self::notifyAllPlayers("zone", '', [
+                'playerId' => $playerId,
+                'circlesIds' => array_map(fn($elem) => intval($elem), $list),
+                'zoneId' => $zid,
+            ]);  
+        }
+  }
+
 }

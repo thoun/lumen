@@ -29,7 +29,7 @@ class PlayerTable {
                 const div = document.createElement('div');
                 div.id = `player-table-${this.playerId}-operation${operation}-number${number}`;
                 div.classList.add('operation-number');
-                div.innerHTML = `${player.operations[operation] >= number ? 'X' : ''}`;
+                div.innerHTML = `${player.operations[operation] >= number ? `<img src="${g_gamethemeurl}img/mul.gif"/>` : ''}`;
                 document.getElementById(`player-table-${this.playerId}-operations`).appendChild(div);
             });
         })
@@ -54,7 +54,7 @@ class PlayerTable {
             if (operation.possible) {
                 const operationNumberDiv = document.getElementById(`player-table-${this.playerId}-operation${key}-number${operation.currentNumber + 1}`);
                 operationNumberDiv.classList.add('ghost');
-                operationNumberDiv.innerHTML = 'X';
+                operationNumberDiv.innerHTML = `<img src="${g_gamethemeurl}img/mul.gif"/>`;
             }
         })
     }
@@ -62,7 +62,12 @@ class PlayerTable {
     public setPlayedOperation(type: number, number: number) {
         const circleDiv = document.getElementById(`player-table-${this.playerId}-operation${type}-number${number}`);
         circleDiv.classList.remove('ghost');
-        circleDiv.innerHTML = 'X';
+        circleDiv.innerHTML = `<img src="${g_gamethemeurl}img/mul.gif"/>`;
+    }
+    
+    setCancelledOperation(type: number, number: number) {
+        const circleDiv = document.getElementById(`player-table-${this.playerId}-operation${type}-number${number+1}`);
+        circleDiv.innerHTML = '';
     }
 
     public setPossibleCells(possibleCircles: number[], value: number) {
@@ -85,5 +90,9 @@ class PlayerTable {
 
     public addCheck(checks: number) {
         // TODO throw new Error("Method not implemented.");
+    }
+    
+    public setZone(circlesIds: number[], zoneId: number) {
+        circlesIds.forEach(circleId => document.getElementById(`player-table-${this.playerId}-circle${circleId}`).dataset.zone = ''+zoneId);
     }
 }
