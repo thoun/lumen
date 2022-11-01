@@ -45,48 +45,6 @@ trait ActionTrait {
         $this->gamestate->nextState('chooseCell');
     }
 
-    public function chooseCell(int $cellId) {
-        $this->checkAction('chooseCell'); 
-        
-        $playerId = intval($this->getActivePlayerId());
-        
-        $args = $this->argChooseCell();
-        if (!in_array($cellId, $args['possibleCircles'])) {
-            throw new BgaUserException("Invalid cell");
-        }
-
-        $value = intval($this->getGameStateValue(PLAYER_NUMBER));
-        self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($playerId, $cellId, $value)");
-
-        if ($value >= 7) {
-            $this->addCheck($playerId);
-        }
-
-        self::notifyAllPlayers('setCircleValue', '', [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'circleId' => $cellId,
-            'value' => $value,
-        ]);
-
-        $this->refreshZones($playerId, $cellId);
-
-        $links = $this->getLinks($playerId);
-        $possibleLinkCirclesIds = $this->getPossibleLinkCirclesIds($links, $cellId);
-
-        if (count($possibleLinkCirclesIds) > 1) {
-            $this->gamestate->nextState('chooseCellLink');
-            return;
-        } else if (count($possibleLinkCirclesIds) === 1) {
-            $this->addLink($playerId, $cellId, $possibleLinkCirclesIds[0]);
-        }
-
-        /*$this->incStat(1, 'takeFromDiscard');
-        $this->incStat(1, 'takeFromDiscard', $playerId);
-        $this->updateCardsPoints($playerId);*/
-        $this->gamestate->nextState('nextPlayer');
-    }
-
     public function cancelOperation() {
         $this->checkAction('cancelOperation'); 
         
@@ -104,5 +62,73 @@ trait ActionTrait {
         ]);
 
         $this->gamestate->nextState('cancel');
+    }
+
+    public function chooseCell(int $cellId) {
+        $this->checkAction('chooseCell'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+        
+        $args = $this->argChooseCell();
+        if (!in_array($cellId, $args['possibleCircles'])) {
+            throw new BgaUserException("Invalid cell");
+        }
+
+        $this->setGameStateValue(PLAYER_CELL, $cellId);
+        $value = intval($this->getGameStateValue(PLAYER_NUMBER));
+        self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($playerId, $cellId, $value)");
+
+        if ($value >= 7) {
+            $this->addCheck($playerId);
+        }
+
+        self::notifyAllPlayers('setCircleValue', '', [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'circleId' => $cellId,
+            'value' => $value,
+        ]);
+
+        $this->refreshZones($playerId, $cellId);
+
+        $links = $this->getLinks($playerId);
+        $possibleUpperLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, 1);
+        $possibleLowerLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, -1);
+
+        if (count($possibleUpperLinkCirclesIds) === 1) {
+            $this->addLink($playerId, $cellId, $possibleUpperLinkCirclesIds[0]);
+        }
+        if (count($possibleLowerLinkCirclesIds) === 1) {
+            $this->addLink($playerId, $cellId, $possibleLowerLinkCirclesIds[0]);
+        }
+
+        if (count($possibleUpperLinkCirclesIds) > 1 || count($possibleLowerLinkCirclesIds) > 1) {
+            $this->gamestate->nextState('chooseCellLink');
+            return;
+        }
+
+        /*$this->incStat(1, 'takeFromDiscard');
+        $this->incStat(1, 'takeFromDiscard', $playerId);
+        $this->updateCardsPoints($playerId);*/
+        $this->gamestate->nextState('nextPlayer'); // TODO
+    }
+
+    public function chooseCellLink(int $cellId) {
+        $this->checkAction('chooseCellLink'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+        
+        $args = $this->argChooseCellLink();
+        if (!in_array($cellId, $args['possibleLinkCirclesIds'])) {
+            throw new BgaUserException("Invalid cell");
+        }
+
+        $fromCell = $args['cellId'];
+        $this->addLink($playerId, $fromCell, $cellId);
+
+        /*$this->incStat(1, 'takeFromDiscard');
+        $this->incStat(1, 'takeFromDiscard', $playerId);
+        $this->updateCardsPoints($playerId);*/
+        $this->gamestate->nextState('nextPlayer'); // TODO
     }
 }

@@ -56,6 +56,7 @@ define('DIE2', 21);
 
 define('PLAYER_OPERATION', 30);
 define('PLAYER_NUMBER', 31);
+define('PLAYER_CELL', 32);
 
 define('REMAINING_FIGHTERS_TO_PLACE', 40);
 

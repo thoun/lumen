@@ -80,4 +80,19 @@ trait ArgsTrait {
             'number' => $number, // for title bar
         ];
     }
+
+    function argChooseCellLink() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $cellId = intval($this->getGameStateValue(PLAYER_CELL));
+        $value = intval($this->getGameStateValue(PLAYER_NUMBER));
+        $links = $this->getLinks($playerId);
+        $possibleUpperLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, 1);
+        $possibleLowerLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, -1);
+
+        return [
+            'possibleLinkCirclesIds' => count($possibleUpperLinkCirclesIds) > 1 ? $possibleUpperLinkCirclesIds : $possibleLowerLinkCirclesIds,
+            'cellId' => $cellId,
+        ];
+    }
 }

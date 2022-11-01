@@ -449,6 +449,16 @@ class Lumen implements LumenGame {
         });
     }
 
+    public chooseCellLink(cell: number) {
+        if(!(this as any).checkAction('chooseCellLink')) {
+            return;
+        }
+
+        this.takeAction('chooseCellLink', {
+            cell
+        });
+    }
+
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;

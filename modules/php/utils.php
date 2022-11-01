@@ -334,8 +334,34 @@ trait UtilTrait {
         }
     }
 
-    function getPossibleLinkCirclesIds(array $links, int $circleId) {
+    function getPossibleLinkCirclesIds(int $playerId, array $links, int $circleId, int $value, int $direction) {
+        $circles = $this->getCircles($playerId);
+        $circle = $this->array_find($circles, fn($c) => $c->circleId == $circleId);
+        $possible = [];
 
+        foreach ($circle->neighbours as $neighbour) {
+            if ($neighbour->value == $value - $direction) {
+                $linkedCirclesIds = [];
+                foreach ($links as $link) {
+                    if ($neighbour->circleId == $link->index1) {
+                        $linkedCirclesIds[] = $link->index2;
+                    } else if ($neighbour->circleId == $link->index2) {
+                        $linkedCirclesIds[] = $link->index1;
+                    }
+                }
+                $neighbourHasUpperLink = $this->array_some($circles, fn($c) => in_array($c->circleId, $linkedCirclesIds) && $c->value > $neighbour->value);
+                $neighbourHasLowerLink = $this->array_some($circles, fn($c) => in_array($c->circleId, $linkedCirclesIds) && $c->value < $neighbour->value);
+
+                if (
+                    ($direction === 1 && !$neighbourHasUpperLink) ||
+                    ($direction === -1 && !$neighbourHasLowerLink)
+                ) {
+                    $possible[] = $neighbour;
+                }
+            }
+        }
+
+        return $possible;
     }
 
     function addLink(int $playerId, int $circleId, int $toCircleId) {

@@ -1219,6 +1219,14 @@ var Lumen = /** @class */ (function () {
             cell: cell
         });
     };
+    Lumen.prototype.chooseCellLink = function (cell) {
+        if (!this.checkAction('chooseCellLink')) {
+            return;
+        }
+        this.takeAction('chooseCellLink', {
+            cell: cell
+        });
+    };
     Lumen.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;

@@ -62,6 +62,16 @@
       self::ajaxResponse();
     }
 
+    public function chooseCellLink() {
+      self::setAjaxMode();
+
+      $cell = self::getArg("cell", AT_posint, true);
+
+      $this->game->chooseCellLink($cell);
+
+      self::ajaxResponse();
+    }
+
   }
   
 

@@ -78,7 +78,7 @@ trait StateTrait {
         $playersIds = $this->getPlayersIds();
 
         // update player_score_aux
-        $endRound = intval($this->getGameStateValue(END_ROUND_TYPE));
+        /*$endRound = intval($this->getGameStateValue(END_ROUND_TYPE));
         $playerId = intval($this->getPlayerBefore($this->getActivePlayerId())); // if STOP, last player is the one before the newly activated player (next round starter)
         if ($endRound == LAST_CHANCE) { // if LAST_CHANCE, it's the player before (before the Caller)
             $playerId = intval($this->getPlayerBefore($playerId));
@@ -98,7 +98,7 @@ trait StateTrait {
                 $this->setStat(1, 'winWithMermaids');
                 $this->setStat(1, 'winWithMermaids', $playerId);
             }
-        }
+        }*/
 
         $this->gamestate->nextState('endGame');
     }
