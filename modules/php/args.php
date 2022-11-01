@@ -23,7 +23,7 @@ trait ArgsTrait {
         $possibleOperationsCount = 0;
         for ($type=1; $type<=5; $type++) {
             $max = $this->getOpMax($type);
-            $current = self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type");
+            $current = intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type"));
 
             $possible = $current < $max;
             if ($possible) {
@@ -31,6 +31,7 @@ trait ArgsTrait {
             }
 
             $operations[$type] = [
+                'currentNumber' => $current,
                 'value' => $this->getValue($die1, $die2, $type),
                 'possible' => $possible,
             ];

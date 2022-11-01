@@ -38,6 +38,7 @@ interface LumenGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
+    scenario: number;
     fightersOnTerritories: Card[];
     firstPlayer: number;
 }
@@ -53,6 +54,7 @@ interface LumenGame extends Game {
 }
 interface EnteringChooseOperationArgs {
     operations: { [operation: number]: {
+        currentNumber: number;
         value: number;
         possible: boolean;
     } };
@@ -61,6 +63,12 @@ interface EnteringChooseOperationArgs {
 interface EnteringChooseCellArgs {
     possibleCircles: number[];
     value: number;
+}
+
+interface NotifSetPlayedOperationArgs {
+    playerId: number;
+    type: number;
+    number: number;
 }
 
 interface NotifSetCircleValueArgs {

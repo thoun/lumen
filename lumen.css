@@ -364,6 +364,19 @@
   display: flex;
   flex-wrap: wrap;
 }
+.player-table .operations .operation-number {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+}
+.player-table .operations .operation-number.ghost {
+  opacity: 0.6;
+  cursor: pointer;
+}
 .player-table .circles {
   display: flex;
   flex-wrap: wrap;

@@ -24,15 +24,45 @@ class PlayerTable {
         `;
         dojo.place(html, document.getElementById('tables'));
 
+        [1, 2, 3, 4, 5].forEach(operation => {
+            (operation > 3 ? [1, 2, 3, 4] : [1, 2, 3]).forEach(number => {
+                const div = document.createElement('div');
+                div.id = `player-table-${this.playerId}-operation${operation}-number${number}`;
+                div.classList.add('operation-number');
+                div.innerHTML = `${player.operations[operation] >= number ? 'X' : ''}`;
+                document.getElementById(`player-table-${this.playerId}-operations`).appendChild(div);
+            });
+        })
+
         player.circles.forEach(circle => {
-            dojo.place(`<div id="player-table-${this.playerId}-circle${circle.circleId}" class="circle">${circle.value ?? ''}</div>`, document.getElementById(`player-table-${this.playerId}-circles`));
-            const div = document.getElementById(`player-table-${this.playerId}-circle${circle.circleId}`);
+            const div = document.createElement('div');
+            div.id = `player-table-${this.playerId}-circle${circle.circleId}`;
+            div.classList.add('circle');
+            div.innerHTML = `${circle.value ?? ''}`;
+            document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
             div.addEventListener('click', () => {
                 if (div.classList.contains('ghost')) {
                     this.game.chooseCell(circle.circleId);
                 }
             });
         });
+    }
+
+    public setPossibleOperations(operations: { [operation: number]: { currentNumber: number; value: number; possible: boolean; }; }) {
+        Object.keys(operations).forEach(key => {
+            const operation = operations[key];
+            if (operation.possible) {
+                const operationNumberDiv = document.getElementById(`player-table-${this.playerId}-operation${key}-number${operation.currentNumber + 1}`);
+                operationNumberDiv.classList.add('ghost');
+                operationNumberDiv.innerHTML = 'X';
+            }
+        })
+    }
+    
+    public setPlayedOperation(type: number, number: number) {
+        const circleDiv = document.getElementById(`player-table-${this.playerId}-operation${type}-number${number}`);
+        circleDiv.classList.remove('ghost');
+        circleDiv.innerHTML = 'X';
     }
 
     public setPossibleCells(possibleCircles: number[], value: number) {
@@ -54,10 +84,6 @@ class PlayerTable {
     }
 
     public addCheck(checks: number) {
-        // TODO throw new Error("Method not implemented.");
-    }
-
-    public setPossibleOperations(operations: { [operation: number]: { value: number; possible: boolean; }; }) {
         // TODO throw new Error("Method not implemented.");
     }
 }

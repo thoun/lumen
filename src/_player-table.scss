@@ -22,6 +22,21 @@
   .operations {
     display: flex;
     flex-wrap: wrap;
+
+    .operation-number {
+      position: relative;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid black;
+
+      &.ghost {
+        opacity: 0.6;
+        cursor: pointer;
+      }
+    }
   }
 
   .circles {

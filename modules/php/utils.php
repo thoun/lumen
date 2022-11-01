@@ -80,7 +80,7 @@ trait UtilTrait {
     }
 
     function getScenario() {
-    return $this->SCENARIOS[/* TODO $this->getScenarioId()*/ 1];
+    return $this->SCENARIOS[$this->getScenarioId()];
     }
     
     function getOpMax(int $type) {

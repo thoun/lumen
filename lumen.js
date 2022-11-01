@@ -803,10 +803,22 @@ var PlayerTable = /** @class */ (function () {
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\">\n            <div id=\"player-table-").concat(this.playerId, "-hand-cards\" class=\"hand cards\" data-player-id=\"").concat(this.playerId, "\" data-current-player=\"").concat(this.currentPlayer.toString(), "\" data-my-hand=\"").concat(this.currentPlayer.toString(), "\"></div>\n            <div class=\"name-wrapper\">\n                <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-operations\" class=\"operations\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-circles\" class=\"circles\">\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
+        [1, 2, 3, 4, 5].forEach(function (operation) {
+            (operation > 3 ? [1, 2, 3, 4] : [1, 2, 3]).forEach(function (number) {
+                var div = document.createElement('div');
+                div.id = "player-table-".concat(_this.playerId, "-operation").concat(operation, "-number").concat(number);
+                div.classList.add('operation-number');
+                div.innerHTML = "".concat(player.operations[operation] >= number ? 'X' : '');
+                document.getElementById("player-table-".concat(_this.playerId, "-operations")).appendChild(div);
+            });
+        });
         player.circles.forEach(function (circle) {
             var _a;
-            dojo.place("<div id=\"player-table-".concat(_this.playerId, "-circle").concat(circle.circleId, "\" class=\"circle\">").concat((_a = circle.value) !== null && _a !== void 0 ? _a : '', "</div>"), document.getElementById("player-table-".concat(_this.playerId, "-circles")));
-            var div = document.getElementById("player-table-".concat(_this.playerId, "-circle").concat(circle.circleId));
+            var div = document.createElement('div');
+            div.id = "player-table-".concat(_this.playerId, "-circle").concat(circle.circleId);
+            div.classList.add('circle');
+            div.innerHTML = "".concat((_a = circle.value) !== null && _a !== void 0 ? _a : '');
+            document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
             div.addEventListener('click', function () {
                 if (div.classList.contains('ghost')) {
                     _this.game.chooseCell(circle.circleId);
@@ -814,6 +826,22 @@ var PlayerTable = /** @class */ (function () {
             });
         });
     }
+    PlayerTable.prototype.setPossibleOperations = function (operations) {
+        var _this = this;
+        Object.keys(operations).forEach(function (key) {
+            var operation = operations[key];
+            if (operation.possible) {
+                var operationNumberDiv = document.getElementById("player-table-".concat(_this.playerId, "-operation").concat(key, "-number").concat(operation.currentNumber + 1));
+                operationNumberDiv.classList.add('ghost');
+                operationNumberDiv.innerHTML = 'X';
+            }
+        });
+    };
+    PlayerTable.prototype.setPlayedOperation = function (type, number) {
+        var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-operation").concat(type, "-number").concat(number));
+        circleDiv.classList.remove('ghost');
+        circleDiv.innerHTML = 'X';
+    };
     PlayerTable.prototype.setPossibleCells = function (possibleCircles, value) {
         var _this = this;
         possibleCircles.forEach(function (circleId) {
@@ -831,9 +859,6 @@ var PlayerTable = /** @class */ (function () {
         // TODO throw new Error("Method not implemented.");
     };
     PlayerTable.prototype.addCheck = function (checks) {
-        // TODO throw new Error("Method not implemented.");
-    };
-    PlayerTable.prototype.setPossibleOperations = function (operations) {
         // TODO throw new Error("Method not implemented.");
     };
     return PlayerTable;
@@ -885,7 +910,6 @@ var Lumen = /** @class */ (function () {
         }
         this.onScreenWidthChange = function () {
             _this.updateTableHeight();
-            _this.onTableCenterSizeChange();
         };
         log("Ending game setup");
     };
@@ -921,7 +945,7 @@ var Lumen = /** @class */ (function () {
         log('Leaving state: ' + stateName);
         switch (stateName) {
             case 'chooseOperation':
-                this.onLeavingGhostMark('operation');
+                this.onLeavingGhostMark('operation-number');
                 break;
             case 'chooseCell':
                 this.onLeavingGhostMark('circle');
@@ -996,7 +1020,6 @@ var Lumen = /** @class */ (function () {
             div.style.marginRight = "".concat(ZOOM_LEVELS_MARGIN[newIndex], "%");
         }
         this.updateTableHeight();
-        this.onTableCenterSizeChange();
     };
     Lumen.prototype.zoomIn = function () {
         if (this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]) {
@@ -1014,21 +1037,6 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.updateTableHeight = function () {
         setTimeout(function () { return document.getElementById('zoom-wrapper').style.height = "".concat(document.getElementById('full-table').getBoundingClientRect().height, "px"); }, 600);
-    };
-    Lumen.prototype.onTableCenterSizeChange = function () {
-        /*const maxWidth = document.getElementById('full-table').clientWidth;
-        const tableCenterWidth = document.getElementById('table-center').clientWidth + 20;
-        const playerTableWidth = 650 + 20;
-        const tablesMaxWidth = maxWidth - tableCenterWidth;
-     
-        let width = 'unset';
-        if (tablesMaxWidth < playerTableWidth * this.gamedatas.playerorder.length) {
-            const reduced = (Math.floor(tablesMaxWidth / playerTableWidth) * playerTableWidth);
-            if (reduced > 0) {
-                width = `${reduced}px`;
-            }
-        }
-        document.getElementById('tables').style.width = width;*/
     };
     Lumen.prototype.setupPreferences = function () {
         var _this = this;
@@ -1055,18 +1063,23 @@ var Lumen = /** @class */ (function () {
         return orderedPlayers;
     };
     Lumen.prototype.createPlayerPanels = function (gamedatas) {
-        var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             document.getElementById("overall_player_board_".concat(playerId)).style.background = "#".concat(player.color);
-            // hand cards counter
-            dojo.place("<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>"), "player_board_".concat(player.id));
-            var handCounter = new ebg.counter();
-            handCounter.create("playerhand-counter-".concat(playerId));
+            /*// hand cards counter
+            dojo.place(`<div class="counters">
+                <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
+                    <div class="player-hand-card"></div>
+                    <span id="playerhand-counter-${player.id}"></span>
+                </div>
+            </div>`, `player_board_${player.id}`);
+
+            const handCounter = new ebg.counter();
+            handCounter.create(`playerhand-counter-${playerId}`);
             //handCounter.setValue(player.handCards.length);
-            _this.handCounters[playerId] = handCounter;
+            this.handCounters[playerId] = handCounter;*/
         });
-        this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+        //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
     };
     Lumen.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
@@ -1079,11 +1092,6 @@ var Lumen = /** @class */ (function () {
         var table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
     };
-    Lumen.prototype.updateDisabledPlayCards = function () {
-        var _a, _b;
-        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.updateDisabledPlayCards(this.selectedCards, this.gamedatas.gamestate.args.playableDuoCards);
-        (_b = document.getElementById("playCards_button")) === null || _b === void 0 ? void 0 : _b.classList.toggle("disabled", this.selectedCards.length != 2);
-    };
     Lumen.prototype.onCardClick = function (card) {
         var cardDiv = document.getElementById("card-".concat(card.id));
         var parentDiv = cardDiv.parentElement;
@@ -1091,7 +1099,7 @@ var Lumen = /** @class */ (function () {
             return;
         }
         switch (this.gamedatas.gamestate.name) {
-            case 'takeCards':
+            /*case 'takeCards':
                 if (parentDiv.dataset.discard) {
                     this.takeCardFromDiscard(Number(parentDiv.dataset.discard));
                 }
@@ -1102,12 +1110,11 @@ var Lumen = /** @class */ (function () {
                 }
                 break;
             case 'playCards':
-                if (parentDiv.dataset.myHand == "true") {
+                if (parentDiv.dataset.myHand == `true`) {
                     if (this.selectedCards.includes(card.id)) {
                         this.selectedCards.splice(this.selectedCards.indexOf(card.id), 1);
                         cardDiv.classList.remove('selected');
-                    }
-                    else {
+                    } else {
                         this.selectedCards.push(card.id);
                         cardDiv.classList.add('selected');
                     }
@@ -1120,24 +1127,14 @@ var Lumen = /** @class */ (function () {
                 }
                 break;
             case 'chooseOpponent':
-                var chooseOpponentArgs = this.gamedatas.gamestate.args;
+                const chooseOpponentArgs = this.gamedatas.gamestate.args as EnteringChooseOpponentArgs;
                 if (parentDiv.dataset.currentPlayer == 'false') {
-                    var stealPlayerId = Number(parentDiv.dataset.playerId);
+                    const stealPlayerId = Number(parentDiv.dataset.playerId);
                     if (chooseOpponentArgs.playersIds.includes(stealPlayerId)) {
                         this.chooseOpponent(stealPlayerId);
                     }
                 }
-                break;
-        }
-    };
-    Lumen.prototype.onDiscardPileClick = function (number) {
-        switch (this.gamedatas.gamestate.name) {
-            case 'putDiscardPile':
-                this.putDiscardPile(number);
-                break;
-            case 'chooseDiscardPile':
-                this.chooseOperation(number);
-                break;
+                break;*/
         }
     };
     Lumen.prototype.addHelp = function () {
@@ -1174,45 +1171,6 @@ var Lumen = /** @class */ (function () {
         // multiplier
         [1, 2, 3, 4].forEach(function (family) { return _this.cards.createMoveOrUpdateCard({ id: 1040 + family, category: 4, family: family }, "help-multiplier-".concat(family)); });
     };
-    Lumen.prototype.takeCardsFromDeck = function () {
-        if (!this.checkAction('takeCardsFromDeck')) {
-            return;
-        }
-        this.takeAction('takeCardsFromDeck');
-    };
-    Lumen.prototype.takeCardFromDiscard = function (discardNumber) {
-        if (!this.checkAction('takeCardFromDiscard')) {
-            return;
-        }
-        this.takeAction('takeCardFromDiscard', {
-            discardNumber: discardNumber
-        });
-    };
-    Lumen.prototype.chooseCard = function (id) {
-        if (!this.checkAction('chooseCard')) {
-            return;
-        }
-        this.takeAction('chooseCard', {
-            id: id
-        });
-    };
-    Lumen.prototype.putDiscardPile = function (discardNumber) {
-        if (!this.checkAction('putDiscardPile')) {
-            return;
-        }
-        this.takeAction('putDiscardPile', {
-            discardNumber: discardNumber
-        });
-    };
-    Lumen.prototype.playCards = function (ids) {
-        if (!this.checkAction('playCards')) {
-            return;
-        }
-        this.takeAction('playCards', {
-            'id1': ids[0],
-            'id2': ids[1],
-        });
-    };
     Lumen.prototype.chooseOperation = function (operation) {
         if (!this.checkAction('chooseOperation')) {
             return;
@@ -1229,73 +1187,10 @@ var Lumen = /** @class */ (function () {
             cell: cell
         });
     };
-    Lumen.prototype.chooseOpponent = function (id) {
-        if (!this.checkAction('chooseOpponent')) {
-            return;
-        }
-        this.takeAction('chooseOpponent', {
-            id: id
-        });
-    };
-    Lumen.prototype.endTurn = function () {
-        if (!this.checkAction('endTurn')) {
-            return;
-        }
-        this.takeAction('endTurn');
-    };
-    Lumen.prototype.endGameWithMermaids = function () {
-        if (!this.checkAction('endGameWithMermaids')) {
-            return;
-        }
-        this.takeAction('endGameWithMermaids');
-    };
-    Lumen.prototype.endRound = function () {
-        if (!this.checkAction('endRound')) {
-            return;
-        }
-        this.takeAction('endRound');
-    };
-    Lumen.prototype.immediateEndRound = function () {
-        if (!this.checkAction('immediateEndRound')) {
-            return;
-        }
-        this.takeAction('immediateEndRound');
-    };
-    Lumen.prototype.seen = function () {
-        if (!this.checkAction('seen')) {
-            return;
-        }
-        this.takeAction('seen');
-    };
     Lumen.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
         this.ajaxcall("/lumen/lumen/".concat(action, ".html"), data, this, function () { });
-    };
-    Lumen.prototype.startActionTimer = function (buttonId, time) {
-        var _a;
-        if (Number((_a = this.prefs[202]) === null || _a === void 0 ? void 0 : _a.value) === 2) {
-            return;
-        }
-        var button = document.getElementById(buttonId);
-        var actionTimerId = null;
-        var _actionTimerLabel = button.innerHTML;
-        var _actionTimerSeconds = time;
-        var actionTimerFunction = function () {
-            var button = document.getElementById(buttonId);
-            if (button == null || button.classList.contains('disabled')) {
-                window.clearInterval(actionTimerId);
-            }
-            else if (_actionTimerSeconds-- > 1) {
-                button.innerHTML = _actionTimerLabel + ' (' + _actionTimerSeconds + ')';
-            }
-            else {
-                window.clearInterval(actionTimerId);
-                button.click();
-            }
-        };
-        actionTimerFunction();
-        actionTimerId = window.setInterval(function () { return actionTimerFunction(); }, 1000);
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
@@ -1312,6 +1207,7 @@ var Lumen = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
+            ['setPlayedOperation', ANIMATION_MS],
             ['setCircleValue', ANIMATION_MS],
             ['addCheck', 1],
             ['addHighCommandCard', ANIMATION_MS],
@@ -1321,6 +1217,9 @@ var Lumen = /** @class */ (function () {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
+    };
+    Lumen.prototype.notif_setPlayedOperation = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number);
     };
     Lumen.prototype.notif_setCircleValue = function (notif) {
         this.getPlayerTable(notif.args.playerId).setCircleValue(notif.args.circleId, notif.args.value);
@@ -1348,11 +1247,11 @@ var Lumen = /** @class */ (function () {
                 if (args.operation && args.operation[0] != '<') {
                     args.operation = "<div class=\"operation-icon\" data-type=\"".concat(args.operation, "\"></div>");
                 }
-                ['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(function (field) {
+                /*['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(field => {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
-                        args[field] = "<strong>".concat(_(args[field]), "</strong>");
+                        args[field] = `<strong>${_(args[field])}</strong>`;
                     }
-                });
+                });*/
             }
         }
         catch (e) {

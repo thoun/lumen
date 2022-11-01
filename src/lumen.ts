@@ -69,7 +69,6 @@ class Lumen implements LumenGame {
 
         (this as any).onScreenWidthChange = () => {
             this.updateTableHeight();
-            this.onTableCenterSizeChange();
         };
 
         log( "Ending game setup" );
@@ -111,7 +110,7 @@ class Lumen implements LumenGame {
 
         switch (stateName) {
             case 'chooseOperation':
-                this.onLeavingGhostMark('operation');
+                this.onLeavingGhostMark('operation-number');
                 break;
             case 'chooseCell':
                 this.onLeavingGhostMark('circle');
@@ -196,7 +195,6 @@ class Lumen implements LumenGame {
         }
 
         this.updateTableHeight();
-        this.onTableCenterSizeChange();
     }
 
     public zoomIn() {
@@ -217,22 +215,6 @@ class Lumen implements LumenGame {
 
     public updateTableHeight() {
         setTimeout(() => document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`, 600);
-    }
-
-    private onTableCenterSizeChange() {
-        /*const maxWidth = document.getElementById('full-table').clientWidth;
-        const tableCenterWidth = document.getElementById('table-center').clientWidth + 20;
-        const playerTableWidth = 650 + 20;
-        const tablesMaxWidth = maxWidth - tableCenterWidth;
-     
-        let width = 'unset';
-        if (tablesMaxWidth < playerTableWidth * this.gamedatas.playerorder.length) {
-            const reduced = (Math.floor(tablesMaxWidth / playerTableWidth) * playerTableWidth);
-            if (reduced > 0) {
-                width = `${reduced}px`;
-            }
-        }
-        document.getElementById('tables').style.width = width;*/
     }
 
     private setupPreferences() {
@@ -271,7 +253,7 @@ class Lumen implements LumenGame {
 
             document.getElementById(`overall_player_board_${playerId}`).style.background = `#${player.color}`;
 
-            // hand cards counter
+            /*// hand cards counter
             dojo.place(`<div class="counters">
                 <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
                     <div class="player-hand-card"></div> 
@@ -282,10 +264,10 @@ class Lumen implements LumenGame {
             const handCounter = new ebg.counter();
             handCounter.create(`playerhand-counter-${playerId}`);
             //handCounter.setValue(player.handCards.length);
-            this.handCounters[playerId] = handCounter;
+            this.handCounters[playerId] = handCounter;*/
         });
 
-        this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+        //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
     }
 
     private createPlayerTables(gamedatas: LumenGamedatas) {
@@ -300,11 +282,6 @@ class Lumen implements LumenGame {
         const table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
     }
-
-    private updateDisabledPlayCards() {
-        this.getCurrentPlayerTable()?.updateDisabledPlayCards(this.selectedCards, this.gamedatas.gamestate.args.playableDuoCards);        
-        document.getElementById(`playCards_button`)?.classList.toggle(`disabled`, this.selectedCards.length != 2);
-    }
     
     public onCardClick(card: Card): void {
         const cardDiv = document.getElementById(`card-${card.id}`);
@@ -315,7 +292,7 @@ class Lumen implements LumenGame {
         }
 
         switch (this.gamedatas.gamestate.name) {
-            case 'takeCards':
+            /*case 'takeCards':
                 if (parentDiv.dataset.discard) {
                     this.takeCardFromDiscard(Number(parentDiv.dataset.discard));
                 }
@@ -350,18 +327,7 @@ class Lumen implements LumenGame {
                         this.chooseOpponent(stealPlayerId);
                     }
                 }
-                break;
-        }
-    }
-
-    public onDiscardPileClick(number: number): void {
-        switch (this.gamedatas.gamestate.name) {
-            case 'putDiscardPile':
-                this.putDiscardPile(number);
-                break;
-            case 'chooseDiscardPile':
-                this.chooseOperation(number);
-                break;
+                break;*/
         }
     }
 
@@ -443,55 +409,6 @@ class Lumen implements LumenGame {
         [1, 2, 3, 4].forEach(family => this.cards.createMoveOrUpdateCard({id: 1040 + family, category: 4, family } as any, `help-multiplier-${family}`));
     }
 
-    public takeCardsFromDeck() {
-        if(!(this as any).checkAction('takeCardsFromDeck')) {
-            return;
-        }
-
-        this.takeAction('takeCardsFromDeck');
-    }
-
-    public takeCardFromDiscard(discardNumber: number) {
-        if(!(this as any).checkAction('takeCardFromDiscard')) {
-            return;
-        }
-
-        this.takeAction('takeCardFromDiscard', {
-            discardNumber
-        });
-    }
-
-    public chooseCard(id: number) {
-        if(!(this as any).checkAction('chooseCard')) {
-            return;
-        }
-
-        this.takeAction('chooseCard', {
-            id
-        });
-    }
-
-    public putDiscardPile(discardNumber: number) {
-        if(!(this as any).checkAction('putDiscardPile')) {
-            return;
-        }
-
-        this.takeAction('putDiscardPile', {
-            discardNumber
-        });
-    }
-
-    public playCards(ids: number[]) {
-        if(!(this as any).checkAction('playCards')) {
-            return;
-        }
-
-        this.takeAction('playCards', {
-            'id1': ids[0],
-            'id2': ids[1],
-        });
-    }
-
     public chooseOperation(operation: number) {
         if(!(this as any).checkAction('chooseOperation')) {
             return;
@@ -512,85 +429,10 @@ class Lumen implements LumenGame {
         });
     }
 
-    public chooseOpponent(id: number) {
-        if(!(this as any).checkAction('chooseOpponent')) {
-            return;
-        }
-
-        this.takeAction('chooseOpponent', {
-            id
-        });
-    }
-
-    public endTurn() {
-        if(!(this as any).checkAction('endTurn')) {
-            return;
-        }
-
-        this.takeAction('endTurn');
-    }
-
-    public endGameWithMermaids() {
-        if(!(this as any).checkAction('endGameWithMermaids')) {
-            return;
-        }
-
-        this.takeAction('endGameWithMermaids');
-    }
-
-    public endRound() {
-        if(!(this as any).checkAction('endRound')) {
-            return;
-        }
-
-        this.takeAction('endRound');
-    }
-
-    public immediateEndRound() {
-        if(!(this as any).checkAction('immediateEndRound')) {
-            return;
-        }
-
-        this.takeAction('immediateEndRound');
-    }
-
-    public seen() {
-        if(!(this as any).checkAction('seen')) {
-            return;
-        }
-
-        this.takeAction('seen');
-    }
-
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;
         (this as any).ajaxcall(`/lumen/lumen/${action}.html`, data, this, () => {});
-    }
-
-    private startActionTimer(buttonId: string, time: number) {
-        if (Number((this as any).prefs[202]?.value) === 2) {
-            return;
-        }
-
-        const button = document.getElementById(buttonId);
- 
-        let actionTimerId = null;
-        const _actionTimerLabel = button.innerHTML;
-        let _actionTimerSeconds = time;
-        const actionTimerFunction = () => {
-          const button = document.getElementById(buttonId);
-          if (button == null || button.classList.contains('disabled')) {
-            window.clearInterval(actionTimerId);
-          } else if (_actionTimerSeconds-- > 1) {
-            button.innerHTML = _actionTimerLabel + ' (' + _actionTimerSeconds + ')';
-          } else {
-            window.clearInterval(actionTimerId);
-            button.click();
-          }
-        };
-        actionTimerFunction();
-        actionTimerId = window.setInterval(() => actionTimerFunction(), 1000);
     }
 
     ///////////////////////////////////////////////////
@@ -609,6 +451,7 @@ class Lumen implements LumenGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
+            ['setPlayedOperation', ANIMATION_MS],
             ['setCircleValue', ANIMATION_MS],
             ['addCheck', 1],
             ['addHighCommandCard', ANIMATION_MS],
@@ -620,6 +463,10 @@ class Lumen implements LumenGame {
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
     }
+
+    notif_setPlayedOperation(notif: Notif<NotifSetPlayedOperationArgs>) {
+        this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number);
+    } 
 
     notif_setCircleValue(notif: Notif<NotifSetCircleValueArgs>) {
         this.getPlayerTable(notif.args.playerId).setCircleValue(notif.args.circleId, notif.args.value);
@@ -652,11 +499,11 @@ class Lumen implements LumenGame {
                     args.operation = `<div class="operation-icon" data-type="${args.operation}"></div>`;
                 }
 
-                ['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(field => {
+                /*['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(field => {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
                         args[field] = `<strong>${_(args[field])}</strong>`;
                     }
-                })
+                });*/
 
             }
         } catch (e) {

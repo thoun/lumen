@@ -26,10 +26,13 @@ trait ActionTrait {
 
         self::DbQuery("update operation set nb = nb + 1 where player_id = $playerId and operation = $type");        
 
-        self::notifyAllPlayers('log', clienttranslate('${player_name} chooses value ${number} (operation ${operation})'), [
+        self::notifyAllPlayers('setPlayedOperation', clienttranslate('${player_name} chooses value ${number} (operation ${operation})'), [
+            'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'number' => $operation['value'],
-            'operation' => $type,
+            'operation' => $type, // for log
+            'type' => $type,
+            'number' => intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type")),
         ]);
 
         /* TODO $this->incStat(1, 'operation'.$type);
