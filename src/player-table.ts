@@ -95,4 +95,12 @@ class PlayerTable {
     public setZone(circlesIds: number[], zoneId: number) {
         circlesIds.forEach(circleId => document.getElementById(`player-table-${this.playerId}-circle${circleId}`).dataset.zone = ''+zoneId);
     }
+    
+    public setLink(index1: number, index2: number) {
+        /*const angle = Math.atan2(circle2.Top - circle1.Top, circle2.Left - circle1.Left) * 180 / Math.PI - 90;
+        TODO
+	    const left: circle1.Left;
+        const top: circle1.Top;
+        const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
+    }
 }

@@ -12,4 +12,15 @@ class Circle {
         $this->zone = $zone;
     }
 }
+
+class Link {
+    public int $index1;
+    public int $index2;
+
+    public function __construct(int $index1, int $index2) {
+        $this->index1 = $index1;
+        $this->index2 = $index2;
+    }
+}
+
 ?>

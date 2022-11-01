@@ -93,6 +93,12 @@ interface NotifZoneArgs {
     zoneId: number;
 }
 
+interface NotifLinkArgs {
+    playerId: number;
+    index1: number;
+    index2: number;
+}
+
 interface NotifNewFirstPlayerArgs {
     playerId: number;
 }

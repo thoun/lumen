@@ -477,6 +477,7 @@ class Lumen implements LumenGame {
             ['addCheck', 1],
             ['addHighCommandCard', ANIMATION_MS],
             ['zone', 1],
+            ['link', 1],
             ['newFirstPlayer', ANIMATION_MS],
         ];
     
@@ -505,10 +506,13 @@ class Lumen implements LumenGame {
     notif_addHighCommandCard(notif: Notif<NotifAddHighCommandCardArgs>) {
         this.getPlayerTable(notif.args.playerId).addHighCommandCard(notif.args.card);
     }
-        
 
     notif_zone(notif: Notif<NotifZoneArgs>) {
         this.getPlayerTable(notif.args.playerId).setZone(notif.args.circlesIds, notif.args.zoneId);
+    }
+
+    notif_link(notif: Notif<NotifLinkArgs>) {
+        this.getPlayerTable(notif.args.playerId).setLink(notif.args.index1, notif.args.index2);
     }
 
     notif_newFirstPlayer(notif: Notif<NotifNewFirstPlayerArgs>) {

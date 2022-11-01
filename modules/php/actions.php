@@ -71,9 +71,18 @@ trait ActionTrait {
 
         $this->refreshZones($playerId, $cellId);
 
+        $links = $this->getLinks($playerId);
+        $possibleLinkCirclesIds = $this->getPossibleLinkCirclesIds($links, $cellId);
+
+        if (count($possibleLinkCirclesIds) > 1) {
+            $this->gamestate->nextState('chooseCellLink');
+            return;
+        } else if (count($possibleLinkCirclesIds) === 1) {
+            $this->addLink($playerId, $cellId, $possibleLinkCirclesIds[0]);
+        }
+
         /*$this->incStat(1, 'takeFromDiscard');
         $this->incStat(1, 'takeFromDiscard', $playerId);
-        TODO update zones and links
         $this->updateCardsPoints($playerId);*/
         $this->gamestate->nextState('nextPlayer');
     }

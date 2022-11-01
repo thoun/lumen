@@ -869,6 +869,13 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         circlesIds.forEach(function (circleId) { return document.getElementById("player-table-".concat(_this.playerId, "-circle").concat(circleId)).dataset.zone = '' + zoneId; });
     };
+    PlayerTable.prototype.setLink = function (index1, index2) {
+        /*const angle = Math.atan2(circle2.Top - circle1.Top, circle2.Left - circle1.Left) * 180 / Math.PI - 90;
+        TODO
+        const left: circle1.Left;
+        const top: circle1.Top;
+        const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
+    };
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
@@ -1238,6 +1245,7 @@ var Lumen = /** @class */ (function () {
             ['addCheck', 1],
             ['addHighCommandCard', ANIMATION_MS],
             ['zone', 1],
+            ['link', 1],
             ['newFirstPlayer', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
@@ -1262,6 +1270,9 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_zone = function (notif) {
         this.getPlayerTable(notif.args.playerId).setZone(notif.args.circlesIds, notif.args.zoneId);
+    };
+    Lumen.prototype.notif_link = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setLink(notif.args.index1, notif.args.index2);
     };
     Lumen.prototype.notif_newFirstPlayer = function (notif) {
         // TODO

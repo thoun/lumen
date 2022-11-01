@@ -277,6 +277,11 @@ trait UtilTrait {
         return $circles;
     }
 
+    function getLinks(int $playerId) {
+        $dbLinks = $this->getCollectionFromDb("SELECT * FROM `link` WHERE player_id = $playerId ORDER BY `index1`, `index2`");
+        return array_map(fn($dbLink) => new Link(intval($dbLink['index1']), intval($dbLink['index2'])), $dbLinks);
+    }
+
     function refreshZones(int $playerId, int $circleId) {
         $circle = self::getObjectFromDB("SELECT * FROM circle where player_id = ".$playerId." and circle_id = ".$circleId);
       
@@ -327,6 +332,23 @@ trait UtilTrait {
                 'zoneId' => $zid,
             ]);  
         }
-  }
+    }
+
+    function getPossibleLinkCirclesIds(array $links, int $circleId) {
+
+    }
+
+    function addLink(int $playerId, int $circleId, int $toCircleId) {
+        $index1 = min($circleId, $toCircleId);
+        $index2 = max($circleId, $toCircleId);
+
+        self::DbQuery("INSERT INTO link (player_id, index1, index2) VALUES ($playerId, $index1, $index2)");
+        
+        self::notifyAllPlayers( "link", '', [
+            'playerId' => $playerId,
+            'index1' => $index1,
+            'index2' => $index2,
+        ]);
+    }
 
 }
