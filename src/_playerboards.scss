@@ -16,8 +16,14 @@
   }
 }
 
-.end-game-points {
-  font-size: 80%;
+.first-player-token-wrapper {
+  position: relative;
+}
+
+#first-player-token {
+  background: url('img/first-player.png');
+  width: 281px;
+  height: 161px;
 }
 
 .counters {
@@ -28,14 +34,4 @@
   .icon {
     margin-right: 5px;
   }
-}
-
-.player-hand-card {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  background-image: url('img/cards.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  vertical-align: bottom;
 }

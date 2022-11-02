@@ -20,17 +20,33 @@
   }
 
   .operations {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
 
     .operation-number {
-      position: relative;
+      position: absolute;
       width: 20px;
       height: 20px;
       display: flex;
       justify-content: center;
       align-items: center;
       border: 2px solid black;
+
+      @for $index from 1 through 5 {
+        &[data-operation="#{$index}"] {
+            top: #{($index - 1) * 20px};
+        }
+      }
+      @for $index from 1 through 4 {
+        &[data-number="#{$index}"] {
+            left: #{($index - 1) * 20px};
+        }
+      }
+
+      img {
+        transform: scale(0.2);
+      }
 
       &.ghost {
         opacity: 0.2;
@@ -40,6 +56,7 @@
   }
 
   .circles {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
 

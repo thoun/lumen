@@ -2,12 +2,20 @@
  * Your game interfaces
  */
 
-interface Card {
+interface ICard {
     id: number;
-    category: number;
-    family: number;
-    color: number;
-    index: number;
+    type: number;
+    subType: number;
+    location: string;
+    locationArg: number;
+}
+
+interface Card extends ICard {
+    played: boolean;
+}
+
+interface DiscoverTile extends ICard {
+    visible: boolean;
 }
 
 interface Circle {
@@ -40,6 +48,7 @@ interface LumenGamedatas {
     // Add here variables you set up in getAllDatas
     scenario: number;
     fightersOnTerritories: Card[];
+    discoverTilesOnTerritories: DiscoverTile[];
     firstPlayer: number;
 }
 
@@ -63,6 +72,11 @@ interface EnteringChooseOperationArgs {
 interface EnteringChooseCellArgs {
     possibleCircles: number[];
     value: number;
+}
+
+interface NotifDiceRollArgs {
+    die1: number;
+    die2: number;
 }
 
 interface NotifSetPlayedOperationArgs {

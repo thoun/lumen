@@ -29,6 +29,8 @@ class PlayerTable {
                 const div = document.createElement('div');
                 div.id = `player-table-${this.playerId}-operation${operation}-number${number}`;
                 div.classList.add('operation-number');
+                div.dataset.operation = ''+operation;
+                div.dataset.number = ''+number;
                 div.innerHTML = `${player.operations[operation] >= number ? `<img src="${g_gamethemeurl}img/mul.gif"/>` : ''}`;
                 document.getElementById(`player-table-${this.playerId}-operations`).appendChild(div);
             });

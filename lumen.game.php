@@ -170,6 +170,7 @@ class Lumen extends Table {
 
         $result['scenario'] = $this->getScenarioId();
         $result['fightersOnTerritories'] = $this->getCardsByLocation('territory');
+        $result['discoverTilesOnTerritories'] = $this->getDiscoverTilesByLocation('territory');
         $result['firstPlayer'] = intval($this->getGameStateValue(FIRST_PLAYER));
   
         return $result;

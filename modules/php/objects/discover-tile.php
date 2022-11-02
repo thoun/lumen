@@ -19,14 +19,14 @@ class DiscoverTile extends DiscoverTileType {
     public int $subType;
     public bool $visible;
 
-    public function __construct($dbCard, $CARDS_TYPE) {
+    public function __construct($dbCard, $DISCOVER_TILES_TYPE) {
         $this->id = intval($dbCard['card_id']);
         $this->location = $dbCard['card_location'];
         $this->locationArg = intval($dbCard['card_location_arg']);
         $this->type = intval($dbCard['card_type']);
         $this->subType = intval($dbCard['card_type_arg']);
         $this->visible = boolval($dbCard['visible']);
-        $this->power = $CARDS_TYPE[$this->subType]->power;
+        $this->power = $DISCOVER_TILES_TYPE[$this->subType]->power;
     } 
 
     public static function onlyId(Card $card) {

@@ -22,6 +22,7 @@ class Lumen implements LumenGame {
     private selectedCards: number[];
     private lastNotif: any;
     private handCounters: Counter[] = [];
+    private firstPlayer: number;
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -277,6 +278,11 @@ class Lumen implements LumenGame {
             handCounter.create(`playerhand-counter-${playerId}`);
             //handCounter.setValue(player.handCards.length);
             this.handCounters[playerId] = handCounter;*/
+
+            dojo.place(`<div id="first-player-token-wrapper-${player.id}" class="first-player-token-wrapper"></div>`, `player_board_${player.id}`);
+            if (gamedatas.firstPlayer == playerId) {
+                dojo.place(`<div id="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
+            }
         });
 
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
@@ -481,6 +487,7 @@ class Lumen implements LumenGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
+            ['diceRoll', 2000],
             ['setPlayedOperation', ANIMATION_MS],
             ['setCancelledOperation', 1],
             ['setCircleValue', ANIMATION_MS],
@@ -494,6 +501,26 @@ class Lumen implements LumenGame {
         notifs.forEach((notif) => {
             dojo.subscribe(notif[0], this, `notif_${notif[0]}`);
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
+        });
+    }
+
+    notif_diceRoll(notif: Notif<NotifDiceRollArgs>) {
+        [1, 2].forEach(number => {
+            var element = document.getElementById(`c_die_${number}`);
+                        
+            if (element != null) {
+                element.className = "";
+                void element.offsetWidth;
+                element.classList.add("cube");  
+                element.classList.add("show"+notif.args[`die${number}`]);        	 
+            }
+            
+            var element = document.getElementById(`d_die_${number}`);
+            if (element != null) {
+                element.classList.remove("roll0", "roll1","roll2", "roll3");
+                void element.offsetWidth;
+                element.classList.add("roll"+Math.floor(Math.random() * 4));     
+            }
         });
     }
 
@@ -526,7 +553,16 @@ class Lumen implements LumenGame {
     }
 
     notif_newFirstPlayer(notif: Notif<NotifNewFirstPlayerArgs>) {
-        // TODO
+        const firstPlayerToken = document.getElementById('first-player-token');
+        const destinationId = `first-player-token-wrapper-${notif.args.playerId}`;
+        const originId = firstPlayerToken.parentElement.id;
+        if (destinationId !== originId) {
+            document.getElementById(destinationId).appendChild(firstPlayerToken);
+            stockSlideAnimation({
+                element: firstPlayerToken,
+                fromElement: document.getElementById(originId),
+            });
+        }
     } 
 
     /* This enable to inject translatable styled things to logs or action bar */

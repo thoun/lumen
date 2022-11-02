@@ -808,6 +808,8 @@ var PlayerTable = /** @class */ (function () {
                 var div = document.createElement('div');
                 div.id = "player-table-".concat(_this.playerId, "-operation").concat(operation, "-number").concat(number);
                 div.classList.add('operation-number');
+                div.dataset.operation = '' + operation;
+                div.dataset.number = '' + number;
                 div.innerHTML = "".concat(player.operations[operation] >= number ? "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>") : '');
                 document.getElementById("player-table-".concat(_this.playerId, "-operations")).appendChild(div);
             });
@@ -1104,6 +1106,10 @@ var Lumen = /** @class */ (function () {
             handCounter.create(`playerhand-counter-${playerId}`);
             //handCounter.setValue(player.handCards.length);
             this.handCounters[playerId] = handCounter;*/
+            dojo.place("<div id=\"first-player-token-wrapper-".concat(player.id, "\" class=\"first-player-token-wrapper\"></div>"), "player_board_".concat(player.id));
+            if (gamedatas.firstPlayer == playerId) {
+                dojo.place("<div id=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
+            }
         });
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
     };
@@ -1247,6 +1253,7 @@ var Lumen = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
+            ['diceRoll', 2000],
             ['setPlayedOperation', ANIMATION_MS],
             ['setCancelledOperation', 1],
             ['setCircleValue', ANIMATION_MS],
@@ -1259,6 +1266,23 @@ var Lumen = /** @class */ (function () {
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
+        });
+    };
+    Lumen.prototype.notif_diceRoll = function (notif) {
+        [1, 2].forEach(function (number) {
+            var element = document.getElementById("c_die_".concat(number));
+            if (element != null) {
+                element.className = "";
+                void element.offsetWidth;
+                element.classList.add("cube");
+                element.classList.add("show" + notif.args["die".concat(number)]);
+            }
+            var element = document.getElementById("d_die_".concat(number));
+            if (element != null) {
+                element.classList.remove("roll0", "roll1", "roll2", "roll3");
+                void element.offsetWidth;
+                element.classList.add("roll" + Math.floor(Math.random() * 4));
+            }
         });
     };
     Lumen.prototype.notif_setPlayedOperation = function (notif) {
@@ -1283,7 +1307,16 @@ var Lumen = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).setLink(notif.args.index1, notif.args.index2);
     };
     Lumen.prototype.notif_newFirstPlayer = function (notif) {
-        // TODO
+        var firstPlayerToken = document.getElementById('first-player-token');
+        var destinationId = "first-player-token-wrapper-".concat(notif.args.playerId);
+        var originId = firstPlayerToken.parentElement.id;
+        if (destinationId !== originId) {
+            document.getElementById(destinationId).appendChild(firstPlayerToken);
+            stockSlideAnimation({
+                element: firstPlayerToken,
+                fromElement: document.getElementById(originId),
+            });
+        }
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

@@ -149,6 +149,22 @@ trait UtilTrait {
         $this->cards->shuffle('bag0');
     }
 
+    function getDiscoverTilesByLocation(string $location, /*int|null*/ $location_arg = null, /*int|null*/ $type = null, /*int|null*/ $subType = null) {
+        $sql = "SELECT * FROM `discover_tile` WHERE `card_location` = '$location'";
+        if ($location_arg !== null) {
+            $sql .= " AND `card_location_arg` = $location_arg";
+        }
+        if ($type !== null) {
+            $sql .= " AND `card_type` = $type";
+        }
+        if ($subType !== null) {
+            $sql .= " AND `card_type_arg` = $type";
+        }
+        $sql .= " ORDER BY `card_location_arg`";
+        $dbResults = $this->getCollectionFromDb($sql);
+        return array_map(fn($dbCard) => new DiscoverTile($dbCard, $this->DISCOVER_TILES), array_values($dbResults));
+    }
+
     function setupDiscoverTiles() {
         foreach ($this->DISCOVER_TILES as $tile) {
             $cards[] = [ 'type' => $tile->type, 'type_arg' => $tile->power, 'nbr' => $tile->number ];

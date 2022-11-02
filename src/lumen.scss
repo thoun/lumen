@@ -1,3 +1,4 @@
+@import 'dice';
 @import 'cards';
 @import 'table-center';
 @import 'playerboards';
@@ -125,12 +126,12 @@ html, .mode_3d #game_play_area_background {
   font-family: 'Dice';
 
   &[data-color="white"] {
-    background: white;
-    color: #212322;
+    background: $dieWhite;
+    color: $dieBlack;
   }
   &[data-color="black"] {
-    background: #212322;
-    color: white;
+    background: $dieBlack;
+    color: $dieWhite;
   }
 }
 
