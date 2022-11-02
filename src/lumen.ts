@@ -496,12 +496,17 @@ class Lumen implements LumenGame {
             ['zone', 1],
             ['link', 1],
             ['newFirstPlayer', ANIMATION_MS],
+            ['takeObjectiveToken', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
             dojo.subscribe(notif[0], this, `notif_${notif[0]}`);
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
+        
+        (this as any).notifqueue.setIgnoreNotificationCheck('takeObjectiveToken', (notif: Notif<NotifTakeObjectiveTokenArgs>) => 
+            notif.args.playerId == this.getPlayerId() && !notif.args.value
+        );
     }
 
     notif_diceRoll(notif: Notif<NotifDiceRollArgs>) {
@@ -564,6 +569,10 @@ class Lumen implements LumenGame {
             });
         }
     } 
+
+    notif_takeObjectiveToken(notif: Notif<NotifTakeObjectiveTokenArgs>) {
+        // TODO check if value
+    }
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

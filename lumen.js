@@ -1262,10 +1262,14 @@ var Lumen = /** @class */ (function () {
             ['zone', 1],
             ['link', 1],
             ['newFirstPlayer', ANIMATION_MS],
+            ['takeObjectiveToken', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
+        });
+        this.notifqueue.setIgnoreNotificationCheck('takeObjectiveToken', function (notif) {
+            return notif.args.playerId == _this.getPlayerId() && !notif.args.value;
         });
     };
     Lumen.prototype.notif_diceRoll = function (notif) {
@@ -1317,6 +1321,9 @@ var Lumen = /** @class */ (function () {
                 fromElement: document.getElementById(originId),
             });
         }
+    };
+    Lumen.prototype.notif_takeObjectiveToken = function (notif) {
+        // TODO check if value
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

@@ -422,4 +422,20 @@ trait UtilTrait {
         ]);
     }
 
+    function takeObjectiveToken(int $playerId, string $letter) {
+        $token = $this->objectiveTokens->pickCardForLocation('deck', 'player', $playerId);
+        $value = intval($token['type']);
+        
+        $args = [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'letter' => $letter
+        ];
+        self::notifyAllPlayers("takeObjectiveToken", clienttranslate('${player_name} get an objective token for objective ${letter}'), $args);
+        self::notifyPlayer($playerId, "takeObjectiveToken", clienttranslate('You get a ${lumens} lumens objective token for objective ${letter}'), $args + [
+            'value' => $value,
+            'lumens' => $value,
+        ]);
+    }
+
 }

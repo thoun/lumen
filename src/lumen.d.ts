@@ -117,3 +117,8 @@ interface NotifLinkArgs {
 interface NotifNewFirstPlayerArgs {
     playerId: number;
 }
+
+interface NotifTakeObjectiveTokenArgs {
+    playerId: number;
+    value: number;
+}
