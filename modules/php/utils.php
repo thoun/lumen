@@ -173,6 +173,14 @@ trait UtilTrait {
         $this->discoverTiles->shuffle('deck');
     }
 
+    function setupObjectiveTokens() {
+        for ($i=3;$i<=5;$i++) {
+            $cards[] = [ 'type' => $i, 'type_arg' => null, 'nbr' => 7 ];
+        }
+        $this->objectiveTokens->createCards($cards, 'deck');
+        $this->objectiveTokens->shuffle('deck');
+    }
+
     function initScenario(array $players) {
         $scenario = $this->getScenario();
         $playersIdsByPlayerNo = [];

@@ -61,7 +61,10 @@ class Lumen extends Table {
         $this->cards->init("card");  
 		
         $this->discoverTiles = $this->getNew("module.common.deck");
-        $this->discoverTiles->init("discover_tile");    
+        $this->discoverTiles->init("discover_tile");   
+		
+        $this->objectiveTokens = $this->getNew("module.common.deck");
+        $this->objectiveTokens->init("objective_token");   
 	}
 	
     protected function getGameName() {
@@ -127,6 +130,7 @@ class Lumen extends Table {
 
         $this->setupCards($players);
         $this->setupDiscoverTiles();
+        $this->setupObjectiveTokens();
         $this->initScenario($players);
         $this->initPlayersCards($players);
 
@@ -171,6 +175,7 @@ class Lumen extends Table {
         $result['scenario'] = $this->getScenarioId();
         $result['fightersOnTerritories'] = $this->getCardsByLocation('territory');
         $result['discoverTilesOnTerritories'] = $this->getDiscoverTilesByLocation('territory');
+        $result['initiativeMarkerTerritory'] = intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY));
         $result['firstPlayer'] = intval($this->getGameStateValue(FIRST_PLAYER));
   
         return $result;

@@ -49,6 +49,7 @@ interface LumenGamedatas {
     scenario: number;
     fightersOnTerritories: Card[];
     discoverTilesOnTerritories: DiscoverTile[];
+    initiativeMarkerTerritory: number;
     firstPlayer: number;
 }
 
