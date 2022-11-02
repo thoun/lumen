@@ -58,7 +58,10 @@ class Lumen extends Table {
         ]); 
 		
         $this->cards = $this->getNew("module.common.deck");
-        $this->cards->init("card");    
+        $this->cards->init("card");  
+		
+        $this->discoverTiles = $this->getNew("module.common.deck");
+        $this->discoverTiles->init("discover_tile");    
 	}
 	
     protected function getGameName() {

@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__.'/objects/circle.php');
+require_once(__DIR__.'/objects/discover-tile.php');
 
 trait UtilTrait {
 
@@ -149,24 +150,44 @@ trait UtilTrait {
     }
 
     function setupDiscoverTiles() {
-        // TODO
+        foreach ($this->DISCOVER_TILES as $tile) {
+            $cards[] = [ 'type' => $tile->type, 'type_arg' => $tile->power, 'nbr' => $tile->number ];
+        }
+        $this->discoverTiles->createCards($cards, 'deck');
+        $this->discoverTiles->shuffle('deck');
     }
 
     function initScenario(array $players) {
         $scenario = $this->getScenario();
         $playersIdsByPlayerNo = [];
+        $territoriesWithFighters = [];
         foreach($players as $playerId => $player) {
             $playersIdsByPlayerNo[intval($player['player_table_order'])] = intval($playerId);
         }
 
+
+        // initial fighters
         foreach ($scenario->initialFighters as $territoryId => $playerFighters) {
             foreach ($playerFighters as $playerNo => $fightersSubType) {
                 foreach($fightersSubType as $fighterSubType) {
                     $card = array_values($this->cards->getCardsOfTypeInLocation($playerNo, $fighterSubType, 'bag'.$playersIdsByPlayerNo[$playerNo]))[0];
                     $this->cards->moveCard($card['id'], 'territory', $territoryId);
+                    $territoriesWithFighters[] = $territoryId;
                 }
             }
         }
+
+        // discover tiles
+        foreach ($scenario->battlefieldsIds as $battlefieldId) {
+            foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                if (!in_array($territory->id, $territoriesWithFighters)) {
+                    $this->discoverTiles->pickCardForLocation('deck', 'territory', $territory->id);
+                }
+            }
+        }
+
+        // initiative marker
+        $this->setGameStateValue(INITIATIVE_MARKER_TERRITORY, $scenario->initiative);
     }
 
     function initPlayersCards(array $players) {

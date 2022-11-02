@@ -93,4 +93,11 @@ define('MISSION_COFFRE', 31);
 define('MISSION_WINTER', 32); 
 define('MISSION_FRELUQUETS', 33); 
 
+// Discover tiles
+define('POWER_BROUILLAGE', 1);
+define('POWER_PLANIFICATION', 2);
+define('POWER_PARACHUTAGE', 3);
+define('POWER_MESSAGE_PRIORITAIRE', 4);
+define('POWER_COUP_FOURRE', 5);
+
 ?>
