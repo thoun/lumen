@@ -60,7 +60,7 @@ interface LumenGame extends Game {
     getPlayerColor(playerId: number): string;
 
     setTooltip(id: string, html: string): void;
-    chooseCell(cell: number): void;
+    cellClick(cell: number): void;
 
     playFighter(id: number): void;
     moveFighter(id: number): void;
@@ -77,6 +77,11 @@ interface EnteringChooseOperationArgs {
 interface EnteringChooseCellArgs {
     possibleCircles: number[];
     value: number;
+}
+
+interface EnteringChooseCellLinkArgs {
+    cellId: number;
+    possibleLinkCirclesIds: number[];
 }
 
 interface EnteringChooseFighterArgs {

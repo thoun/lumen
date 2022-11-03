@@ -46,11 +46,7 @@ class PlayerTable {
             div.classList.add('circle');
             div.innerHTML = `${circle.value ?? ''}`;
             document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
-            div.addEventListener('click', () => {
-                if (div.classList.contains('ghost')) {
-                    this.game.chooseCell(circle.circleId);
-                }
-            });
+            div.addEventListener('click', () => this.game.cellClick(circle.circleId));
         });
 
         // TODO TEMP
@@ -91,13 +87,17 @@ class PlayerTable {
             const circleDiv = document.getElementById(`player-table-${this.playerId}-circle${circleId}`);
             circleDiv.classList.add('ghost');
             circleDiv.innerHTML = ''+value;
-        })
+        });
     }
     
     public setCircleValue(circleId: number, value: number) {
         const circleDiv = document.getElementById(`player-table-${this.playerId}-circle${circleId}`);
         circleDiv.classList.remove('ghost');
         circleDiv.innerHTML = ''+value;
+    }
+
+    public setPossibleCellLinks(possibleLinkCirclesIds: number[], cellId: number) {
+        // TODO throw new Error("Method not implemented.");
     }
 
     public addHighCommandCard(card: Card) {

@@ -65,9 +65,9 @@ trait StateTrait {
             $firstPlayerId = $this->getFirstPlayerId();
             if ($initiativeMarkerControlledPlayer === null) {
                 $newFirstPlayerId = $this->getOpponentId($firstPlayerId);
-                $this->setFirstPlayer($newFirstPlayerId);
+                $this->setFirstPlayer($newFirstPlayerId, false);
             } else if ($initiativeMarkerControlledPlayer != $firstPlayerId) {
-                $this->setFirstPlayer($initiativeMarkerControlledPlayer);
+                $this->setFirstPlayer($initiativeMarkerControlledPlayer, true);
             }
         }
 

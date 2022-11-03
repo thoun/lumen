@@ -98,6 +98,9 @@ class Lumen implements LumenGame {
             case 'chooseCell':
                 this.onEnteringChooseCell(args.args);
                 break;
+            case 'chooseCellLink':
+                this.onEnteringChooseCellLink(args.args);
+                break;
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
                 break;   
@@ -116,6 +119,12 @@ class Lumen implements LumenGame {
     private onEnteringChooseCell(args: EnteringChooseCellArgs) {
         if ((this as any).isCurrentPlayerActive()) {
             this.getCurrentPlayerTable()?.setPossibleCells(args.possibleCircles, args.value);
+        }
+    }
+    
+    private onEnteringChooseCellLink(args: EnteringChooseCellLinkArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.getCurrentPlayerTable()?.setPossibleCellLinks(args.possibleLinkCirclesIds, args.cellId);
         }
     }
     
@@ -471,6 +480,17 @@ class Lumen implements LumenGame {
         [1, 2, 3, 4].forEach(family => this.cards.createMoveOrUpdateCard({id: 1040 + family, category: 4, family } as any, `help-multiplier-${family}`));
     }
 
+    public cellClick(cell: number) {
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseCell':
+                this.chooseCell(cell);
+                break;
+            case 'chooseCellLink':
+                this.chooseCellLink(cell);
+                break;
+        }
+    }
+
     public chooseOperation(operation: number) {
         if(!(this as any).checkAction('chooseOperation')) {
             return;
@@ -481,7 +501,7 @@ class Lumen implements LumenGame {
         });
     }
 
-    public cancelOperation() {
+    private cancelOperation() {
         if(!(this as any).checkAction('cancelOperation')) {
             return;
         }
@@ -489,7 +509,7 @@ class Lumen implements LumenGame {
         this.takeAction('cancelOperation');
     }
 
-    public chooseCell(cell: number) {
+    private chooseCell(cell: number) {
         if(!(this as any).checkAction('chooseCell')) {
             return;
         }
@@ -499,7 +519,7 @@ class Lumen implements LumenGame {
         });
     }
 
-    public chooseCellLink(cell: number) {
+    private chooseCellLink(cell: number) {
         if(!(this as any).checkAction('chooseCellLink')) {
             return;
         }

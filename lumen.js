@@ -849,11 +849,7 @@ var PlayerTable = /** @class */ (function () {
             div.classList.add('circle');
             div.innerHTML = "".concat((_a = circle.value) !== null && _a !== void 0 ? _a : '');
             document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
-            div.addEventListener('click', function () {
-                if (div.classList.contains('ghost')) {
-                    _this.game.chooseCell(circle.circleId);
-                }
-            });
+            div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
         });
         // TODO TEMP
         player.reserve.forEach(function (card) {
@@ -897,6 +893,9 @@ var PlayerTable = /** @class */ (function () {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-circle").concat(circleId));
         circleDiv.classList.remove('ghost');
         circleDiv.innerHTML = '' + value;
+    };
+    PlayerTable.prototype.setPossibleCellLinks = function (possibleLinkCirclesIds, cellId) {
+        // TODO throw new Error("Method not implemented.");
     };
     PlayerTable.prototype.addHighCommandCard = function (card) {
         // TODO throw new Error("Method not implemented.");
@@ -988,6 +987,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseCell':
                 this.onEnteringChooseCell(args.args);
                 break;
+            case 'chooseCellLink':
+                this.onEnteringChooseCellLink(args.args);
+                break;
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
                 break;
@@ -1006,6 +1008,12 @@ var Lumen = /** @class */ (function () {
         var _a;
         if (this.isCurrentPlayerActive()) {
             (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setPossibleCells(args.possibleCircles, args.value);
+        }
+    };
+    Lumen.prototype.onEnteringChooseCellLink = function (args) {
+        var _a;
+        if (this.isCurrentPlayerActive()) {
+            (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setPossibleCellLinks(args.possibleLinkCirclesIds, args.cellId);
         }
     };
     Lumen.prototype.onEnteringChooseFighter = function (args) {
@@ -1282,6 +1290,16 @@ var Lumen = /** @class */ (function () {
         });
         // multiplier
         [1, 2, 3, 4].forEach(function (family) { return _this.cards.createMoveOrUpdateCard({ id: 1040 + family, category: 4, family: family }, "help-multiplier-".concat(family)); });
+    };
+    Lumen.prototype.cellClick = function (cell) {
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseCell':
+                this.chooseCell(cell);
+                break;
+            case 'chooseCellLink':
+                this.chooseCellLink(cell);
+                break;
+        }
     };
     Lumen.prototype.chooseOperation = function (operation) {
         if (!this.checkAction('chooseOperation')) {
