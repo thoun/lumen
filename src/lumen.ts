@@ -100,6 +100,9 @@ class Lumen implements LumenGame {
                 break;
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
+                break;   
+            case 'chooseTerritory':
+                this.onEnteringChooseTerritory(args.args);
                 break;                
         }
     }
@@ -134,6 +137,10 @@ class Lumen implements LumenGame {
         subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
         document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
         document.getElementById(`pagemaintitletext`).appendChild(subTitle);
+    }
+
+    private onEnteringChooseTerritory(args: EnteringChooseTerritoryArgs) {
+        this.setGamestateDescription(''+args.move);
     }
 
     public onLeavingState(stateName: string) {
@@ -174,6 +181,13 @@ class Lumen implements LumenGame {
                     break;
                 case 'chooseCell':
                     (this as any).addActionButton(`cancelOperation_button`, _('Cancel'), () => this.cancelOperation(), null, null, 'gray');
+                    break;
+                case 'chooseTerritory':
+                    // TODO TEMP
+                    const chooseTerritoryArgs = args as EnteringChooseTerritoryArgs;
+                    chooseTerritoryArgs.territoriesIds.forEach(territoryId => 
+                    (this as any).addActionButton(`chooseTerritory${territoryId}_button`, `territory ${territoryId}`, () => this.chooseTerritory(territoryId))
+                    )
                     break;
             }
         }
@@ -521,6 +535,16 @@ class Lumen implements LumenGame {
         }
 
         this.takeAction('activateFighter', {
+            id
+        });
+    }
+
+    public chooseTerritory(id: number) {
+        if(!(this as any).checkAction('chooseTerritory')) {
+            return;
+        }
+
+        this.takeAction('chooseTerritory', {
             id
         });
     }

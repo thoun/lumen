@@ -787,9 +787,37 @@ var Cards = /** @class */ (function () {
     };
     return Cards;
 }());
+var Territory = /** @class */ (function () {
+    function Territory(id, lumens) {
+        this.id = id;
+        this.lumens = lumens;
+    }
+    return Territory;
+}());
+var Battlefield = /** @class */ (function () {
+    function Battlefield(id, territories, territoriesLinks) {
+        this.id = id;
+        this.territories = territories;
+        this.territoriesLinks = territoriesLinks;
+    }
+    return Battlefield;
+}());
+var Scenario = /** @class */ (function () {
+    function Scenario(battlefieldsIds) {
+        this.battlefieldsIds = battlefieldsIds;
+    }
+    return Scenario;
+}());
 var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
+        var _this = this;
         this.game = game;
+        // TODO TEMP
+        gamedatas.fightersOnTerritories.forEach(function (card) {
+            dojo.place("<div><button id=\"card-".concat(card.id, "-move\">move ").concat(card.id, "</button><button id=\"card-").concat(card.id, "-activate\">activate ").concat(card.id, "</button></div>"), "map");
+            document.getElementById("card-".concat(card.id, "-move")).addEventListener('click', function () { return _this.game.moveFighter(card.id); });
+            document.getElementById("card-".concat(card.id, "-activate")).addEventListener('click', function () { return _this.game.activateFighter(card.id); });
+        });
     }
     return TableCenter;
 }());
@@ -963,6 +991,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
                 break;
+            case 'chooseTerritory':
+                this.onEnteringChooseTerritory(args.args);
+                break;
         }
     };
     Lumen.prototype.onEnteringChooseOperation = function (args) {
@@ -996,6 +1027,9 @@ var Lumen = /** @class */ (function () {
         subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
         document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
         document.getElementById("pagemaintitletext").appendChild(subTitle);
+    };
+    Lumen.prototype.onEnteringChooseTerritory = function (args) {
+        this.setGamestateDescription('' + args.move);
     };
     Lumen.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
@@ -1033,6 +1067,13 @@ var Lumen = /** @class */ (function () {
                     break;
                 case 'chooseCell':
                     this.addActionButton("cancelOperation_button", _('Cancel'), function () { return _this.cancelOperation(); }, null, null, 'gray');
+                    break;
+                case 'chooseTerritory':
+                    // TODO TEMP
+                    var chooseTerritoryArgs = args;
+                    chooseTerritoryArgs.territoriesIds.forEach(function (territoryId) {
+                        return _this.addActionButton("chooseTerritory".concat(territoryId, "_button"), "territory ".concat(territoryId), function () { return _this.chooseTerritory(territoryId); });
+                    });
                     break;
             }
         }
@@ -1293,6 +1334,14 @@ var Lumen = /** @class */ (function () {
             return;
         }
         this.takeAction('activateFighter', {
+            id: id
+        });
+    };
+    Lumen.prototype.chooseTerritory = function (id) {
+        if (!this.checkAction('chooseTerritory')) {
+            return;
+        }
+        this.takeAction('chooseTerritory', {
             id: id
         });
     };

@@ -84,6 +84,12 @@ interface EnteringChooseFighterArgs {
     remainingMoves: number;
 }
 
+interface EnteringChooseTerritoryArgs {
+    move: number;
+    selectedFighter: Card;
+    territoriesIds: number[];
+}
+
 interface NotifDiceRollArgs {
     die1: number;
     die2: number;

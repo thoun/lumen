@@ -107,4 +107,32 @@ trait ArgsTrait {
             'remainingMoves' => $remainingMoves,
         ];
     }
+
+    function argChooseTerritory() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+        $selectedFighter = $this->getCardById($selectedFighterId);
+
+        $move = intval($this->getGameStateValue(PLAYER_CURRENT_MOVE));
+
+        $territoriesIds = [];
+        switch ($move) {
+            case MOVE_PLAY:
+                // territories with already placed fighters
+                $fighters = $this->getCardsByLocation('territory', null, $playerId);
+                $territoriesIds = array_values(array_unique(array_map(fn($fighter) => $fighter->locationArg, $fighters)));
+                break;
+            case MOVE_MOVE:
+                // territories neighbours to current fighter
+                $territoriesIds = $this->getTerritoryNeighboursIds($selectedFighter->locationArg);
+                break;
+        }
+
+        return [
+            'selectedFighter' => $selectedFighter,
+            'move' => $move,
+            'territoriesIds' => $territoriesIds,
+        ];
+    }
 } 

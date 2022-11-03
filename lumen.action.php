@@ -72,12 +72,12 @@
       self::ajaxResponse();
     }
 
-    public function chooseFighter() {
+    public function playFighter() {
       self::setAjaxMode();
 
       $id = self::getArg("id", AT_posint, true);
 
-      $this->game->chooseFighter($id);
+      $this->game->playFighter($id);
 
       self::ajaxResponse();
     }
@@ -98,6 +98,16 @@
       $id = self::getArg("id", AT_posint, true);
 
       $this->game->activateFighter($id);
+
+      self::ajaxResponse();
+    }
+
+    public function chooseTerritory() {
+      self::setAjaxMode();
+
+      $id = self::getArg("id", AT_posint, true);
+
+      $this->game->chooseTerritory($id);
 
       self::ajaxResponse();
     }

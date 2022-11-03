@@ -168,36 +168,25 @@ $playerActionsGameStates = [
             "activateFighter",
         ],
         "transitions" => [
-            "chooseTerritory" => ST_PLAYER_CHOOSE_FIGHTER_TERRITORY,
+            "chooseTerritory" => ST_PLAYER_CHOOSE_TERRITORY,
         ]
     ],
 
-    ST_PLAYER_CHOOSE_MOVE_OR_ACTIVATE => [
-        "name" => "chooseMoveOrActivate",
-        "description" => clienttranslate('${actplayer} must choose to move or activate selected fighter'),
-        "descriptionmyturn" => clienttranslate('${you} must choose to move or activate selected fighter'),
-        "type" => "activeplayer",
-        "possibleactions" => [ 
-            "chooseMove",
-            "chooseActivate",
-        ],
-        "transitions" => [
-            "chooseNewTerritory" => ST_PLAYER_CHOOSE_FIGHTER_TERRITORY,
-            "chooseNewTerritory" => ST_PLAYER_CHOOSE_FIGHTER_TERRITORY,
-        ]
-    ],
-
-    ST_PLAYER_CHOOSE_FIGHTER_TERRITORY => [
-        "name" => "chooseFighterTerritory",
-        "description" => clienttranslate('${actplayer} must choose a card'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a card'),
+    ST_PLAYER_CHOOSE_TERRITORY => [
+        "name" => "chooseTerritory",
+        "description" => '',
+        "descriptionmyturn" => '',
+        "description1" => clienttranslate('${actplayer} must choose a territory to place the new fighter'),
+        "descriptionmyturn1" => clienttranslate('${you} must choose a territory to place the new fighter'),
+        "description2" => clienttranslate('${actplayer} must choose a territory to move the fighter'),
+        "descriptionmyturn2" => clienttranslate('${you} must choose a territory to move the fighter'),
         "type" => "activeplayer", 
-        "args" => "argChooseFighterTerritory", 
+        "args" => "argChooseTerritory", 
         "possibleactions" => [ 
-            "chooseFighterTerritory",
+            "chooseTerritory",
         ],
         "transitions" => [
-            //"playCards" => ST_PLAYER_PLAY_CARDS,
+            "nextMove" => ST_NEXT_MOVE,
         ]
     ],
 

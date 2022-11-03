@@ -143,7 +143,7 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
 
-        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) > 0) {
+        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) <= 0) {
             throw new BgaUserException("No remaining action");
         }
 
@@ -164,7 +164,7 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
 
-        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) > 0) {
+        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
             throw new BgaUserException("No remaining action");
         }
 
@@ -185,7 +185,7 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
 
-        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) > 0) {
+        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
             throw new BgaUserException("No remaining action");
         }
 
@@ -203,5 +203,37 @@ trait ActionTrait {
 
         // TODO
         $this->gamestate->nextState('chooseTerritory');
+    }
+
+    public function chooseTerritory(int $territoryId) {
+        $this->checkAction('chooseTerritory'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+
+        if ($selectedFighterId <= 0) {
+            throw new BgaUserException("No selected fighter");
+        }
+
+        $selectedFighter = $this->getCardById($selectedFighterId);
+
+        $move = intval($this->getGameStateValue(PLAYER_CURRENT_MOVE));
+        if ($move <= 0) {
+            throw new BgaUserException("No selected move");
+        }
+
+        switch ($move) {
+            case MOVE_PLAY:
+                $this->applyMoveFighter($selectedFighter, $territoryId);
+                $this->incGameStateValue(REMAINING_FIGHTERS_TO_PLACE, -1);
+                break;
+            case MOVE_MOVE:
+                $this->applyMoveFighter($selectedFighter, $territoryId);
+                $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, -1);
+                break;
+        }
+
+        $this->gamestate->nextState('nextMove');
     }
 }

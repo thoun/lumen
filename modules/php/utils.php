@@ -233,8 +233,8 @@ trait UtilTrait {
         }
     }
 
-    function getTerritoryNeighbours(int $territoryId, int $scenarioId) {
-        $scenario = $this->SCENARIOS[$scenarioId];
+    function getTerritoryNeighboursIds(int $territoryId) {
+        $scenario = $this->SCENARIOS[$this->getScenarioId()];
 
         $neighboursId = [];
 
@@ -242,10 +242,12 @@ trait UtilTrait {
             $battlefield = $this->BATTLEFIELDS[$battlefieldId];
             foreach ($battlefield->territoriesLinks as $from => $tos) {
                 if ($from == $territoryId) {
+                    if ($neighboursId == null || $tos == null) {
+                    }
                     $neighboursId = array_merge($neighboursId, $tos);
                 }
                 if (in_array($territoryId, $tos)) {
-                    $neighboursId = $from;
+                    $neighboursId[] = $from;
                 }
             }
         }
@@ -255,7 +257,7 @@ trait UtilTrait {
                 $neighboursId = array_merge($neighboursId, $tos);
             }
             if (in_array($territoryId, $tos)) {
-                $neighboursId = $from;
+                $neighboursId[] = $from;
             }
         }
 
@@ -297,6 +299,7 @@ trait UtilTrait {
 
         self::notifyAllPlayers('newFirstPlayer', clienttranslate('${player_name} is the new first player'), [
             'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
         ]);
     }
 
@@ -457,6 +460,13 @@ trait UtilTrait {
             'value' => $value,
             'lumens' => $value,
         ]);
+    }
+
+    function applyMoveFighter(Card $fighter, int $territoryId) {
+        $this->cards->moveCard($fighter->id, 'territory', $territoryId);
+        $fighter = $this->getCardById($fighter->id);
+
+        // TODO notif
     }
 
 }

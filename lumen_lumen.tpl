@@ -28,6 +28,7 @@
                 </div>
             </div>
         </div>	
+        <div id="map"></div>
         <div id="tables"></div>
     </div>
     <div id="zoom-controls">
