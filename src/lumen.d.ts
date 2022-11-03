@@ -142,3 +142,14 @@ interface NotifTakeObjectiveTokenArgs {
     playerId: number;
     value: number;
 }
+
+interface NotifMoveFighterArgs {
+    fighter: Card;
+    territoryId: number;
+}
+
+interface NotifRefillReserveArgs {
+    playerId: number;
+    fighter: Card | null;
+    slot: number;
+}

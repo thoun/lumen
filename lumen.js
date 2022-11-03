@@ -819,6 +819,9 @@ var TableCenter = /** @class */ (function () {
             document.getElementById("card-".concat(card.id, "-activate")).addEventListener('click', function () { return _this.game.activateFighter(card.id); });
         });
     }
+    TableCenter.prototype.moveFighter = function (fighter, territoryId) {
+        // TODO throw new Error("Method not implemented.");
+    };
     return TableCenter;
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
@@ -913,6 +916,9 @@ var PlayerTable = /** @class */ (function () {
         const left: circle1.Left;
         const top: circle1.Top;
         const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
+    };
+    PlayerTable.prototype.refillReserve = function (fighter, slot) {
+        // TODO throw new Error("Method not implemented.");
     };
     return PlayerTable;
 }());
@@ -1393,6 +1399,8 @@ var Lumen = /** @class */ (function () {
             ['link', 1],
             ['newFirstPlayer', ANIMATION_MS],
             ['takeObjectiveToken', ANIMATION_MS],
+            ['moveFighter', ANIMATION_MS],
+            ['refillReserve', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -1454,6 +1462,12 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_takeObjectiveToken = function (notif) {
         // TODO check if value
+    };
+    Lumen.prototype.notif_moveFighter = function (notif) {
+        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId);
+    };
+    Lumen.prototype.notif_refillReserve = function (notif) {
+        this.getPlayerTable(notif.args.playerId).refillReserve(notif.args.fighter, notif.args.slot);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

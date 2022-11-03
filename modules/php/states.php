@@ -46,6 +46,7 @@ trait StateTrait {
 
     function stNextPlayer() {
         $playerId = intval($this->getActivePlayerId());
+        $this->refillReserve($playerId);
 
         $this->giveExtraTime($playerId);
         $playerId = $this->activeNextPlayer();

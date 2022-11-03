@@ -119,4 +119,8 @@ class PlayerTable {
         const top: circle1.Top;
         const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
     }
+    
+    public refillReserve(fighter: Card, slot: number) {
+        // TODO throw new Error("Method not implemented.");
+    }
 }

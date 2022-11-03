@@ -8,4 +8,8 @@ class TableCenter {
             document.getElementById(`card-${card.id}-activate`).addEventListener('click', () => this.game.activateFighter(card.id));
         });
     }
+    
+    public moveFighter(fighter: Card, territoryId: number) {
+        // TODO throw new Error("Method not implemented.");
+    }
 }

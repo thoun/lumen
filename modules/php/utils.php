@@ -469,7 +469,28 @@ trait UtilTrait {
         $this->cards->moveCard($fighter->id, 'territory', $territoryId);
         $fighter = $this->getCardById($fighter->id);
 
-        // TODO notif
+        self::notifyAllPlayers("moveFighter", '', [
+            'fighter' => $fighter,
+            'territoryId' => $territoryId,
+        ]);
+    }
+
+    function refillReserve(int $playerId) {
+        $reserve = $this->getCardsByLocation('reserve'.$playerId);
+        for ($i=1; $i<=3; $i++) {
+            if (!$this->array_some($reserve, fn($fighter) => $fighter->locationArg == $i)) {
+                $this->cards->pickCardForLocation('bag'.$playerId, 'reserve'.$playerId, $i);
+
+                $fighters = $this->getCardsByLocation('reserve'.$playerId, $i);
+                $fighter = count($fighters) > 0 ? $fighters[0] : null;
+
+                self::notifyAllPlayers("refillReserve", '', [
+                    'playerId' => $playerId,
+                    'fighter' => $fighter,
+                    'slot' => $i,
+                ]);
+            }
+        }
     }
 
 }
