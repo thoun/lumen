@@ -66,6 +66,8 @@ trait ActionTrait {
 
     public function chooseCell(int $cellId) {
         $this->checkAction('chooseCell'); 
+        $this->setGameStateValue(REMAINING_FIGHTERS_TO_PLACE, 0);
+        $this->setGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 0);
         
         $playerId = intval($this->getActivePlayerId());
         
@@ -89,7 +91,8 @@ trait ActionTrait {
             'value' => $value,
         ]);
 
-        $this->refreshZones($playerId, $cellId);
+        $newZoneCellCount = $this->refreshZones($playerId, $cellId);
+        $this->setGameStateValue(REMAINING_FIGHTERS_TO_PLACE, $newZoneCellCount);
 
         $links = $this->getLinks($playerId);
         $possibleUpperLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, 1);
@@ -97,9 +100,11 @@ trait ActionTrait {
 
         if (count($possibleUpperLinkCirclesIds) === 1) {
             $this->addLink($playerId, $cellId, $possibleUpperLinkCirclesIds[0]);
+            $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
         }
         if (count($possibleLowerLinkCirclesIds) === 1) {
             $this->addLink($playerId, $cellId, $possibleLowerLinkCirclesIds[0]);
+            $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
         }
 
         if (count($possibleUpperLinkCirclesIds) > 1 || count($possibleLowerLinkCirclesIds) > 1) {
@@ -125,6 +130,7 @@ trait ActionTrait {
 
         $fromCell = $args['cellId'];
         $this->addLink($playerId, $fromCell, $cellId);
+        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
 
         /*$this->incStat(1, 'takeFromDiscard');
         $this->incStat(1, 'takeFromDiscard', $playerId);

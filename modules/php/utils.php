@@ -335,15 +335,18 @@ trait UtilTrait {
         
         $list = [];
         $zid = -1;
+        $newZoneCellCount = 0;
         
         $zones = self::getObjectListFromDB('SELECT distinct(zone) FROM `circle` WHERE value = '.$circle['value'].' and player_id = '.$playerId.' and circle_id in ('.$neighttxt.')', true);
         if(count($zones) == 1 && intval($zones[0]) == -1) {
             //new zones
             $zid = self::getUniqueValueFromDB( "SELECT max(zone) from circle where player_id = ".$playerId) + 1;
             self::DbQuery("update circle set zone = ".$zid.' where value = '.$circle['value'].' and player_id = '.$playerId.' and circle_id in ('.$neighttxt.', '.$circleId.')');
+            $newZoneCellCount = 2;
         } else if(count($zones) == 1 && $zones[0] > -1) {
             self::DbQuery("update circle set zone = ".$zones[0].' where player_id = '.$playerId.' and circle_id = '.$circleId);
-            $zid = $zones[0];            
+            $zid = $zones[0];
+            $newZoneCellCount = 1;
         } else if(count($zones) > 1) {
             $zid = -1;              
             for($i=0;$i<count($zones);$i++) {
@@ -366,6 +369,7 @@ trait UtilTrait {
                     self::DbQuery("update circle set zone = ".$zid.' where player_id = '.$playerId.' and zone = '.$zones[$i]);
                 }
             }
+            $newZoneCellCount = 1;
         }
                 
         if ($zid >= 0) {
@@ -377,6 +381,8 @@ trait UtilTrait {
                 'zoneId' => $zid,
             ]);  
         }
+
+        return $newZoneCellCount;
     }
 
     function getPossibleLinkCirclesIds(int $playerId, array $links, int $circleId, int $value, int $direction) {
