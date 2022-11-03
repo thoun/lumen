@@ -20,6 +20,10 @@ class PlayerTable {
             </div>
             <div id="player-table-${this.playerId}-circles" class="circles">
             </div>
+            <div id="player-table-${this.playerId}-reserve" class="reserve">
+            </div>
+            <div id="player-table-${this.playerId}-highCommand" class="highCommand">
+            </div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));
@@ -47,6 +51,16 @@ class PlayerTable {
                     this.game.chooseCell(circle.circleId);
                 }
             });
+        });
+
+        // TODO TEMP
+        player.reserve.forEach(card => {
+            dojo.place(`<div><button id="card-${card.id}">play reserve ${card.id}</button></div>`, `player-table-${this.playerId}-reserve`);
+            document.getElementById(`card-${card.id}`).addEventListener('click', () => this.game.playFighter(card.id));
+        });
+        player.highCommand.forEach(card => {
+            dojo.place(`<div><button id="card-${card.id}">play highCommand ${card.id}</button></div>`, `player-table-${this.playerId}-highCommand`);
+            document.getElementById(`card-${card.id}`).addEventListener('click', () => this.game.playFighter(card.id));
         });
     }
 

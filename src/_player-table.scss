@@ -20,9 +20,11 @@
   }
 
   .operations {
-    position: relative;
+    position: absolute;
     display: flex;
     flex-wrap: wrap;
+    left: 800px;
+    top: 50px;
 
     .operation-number {
       position: absolute;
@@ -56,9 +58,12 @@
   }
 
   .circles {
-    position: relative;
+    position: absolute;
     display: flex;
     flex-wrap: wrap;
+    left: 300px;
+    top: 50px;
+    width: 500px;
 
     .circle {
       position: relative;

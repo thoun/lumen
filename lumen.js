@@ -801,7 +801,7 @@ var PlayerTable = /** @class */ (function () {
         this.game = game;
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\">\n            <div id=\"player-table-").concat(this.playerId, "-hand-cards\" class=\"hand cards\" data-player-id=\"").concat(this.playerId, "\" data-current-player=\"").concat(this.currentPlayer.toString(), "\" data-my-hand=\"").concat(this.currentPlayer.toString(), "\"></div>\n            <div class=\"name-wrapper\">\n                <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-operations\" class=\"operations\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-circles\" class=\"circles\">\n            </div>\n        </div>\n        ");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\">\n            <div id=\"player-table-").concat(this.playerId, "-hand-cards\" class=\"hand cards\" data-player-id=\"").concat(this.playerId, "\" data-current-player=\"").concat(this.currentPlayer.toString(), "\" data-my-hand=\"").concat(this.currentPlayer.toString(), "\"></div>\n            <div class=\"name-wrapper\">\n                <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-operations\" class=\"operations\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-circles\" class=\"circles\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-reserve\" class=\"reserve\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-highCommand\" class=\"highCommand\">\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         [1, 2, 3, 4, 5].forEach(function (operation) {
             (operation > 3 ? [1, 2, 3, 4] : [1, 2, 3]).forEach(function (number) {
@@ -826,6 +826,15 @@ var PlayerTable = /** @class */ (function () {
                     _this.game.chooseCell(circle.circleId);
                 }
             });
+        });
+        // TODO TEMP
+        player.reserve.forEach(function (card) {
+            dojo.place("<div><button id=\"card-".concat(card.id, "\">play reserve ").concat(card.id, "</button></div>"), "player-table-".concat(_this.playerId, "-reserve"));
+            document.getElementById("card-".concat(card.id)).addEventListener('click', function () { return _this.game.playFighter(card.id); });
+        });
+        player.highCommand.forEach(function (card) {
+            dojo.place("<div><button id=\"card-".concat(card.id, "\">play highCommand ").concat(card.id, "</button></div>"), "player-table-".concat(_this.playerId, "-highCommand"));
+            document.getElementById("card-".concat(card.id)).addEventListener('click', function () { return _this.game.playFighter(card.id); });
         });
     }
     PlayerTable.prototype.setPossibleOperations = function (operations) {
@@ -932,6 +941,13 @@ var Lumen = /** @class */ (function () {
     };
     ///////////////////////////////////////////////////
     //// Game & client states
+    Lumen.prototype.setGamestateDescription = function (property) {
+        if (property === void 0) { property = ''; }
+        var originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
+        this.gamedatas.gamestate.description = "".concat(originalState['description' + property]);
+        this.gamedatas.gamestate.descriptionmyturn = "".concat(originalState['descriptionmyturn' + property]);
+        this.updatePageTitle();
+    };
     // onEnteringState: this method is called each time we are entering into a new game state.
     //                  You can use this method to perform some user interface changes at this moment.
     //
@@ -943,6 +959,9 @@ var Lumen = /** @class */ (function () {
                 break;
             case 'chooseCell':
                 this.onEnteringChooseCell(args.args);
+                break;
+            case 'chooseFighter':
+                this.onEnteringChooseFighter(args.args);
                 break;
         }
     };
@@ -957,6 +976,26 @@ var Lumen = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setPossibleCells(args.possibleCircles, args.value);
         }
+    };
+    Lumen.prototype.onEnteringChooseFighter = function (args) {
+        if (!args.remainingMoves) {
+            this.setGamestateDescription('OnlyPlay');
+        }
+        else if (!args.remainingPlays) {
+            this.setGamestateDescription('OnlyMoveActivate');
+        }
+        var subTitle = document.createElement('span');
+        var text = _('(${remainingPlays} fighters to add, ${remainingMoves} moves/activations)');
+        if (!args.remainingMoves) {
+            text = _('(${remainingPlays} fighters to add)');
+        }
+        else if (!args.remainingPlays) {
+            text = _('(${remainingMoves} moves/activations)');
+        }
+        subTitle.classList.add('subtitle');
+        subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
+        document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
+        document.getElementById("pagemaintitletext").appendChild(subTitle);
     };
     Lumen.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
@@ -1231,6 +1270,30 @@ var Lumen = /** @class */ (function () {
         }
         this.takeAction('chooseCellLink', {
             cell: cell
+        });
+    };
+    Lumen.prototype.playFighter = function (id) {
+        if (!this.checkAction('playFighter')) {
+            return;
+        }
+        this.takeAction('playFighter', {
+            id: id
+        });
+    };
+    Lumen.prototype.moveFighter = function (id) {
+        if (!this.checkAction('moveFighter')) {
+            return;
+        }
+        this.takeAction('moveFighter', {
+            id: id
+        });
+    };
+    Lumen.prototype.activateFighter = function (id) {
+        if (!this.checkAction('activateFighter')) {
+            return;
+        }
+        this.takeAction('activateFighter', {
+            id: id
         });
     };
     Lumen.prototype.takeAction = function (action, data) {

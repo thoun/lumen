@@ -588,9 +588,11 @@
   font-weight: bold;
 }
 .player-table .operations {
-  position: relative;
+  position: absolute;
   display: flex;
   flex-wrap: wrap;
+  left: 800px;
+  top: 50px;
 }
 .player-table .operations .operation-number {
   position: absolute;
@@ -636,9 +638,12 @@
   cursor: pointer;
 }
 .player-table .circles {
-  position: relative;
+  position: absolute;
   display: flex;
   flex-wrap: wrap;
+  left: 300px;
+  top: 50px;
+  width: 500px;
 }
 .player-table .circles .circle {
   position: relative;
@@ -876,6 +881,10 @@ html, .mode_3d #game_play_area_background {
   width: 20px;
   height: 20px;
   margin-right: 5px;
+}
+#page-title #pagemaintitletext .subtitle {
+  color: gray;
+  font-size: 80%;
 }
 
 #zoom-wrapper {

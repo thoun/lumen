@@ -75,9 +75,7 @@ $basicGameStates = [
 
 
 $chooseCellTransitions = [
-    "chooseNewFighter" => ST_PLAYER_CHOOSE_NEW_FIGHTER,
-    "chooseFighterToMove" => ST_PLAYER_CHOOSE_FIGHTER,
-    "chooseFighterToActivate" => ST_PLAYER_CHOOSE_FIGHTER_POWER,
+    "nextMove" => ST_NEXT_MOVE,
     "cancel" => ST_PLAYER_CHOOSE_OPERATION,
     "nextPlayer" => ST_NEXT_PLAYER,
 ];
@@ -117,8 +115,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose an operation'),
         "descriptionmyturn" => clienttranslate('${you} must choose an operation'),
         "type" => "activeplayer",
-        "args" => "argChooseOperation",     
-        "action" => "stChooseOperation",
+        "args" => "argChooseOperation",
         "possibleactions" => [ 
             "chooseOperation",
         ],
@@ -132,8 +129,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must report ${number} in an eligible circle'),
         "descriptionmyturn" => clienttranslate('${you} must report ${number} in an eligible circle'),
         "type" => "activeplayer",    
-        "args" => "argChooseCell",     
-        "action" => "stChooseCell",
+        "args" => "argChooseCell",
         "possibleactions" => [ 
             "chooseCell",
             "cancelOperation",
@@ -156,42 +152,34 @@ $playerActionsGameStates = [
         "transitions" => $chooseCellTransitions,
     ],
 
-    ST_PLAYER_CHOOSE_NEW_FIGHTER => [
-        "name" => "chooseNewFighter",
-        "description" => clienttranslate('${actplayer} must choose a discard pile'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a discard pile'),
-        "type" => "activeplayer",
-        "args" => "argChooseNewFighter", 
-        "possibleactions" => [ 
-            "chooseNewFighter",
-        ],
-        "transitions" => [
-            "chooseTerritory" => ST_PLAYER_CHOOSE_NEW_FIGHTER_TERRITORY,
-        ]
-    ],
-
-    ST_PLAYER_CHOOSE_NEW_FIGHTER_TERRITORY => [
-        "name" => "chooseNewFighterTerritory",
-        "description" => clienttranslate('${actplayer} must choose a card'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a card'),
-        "type" => "activeplayer", 
-        "args" => "argChooseNewFighterTerritory", 
-        "possibleactions" => [ 
-            "chooseNewFighterTerritory",
-        ],
-        "transitions" => [
-            "nextMove" => ST_NEXT_MOVE,
-        ]
-    ],
-
     ST_PLAYER_CHOOSE_FIGHTER => [
         "name" => "chooseFighter",
-        "description" => clienttranslate('${actplayer} must choose a discard pile'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a discard pile'),
+        "description" => clienttranslate('${actplayer} must choose a fighter to play, move or activate'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a fighter to play, move or activate'),
+        "descriptionOnlyPlay" => clienttranslate('${actplayer} must choose a fighter to play'),
+        "descriptionmyturnOnlyPlay" => clienttranslate('${you} must choose a fighter to play'),
+        "descriptionOnlyMoveActivate" => clienttranslate('${actplayer} must choose a fighter to move or activate'),
+        "descriptionmyturnOnlyMoveActivate" => clienttranslate('${you} must choose a fighter to move or activate'),
         "type" => "activeplayer",
         "args" => "argChooseFighter", 
         "possibleactions" => [ 
-            "chooseFighter",
+            "playFighter",
+            "moveFighter",
+            "activateFighter",
+        ],
+        "transitions" => [
+            "chooseTerritory" => ST_PLAYER_CHOOSE_FIGHTER_TERRITORY,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_MOVE_OR_ACTIVATE => [
+        "name" => "chooseMoveOrActivate",
+        "description" => clienttranslate('${actplayer} must choose to move or activate selected fighter'),
+        "descriptionmyturn" => clienttranslate('${you} must choose to move or activate selected fighter'),
+        "type" => "activeplayer",
+        "possibleactions" => [ 
+            "chooseMove",
+            "chooseActivate",
         ],
         "transitions" => [
             "chooseNewTerritory" => ST_PLAYER_CHOOSE_FIGHTER_TERRITORY,
@@ -299,7 +287,8 @@ $gameGameStates = [
         "description" => "",
         "type" => "game",
         "action" => "stNextMove",
-        "transitions" => $chooseCellTransitions + [
+        "transitions" => [
+            "chooseFighter" => ST_PLAYER_CHOOSE_FIGHTER,
             "nextPlayer" => ST_NEXT_PLAYER,
         ],
     ],

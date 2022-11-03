@@ -36,12 +36,12 @@ trait StateTrait {
         $this->gamestate->nextState('chooseOperation');
     } 
 
-    function stChooseOperation() {
-        // TODO choose operation if only one available ?
-    }
-
-    function stChooseCell() {
-        // TODO choose cell if only one available ?
+    function stNextMove() {
+        $canDoAction =  (
+            intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) + 
+            intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE))
+        ) > 0;
+        $this->gamestate->nextState($canDoAction ? 'chooseFighter' : 'nextPlayer');
     }
 
     function stNextPlayer() {

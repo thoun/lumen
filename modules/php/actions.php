@@ -115,7 +115,7 @@ trait ActionTrait {
         /*$this->incStat(1, 'takeFromDiscard');
         $this->incStat(1, 'takeFromDiscard', $playerId);
         $this->updateCardsPoints($playerId);*/
-        $this->gamestate->nextState('nextPlayer'); // TODO
+        $this->gamestate->nextState('nextMove');
     }
 
     public function chooseCellLink(int $cellId) {
@@ -135,6 +135,73 @@ trait ActionTrait {
         /*$this->incStat(1, 'takeFromDiscard');
         $this->incStat(1, 'takeFromDiscard', $playerId);
         $this->updateCardsPoints($playerId);*/
-        $this->gamestate->nextState('nextPlayer'); // TODO
+        $this->gamestate->nextState('nextMove');
+    }
+
+    public function playFighter(int $id) {
+        $this->checkAction('playFighter'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) > 0) {
+            throw new BgaUserException("No remaining action");
+        }
+
+        $fighter = $this->getCardById($id);
+        
+        if ($fighter->playerId != $playerId || !in_array($fighter->location, ['reserve'.$playerId, 'highCommand'.$playerId])) {
+            throw new BgaUserException("Invalid fighter");
+        }
+
+        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
+        $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_PLAY);
+
+        $this->gamestate->nextState('chooseTerritory');
+    }
+
+    public function moveFighter(int $id) {
+        $this->checkAction('moveFighter'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) > 0) {
+            throw new BgaUserException("No remaining action");
+        }
+
+        $fighter = $this->getCardById($id);
+        
+        if ($fighter->playerId != $playerId || $fighter->location != 'territory') {
+            throw new BgaUserException("Invalid fighter");
+        }
+
+        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
+        $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_MOVE);
+
+        $this->gamestate->nextState('chooseTerritory');
+    }
+
+    public function activateFighter(int $id) {
+        $this->checkAction('moveFighter'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) > 0) {
+            throw new BgaUserException("No remaining action");
+        }
+
+        $fighter = $this->getCardById($id);
+        
+        if ($fighter->playerId != $playerId || $fighter->location != 'territory') {
+            throw new BgaUserException("Invalid fighter");
+        }
+        if ($fighter->played) {
+            throw new BgaUserException("This fighter is already played");
+        }
+
+        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
+        $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_ACTIVATE);
+
+        // TODO
+        $this->gamestate->nextState('chooseTerritory');
     }
 }

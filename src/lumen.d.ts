@@ -61,6 +61,10 @@ interface LumenGame extends Game {
 
     setTooltip(id: string, html: string): void;
     chooseCell(cell: number): void;
+
+    playFighter(id: number): void;
+    moveFighter(id: number): void;
+    activateFighter(id: number): void;
 }
 interface EnteringChooseOperationArgs {
     operations: { [operation: number]: {
@@ -73,6 +77,11 @@ interface EnteringChooseOperationArgs {
 interface EnteringChooseCellArgs {
     possibleCircles: number[];
     value: number;
+}
+
+interface EnteringChooseFighterArgs {
+    remainingPlays: number;
+    remainingMoves: number;
 }
 
 interface NotifDiceRollArgs {

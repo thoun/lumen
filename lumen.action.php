@@ -72,6 +72,36 @@
       self::ajaxResponse();
     }
 
+    public function chooseFighter() {
+      self::setAjaxMode();
+
+      $id = self::getArg("id", AT_posint, true);
+
+      $this->game->chooseFighter($id);
+
+      self::ajaxResponse();
+    }
+
+    public function moveFighter() {
+      self::setAjaxMode();
+
+      $id = self::getArg("id", AT_posint, true);
+
+      $this->game->moveFighter($id);
+
+      self::ajaxResponse();
+    }
+
+    public function activateFighter() {
+      self::setAjaxMode();
+
+      $id = self::getArg("id", AT_posint, true);
+
+      $this->game->activateFighter($id);
+
+      self::ajaxResponse();
+    }
+
   }
   
 

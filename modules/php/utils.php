@@ -111,10 +111,20 @@ trait UtilTrait {
         return $value;
     }
 
-    function getCardsByLocation(string $location, /*int|null*/ $location_arg = null, /*int|null*/ $type = null, /*int|null*/ $subType = null) {
+    function getCardById(int $id) {
+        $sql = "SELECT * FROM `card` WHERE `card_id` = $id";
+        $dbResults = $this->getCollectionFromDb($sql);
+        $cards = array_map(fn($dbCard) => new Card($dbCard, $this->CARDS), array_values($dbResults));
+        return count($cards) > 0 ? $cards[0] : null;
+    }
+
+    function getCardsByLocation(string $location, /*int|null*/ $location_arg = null, /*int|null*/ $playerId = null, /*int|null*/ $type = null, /*int|null*/ $subType = null) {
         $sql = "SELECT * FROM `card` WHERE `card_location` = '$location'";
         if ($location_arg !== null) {
             $sql .= " AND `card_location_arg` = $location_arg";
+        }
+        if ($playerId !== null) {
+            $sql .= " AND `player_id` = $playerId";
         }
         if ($type !== null) {
             $sql .= " AND `card_type` = $type";
@@ -137,6 +147,7 @@ trait UtilTrait {
             }
             $this->cards->createCards($cards, 'bag'.$playerId);
             $this->cards->shuffle('bag'.$playerId);
+            self::DbQuery("update card set player_id = $playerId WHERE card_location='bag$playerId'");
         }
 
         $cards = [];
@@ -270,6 +281,9 @@ trait UtilTrait {
         if ($slot > 0) {
             $this->cards->pickCardForLocation('bag'.$playerId, 'highCommand'.$playerId, $slot); // TODO check translation
             $card = $this->getCardsByLocation('highCommand'.$playerId, $slot)[0];
+            self::DbQuery("update card set player_id = $playerId WHERE card_id=$card->id");
+            $card->playerId = $playerId;
+
             self::notifyAllPlayers('addHighCommandCard', clienttranslate('${player_name} get a new high command card'), [ // TODO check translation
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
@@ -390,7 +404,8 @@ trait UtilTrait {
         $circle = $this->array_find($circles, fn($c) => $c->circleId == $circleId);
         $possible = [];
 
-        foreach ($circle->neighbours as $neighbour) {
+        foreach ($circle->neighbours as $neighbourId) {
+            $neighbour = $this->array_find($circles, fn($c) => $c->circleId == $neighbourId);
             if ($neighbour->value == $value - $direction) {
                 $linkedCirclesIds = [];
                 foreach ($links as $link) {
@@ -407,7 +422,7 @@ trait UtilTrait {
                     ($direction === 1 && !$neighbourHasUpperLink) ||
                     ($direction === -1 && !$neighbourHasLowerLink)
                 ) {
-                    $possible[] = $neighbour;
+                    $possible[] = $neighbour->circleId;
                 }
             }
         }

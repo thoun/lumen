@@ -19,6 +19,7 @@ class Card extends CardType {
     public string $location;
     public int $locationArg;
     public int $subType;
+    public int $playerId;
     public bool $played;
 
     public function __construct($dbCard, $CARDS_TYPE) {
@@ -27,17 +28,21 @@ class Card extends CardType {
         $this->locationArg = intval($dbCard['card_location_arg']);
         $this->type = intval($dbCard['card_type']);
         $this->subType = intval($dbCard['card_type_arg']);
+        $this->playerId = intval($dbCard['player_id']);
         $this->played = boolval($dbCard['played']);
-        $this->strength = $CARDS_TYPE[$this->subType]->strength;
-        $this->power = $CARDS_TYPE[$this->subType]->power;
+        if ($this->subType) {
+            $this->strength = $CARDS_TYPE[$this->subType]->strength;
+            $this->power = $CARDS_TYPE[$this->subType]->power;
+        }
     } 
 
     public static function onlyId(Card $card) {
         return new Card([
-            'id' => $card->id,
-            'location' => $card->location,
-            'location_arg' => $card->locationArg,
-            'type' => null
+            'card_id' => $card->id,
+            'card_location' => $card->location,
+            'card_location_arg' => $card->locationArg,
+            'card_type' => null,
+            'card_type_arg' => null,
         ], null);
     }
 

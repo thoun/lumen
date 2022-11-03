@@ -95,4 +95,16 @@ trait ArgsTrait {
             'cellId' => $cellId,
         ];
     }
-}
+
+    function argChooseFighter() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $remainingPlays = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
+        $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+
+        return [
+            'remainingPlays' => $remainingPlays,
+            'remainingMoves' => $remainingMoves,
+        ];
+    }
+} 

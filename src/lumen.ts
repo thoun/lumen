@@ -77,6 +77,13 @@ class Lumen implements LumenGame {
 
     ///////////////////////////////////////////////////
     //// Game & client states
+    
+    private setGamestateDescription(property: string = '') {
+        const originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
+        this.gamedatas.gamestate.description = `${originalState['description' + property]}`; 
+        this.gamedatas.gamestate.descriptionmyturn = `${originalState['descriptionmyturn' + property]}`;
+        (this as any).updatePageTitle();
+    }
 
     // onEnteringState: this method is called each time we are entering into a new game state.
     //                  You can use this method to perform some user interface changes at this moment.
@@ -91,6 +98,9 @@ class Lumen implements LumenGame {
             case 'chooseCell':
                 this.onEnteringChooseCell(args.args);
                 break;
+            case 'chooseFighter':
+                this.onEnteringChooseFighter(args.args);
+                break;                
         }
     }
     
@@ -104,6 +114,26 @@ class Lumen implements LumenGame {
         if ((this as any).isCurrentPlayerActive()) {
             this.getCurrentPlayerTable()?.setPossibleCells(args.possibleCircles, args.value);
         }
+    }
+    
+    private onEnteringChooseFighter(args: EnteringChooseFighterArgs) {
+        if (!args.remainingMoves) {
+            this.setGamestateDescription('OnlyPlay');
+        } else if (!args.remainingPlays) {
+            this.setGamestateDescription('OnlyMoveActivate');
+        }
+
+        const subTitle = document.createElement('span');
+        let text = _('(${remainingPlays} fighters to add, ${remainingMoves} moves/activations)');
+        if (!args.remainingMoves) {
+            text = _('(${remainingPlays} fighters to add)');
+        } else if (!args.remainingPlays) {
+            text = _('(${remainingMoves} moves/activations)');
+        }
+        subTitle.classList.add('subtitle');
+        subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
+        document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
+        document.getElementById(`pagemaintitletext`).appendChild(subTitle);
     }
 
     public onLeavingState(stateName: string) {
@@ -462,6 +492,36 @@ class Lumen implements LumenGame {
 
         this.takeAction('chooseCellLink', {
             cell
+        });
+    }
+
+    public playFighter(id: number) {
+        if(!(this as any).checkAction('playFighter')) {
+            return;
+        }
+
+        this.takeAction('playFighter', {
+            id
+        });
+    }
+
+    public moveFighter(id: number) {
+        if(!(this as any).checkAction('moveFighter')) {
+            return;
+        }
+
+        this.takeAction('moveFighter', {
+            id
+        });
+    }
+
+    public activateFighter(id: number) {
+        if(!(this as any).checkAction('activateFighter')) {
+            return;
+        }
+
+        this.takeAction('activateFighter', {
+            id
         });
     }
 
