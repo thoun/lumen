@@ -895,7 +895,7 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.setCircleValue = function (circleId, value) {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-circle").concat(circleId));
         circleDiv.classList.remove('ghost');
-        circleDiv.innerHTML = '' + value;
+        circleDiv.innerHTML = value === -1 ? 'X' /* TODO Brouillage*/ : '' + value;
     };
     PlayerTable.prototype.setPossibleCellLinks = function (possibleLinkCirclesIds, cellId) {
         // TODO throw new Error("Method not implemented.");
@@ -1305,6 +1305,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseCellLink':
                 this.chooseCellLink(cell);
                 break;
+            case 'chooseCellBrouillage':
+                this.chooseCellBrouillage(cell);
+                break;
         }
     };
     Lumen.prototype.chooseOperation = function (operation) {
@@ -1334,6 +1337,14 @@ var Lumen = /** @class */ (function () {
             return;
         }
         this.takeAction('chooseCellLink', {
+            cell: cell
+        });
+    };
+    Lumen.prototype.chooseCellBrouillage = function (cell) {
+        if (!this.checkAction('chooseCellBrouillage')) {
+            return;
+        }
+        this.takeAction('chooseCellBrouillage', {
             cell: cell
         });
     };

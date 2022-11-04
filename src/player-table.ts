@@ -93,7 +93,7 @@ class PlayerTable {
     public setCircleValue(circleId: number, value: number) {
         const circleDiv = document.getElementById(`player-table-${this.playerId}-circle${circleId}`);
         circleDiv.classList.remove('ghost');
-        circleDiv.innerHTML = ''+value;
+        circleDiv.innerHTML = value === -1 ? 'X' /* TODO Brouillage*/ : ''+value;
     }
 
     public setPossibleCellLinks(possibleLinkCirclesIds: number[], cellId: number) {

@@ -50,11 +50,7 @@ trait ArgsTrait {
         ];
     }
 
-    function argChooseCell() {        
-        $playerId = intval($this->getActivePlayerId());
-
-        $number = intval($this->getGameStateValue(PLAYER_NUMBER));
-
+    function getPossibleCircles(int $playerId/*, /_* int | null*_/ $ignoreCircleId = null*/) {
         $circles = $this->getCircles($playerId);
         $allEmpty = $this->array_every($circles, fn($circle) => $circle->value === null || $circle->value === -1);
 
@@ -63,16 +59,26 @@ trait ArgsTrait {
             $possibleCircles = array_map(fn($circle) => $circle->circleId, $circles);
         } else {
             foreach ($circles as $circle) {
-                if ($circle->value !== null && $circle->value !== -1) {
+                if ($circle->value !== null && $circle->value !== -1/* && $circle->circleId !== $ignoreCircleId*/) {
                     foreach ($circle->neighbours as $neighbourId) {
                         $neighbour = $this->array_find($circles, fn($c) => $c->circleId === $neighbourId);
                         if ($neighbour->value === null && !in_array($neighbourId, $possibleCircles)) {
                             $possibleCircles[] = $neighbourId;
                         }
-                    }              
+                    }
                 }
             }
         }
+
+        return $possibleCircles;
+    }
+
+    function argChooseCell() {        
+        $playerId = intval($this->getActivePlayerId());
+
+        $number = intval($this->getGameStateValue(PLAYER_NUMBER));
+
+        $possibleCircles = $this->getPossibleCircles($playerId);
     
         return [
             'possibleCircles' => $possibleCircles,
@@ -133,6 +139,25 @@ trait ArgsTrait {
             'selectedFighter' => $selectedFighter,
             'move' => $move,
             'territoriesIds' => $territoriesIds,
+        ];
+    }
+
+    function argChooseCellBrouillage() {
+        $playerId = intval($this->getActivePlayerId());
+        $opponentId = $this->getOpponentId($playerId);
+
+        $circles = $this->getCircles($opponentId);
+        $emptyCircles = array_values(array_filter($circles, fn($circle) => $circle->value === null || $circle->value === -1));
+
+        $possibleCircles = array_map(fn($circle) => $circle->circleId, $emptyCircles);
+        /* TODO Restriction : vous ne pouvez
+        pas éliminer une cellule qui
+        empêcherait votre adversaire
+        d’accéder à une partie des cellules
+        de sa fiche de commandement.*/
+
+        return [
+            'possibleCircles' => $possibleCircles,
         ];
     }
 } 

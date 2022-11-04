@@ -186,6 +186,21 @@ $playerActionsGameStates = [
             "chooseTerritory",
         ],
         "transitions" => [
+            "chooseCellBrouillage" => ST_PLAYER_CHOOSE_CELL_BROUILLAGE,
+            "nextMove" => ST_NEXT_MOVE,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_CELL_BROUILLAGE => [
+        "name" => "chooseCellBrouillage",
+        "description" => clienttranslate('${actplayer} must choose a circle for Brouillage'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a circle for Brouillage'),
+        "type" => "activeplayer", 
+        "args" => "argChooseCellBrouillage", 
+        "possibleactions" => [ 
+            "chooseCellBrouillage",
+        ],
+        "transitions" => [
             "nextMove" => ST_NEXT_MOVE,
         ]
     ],

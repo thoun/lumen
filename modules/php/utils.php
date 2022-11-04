@@ -515,7 +515,6 @@ trait UtilTrait {
             'discoverTile' => $discoverTile,
             'playerId' => $playerId,
         ]);
-        // TODO notif
     }
 
     function discardDiscoverTile(DiscoverTile &$discoverTile) {

@@ -72,6 +72,16 @@
       self::ajaxResponse();
     }
 
+    public function chooseCellBrouillage() {
+      self::setAjaxMode();
+
+      $cell = self::getArg("cell", AT_posint, true);
+
+      $this->game->chooseCellBrouillage($cell);
+
+      self::ajaxResponse();
+    }
+
     public function playFighter() {
       self::setAjaxMode();
 

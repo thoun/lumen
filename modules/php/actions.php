@@ -118,6 +118,29 @@ trait ActionTrait {
         $this->gamestate->nextState('nextMove');
     }
 
+    public function chooseCellBrouillage(int $cellId) {
+        $this->checkAction('chooseCellBrouillage'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+        $opponentId = $this->getOpponentId($playerId);
+        
+        $args = $this->argChooseCellBrouillage();
+        if (!in_array($cellId, $args['possibleCircles'])) {
+            throw new BgaUserException("Invalid cell");
+        }
+
+        self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($opponentId, $cellId, -1)");
+
+        self::notifyAllPlayers('setCircleValue', clienttranslate('${player_name} Brouillage an opponent circle'), [
+            'playerId' => $opponentId,
+            'player_name' => $this->getPlayerName($playerId),
+            'circleId' => $cellId,
+            'value' => -1,
+        ]);
+
+        $this->gamestate->nextState('nextMove');
+    }
+
     public function chooseCellLink(int $cellId) {
         $this->checkAction('chooseCellLink'); 
         
@@ -223,17 +246,18 @@ trait ActionTrait {
             throw new BgaUserException("No selected move");
         }
 
+        $redirectBrouillage = false;
         switch ($move) {
             case MOVE_PLAY:
-                $this->applyMoveFighter($selectedFighter, $territoryId);
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
                 $this->incGameStateValue(REMAINING_FIGHTERS_TO_PLACE, -1);
                 break;
             case MOVE_MOVE:
-                $this->applyMoveFighter($selectedFighter, $territoryId);
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
                 $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, -1);
                 break;
         }
 
-        $this->gamestate->nextState('nextMove');
+        $this->gamestate->nextState($redirectBrouillage ? 'chooseCellBrouillage' : 'nextMove');
     }
 }

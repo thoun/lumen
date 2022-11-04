@@ -488,6 +488,9 @@ class Lumen implements LumenGame {
             case 'chooseCellLink':
                 this.chooseCellLink(cell);
                 break;
+            case 'chooseCellBrouillage':
+                this.chooseCellBrouillage(cell);
+                break;
         }
     }
 
@@ -525,6 +528,16 @@ class Lumen implements LumenGame {
         }
 
         this.takeAction('chooseCellLink', {
+            cell
+        });
+    }
+
+    private chooseCellBrouillage(cell: number) {
+        if(!(this as any).checkAction('chooseCellBrouillage')) {
+            return;
+        }
+
+        this.takeAction('chooseCellBrouillage', {
             cell
         });
     }
