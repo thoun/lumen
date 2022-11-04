@@ -112,12 +112,33 @@
       self::ajaxResponse();
     }
 
+    public function chooseFighters() {
+      self::setAjaxMode();
+
+      $idsStr = explode(',', self::getArg("ids", AT_numberlist, true));
+      $ids = array_map(fn($idStr) => intval($idStr), $idsStr);
+
+      $this->game->chooseFighters($ids);
+
+      self::ajaxResponse();
+    }
+
     public function chooseTerritory() {
       self::setAjaxMode();
 
       $id = self::getArg("id", AT_posint, true);
 
       $this->game->chooseTerritory($id);
+
+      self::ajaxResponse();
+    }
+
+    public function pushFighter() {
+      self::setAjaxMode();
+
+      $id = self::getArg("id", AT_posint, true);
+
+      $this->game->pushFighter($id);
 
       self::ajaxResponse();
     }

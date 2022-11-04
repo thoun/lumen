@@ -1023,24 +1023,26 @@ var Lumen = /** @class */ (function () {
         }
     };
     Lumen.prototype.onEnteringChooseFighter = function (args) {
-        if (!args.remainingMoves) {
-            this.setGamestateDescription('OnlyPlay');
+        if (!args.move) {
+            if (!args.remainingMoves) {
+                this.setGamestateDescription('OnlyPlay');
+            }
+            else if (!args.remainingPlays) {
+                this.setGamestateDescription('OnlyMoveActivate');
+            }
+            var subTitle = document.createElement('span');
+            var text = _('(${remainingPlays} fighters to add, ${remainingMoves} moves/activations)');
+            if (!args.remainingMoves) {
+                text = _('(${remainingPlays} fighters to add)');
+            }
+            else if (!args.remainingPlays) {
+                text = _('(${remainingMoves} moves/activations)');
+            }
+            subTitle.classList.add('subtitle');
+            subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
+            document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
+            document.getElementById("pagemaintitletext").appendChild(subTitle);
         }
-        else if (!args.remainingPlays) {
-            this.setGamestateDescription('OnlyMoveActivate');
-        }
-        var subTitle = document.createElement('span');
-        var text = _('(${remainingPlays} fighters to add, ${remainingMoves} moves/activations)');
-        if (!args.remainingMoves) {
-            text = _('(${remainingPlays} fighters to add)');
-        }
-        else if (!args.remainingPlays) {
-            text = _('(${remainingMoves} moves/activations)');
-        }
-        subTitle.classList.add('subtitle');
-        subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
-        document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
-        document.getElementById("pagemaintitletext").appendChild(subTitle);
     };
     Lumen.prototype.onEnteringChooseTerritory = function (args) {
         this.setGamestateDescription('' + args.move);
@@ -1372,6 +1374,14 @@ var Lumen = /** @class */ (function () {
             id: id
         });
     };
+    Lumen.prototype.chooseFighters = function (ids) {
+        if (!this.checkAction('chooseFighters')) {
+            return;
+        }
+        this.takeAction('chooseFighters', {
+            ids: ids.join(',')
+        });
+    };
     Lumen.prototype.chooseTerritory = function (id) {
         if (!this.checkAction('chooseTerritory')) {
             return;
@@ -1415,6 +1425,11 @@ var Lumen = /** @class */ (function () {
             ['moveDiscoverTileToPlayer', ANIMATION_MS],
             ['discardDiscoverTile', ANIMATION_MS],
             ['revealDiscoverTile', ANIMATION_MS],
+            ['moveInitiativeMarker', ANIMATION_MS],
+            ['putBackInBag', ANIMATION_MS],
+            ['setFightersActivated', ANIMATION_MS],
+            ['setFightersUnactivated', ANIMATION_MS],
+            ['exchangedFighters', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -1490,6 +1505,21 @@ var Lumen = /** @class */ (function () {
         // TODO
     };
     Lumen.prototype.notif_revealDiscoverTile = function (notif) {
+        // TODO
+    };
+    Lumen.prototype.notif_moveInitiativeMarker = function (notif) {
+        // TODO
+    };
+    Lumen.prototype.notif_putBackInBag = function (notif) {
+        // TODO
+    };
+    Lumen.prototype.notif_setFightersActivated = function (notif) {
+        // TODO
+    };
+    Lumen.prototype.notif_setFightersUnactivated = function (notif) {
+        // TODO
+    };
+    Lumen.prototype.notif_exchangedFighters = function (notif) {
         // TODO
     };
     /* This enable to inject translatable styled things to logs or action bar */

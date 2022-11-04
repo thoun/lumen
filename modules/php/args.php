@@ -105,12 +105,76 @@ trait ArgsTrait {
     function argChooseFighter() {
         $playerId = intval($this->getActivePlayerId());
 
-        $remainingPlays = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
-        $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+        $move = intval($this->getGameStateValue(PLAYER_CURRENT_MOVE));
+        $args = [
+            'move' => $move,
+        ];
 
-        return [
-            'remainingPlays' => $remainingPlays,
-            'remainingMoves' => $remainingMoves,
+        $possibleTerritoryFighters = [];
+        $selectionSize = 1;
+
+        switch ($move) {
+            case 0:
+                $remainingPlays = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
+                $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+
+                $highCommand = $this->getCardsByLocation('highCommand'.$playerId);
+                $territoryFighters = $this->getCardsByLocation('territory', null, $playerId);
+                $possibleTerritoryFighters = $territoryFighters;
+
+                $args = $args + [
+                    'remainingPlays' => $remainingPlays,
+                    'remainingMoves' => $remainingMoves,
+                    'possibleFightersToPlace' => array_merge(
+                        $this->getCardsByLocation('reserve'.$playerId),
+                        array_values(array_filter($highCommand, fn($fighter) => in_array($fighter->type, [1, 10])))
+                    ),
+                    'possibleActions' => array_values(array_filter($highCommand, fn($fighter) => $fighter->type === 20)),
+                    'possibleFightersToActivate' => array_values(array_filter($territoryFighters, fn($fighter) => !$fighter->played)),
+                ];
+                break;
+            case MOVE_PUSH:
+                $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+                $selectedFighter = $this->getCardById($selectedFighterId);
+                $possibleTerritoryFighters = $this->getCardsByLocation('territory', $selectedFighter->locationArg);
+                break;
+            case MOVE_KILL:
+                $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+                $selectedFighter = $this->getCardById($selectedFighterId);
+                $territoryFilter = $selectedFighter->power == POWER_BOMBARDE ? null : $selectedFighter->locationArg;
+                $possibleTerritoryFighters = $this->getCardsByLocation('territory', $territoryFilter, $this->getOpponentId($playerId));
+                $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->power != POWER_BAVEUX));
+                break;
+            case MOVE_UNACTIVATE:
+                $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+                $selectedFighter = $this->getCardById($selectedFighterId);
+                $territoriesIds = [$selectedFighter->locationArg, ...$this->getTerritoryNeighboursIds($selectedFighter->locationArg)];
+                $opponentId = $this->getOpponentId($playerId);
+                foreach($territoriesIds as $territoryId) {
+                    $opponentFighters = $this->getCardsByLocation('territory', $territoryId, $opponentId);
+                    $opponentFighters = array_values(array_filter($opponentFighters, fn($fighter) => !$fighter->played));
+                    $possibleTerritoryFighters = array_merge($possibleTerritoryFighters, $opponentFighters);
+                }
+                $selectionSize = -1;
+                break;
+            case ACTION_FURY:
+                $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $this->getOpponentId($playerId));
+                $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->power != POWER_BAVEUX));
+                $selectionSize = 2;
+                break;
+            case ACTION_RESET:
+                $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $playerId);
+                break;
+            case ACTION_TELEPORT:
+                $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $playerId);
+                $selectionSize = 2;
+                break;
+        }
+
+
+        return $args + [
+           'possibleTerritoryFighters' => $possibleTerritoryFighters,
+           'selectionSize' => $selectionSize,
         ];
     }
 
@@ -130,8 +194,28 @@ trait ArgsTrait {
                 $territoriesIds = array_values(array_unique(array_map(fn($fighter) => $fighter->locationArg, $fighters)));
                 break;
             case MOVE_MOVE:
+            case MOVE_PUSH:
+            case MOVE_SUPER:
                 // territories neighbours to current fighter
-                $territoriesIds = $this->getTerritoryNeighboursIds($selectedFighter->locationArg);
+                $neighboursIds = $this->getTerritoryNeighboursIds($selectedFighter->locationArg);
+                $opponentId = $this->getOpponentId();
+                foreach($neighboursIds as $neighbourId) {
+                    $opponentRooteds = $this->getCardsByLocation($selectedFighter->location, $neighbourId, $opponentId, null, 16);
+                    if (!$this->array_some($opponentRooteds, fn($opponentRooted) => $opponentRooted->played)) {
+                        $territoriesIds[] = $neighbourId;
+                    }
+                }
+                break;
+            case MOVE_FLY:
+                $scenario = $this->getScenario();
+                foreach ($scenario->battlefieldsIds as $battlefieldId) {
+                    foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                        $territoriesIds[] = $territory->id;
+                    }
+                }
+                break;
+            case MOVE_IMPATIENT:
+                $territoriesIds = [$selectedFighter->locationArg, ...$this->getTerritoryNeighboursIds($selectedFighter->locationArg)];
                 break;
         }
 

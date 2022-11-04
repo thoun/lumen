@@ -64,6 +64,15 @@ define('PLAYER_CURRENT_MOVE', 41);
     define('MOVE_PLAY', 1);
     define('MOVE_MOVE', 2);
     define('MOVE_ACTIVATE', 3);
+    define('MOVE_PUSH', 4);
+    define('MOVE_KILL', 5);
+    define('MOVE_FLY', 6);
+    define('MOVE_SUPER', 7);
+    define('MOVE_IMPATIENT', 8);
+    define('MOVE_UNACTIVATE', 9);
+    define('MOVE_FURY', 21); 
+    define('MOVE_RESET', 22);
+    define('MOVE_TELEPORT', 23);
 
 
 /*

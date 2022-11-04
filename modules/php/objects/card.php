@@ -49,6 +49,14 @@ class Card extends CardType {
     public static function onlyIds(array $cards) {
         return array_map(fn($card) => self::onlyId($card), $cards);
     }
+
+    public function getStrength() {
+        if ($this->power === POWER_METAMORPH && $this->played) {
+            return 3;
+        } else {
+            return $this->strength;
+        }
+    }
 }
 
 ?>

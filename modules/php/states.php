@@ -12,7 +12,10 @@ trait StateTrait {
     */
 
     function stNewRound() {
-        $canActivatePlanification = false; // TODO
+        $playerId = intval($this->getActivePlayerId());
+
+        $planificationTiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_PLANIFICATION);
+        $canActivatePlanification = count($planificationTiles) > 0;
 
         $this->gamestate->nextState($canActivatePlanification ? 'askActivatePlanification' : 'rollDice');
     }    
@@ -37,6 +40,9 @@ trait StateTrait {
     } 
 
     function stNextMove() {
+        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
+        $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
+        
         $canDoAction =  (
             intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) + 
             intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE))

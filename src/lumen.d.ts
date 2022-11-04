@@ -85,8 +85,14 @@ interface EnteringChooseCellLinkArgs {
 }
 
 interface EnteringChooseFighterArgs {
-    remainingPlays: number;
-    remainingMoves: number;
+    move: number;
+    remainingPlays?: number;
+    remainingMoves?: number;
+    possibleTerritoryFighters: Card[];
+    possibleFightersToPlace?: Card[];
+    possibleActions?: Card[];
+    possibleFightersToActivate?: Card[];
+    selectionSize: number;
 }
 
 interface EnteringChooseTerritoryArgs {
@@ -165,4 +171,16 @@ interface NotifDiscardDiscoverTileArgs {
 
 interface NotifRevealDiscoverTileArgs {
     discoverTile: DiscoverTile;
+}
+
+interface NotifMoveInitiativeMarkerArgs {
+    territoryId: number;
+}
+
+interface NotifPutBackInBagArgs {
+    fighters: Card[];
+}
+
+interface NotifSetFightersActivatedArgs {
+    fighters: Card[];
 }

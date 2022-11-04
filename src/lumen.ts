@@ -129,23 +129,25 @@ class Lumen implements LumenGame {
     }
     
     private onEnteringChooseFighter(args: EnteringChooseFighterArgs) {
-        if (!args.remainingMoves) {
-            this.setGamestateDescription('OnlyPlay');
-        } else if (!args.remainingPlays) {
-            this.setGamestateDescription('OnlyMoveActivate');
-        }
+        if (!args.move) {
+            if (!args.remainingMoves) {
+                this.setGamestateDescription('OnlyPlay');
+            } else if (!args.remainingPlays) {
+                this.setGamestateDescription('OnlyMoveActivate');
+            }
 
-        const subTitle = document.createElement('span');
-        let text = _('(${remainingPlays} fighters to add, ${remainingMoves} moves/activations)');
-        if (!args.remainingMoves) {
-            text = _('(${remainingPlays} fighters to add)');
-        } else if (!args.remainingPlays) {
-            text = _('(${remainingMoves} moves/activations)');
+            const subTitle = document.createElement('span');
+            let text = _('(${remainingPlays} fighters to add, ${remainingMoves} moves/activations)');
+            if (!args.remainingMoves) {
+                text = _('(${remainingPlays} fighters to add)');
+            } else if (!args.remainingPlays) {
+                text = _('(${remainingMoves} moves/activations)');
+            }
+            subTitle.classList.add('subtitle');
+            subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
+            document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
+            document.getElementById(`pagemaintitletext`).appendChild(subTitle);
         }
-        subTitle.classList.add('subtitle');
-        subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
-        document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
-        document.getElementById(`pagemaintitletext`).appendChild(subTitle);
     }
 
     private onEnteringChooseTerritory(args: EnteringChooseTerritoryArgs) {
@@ -572,6 +574,16 @@ class Lumen implements LumenGame {
         });
     }
 
+    public chooseFighters(ids: number[]) {
+        if(!(this as any).checkAction('chooseFighters')) {
+            return;
+        }
+
+        this.takeAction('chooseFighters', {
+            ids: ids.join(',')
+        });
+    }
+
     public chooseTerritory(id: number) {
         if(!(this as any).checkAction('chooseTerritory')) {
             return;
@@ -619,6 +631,11 @@ class Lumen implements LumenGame {
             ['moveDiscoverTileToPlayer', ANIMATION_MS],
             ['discardDiscoverTile', ANIMATION_MS],
             ['revealDiscoverTile', ANIMATION_MS],
+            ['moveInitiativeMarker', ANIMATION_MS],
+            ['putBackInBag', ANIMATION_MS],
+            ['setFightersActivated', ANIMATION_MS],
+            ['setFightersUnactivated', ANIMATION_MS],
+            ['exchangedFighters', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -713,6 +730,26 @@ class Lumen implements LumenGame {
     }
 
     notif_revealDiscoverTile(notif: Notif<NotifRevealDiscoverTileArgs>) {
+        // TODO
+    }
+
+    notif_moveInitiativeMarker(notif: Notif<NotifMoveInitiativeMarkerArgs>) {
+        // TODO
+    }
+
+    notif_putBackInBag(notif: Notif<NotifPutBackInBagArgs>) {
+        // TODO
+    }
+
+    notif_setFightersActivated(notif: Notif<NotifSetFightersActivatedArgs>) {
+        // TODO
+    }
+
+    notif_setFightersUnactivated(notif: Notif<NotifSetFightersActivatedArgs>) {
+        // TODO
+    }
+
+    notif_exchangedFighters(notif: Notif<NotifSetFightersActivatedArgs>) {
         // TODO
     }
 

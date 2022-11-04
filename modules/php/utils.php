@@ -142,7 +142,7 @@ trait UtilTrait {
             $cards = [];
             foreach ($this->CARDS as $subType => $cardType) {
                 if ($cardType->type === 1) {
-                    $cards[] = [ 'type' => intval($player['player_table_order']), 'type_arg' => $subType, 'nbr' => $cardType->number ];
+                    $cards[] = [ 'type' => $cardType->type, 'type_arg' => $subType, 'nbr' => $cardType->number ];
                 }
             }
             $this->cards->createCards($cards, 'bag'.$playerId);
@@ -316,7 +316,7 @@ trait UtilTrait {
         $strengthByPlayer = [];
         foreach ($playersIds as $playerId) {
             $playerFighters = array_values(array_filter($fightersOnTerritory, fn($fighter) => $fighter->playerId == $playerId));
-            $playerFightersStrengthes = array_map(fn($fighter) => $fighter->strength, $playerFighters);
+            $playerFightersStrengthes = array_map(fn($fighter) => $fighter->getStrength(), $playerFighters);
             $strengthByPlayer[$playerId] = array_reduce($playerFightersStrengthes, fn($a, $b) => $a + $b, 0);
         }
 
@@ -498,14 +498,18 @@ trait UtilTrait {
         }
 
         // every time a fighter moves, we check if it makes a control to a visible Discover tile
+        $this->checkTerritoriesDiscoverTileControl();
+
+        return $redirectBrouillage;
+    }
+
+    function checkTerritoriesDiscoverTileControl() {
         $discoverTiles = $this->getDiscoverTilesByLocation('territory', null, true);
         foreach($discoverTiles as &$discoverTile) {
             if ($discoverTile->type === 1) { // coffre
                 $this->checkDiscoverTileControl($discoverTile);
             }
         }
-
-        return $redirectBrouillage;
     }
 
     function moveDiscoverTileToPlayer(DiscoverTile &$discoverTile, int $playerId) {
@@ -588,4 +592,126 @@ trait UtilTrait {
         }
     }
 
+    function setFightersActivated(array &$fighters) {
+        $fightersIds = array_map(fn($fighter) => $fighter->id, $fighters);
+        self::DbQuery("update card set played = true where card_id IN (".implode(',', $fightersIds).")");
+
+        self::notifyAllPlayers("setFightersActivated", '', [
+            'fighters' => $fighters,
+        ]);
+    }
+
+    function setFightersUnactivated(array &$fighters) {
+        $fightersIds = array_map(fn($fighter) => $fighter->id, $fighters);
+        self::DbQuery("update card set played = false where card_id IN (".implode(',', $fightersIds).")");
+
+        self::notifyAllPlayers("setFightersUnactivated", '', [
+            'fighters' => $fighters,
+        ]);
+    }
+
+    function putBackInBag(array &$fighters, int $bag) {
+        $bags = [];
+        $movedFighters = [];
+        foreach($fighters as &$fighter) {
+            $bag = $fighter->type != 1 ? 0 : $fighter->playerId;
+            $this->cards->moveCard($fighter->id, 'bag'.$bag);
+            if ($bag == 0) {
+                self::DbQuery("update card set player_id = 0 where card_id = $fighter->id");
+            }
+            if (!in_array($bag, $bags)) {
+                $bags[] = $bag;
+            }
+            $movedFighters[] = $this->getCardById($fighter->id);
+        }    
+        
+        foreach($bags as $bag) {
+            $this->cards->shuffle('bag'.$bag);
+        }
+
+        self::notifyAllPlayers("putBackInBag", '', [
+            'fighters' => $movedFighters,
+        ]);
+    }
+    
+    function applyAction(Card &$action) {
+        $nextState = 'chooseFighter';
+        switch ($action->power) {
+            case ACTION_FURY:
+                $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_FURY);
+                break;
+            case ACTION_RESET:
+                $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_RESET);
+                break;
+            case ACTION_TELEPORT:
+                $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_TELEPORT);
+                break;
+        }
+        // TODO action
+        $this->gamestate->nextState($nextState);
+        //$this->putBackInBag($action, 0);
+    }
+
+    function applyActivateFighter(Card &$fighter) {
+        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $fighter->id);
+        $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_ACTIVATE);
+
+        $this->setFightersActivated([$fighter]);
+        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, -1);
+        if ($fighter->power === POWER_METAMORPH) {
+            // every time a metamorph is flipped, we check if it makes a control to a visible Discover tile
+            $this->checkTerritoriesDiscoverTileControl();
+        }
+
+        $nextState = 'nextMove';
+        switch ($fighter->power) {
+            case POWER_REANIMATRICE:
+                $territories = [$fighter->locationArg, ...$this->getTerritoryNeighboursIds($fighter->locationArg)];
+                $playerFighters = $this->getCardsByLocation('territory', null, $fighter->playerId);
+                $unactivatedFighters = array_values(array_filter($playerFighters, fn($playerFighter) => $playerFighter->played && $playerFighter->id != $fighter->id && in_array($playerFighter->locationArg, $territories)));
+                $this->setFightersUnactivated($unactivatedFighters);
+                if ($this->array_some($unactivatedFighters, fn($unactivatedFighter) => $unactivatedFighter->power === POWER_METAMORPH)) {
+                    // every time a metamorph is flipped, we check if it makes a control to a visible Discover tile
+                    $this->checkTerritoriesDiscoverTileControl();
+                }
+                break;
+            case POWER_PUSHER:
+                if ($fighter->type === 10) { // super pusher                    
+                    $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_SUPER);
+                    $nextState = 'chooseTerritory';
+                } else {
+                    $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_PUSH);
+                    $nextState = 'chooseFighter';
+                }
+                break;
+            case POWER_ASSASSIN:
+                if ($fighter->type === 10) { // super assassin                 
+                    $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_SUPER);
+                    $nextState = 'chooseTerritory';
+                } else {
+                    $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_KILL);
+                    $nextState = 'chooseFighter';
+                    break;
+                }
+            case POWER_EMPLUME:
+                $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_FLY);
+                $nextState = 'chooseTerritory';
+                break;
+            case POWER_IMPATIENT:
+                $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_IMPATIENT);
+                $nextState = 'chooseTerritory';
+                break;
+            case POWER_BOMBARDE:
+                $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_KILL);
+                $nextState = 'chooseFighter';
+                break;
+            case POWER_PACIFICATEUR:
+                $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_UNACTIVATE);
+                $nextState = 'chooseFighter';
+                break;
+            // POWER_TISSEUSE, POWER_ROOTED, POWER_METAMORPH: passive powers
+        }
+
+        $this->gamestate->nextState($nextState);
+    }
 }

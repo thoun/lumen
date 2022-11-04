@@ -138,7 +138,23 @@ trait ActionTrait {
             'value' => -1,
         ]);
 
-        $this->gamestate->nextState('nextMove');
+        $nextState = 'nextMove';
+        if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) == MOVE_SUPER) {
+            $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+            $selectedFighter = $this->getCardById($selectedFighterId);
+
+            switch ($selectedFighter->power) {
+                case POWER_PUSHER:
+                    $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_PUSH);
+                    break;
+                case POWER_ASSASSIN:
+                    $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_KILL);
+                    break;
+            }
+            $nextState = 'chooseFighter';
+        }
+
+        $this->gamestate->nextState($nextState);
     }
 
     public function chooseCellLink(int $cellId) {
@@ -169,11 +185,17 @@ trait ActionTrait {
         if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) <= 0) {
             throw new BgaUserException("No remaining action");
         }
+        if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
+            throw new BgaUserException("Impossible to play a fighter now");
+        }
 
         $fighter = $this->getCardById($id);
         
         if ($fighter->playerId != $playerId || !in_array($fighter->location, ['reserve'.$playerId, 'highCommand'.$playerId])) {
             throw new BgaUserException("Invalid fighter");
+        }
+        if (!in_array($fighter->type, [1, 10])) {
+            throw new BgaUserException("This is not a fighter");
         }
 
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
@@ -190,11 +212,34 @@ trait ActionTrait {
         if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
             throw new BgaUserException("No remaining action");
         }
+        if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
+            throw new BgaUserException("Impossible to move a fighter now");
+        }
 
         $fighter = $this->getCardById($id);
         
         if ($fighter->playerId != $playerId || $fighter->location != 'territory') {
             throw new BgaUserException("Invalid fighter");
+        }
+
+        if ($fighter->power === POWER_BAVEUX) {
+            throw new BgaUserException("The Baveux cannot be moved");
+        }
+        if ($fighter->power === POWER_TISSEUSE && $fighter->played) {
+            throw new BgaUserException("The Tisseuse cannot be moved when activated");
+        }
+        if ($fighter->power === POWER_ROOTED && $fighter->played) {
+            throw new BgaUserException("The Rooted cannot be moved when activated");
+        }
+        if ($fighter->power === POWER_METAMORPH && !$fighter->played) {
+            throw new BgaUserException("The Metamorph cannot be moved until activated");
+        }
+
+        if ($fighter->location === 'territory') {
+            $opponentTisseuses = $this->getCardsByLocation($fighter->location, $fighter->locationArg, $this->getOpponentId(), null, 15);
+            if ($this->array_some($opponentTisseuses, fn($opponentTisseuse) => $opponentTisseuse->played)) {
+                throw new BgaUserException("An opponent Tisseuse prevents you to leave the territory");
+            }
         }
 
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
@@ -204,28 +249,95 @@ trait ActionTrait {
     }
 
     public function activateFighter(int $id) {
-        $this->checkAction('moveFighter'); 
+        $this->checkAction('activateFighter'); 
         
         $playerId = intval($this->getActivePlayerId());
 
         if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
             throw new BgaUserException("No remaining action");
         }
+        if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
+            throw new BgaUserException("Impossible to activate a fighter now");
+        }
 
         $fighter = $this->getCardById($id);
-        
-        if ($fighter->playerId != $playerId || $fighter->location != 'territory') {
-            throw new BgaUserException("Invalid fighter");
+
+        $action = $fighter->type === 20;
+        if ($action) {
+            if ($fighter->location != 'highCommand'.$playerId) {
+                throw new BgaUserException("You can't activate this action");
+            }
+        } else {
+            if ($fighter->playerId != $playerId || $fighter->location != 'territory') {
+                throw new BgaUserException("Invalid fighter");
+            }
         }
         if ($fighter->played) {
             throw new BgaUserException("This fighter is already played");
         }
+        if (!$fighter->power || $fighter->power === POWER_BAVEUX) {
+            throw new BgaUserException("This fighter has no activable power");
+        }
 
-        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
-        $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_ACTIVATE);
+        if ($action) {
+            $this->applyAction($fighter);
+        } else {
+            $this->applyActivateFighter($fighter);
+        }
+    }
 
-        // TODO
-        $this->gamestate->nextState('chooseTerritory');
+    public function chooseFighters(array $ids) {        
+        $this->checkAction('chooseFighters'); 
+
+        $args = $this->argChooseFighter();
+        if ($args['selectionSize'] != count($ids)) {
+            throw new BgaUserException("Invalid selection size");
+        }
+        $fighters = [];
+        foreach($ids as $id) {
+            if (!in_array($id, $args['possibleTerritoryFighters'])) {
+                throw new BgaUserException("Invalid fighter");
+            }
+            $fighters[] = $this->getCardById($id);
+        }
+        $fighter = $fighters[0];
+
+        $nextState = 'nextMove';
+        switch ($fighter->power) {
+            case POWER_PUSHER:                 
+                $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $fighter->id);
+                $nextState = 'chooseTerritory';
+                break;
+            case POWER_ASSASSIN:
+                $this->putBackInBag([$fighter]);
+                $this->checkTerritoriesDiscoverTileControl();
+                break;
+            case POWER_PACIFICATEUR:
+                $this->setFightersActivated($fighters);
+                break;
+            case ACTION_FURY:
+                if ($fighters[0]->locationArg == $fighters[1]->locationArg) {
+                    throw new BgaUserException("You must select fighters of different trritories");
+                }
+                $this->putBackInBag($fighters);
+                $this->checkTerritoriesDiscoverTileControl();
+                break;
+            case ACTION_RESET:
+                $fighters = $this->getCardsByLocation($fighter->location, $fighter->locationArg);
+                $this->putBackInBag($fighters);
+                break;
+            case ACTION_TELEPORT:
+                $this->cards->moveCard($fighters[0]->id, 'territory', $fighters[1]->locationArg);
+                $this->cards->moveCard($fighters[1]->id, 'territory', $fighters[0]->locationArg);
+                $this->checkTerritoriesDiscoverTileControl();
+        
+                self::notifyAllPlayers("exchangedFighters", '', [
+                    'fighters' => $fighters,
+                ]);
+                break;
+        }
+
+        $this->gamestate->nextState($nextState);
     }
 
     public function chooseTerritory(int $territoryId) {
@@ -233,31 +345,67 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
 
-        $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+        $args = $this->argChooseTerritory();
+        $selectedFighter = $args['selectedFighter'];
 
-        if ($selectedFighterId <= 0) {
+        if ($selectedFighter == null) {
             throw new BgaUserException("No selected fighter");
         }
-
-        $selectedFighter = $this->getCardById($selectedFighterId);
-
-        $move = intval($this->getGameStateValue(PLAYER_CURRENT_MOVE));
+        
+        $move = $args['move'];
         if ($move <= 0) {
             throw new BgaUserException("No selected move");
         }
 
-        $redirectBrouillage = false;
+        if (!in_array($territoryId, $args['territoriesIds'])) {
+            throw new BgaUserException("Invalid territory");
+        }
+
+        $nextState = 'nextMove';
         switch ($move) {
             case MOVE_PLAY:
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                $this->applyMoveFighter($selectedFighter, $territoryId);
                 $this->incGameStateValue(REMAINING_FIGHTERS_TO_PLACE, -1);
                 break;
             case MOVE_MOVE:
                 $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                if ($redirectBrouillage) {
+                    $nextState = 'chooseCellBrouillage';
+                }
                 $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, -1);
+                break;
+            case MOVE_SUPER:
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                if ($redirectBrouillage) {
+                    $nextState = 'chooseCellBrouillage';
+                } else {
+                    switch ($selectedFighter->power) {
+                        case POWER_PUSHER:
+                            $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_PUSH);
+                            break;
+                        case POWER_ASSASSIN:
+                            $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_KILL);
+                            break;
+                    }
+                    $nextState = 'chooseFighter';
+                }
+                break;
+            case MOVE_PUSH:
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                if ($redirectBrouillage) {
+                    $nextState = 'chooseCellBrouillage';
+                }
+                break;
+            case POWER_IMPATIENT:
+                $this->setGameStateValue(INITIATIVE_MARKER_TERRITORY, $territoryId);
+                self::notifyAllPlayers('moveInitiativeMarker', clienttranslate('${player_name} moves the initiative marker'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'territoryId' => $territoryId,
+                ]);
                 break;
         }
 
-        $this->gamestate->nextState($redirectBrouillage ? 'chooseCellBrouillage' : 'nextMove');
+        $this->gamestate->nextState($nextState);
     }
 }
