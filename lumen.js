@@ -1401,6 +1401,9 @@ var Lumen = /** @class */ (function () {
             ['takeObjectiveToken', ANIMATION_MS],
             ['moveFighter', ANIMATION_MS],
             ['refillReserve', ANIMATION_MS],
+            ['moveDiscoverTileToPlayer', ANIMATION_MS],
+            ['discardDiscoverTile', ANIMATION_MS],
+            ['revealDiscoverTile', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -1468,6 +1471,15 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_refillReserve = function (notif) {
         this.getPlayerTable(notif.args.playerId).refillReserve(notif.args.fighter, notif.args.slot);
+    };
+    Lumen.prototype.notif_moveDiscoverTileToPlayer = function (notif) {
+        // TODO
+    };
+    Lumen.prototype.notif_discardDiscoverTile = function (notif) {
+        // TODO
+    };
+    Lumen.prototype.notif_revealDiscoverTile = function (notif) {
+        // TODO
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

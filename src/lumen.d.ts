@@ -153,3 +153,16 @@ interface NotifRefillReserveArgs {
     fighter: Card | null;
     slot: number;
 }
+
+interface NotifMoveDiscoverTileToPlayerArgs {
+    playerId: number;
+    discoverTile: DiscoverTile;
+}
+
+interface NotifDiscardDiscoverTileArgs {
+    discoverTile: DiscoverTile;
+}
+
+interface NotifRevealDiscoverTileArgs {
+    discoverTile: DiscoverTile;
+}

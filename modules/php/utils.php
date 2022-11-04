@@ -160,10 +160,13 @@ trait UtilTrait {
         $this->cards->shuffle('bag0');
     }
 
-    function getDiscoverTilesByLocation(string $location, /*int|null*/ $location_arg = null, /*int|null*/ $type = null, /*int|null*/ $subType = null) {
+    function getDiscoverTilesByLocation(string $location, /*int|null*/ $location_arg = null, /*bool|null*/ $visible = null, /*int|null*/ $type = null, /*int|null*/ $subType = null) {
         $sql = "SELECT * FROM `discover_tile` WHERE `card_location` = '$location'";
         if ($location_arg !== null) {
             $sql .= " AND `card_location_arg` = $location_arg";
+        }
+        if ($visible !== null) {
+            $sql .= " AND `visible` = ".strval($visible);
         }
         if ($type !== null) {
             $sql .= " AND `card_type` = $type";
@@ -306,21 +309,21 @@ trait UtilTrait {
         ]);
     }
 
-    function getTerritoryControlledPlayer(int $territoryId) {
+    function getTerritoryControlledPlayer(int $territoryId, int $requiredDiff = 1) {
         $territoryControlledPlayer = null;
-        $players = $this->loadPlayersBasicInfos();
+        $playersIds = $this->getPlayersIds();
         $fightersOnTerritory = $this->getCardsByLocation('territory', $territoryId);
         $strengthByPlayer = [];
-        foreach ($players as $playerId => $player) {
-            $playerFighters = array_values(array_filter($fightersOnTerritory, fn($fighter) => $fighter->type == intval($player['player_no'])));
+        foreach ($playersIds as $playerId) {
+            $playerFighters = array_values(array_filter($fightersOnTerritory, fn($fighter) => $fighter->playerId == $playerId));
             $playerFightersStrengthes = array_map(fn($fighter) => $fighter->strength, $playerFighters);
             $strengthByPlayer[$playerId] = array_reduce($playerFightersStrengthes, fn($a, $b) => $a + $b, 0);
         }
 
-        if ($strengthByPlayer[array_keys($strengthByPlayer)[0]] > $strengthByPlayer[array_keys($strengthByPlayer)[1]]) {
-            $territoryControlledPlayer = array_keys($strengthByPlayer)[0];
-        } else if ($strengthByPlayer[array_keys($strengthByPlayer)[1]] > $strengthByPlayer[array_keys($strengthByPlayer)[0]]) {
-            $territoryControlledPlayer = array_keys($strengthByPlayer)[1];
+        if ($strengthByPlayer[$playersIds[0]] >= $strengthByPlayer[$playersIds[1]] + $requiredDiff) {
+            $territoryControlledPlayer = $playersIds[0];
+        } else if ($strengthByPlayer[$playersIds[1]] >= $strengthByPlayer[$playersIds[0]] + $requiredDiff) {
+            $territoryControlledPlayer = $playersIds[1];
         }
 
         return $territoryControlledPlayer;
@@ -465,7 +468,7 @@ trait UtilTrait {
         ]);
     }
 
-    function applyMoveFighter(Card $fighter, int $territoryId) {
+    function applyMoveFighter(Card &$fighter, int $territoryId) { // return redirected for brouillage
         $this->cards->moveCard($fighter->id, 'territory', $territoryId);
         $fighter = $this->getCardById($fighter->id);
 
@@ -473,6 +476,99 @@ trait UtilTrait {
             'fighter' => $fighter,
             'territoryId' => $territoryId,
         ]);
+
+        return $this->fighterMoved($fighter, $territoryId);
+    }
+
+    function checkDiscoverTileControl(DiscoverTile &$discoverTile) {
+        $controlledBy = $this->getTerritoryControlledPlayer($discoverTile->locationArg, $discoverTile->typeArg);
+        if ($controlledBy !== null) {
+            $this->moveDiscoverTileToPlayer($discoverTile, $controlledBy);
+        }
+    }
+
+    function fighterMoved(Card &$fighter, int $territoryId) { // return redirected for brouillage
+        $redirectBrouillage = false;
+        $discoverTiles = $this->getDiscoverTilesByLocation('territory', $territoryId, false);
+        //we reveal hidden discover tiles
+        foreach($discoverTiles as &$discoverTile) {
+            if ($this->revealDiscoverTile($discoverTile, $fighter->playerId, $territoryId)) {
+                $redirectBrouillage = true;
+            }
+        }
+
+        // every time a fighter moves, we check if it makes a control to a visible Discover tile
+        $discoverTiles = $this->getDiscoverTilesByLocation('territory', null, true);
+        foreach($discoverTiles as &$discoverTile) {
+            if ($discoverTile->type === 1) { // coffre
+                $this->checkDiscoverTileControl($discoverTile);
+            }
+        }
+
+        return $redirectBrouillage;
+    }
+
+    function moveDiscoverTileToPlayer(DiscoverTile &$discoverTile, int $playerId) {
+        $this->cards->moveCard($discoverTile->id, 'player', $playerId);
+
+        self::notifyAllPlayers("moveDiscoverTileToPlayer", '', [
+            'discoverTile' => $discoverTile,
+            'playerId' => $playerId,
+        ]);
+        // TODO notif
+    }
+
+    function discardDiscoverTile(DiscoverTile &$discoverTile) {
+        $this->cards->moveCard($discoverTile->id, 'discard');
+
+        self::notifyAllPlayers("discardDiscoverTile", '', [
+            'discoverTile' => $discoverTile,
+        ]);
+    }
+
+    function applyParachutage(DiscoverTile &$discoverTile, int $playerId, int $territoryId) {
+        $cardDb = $this->cards->pickCardForLocation('bag'.$playerId, 'territory', $territoryId);
+        if ($cardDb == null) {
+            self::notifyAllPlayers("log", clienttranslate('The bag is empty, impossible to apply Parachutage'), []); // TODO check log
+            return;
+        }
+        $fighter = $this->getCardById(intval($cardDb['id']));
+        $this->applyMoveFighter($fighter, $territoryId);
+
+        $this->discardDiscoverTile($discoverTile);
+    }
+
+    function revealDiscoverTile(DiscoverTile &$discoverTile, int $playerId, int $territoryId) { // return redirected for brouillage
+        self::DbQuery("update discover_tile set visible = true where card_id = $discoverTile->id");
+        $discoverTile->visible = true;
+        self::notifyAllPlayers("revealDiscoverTile", '', [
+            'discoverTile' => $discoverTile,
+        ]);
+
+        switch ($discoverTile->type) {
+            case 1: // coffre
+                // nothing, will be checked for all coffre in fighterMoved
+                break;
+            case 2: // power
+                switch ($discoverTile->power) {
+                    case POWER_BROUILLAGE:
+                        return true;
+                    case POWER_PLANIFICATION:
+                    case POWER_COUP_FOURRE:
+                        $this->moveDiscoverTileToPlayer($discoverTile, $playerId);
+                        break;
+                    case POWER_PARACHUTAGE:
+                        $this->applyParachutage($discoverTile, $playerId, $territoryId);
+                        break;
+                    case POWER_MESSAGE_PRIORITAIRE:
+                        $this->addCheck($playerId);
+                        $this->discardDiscoverTile($discoverTile);
+                        break;
+                }
+                break;
+        }
+
+        return false;
     }
 
     function refillReserve(int $playerId) {

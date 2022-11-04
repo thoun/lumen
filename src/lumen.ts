@@ -603,6 +603,9 @@ class Lumen implements LumenGame {
             ['takeObjectiveToken', ANIMATION_MS],
             ['moveFighter', ANIMATION_MS],
             ['refillReserve', ANIMATION_MS],
+            ['moveDiscoverTileToPlayer', ANIMATION_MS],
+            ['discardDiscoverTile', ANIMATION_MS],
+            ['revealDiscoverTile', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -686,6 +689,18 @@ class Lumen implements LumenGame {
 
     notif_refillReserve(notif: Notif<NotifRefillReserveArgs>) {
         this.getPlayerTable(notif.args.playerId).refillReserve(notif.args.fighter, notif.args.slot);
+    }
+
+    notif_moveDiscoverTileToPlayer(notif: Notif<NotifMoveDiscoverTileToPlayerArgs>) {
+        // TODO
+    }
+
+    notif_discardDiscoverTile(notif: Notif<NotifDiscardDiscoverTileArgs>) {
+        // TODO
+    }
+
+    notif_revealDiscoverTile(notif: Notif<NotifRevealDiscoverTileArgs>) {
+        // TODO
     }
 
     /* This enable to inject translatable styled things to logs or action bar */
