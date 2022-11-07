@@ -84,6 +84,17 @@ trait StateTrait {
     function stEndScore() {
         $playersIds = $this->getPlayersIds();
 
+        $scenarioId = $this->getScenarioId();
+        switch ($scenarioId) {
+            case 1:
+                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+                if ($initiativeMarkerControlledPlayer !== null) {
+                    $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer, 'C');
+                    $this->setRealizedObjective('C');
+                }
+                break;
+        }
+
         // update player_score_aux
         /*$endRound = intval($this->getGameStateValue(END_ROUND_TYPE));
         $playerId = intval($this->getPlayerBefore($this->getActivePlayerId())); // if STOP, last player is the one before the newly activated player (next round starter)

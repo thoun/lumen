@@ -2,6 +2,7 @@
 
 require_once(__DIR__.'/objects/circle.php');
 require_once(__DIR__.'/objects/discover-tile.php');
+require_once(__DIR__.'/objects/objective-token.php');
 
 trait UtilTrait {
 
@@ -187,6 +188,17 @@ trait UtilTrait {
         $this->discoverTiles->shuffle('deck');
     }
 
+    function getObjectiveTokenFromDb(/*array|null*/ $dbCard) {
+        if ($dbCard == null) {
+            return null;
+        }
+        return new ObjectiveToken($dbCard);
+    }
+
+    function getObjectiveTokensFromDb(array $dbCards) {
+        return array_map(fn($dbCard) => $this->getObjectiveTokenFromDb($dbCard), array_values($dbCards));
+    }
+
     function setupObjectiveTokens() {
         for ($i=3;$i<=5;$i++) {
             $cards[] = [ 'type' => $i, 'type_arg' => null, 'nbr' => 7 ];
@@ -234,6 +246,20 @@ trait UtilTrait {
                 $this->cards->pickCardForLocation('bag'.$playerId, 'reserve'.$playerId, $i); // TODO check translation
             }
         }
+    }
+
+    function isRealizedObjective(string $letter, /*int|null*/ $playerId = null) {
+        $sql = "SELECT count(*) FROM `realized_objective` WHERE `letter` = '$letter'";
+        if ($playerId !== null) {
+            $sql .= " AND `player_id` = $playerId";
+        }
+        return boolval(self::getUniqueValueFromDB($sql));
+    }
+
+    
+
+    function setRealizedObjective(string $letter, int $playerId = 0) {
+        self::DbQuery("update `realized_objective` set player_id = $playerId WHERE `letter` = '$letter'");
     }
 
     function getTerritoryNeighboursIds(int $territoryId) {
@@ -294,6 +320,10 @@ trait UtilTrait {
                 'player_name' => $this->getPlayerName($playerId),
                 'card' => $card,
             ]);
+        }
+
+        if ($checks >= 6) {
+            $this->takeCheckObjectiveToken($playerId, $checks);
         }
     }
 
@@ -452,20 +482,41 @@ trait UtilTrait {
         ]);
     }
 
-    function takeObjectiveToken(int $playerId, string $letter) {
-        $token = $this->objectiveTokens->pickCardForLocation('deck', 'player', $playerId);
-        $value = intval($token['type']);
+    function takeObjectiveTokens(int $playerId, int $number, string $message, $messageArgs = []) {
+        $tokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->pickCardsForLocation($number, 'deck', 'player', $playerId));
         
         $args = [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
-            'letter' => $letter
-        ];
-        self::notifyAllPlayers("takeObjectiveToken", clienttranslate('${player_name} get an objective token for objective ${letter}'), $args);
-        self::notifyPlayer($playerId, "takeObjectiveToken", clienttranslate('You get a ${lumens} lumens objective token for objective ${letter}'), $args + [
-            'value' => $value,
-            'lumens' => $value,
+        ] + $messageArgs;
+        self::notifyAllPlayers("takeObjectiveToken", $message, $args + [
+            'tokens' => ObjectiveToken::onlyIds($tokens),
         ]);
+        self::notifyPlayer($playerId, "takeObjectiveToken", $message, $args + [
+            'tokens' => $tokens,
+        ]);
+    }
+
+    function takeScenarioObjectiveToken(int $playerId, string $letter) {
+        $this->takeObjectiveTokens(
+            $playerId, 
+            1,
+            clienttranslate('${player_name} get an objective token for objective ${letter}'), 
+            [
+                'letter' => $letter
+            ]
+        );
+    }
+
+    function takeCheckObjectiveToken(int $playerId, int $check) {
+        $this->takeObjectiveTokens(
+            $playerId, 
+            1,
+            clienttranslate('${player_name} get an objective token for checking the high-command check number ${check}'), 
+            [
+                'check' => $check
+            ]
+        );
     }
 
     function applyMoveFighter(Card &$fighter, int $territoryId) { // return redirected for brouillage
@@ -508,6 +559,22 @@ trait UtilTrait {
         foreach($discoverTiles as &$discoverTile) {
             if ($discoverTile->type === 1) { // coffre
                 $this->checkDiscoverTileControl($discoverTile);
+            }
+        }
+        
+        $frontierObjectives = $this->getScenario()->frontierObjectives;
+
+        foreach ($frontierObjectives as $letter => $territoriesIds) {
+            if (!$this->isRealizedObjective($letter)) {
+                $controlledBy = [];
+                foreach ($territoriesIds as $territoryId) {
+                    $controlledBy[] = $this->getTerritoryControlledPlayer($territoryId);
+                }
+
+                if (count(array_unique($controlledBy, SORT_REGULAR)) === 1 && $controlledBy[0] !== null) {
+                    $this->takeScenarioObjectiveToken($controlledBy[0], 'B');
+                    $this->setRealizedObjective($letter);
+                }
             }
         }
     }

@@ -152,7 +152,11 @@ $this->SCENARIOS = [
       1 => [3],
     ],
   ], 
-  11), // TODO change
+  11,  // TODO change
+  [
+    'B1' => [61, 65],
+    'B2' => [71, 73, 75],
+  ]),
 ];
 
 $this->CIRCLE_NEIGHBOURS = [
