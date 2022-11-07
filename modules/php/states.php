@@ -95,6 +95,50 @@ trait StateTrait {
                 break;
         }
 
+        foreach ($playersIds as $playerId) {
+            $missions = $this->getCardsByLocation('highCommand'.$playerId, null, null, 30);
+            $scenario = $this->getScenario();
+
+            foreach ($missions as $mission) {
+                switch ($mission->power) {
+                    case MISSION_COFFRE:
+                        $discoverTokens = $this->getDiscoverTilesByLocation('player', $playerId, null, 1);
+                        $count = count($discoverTokens);
+                        if ($count >= 2) {
+                            $this->takeMissionObjectiveToken($playerId, $count - 1, _('Coffre')); // TODO
+                        }
+                        break;
+                    case MISSION_WINTER:
+                        $controlledWinterTerritories = 0;
+                        foreach ($scenario->battlefieldsIds as $battlefieldId) {
+                            foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                                if ($territory->lumens === 1 && $this->getTerritoryControlledPlayer($territory->id) === $playerId) {
+                                    $controlledWinterTerritories++;
+                                }
+                            }
+                        }
+                        if ($controlledWinterTerritories >= 2) {
+                            $this->takeMissionObjectiveToken($playerId, $controlledWinterTerritories - 1, _('Hiver')); // TODO
+                        }
+                        break;
+                    case MISSION_FRELUQUETS:
+                        $tokensCount = 0;
+                        foreach ($scenario->battlefieldsIds as $battlefieldId) {
+                            foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                                $count = $this->getCardsByLocation('territory', $territory->id, $playerId, 1, 1);
+                                if ($count >= 2) {
+                                    $tokensCount += $count - 1;
+                                }
+                            }
+                        }
+                        if ($tokensCount > 0) {
+                            $this->takeMissionObjectiveToken($playerId, $tokensCount, _('Freluquet')); // TODO
+                        }
+                        break;
+                }
+            }
+        }
+
         // update player_score_aux
         /*$endRound = intval($this->getGameStateValue(END_ROUND_TYPE));
         $playerId = intval($this->getPlayerBefore($this->getActivePlayerId())); // if STOP, last player is the one before the newly activated player (next round starter)

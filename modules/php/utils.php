@@ -514,7 +514,19 @@ trait UtilTrait {
             1,
             clienttranslate('${player_name} get an objective token for checking the high-command check number ${check}'), 
             [
-                'check' => $check
+                'check' => $check,
+            ]
+        );
+    }
+
+    function takeMissionObjectiveToken(int $playerId, int $number, string $mission) {
+        $this->takeObjectiveTokens(
+            $playerId, 
+            $number,
+            clienttranslate('${player_name} get an objective token for mission ${mission}'), 
+            [
+                'mission' => $mission,
+                'i18n' => ['mission'],
             ]
         );
     }
@@ -580,7 +592,7 @@ trait UtilTrait {
     }
 
     function moveDiscoverTileToPlayer(DiscoverTile &$discoverTile, int $playerId) {
-        $this->cards->moveCard($discoverTile->id, 'player', $playerId);
+        $this->discoverTiles->moveCard($discoverTile->id, 'player', $playerId);
 
         self::notifyAllPlayers("moveDiscoverTileToPlayer", '', [
             'discoverTile' => $discoverTile,
