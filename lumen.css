@@ -251,8 +251,7 @@
   background: green;
 }
 .card.fighter .card-sides .card-side.front > * {
-  pointer-events: none;
-  user-select: none;
+  pointer-events: all;
 }
 .card.fighter .card-sides .card-side.back {
   background: white;
@@ -269,19 +268,41 @@
   border-radius: 40%;
 }
 .card.discover-tile .card-sides .card-side {
-  border-radius: 5px;
-  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
+  background: url("img/discover-tiles.png");
+  background-size: auto 100%;
   border-radius: 40%;
 }
-.card.discover-tile .card-sides .card-side.front {
-  background: blue;
+.card.discover-tile .card-sides .card-side.front[data-type="1"][data-sub-type="3"] {
+  background-position-x: 0%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="1"][data-sub-type="4"] {
+  background-position-x: 12.5%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="1"][data-sub-type="5"] {
+  background-position-x: 25%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="1"] {
+  background-position-x: 50%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="2"] {
+  background-position-x: 62.5%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="3"] {
+  background-position-x: 75%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="4"] {
+  background-position-x: 87.5%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="5"] {
+  background-position-x: 100%;
 }
 .card.discover-tile .card-sides .card-side.front > * {
   pointer-events: none;
   user-select: none;
 }
 .card.discover-tile .card-sides .card-side.back {
-  background: teal;
+  background-position-x: 0;
 }
 
 body > .card {
@@ -503,15 +524,18 @@ body > .card {
 }
 
 .player-table {
-  width: 650px;
-  height: 300px;
+  width: 900px;
+  height: 350px;
   position: relative;
   background: rgba(255, 255, 255, 0.4);
   border: 2px solid white;
   border-radius: 15px;
 }
 .player-table .name-wrapper {
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 300px;
   display: flex;
   background: rgba(255, 255, 255, 0.6666666667);
   padding: 5px;
@@ -522,12 +546,25 @@ body > .card {
   font-size: 20pt;
   font-weight: bold;
 }
+.player-table .slot-stock .slot {
+  width: 100px;
+  height: 100px;
+}
+.player-table .reserve {
+  position: absolute;
+  width: 320px;
+}
+.player-table .highCommand {
+  position: absolute;
+  width: 540px;
+  left: 350px;
+}
 .player-table .operations {
   position: absolute;
   display: flex;
   flex-wrap: wrap;
   left: 800px;
-  top: 50px;
+  top: 100px;
 }
 .player-table .operations .operation-number {
   position: absolute;
@@ -576,12 +613,12 @@ body > .card {
   position: absolute;
   display: flex;
   flex-wrap: wrap;
-  left: 300px;
-  top: 50px;
+  left: 400px;
+  top: 100px;
   width: 500px;
 }
 .player-table .circles .circle {
-  position: relative;
+  position: absolute;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -623,15 +660,89 @@ body > .card {
 .player-table .circles .circle[data-zone="8"] {
   background-color: rgba(255, 0, 128, 0.4);
 }
-.player-table .slot-stock .slot {
-  width: 150px;
-  height: 150px;
+.player-table .circles .circle[data-circle="1"] {
+  top: 0px;
+  left: 145px;
 }
-.player-table .reserve {
-  position: absolute;
+.player-table .circles .circle[data-circle="2"] {
+  top: 0px;
+  left: 195px;
 }
-.player-table .highCommand {
-  position: absolute;
+.player-table .circles .circle[data-circle="3"] {
+  top: 0px;
+  left: 245px;
+}
+.player-table .circles .circle[data-circle="3"] {
+  top: 0px;
+  left: 295px;
+}
+.player-table .circles .circle[data-circle="4"] {
+  top: 40px;
+  left: 120px;
+}
+.player-table .circles .circle[data-circle="5"] {
+  top: 40px;
+  left: 170px;
+}
+.player-table .circles .circle[data-circle="6"] {
+  top: 40px;
+  left: 220px;
+}
+.player-table .circles .circle[data-circle="7"] {
+  top: 40px;
+  left: 270px;
+}
+.player-table .circles .circle[data-circle="8"] {
+  top: 40px;
+  left: 320px;
+}
+.player-table .circles .circle[data-circle="9"] {
+  top: 80px;
+  left: 45px;
+}
+.player-table .circles .circle[data-circle="10"] {
+  top: 80px;
+  left: 95px;
+}
+.player-table .circles .circle[data-circle="11"] {
+  top: 80px;
+  left: 145px;
+}
+.player-table .circles .circle[data-circle="12"] {
+  top: 80px;
+  left: 195px;
+}
+.player-table .circles .circle[data-circle="13"] {
+  top: 80px;
+  left: 245px;
+}
+.player-table .circles .circle[data-circle="14"] {
+  top: 80px;
+  left: 295px;
+}
+.player-table .circles .circle[data-circle="15"] {
+  top: 105px;
+  left: 0;
+}
+.player-table .circles .circle[data-circle="16"] {
+  top: 130px;
+  left: 45px;
+}
+.player-table .circles .circle[data-circle="17"] {
+  top: 130px;
+  left: 95px;
+}
+.player-table .circles .circle[data-circle="18"] {
+  top: 130px;
+  left: 145px;
+}
+.player-table .circles .circle[data-circle="19"] {
+  top: 170px;
+  left: 70px;
+}
+.player-table .circles .circle[data-circle="20"] {
+  top: 170px;
+  left: 120px;
 }
 
 html[data-filling-pattern=true] .circle[data-zone="0"] {

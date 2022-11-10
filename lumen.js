@@ -619,11 +619,15 @@ var CardsManager = /** @class */ (function (_super) {
             getId: function (card) { return "card-".concat(card.id); },
             setupDiv: function (card, div) { return div.classList.add('fighter'); },
             setupFrontDiv: function (card, div) {
-                div.innerHTML = "".concat(card.type, " ").concat(card.subType, "\n            <button id=\"card-").concat(card.id, "-play\">play ").concat(card.id, "</button>\n            <button id=\"card-").concat(card.id, "-move\">move ").concat(card.id, "</button>\n            <button id=\"card-").concat(card.id, "-activate\">activate ").concat(card.id, "</button>\n            ");
+                div.innerHTML = "".concat(card.type, " ").concat(card.subType, "\n                <button id=\"card-").concat(card.id, "-play\">play ").concat(card.id, "</button>\n                <button id=\"card-").concat(card.id, "-move\">move ").concat(card.id, "</button>\n                <button id=\"card-").concat(card.id, "-activate\">activate ").concat(card.id, "</button>\n                ");
                 document.getElementById("card-".concat(card.id, "-play")).addEventListener('click', function () { return _this.game.playFighter(card.id); });
                 document.getElementById("card-".concat(card.id, "-move")).addEventListener('click', function () { return _this.game.moveFighter(card.id); });
                 document.getElementById("card-".concat(card.id, "-activate")).addEventListener('click', function () { return _this.game.activateFighter(card.id); });
-            }
+            },
+            setupBackDiv: function (card, div) {
+                div.innerHTML = "".concat(card.type, " ").concat(card.subType, "\n                <button id=\"card-").concat(card.id, "-move-back\">move ").concat(card.id, "</button>\n                ");
+                document.getElementById("card-".concat(card.id, "-move-back")).addEventListener('click', function () { return _this.game.moveFighter(card.id); });
+            },
         }) || this;
         _this.game = game;
         return _this;
@@ -637,7 +641,10 @@ var DiscoverTilesManager = /** @class */ (function (_super) {
             getId: function (card) { return "discover-tile-".concat(card.id); },
             setupDiv: function (card, div) { return div.classList.add('discover-tile'); },
             setupFrontDiv: function (card, div) {
-                div.innerHTML = "".concat(card.type, " ").concat(card.subType);
+                if (card.type) {
+                    div.dataset.type = '' + card.type;
+                    div.dataset.subType = '' + card.subType;
+                }
             }
         }) || this;
         _this.game = game;
@@ -727,8 +734,8 @@ var TableCenter = /** @class */ (function () {
         this.discoverTilesStocks = [];
         var scenario = SCENARIOS[gamedatas.scenario];
         this.addBattlefields(scenario.battlefields);
-        gamedatas.fightersOnTerritories.forEach(function (card) { return _this.fightersStocks[card.locationArg].addCard(card); });
-        gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile); });
+        gamedatas.fightersOnTerritories.forEach(function (card) { return _this.fightersStocks[card.locationArg].addCard(card, undefined, { visible: !card.played }); });
+        gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, { visible: discoverTile.visible }); });
     }
     TableCenter.prototype.addBattlefields = function (battlefields) {
         var _this = this;
@@ -786,6 +793,7 @@ var PlayerTable = /** @class */ (function () {
             var _a;
             var div = document.createElement('div');
             div.id = "player-table-".concat(_this.playerId, "-circle").concat(circle.circleId);
+            div.dataset.circle = "".concat(circle.circleId);
             div.classList.add('circle');
             div.innerHTML = "".concat((_a = circle.value) !== null && _a !== void 0 ? _a : '');
             document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);

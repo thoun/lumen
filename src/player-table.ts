@@ -46,6 +46,7 @@ class PlayerTable {
         player.circles.forEach(circle => {
             const div = document.createElement('div');
             div.id = `player-table-${this.playerId}-circle${circle.circleId}`;
+            div.dataset.circle = `${circle.circleId}`;
             div.classList.add('circle');
             div.innerHTML = `${circle.value ?? ''}`;
             document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);

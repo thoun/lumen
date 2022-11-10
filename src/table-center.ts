@@ -7,8 +7,8 @@ class TableCenter {
 
         this.addBattlefields(scenario.battlefields);
         
-        gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card));
-        gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile));
+        gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
+        gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, {visible: discoverTile.visible}));
     }
     
     private addBattlefields(battlefields: BattlefieldPosition[]) {

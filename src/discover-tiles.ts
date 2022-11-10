@@ -5,7 +5,10 @@ class DiscoverTilesManager extends CardManager<DiscoverTile> {
             getId: card => `discover-tile-${card.id}`,
             setupDiv: (card, div) => div.classList.add('discover-tile'),
             setupFrontDiv: (card, div) => {
-                div.innerHTML = `${card.type} ${card.subType}`;
+                if (card.type) {
+                    div.dataset.type = ''+card.type;
+                    div.dataset.subType = ''+card.subType;
+                }
             }
         })
     }  

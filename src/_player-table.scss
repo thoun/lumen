@@ -1,13 +1,18 @@
+$circleWidth: 50px;
+
 .player-table {
-  width: 650px;
-  height: 300px;
+  width: 900px;
+  height: 350px;
   position: relative;
   background: #FFFFFF66;
   border: 2px solid white;
   border-radius: 15px;
 
   .name-wrapper {
-    position: relative;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 300px;
     display: flex;
     background: #FFFFFFAA;
     padding: 5px;
@@ -20,12 +25,29 @@
     }
   }
 
+  .slot-stock {
+    .slot {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  .reserve {
+    position: absolute;
+    width: 320px;
+  }
+  .highCommand {
+    position: absolute;
+    width: 540px;
+    left: 350px;
+  }
+
   .operations {
     position: absolute;
     display: flex;
     flex-wrap: wrap;
     left: 800px;
-    top: 50px;
+    top: 100px;
 
     .operation-number {
       position: absolute;
@@ -62,14 +84,14 @@
     position: absolute;
     display: flex;
     flex-wrap: wrap;
-    left: 300px;
-    top: 50px;
+    left: 400px;
+    top: 100px;
     width: 500px;
 
     .circle {
-      position: relative;
-      width: 50px;
-      height: 50px;
+      position: absolute;
+      width: $circleWidth;
+      height: $circleWidth;
       border-radius: 50%;
       display: flex;
       justify-content: center;
@@ -92,21 +114,46 @@
       &[data-zone="6"] { background-color: rgba(0, 255, 255, .4); }
       &[data-zone="7"] { background-color: rgba(0, 255, 128, .4); }
       &[data-zone="8"] { background-color: rgba(255, 0, 128, .4); }
-    }
-  }
 
-  .slot-stock {
-    .slot {
-      width: 150px;
-      height: 150px;
+      @for $index from 1 through 3 {
+        &[data-circle="#{$index}"] {
+          top: 0px;
+          left: #{145px + ($circleWidth * ($index - 1))};
+        }
+      }
+      &[data-circle="3"] {
+        top: 0px;
+        left: #{145px + ($circleWidth * 3)};
+      }
+      @for $index from 4 through 8 {
+        &[data-circle="#{$index}"] {
+          top: 40px;
+          left: #{120px + ($circleWidth * ($index - 4))};
+        }
+      }
+      @for $index from 9 through 14 {
+        &[data-circle="#{$index}"] {
+          top: 80px;
+          left: #{45px + ($circleWidth * ($index - 9))};
+        }
+      }
+      &[data-circle="15"] {
+        top: 105px;
+        left: 0;
+      }
+      @for $index from 16 through 18 {
+        &[data-circle="#{$index}"] {
+          top: 130px;
+          left: #{45px + ($circleWidth * ($index - 16))};
+        }
+      }
+      @for $index from 19 through 20 {
+        &[data-circle="#{$index}"] {
+          top: 170px;
+          left: #{70px + ($circleWidth * ($index - 19))};
+        }
+      }
     }
-  }
-
-  .reserve {
-    position: absolute;
-  }
-  .highCommand {
-    position: absolute;
   }
 }
       

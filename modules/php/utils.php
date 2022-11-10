@@ -673,7 +673,7 @@ trait UtilTrait {
         }
     }
 
-    function setFightersActivated(array &$fighters) {
+    function setFightersActivated(array $fighters) {
         $fightersIds = array_map(fn($fighter) => $fighter->id, $fighters);
         self::DbQuery("update card set played = true where card_id IN (".implode(',', $fightersIds).")");
 
@@ -682,7 +682,7 @@ trait UtilTrait {
         ]);
     }
 
-    function setFightersUnactivated(array &$fighters) {
+    function setFightersUnactivated(array $fighters) {
         $fightersIds = array_map(fn($fighter) => $fighter->id, $fighters);
         self::DbQuery("update card set played = false where card_id IN (".implode(',', $fightersIds).")");
 
@@ -691,7 +691,7 @@ trait UtilTrait {
         ]);
     }
 
-    function putBackInBag(array &$fighters, int $bag) {
+    function putBackInBag(array $fighters, int $bag) {
         $bags = [];
         $movedFighters = [];
         foreach($fighters as &$fighter) {

@@ -23,8 +23,7 @@
                 background: green;
 
                 &>* {
-                    pointer-events: none;
-                    user-select: none;
+                    pointer-events: all;
                 }
             } 
             

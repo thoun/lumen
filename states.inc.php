@@ -171,6 +171,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "chooseTerritory" => ST_PLAYER_CHOOSE_TERRITORY,
+            "chooseFighter" => ST_PLAYER_CHOOSE_FIGHTER,
             "nextMove" => ST_NEXT_MOVE,
             "nextPlayer" => ST_NEXT_PLAYER,
         ]
