@@ -19,10 +19,7 @@ class Lumen implements LumenGame {
     private gamedatas: LumenGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
-    private selectedCards: number[];
-    private lastNotif: any;
-    private handCounters: Counter[] = [];
-    private firstPlayer: number;
+    private selectedPlanificationDice: { [color: string]: number } = {};
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -109,6 +106,28 @@ class Lumen implements LumenGame {
                 break;                
         }
     }
+
+    private onEnteringPlanificationChooseFaces() {
+
+        (this as any).addActionButton(`confirmSelectedPlanificationFaces-button`, _("Confirm"), () => this.chooseDiceFaces());
+        dojo.addClass(`confirmSelectedPlanificationFaces-button`, 'disabled');
+        const confirmButton = document.getElementById(`confirmSelectedPlanificationFaces-button`);
+
+        ['white', 'black'].forEach((color, dieIndex) => {
+            const facesWrapper = document.createElement('div');
+
+            [0, 1, 2, 3, 4, 5].forEach(dieValueIndex => {
+                const dieValue = dieIndex + dieValueIndex;
+                const html = `<div class="die-icon" data-color="${color}">${dieValue}</div>`;
+
+                (this as any).addActionButton(`select-${color}-die-${dieValue}-button`, html, () => this.onPlanificationDiceSelection(color, dieValue), null, null, 'gray');
+                facesWrapper.appendChild(document.getElementById(`select-${color}-die-${dieValue}-button`));
+                
+            });
+
+            confirmButton.parentElement.insertBefore(facesWrapper, confirmButton);
+        });
+    }
     
     private onEnteringChooseOperation(args: EnteringChooseOperationArgs) {
         if ((this as any).isCurrentPlayerActive()) {
@@ -158,6 +177,9 @@ class Lumen implements LumenGame {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
+            case 'planificationChooseFaces':
+                this.onLeavingPlanificationChooseFaces();
+                break;
             case 'chooseOperation':
                 this.onLeavingGhostMark('operation-number');
                 break;
@@ -165,6 +187,10 @@ class Lumen implements LumenGame {
                 this.onLeavingGhostMark('circle');
                 break;
         }
+    }
+
+    private onLeavingPlanificationChooseFaces() {
+        this.selectedPlanificationDice = {};
     }
 
     private onLeavingGhostMark(className: string) {
@@ -180,6 +206,13 @@ class Lumen implements LumenGame {
     public onUpdateActionButtons(stateName: string, args: any) {
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'askActivatePlanification':
+                    (this as any).addActionButton(`activatePlanification_button`, _('Activate'), () => this.activatePlanification());
+                    (this as any).addActionButton(`passPlanification_button`, _('Pass'), () => this.passPlanification());
+                    break;
+                case 'planificationChooseFaces':
+                    this.onEnteringPlanificationChooseFaces();
+                    break;
                 case 'chooseOperation':
                     const chooseOperationArgs = args as EnteringChooseOperationArgs;
                     Object.keys(chooseOperationArgs.operations).forEach((type: any) => {
@@ -482,6 +515,19 @@ class Lumen implements LumenGame {
         [1, 2, 3, 4].forEach(family => this.cards.createMoveOrUpdateCard({id: 1040 + family, category: 4, family } as any, `help-multiplier-${family}`));
     }
 
+    private onPlanificationDiceSelection(color: string, value: number) {
+        const oldSelectedButton = document.getElementById(`select-${color}-die-${this.selectedPlanificationDice[color]}-button`);
+        const newSelectedButton = document.getElementById(`select-${color}-die-${value}-button`);
+        this.selectedPlanificationDice[color] = value;
+
+        oldSelectedButton?.classList.add('bgabutton_gray');
+        oldSelectedButton?.classList.remove('bgabutton_blue');
+        newSelectedButton?.classList.add('bgabutton_blue');
+        newSelectedButton?.classList.remove('bgabutton_gray');
+
+        dojo.toggleClass(`confirmSelectedPlanificationFaces-button`, 'disabled', isNaN(this.selectedPlanificationDice['white']) || isNaN(this.selectedPlanificationDice['black']));
+    }
+
     public cellClick(cell: number) {
         switch (this.gamedatas.gamestate.name) {
             case 'chooseCell':
@@ -494,6 +540,31 @@ class Lumen implements LumenGame {
                 this.chooseCellBrouillage(cell);
                 break;
         }
+    }
+
+    public activatePlanification() {
+        if(!(this as any).checkAction('activatePlanification')) {
+            return;
+        }
+
+        this.takeAction('activatePlanification');
+    }
+
+    public passPlanification() {
+        if(!(this as any).checkAction('passPlanification')) {
+            return;
+        }
+
+        this.takeAction('passPlanification');
+    }
+
+    
+    public chooseDiceFaces() {
+        if(!(this as any).checkAction('chooseDiceFaces')) {
+            return;
+        }
+
+        this.takeAction('chooseDiceFaces', this.selectedPlanificationDice);
     }
 
     public chooseOperation(operation: number) {
@@ -617,6 +688,7 @@ class Lumen implements LumenGame {
 
         const notifs = [
             ['diceRoll', 2000],
+            ['diceChange', ANIMATION_MS],
             ['setPlayedOperation', ANIMATION_MS],
             ['setCancelledOperation', 1],
             ['setCircleValue', ANIMATION_MS],
@@ -664,6 +736,19 @@ class Lumen implements LumenGame {
                 element.classList.remove("roll0", "roll1","roll2", "roll3");
                 void element.offsetWidth;
                 element.classList.add("roll"+Math.floor(Math.random() * 4));     
+            }
+        });
+    }
+
+    notif_diceChange(notif: Notif<NotifDiceRollArgs>) {
+        [1, 2].forEach(number => {
+            var element = document.getElementById(`c_die_${number}`);
+                        
+            if (element != null) {
+                element.className = "";
+                void element.offsetWidth;
+                element.classList.add("cube");  
+                element.classList.add("show"+notif.args[`die${number}`]);        	 
             }
         });
     }

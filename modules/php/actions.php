@@ -11,6 +11,50 @@ trait ActionTrait {
         (note: each method below must match an input method in nicodemus.action.php)
     */
 
+    public function activatePlanification() {
+        $this->checkAction('activatePlanification'); 
+
+        $this->gamestate->nextState('activate');
+    }
+
+    public function passPlanification() {
+        $this->checkAction('passPlanification'); 
+
+        $this->gamestate->nextState('pass');
+    }
+
+    public function chooseDiceFaces(int $die1, int $die2) {
+        $this->checkAction('chooseDiceFaces'); 
+        
+        if ($die1 < 0 || $die1 > 5 || $die2 < 1 || $die2 > 6) {
+            throw new BgaUserException("Invalid die face");
+        }
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        $planificationTiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_PLANIFICATION);
+        if (count($planificationTiles) < 1) {
+            throw new BgaUserException("No planification token");
+        }
+
+        $this->setGameStateValue(DIE1, $die1);
+        $this->setGameStateValue(DIE2, $die2);
+
+        $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
+        self::notifyAllPlayers('diceChange', clienttranslate('${player_name} choses ${whiteDieFace} ${blackDieFace} with Planification'), [
+            'player_name' => $this->getPlayerName($firstPlayer),
+            'die1' => $die1,
+            'die2' => $die2,
+            'whiteDieFace' => $die1,
+            'blackDieFace' => $die2,
+        ]);
+
+        // remove the used planification tile
+        $this->discardDiscoverTile($planificationTiles[0]);
+
+        $this->gamestate->nextState('chooseOperation');
+    }
+
     public function chooseOperation(int $type) {
         $this->checkAction('chooseOperation'); 
 

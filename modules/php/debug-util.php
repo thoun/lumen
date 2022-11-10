@@ -11,6 +11,21 @@ trait DebugUtilTrait {
             return;
         } 
 
+        $this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
+    }
+
+    public function debugAddDiscoverTile(int $playerId, int $powerOrLumens, int $type = 2) {
+        $tiles = $this->getDiscoverTilesByLocation('deck', null, null, $type, $powerOrLumens);
+        if (count($tiles) > 0) {
+            $this->discoverTiles->moveCard($tiles[0]->id, 'player', $playerId);
+        } else {
+            $tiles = $this->getDiscoverTilesByLocation('territory', null, null, $type, $powerOrLumens);
+            if (count($tiles) > 0) {
+                $this->discoverTiles->moveCard($tiles[0]->id, 'player', $playerId);
+            } else {
+                $this->debug("Discover tile $type $powerOrLumens not found");
+            }
+        }
     }
 
     public function debugReplacePlayersIds() {

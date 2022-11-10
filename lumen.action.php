@@ -32,7 +32,34 @@
             $this->view = "lumen_lumen";
             self::trace( "Complete reinitialization of board game" );
       }
-  	} 
+  	}
+
+    public function activatePlanification() {
+      self::setAjaxMode();
+
+      $this->game->activatePlanification();
+
+      self::ajaxResponse();
+    }
+
+    public function passPlanification() {
+      self::setAjaxMode();
+
+      $this->game->passPlanification();
+
+      self::ajaxResponse();
+    }
+
+    public function chooseDiceFaces() {
+      self::setAjaxMode();
+
+      $white = self::getArg("white", AT_posint, true);
+      $black = self::getArg("black", AT_posint, true);
+
+      $this->game->chooseDiceFaces($white, $black);
+
+      self::ajaxResponse();
+    }
 
     public function chooseOperation() {
       self::setAjaxMode();

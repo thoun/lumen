@@ -931,7 +931,7 @@ var Lumen = /** @class */ (function () {
     function Lumen() {
         this.zoom = 1;
         this.playersTables = [];
-        this.handCounters = [];
+        this.selectedPlanificationDice = {};
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -1004,6 +1004,22 @@ var Lumen = /** @class */ (function () {
                 break;
         }
     };
+    Lumen.prototype.onEnteringPlanificationChooseFaces = function () {
+        var _this = this;
+        this.addActionButton("confirmSelectedPlanificationFaces-button", _("Confirm"), function () { return _this.chooseDiceFaces(); });
+        dojo.addClass("confirmSelectedPlanificationFaces-button", 'disabled');
+        var confirmButton = document.getElementById("confirmSelectedPlanificationFaces-button");
+        ['white', 'black'].forEach(function (color, dieIndex) {
+            var facesWrapper = document.createElement('div');
+            [0, 1, 2, 3, 4, 5].forEach(function (dieValueIndex) {
+                var dieValue = dieIndex + dieValueIndex;
+                var html = "<div class=\"die-icon\" data-color=\"".concat(color, "\">").concat(dieValue, "</div>");
+                _this.addActionButton("select-".concat(color, "-die-").concat(dieValue, "-button"), html, function () { return _this.onPlanificationDiceSelection(color, dieValue); }, null, null, 'gray');
+                facesWrapper.appendChild(document.getElementById("select-".concat(color, "-die-").concat(dieValue, "-button")));
+            });
+            confirmButton.parentElement.insertBefore(facesWrapper, confirmButton);
+        });
+    };
     Lumen.prototype.onEnteringChooseOperation = function (args) {
         var _a;
         if (this.isCurrentPlayerActive()) {
@@ -1050,6 +1066,9 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
         switch (stateName) {
+            case 'planificationChooseFaces':
+                this.onLeavingPlanificationChooseFaces();
+                break;
             case 'chooseOperation':
                 this.onLeavingGhostMark('operation-number');
                 break;
@@ -1057,6 +1076,9 @@ var Lumen = /** @class */ (function () {
                 this.onLeavingGhostMark('circle');
                 break;
         }
+    };
+    Lumen.prototype.onLeavingPlanificationChooseFaces = function () {
+        this.selectedPlanificationDice = {};
     };
     Lumen.prototype.onLeavingGhostMark = function (className) {
         Array.from(document.querySelectorAll(".".concat(className, ".ghost"))).forEach(function (elem) {
@@ -1071,6 +1093,13 @@ var Lumen = /** @class */ (function () {
         var _this = this;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'askActivatePlanification':
+                    this.addActionButton("activatePlanification_button", _('Activate'), function () { return _this.activatePlanification(); });
+                    this.addActionButton("passPlanification_button", _('Pass'), function () { return _this.passPlanification(); });
+                    break;
+                case 'planificationChooseFaces':
+                    this.onEnteringPlanificationChooseFaces();
+                    break;
                 case 'chooseOperation':
                     var chooseOperationArgs_1 = args;
                     Object.keys(chooseOperationArgs_1.operations).forEach(function (type) {
@@ -1299,6 +1328,16 @@ var Lumen = /** @class */ (function () {
         // multiplier
         [1, 2, 3, 4].forEach(function (family) { return _this.cards.createMoveOrUpdateCard({ id: 1040 + family, category: 4, family: family }, "help-multiplier-".concat(family)); });
     };
+    Lumen.prototype.onPlanificationDiceSelection = function (color, value) {
+        var oldSelectedButton = document.getElementById("select-".concat(color, "-die-").concat(this.selectedPlanificationDice[color], "-button"));
+        var newSelectedButton = document.getElementById("select-".concat(color, "-die-").concat(value, "-button"));
+        this.selectedPlanificationDice[color] = value;
+        oldSelectedButton === null || oldSelectedButton === void 0 ? void 0 : oldSelectedButton.classList.add('bgabutton_gray');
+        oldSelectedButton === null || oldSelectedButton === void 0 ? void 0 : oldSelectedButton.classList.remove('bgabutton_blue');
+        newSelectedButton === null || newSelectedButton === void 0 ? void 0 : newSelectedButton.classList.add('bgabutton_blue');
+        newSelectedButton === null || newSelectedButton === void 0 ? void 0 : newSelectedButton.classList.remove('bgabutton_gray');
+        dojo.toggleClass("confirmSelectedPlanificationFaces-button", 'disabled', isNaN(this.selectedPlanificationDice['white']) || isNaN(this.selectedPlanificationDice['black']));
+    };
     Lumen.prototype.cellClick = function (cell) {
         switch (this.gamedatas.gamestate.name) {
             case 'chooseCell':
@@ -1311,6 +1350,24 @@ var Lumen = /** @class */ (function () {
                 this.chooseCellBrouillage(cell);
                 break;
         }
+    };
+    Lumen.prototype.activatePlanification = function () {
+        if (!this.checkAction('activatePlanification')) {
+            return;
+        }
+        this.takeAction('activatePlanification');
+    };
+    Lumen.prototype.passPlanification = function () {
+        if (!this.checkAction('passPlanification')) {
+            return;
+        }
+        this.takeAction('passPlanification');
+    };
+    Lumen.prototype.chooseDiceFaces = function () {
+        if (!this.checkAction('chooseDiceFaces')) {
+            return;
+        }
+        this.takeAction('chooseDiceFaces', this.selectedPlanificationDice);
     };
     Lumen.prototype.chooseOperation = function (operation) {
         if (!this.checkAction('chooseOperation')) {
@@ -1411,6 +1468,7 @@ var Lumen = /** @class */ (function () {
         var _this = this;
         var notifs = [
             ['diceRoll', 2000],
+            ['diceChange', ANIMATION_MS],
             ['setPlayedOperation', ANIMATION_MS],
             ['setCancelledOperation', 1],
             ['setCircleValue', ANIMATION_MS],
@@ -1453,6 +1511,17 @@ var Lumen = /** @class */ (function () {
                 element.classList.remove("roll0", "roll1", "roll2", "roll3");
                 void element.offsetWidth;
                 element.classList.add("roll" + Math.floor(Math.random() * 4));
+            }
+        });
+    };
+    Lumen.prototype.notif_diceChange = function (notif) {
+        [1, 2].forEach(function (number) {
+            var element = document.getElementById("c_die_".concat(number));
+            if (element != null) {
+                element.className = "";
+                void element.offsetWidth;
+                element.classList.add("cube");
+                element.classList.add("show" + notif.args["die".concat(number)]);
             }
         });
     };

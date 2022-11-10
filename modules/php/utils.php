@@ -131,7 +131,7 @@ trait UtilTrait {
             $sql .= " AND `card_type` = $type";
         }
         if ($subType !== null) {
-            $sql .= " AND `card_type_arg` = $type";
+            $sql .= " AND `card_type_arg` = $subType";
         }
         $sql .= " ORDER BY `card_location_arg`";
         $dbResults = $this->getCollectionFromDb($sql);
@@ -173,7 +173,7 @@ trait UtilTrait {
             $sql .= " AND `card_type` = $type";
         }
         if ($subType !== null) {
-            $sql .= " AND `card_type_arg` = $type";
+            $sql .= " AND `card_type_arg` = $subType";
         }
         $sql .= " ORDER BY `card_location_arg`";
         $dbResults = $this->getCollectionFromDb($sql);
@@ -220,8 +220,10 @@ trait UtilTrait {
         foreach ($scenario->initialFighters as $territoryId => $playerFighters) {
             foreach ($playerFighters as $playerNo => $fightersSubType) {
                 foreach($fightersSubType as $fighterSubType) {
-                    $card = array_values($this->cards->getCardsOfTypeInLocation($playerNo, $fighterSubType, 'bag'.$playersIdsByPlayerNo[$playerNo]))[0];
-                    $this->cards->moveCard($card['id'], 'territory', $territoryId);
+                    $playerId = $playersIdsByPlayerNo[$playerNo];
+                    //$this->debug($playerId);
+                    $cards = $this->getCardsByLocation('bag'.$playerId, null, null, null, $fighterSubType);
+                    $this->cards->moveCard($cards[0]->id, 'territory', $territoryId);
                     $territoriesWithFighters[] = $territoryId;
                 }
             }
