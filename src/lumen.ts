@@ -14,7 +14,8 @@ const LOCAL_STORAGE_ZOOM_KEY = 'Lumen-zoom';
 
 class Lumen implements LumenGame {
     public zoom: number = 1;
-    public cards: Cards;
+    public cards: CardsManager;
+    public discoverTiles: DiscoverTilesManager;
 
     private gamedatas: LumenGamedatas;
     private tableCenter: TableCenter;
@@ -50,7 +51,8 @@ class Lumen implements LumenGame {
 
         log('gamedatas', gamedatas);
 
-        this.cards = new Cards(this);
+        this.cards = new CardsManager(this);
+        this.discoverTiles = new DiscoverTilesManager(this);
         this.tableCenter = new TableCenter(this, this.gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
@@ -237,13 +239,13 @@ class Lumen implements LumenGame {
                         (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
                     }
                     break;
-                case 'chooseTerritory':
+                /*case 'chooseTerritory':
                     // TODO TEMP
                     const chooseTerritoryArgs = args as EnteringChooseTerritoryArgs;
                     chooseTerritoryArgs.territoriesIds.forEach(territoryId => 
                     (this as any).addActionButton(`chooseTerritory${territoryId}_button`, `territory ${territoryId}`, () => this.chooseTerritory(territoryId))
                     )
-                    break;
+                    break;*/
             }
         }
     }
@@ -549,6 +551,14 @@ class Lumen implements LumenGame {
                 break;
             case 'chooseCellBrouillage':
                 this.chooseCellBrouillage(cell);
+                break;
+        }
+    }
+
+    public  territoryClick(id: number): void {
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseTerritory':
+                this.chooseTerritory(id);
                 break;
         }
     }

@@ -1,15 +1,48 @@
 class TableCenter {
+    private fightersStocks: LineStock<Card>[] = [];
+    private discoverTilesStocks: LineStock<DiscoverTile>[] = [];
+
     constructor(private game: LumenGame, gamedatas: LumenGamedatas) {
+        const scenario = SCENARIOS[gamedatas.scenario];
+
+        this.addBattlefields(scenario.battlefields);
         
-        // TODO TEMP
-        gamedatas.fightersOnTerritories.forEach(card => {
-            dojo.place(`<div><button id="card-${card.id}-move">move ${card.id}</button><button id="card-${card.id}-activate">activate ${card.id}</button></div>`, `map`);
-            document.getElementById(`card-${card.id}-move`).addEventListener('click', () => this.game.moveFighter(card.id));
-            document.getElementById(`card-${card.id}-activate`).addEventListener('click', () => this.game.activateFighter(card.id));
+        gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card));
+        gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile));
+    }
+    
+    private addBattlefields(battlefields: BattlefieldPosition[]) {
+        const map = document.getElementById(`map`);
+        battlefields.forEach(battlefieldInfos => {
+            const battlefield = document.createElement('div');
+            battlefield.id = `battlefield-${battlefieldInfos.battlefieldId}`;
+            battlefield.classList.add('battlefield');
+            battlefield.innerHTML = `battlefield-${battlefieldInfos.battlefieldId}`;
+            map.appendChild(battlefield);
+            this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield);
+        });
+    }
+    
+    private addTerritories(territories: Territory[], battlefield: HTMLDivElement) {
+        territories.forEach(territoryInfos => {
+            const territory = document.createElement('div');
+            territory.id = `territory-${territoryInfos.id}`;
+            territory.classList.add('territory');
+            territory.innerHTML = `
+            territory-${territoryInfos.id}
+            <div id="territory-${territoryInfos.id}-fighters"></div>
+            <div id="territory-${territoryInfos.id}-discover-tiles"></div>
+            `;
+            battlefield.appendChild(territory);
+            territory.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
+
+            this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cards, document.getElementById(`territory-${territoryInfos.id}-fighters`));
+            this.discoverTilesStocks[territoryInfos.id] = new LineStock<DiscoverTile>(this.game.discoverTiles, document.getElementById(`territory-${territoryInfos.id}-discover-tiles`));
         });
     }
     
     public moveFighter(fighter: Card, territoryId: number) {
-        // TODO throw new Error("Method not implemented.");
+        // TODO
+        document.getElementById(`territory-${territoryId}`).appendChild(document.getElementById(`card-${fighter.id}`));
     }
 }

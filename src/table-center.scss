@@ -9,3 +9,20 @@
     background: #1f306766;
     min-width: 505px;
 }
+
+#map {
+    .battlefield {
+        // TODO TEMP
+        border: 1px solid green;        
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        padding: 10px;
+        gap: 10px;
+
+        .territory {
+            // TODO TEMP
+            border: 1px solid darkblue;
+            padding: 5px;
+        }
+    }
+}

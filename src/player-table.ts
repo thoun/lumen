@@ -4,6 +4,9 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 class PlayerTable {
     public playerId: number;
 
+    private reserve: SlotStock<Card>;
+    private highCommand: SlotStock<Card>;
+
     private currentPlayer: boolean;
 
     constructor(private game: LumenGame, player: LumenPlayer) {
@@ -49,15 +52,17 @@ class PlayerTable {
             div.addEventListener('click', () => this.game.cellClick(circle.circleId));
         });
 
-        // TODO TEMP
-        player.reserve.forEach(card => {
-            dojo.place(`<div><button id="card-${card.id}">play reserve ${card.id}</button></div>`, `player-table-${this.playerId}-reserve`);
-            document.getElementById(`card-${card.id}`).addEventListener('click', () => this.game.playFighter(card.id));
+        this.reserve = new SlotStock<Card>(this.game.cards, document.getElementById(`player-table-${this.playerId}-reserve`), {
+            slotsIds: [1, 2, 3],
+            mapCardToSlot: card => card.locationArg
         });
-        player.highCommand.forEach(card => {
-            dojo.place(`<div><button id="card-${card.id}">play highCommand ${card.id}</button></div>`, `player-table-${this.playerId}-highCommand`);
-            document.getElementById(`card-${card.id}`).addEventListener('click', () => this.game.playFighter(card.id));
+        this.reserve.addCards(player.reserve);
+
+        this.highCommand = new SlotStock<Card>(this.game.cards, document.getElementById(`player-table-${this.playerId}-highCommand`), {
+            slotsIds: [1, 2, 3, 4, 5],
+            mapCardToSlot: card => card.locationArg
         });
+        this.highCommand.addCards(player.highCommand);
     }
 
     public setPossibleOperations(operations: { [operation: number]: { currentNumber: number; value: number; possible: boolean; }; }) {

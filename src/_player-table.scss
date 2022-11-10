@@ -95,6 +95,19 @@
     }
   }
 
+  .slot-stock {
+    .slot {
+      width: 150px;
+      height: 150px;
+    }
+  }
+
+  .reserve {
+    position: absolute;
+  }
+  .highCommand {
+    position: absolute;
+  }
 }
       
 html[data-filling-pattern="true"] .circle[data-zone="0"] {

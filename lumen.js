@@ -612,215 +612,152 @@ var CardManager = /** @class */ (function () {
     };
     return CardManager;
 }());
-var Cards = /** @class */ (function () {
-    function Cards(game) {
-        this.game = game;
-        this.COLORS = [
-            _('White'),
-            _('Dark blue'),
-            _('Light blue'),
-            _('Black'),
-            _('Yellow'),
-            _('Green'),
-            _('Purple'),
-            _('Gray'),
-            _('Light orange'),
-            _('Pink'),
-            _('Orange'),
-        ];
+var CardsManager = /** @class */ (function (_super) {
+    __extends(CardsManager, _super);
+    function CardsManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return "card-".concat(card.id); },
+            setupDiv: function (card, div) { return div.classList.add('fighter'); },
+            setupFrontDiv: function (card, div) {
+                div.innerHTML = "".concat(card.type, " ").concat(card.subType, "\n            <button id=\"card-").concat(card.id, "-play\">play ").concat(card.id, "</button>\n            <button id=\"card-").concat(card.id, "-move\">move ").concat(card.id, "</button>\n            <button id=\"card-").concat(card.id, "-activate\">activate ").concat(card.id, "</button>\n            ");
+                document.getElementById("card-".concat(card.id, "-play")).addEventListener('click', function () { return _this.game.playFighter(card.id); });
+                document.getElementById("card-".concat(card.id, "-move")).addEventListener('click', function () { return _this.game.moveFighter(card.id); });
+                document.getElementById("card-".concat(card.id, "-activate")).addEventListener('click', function () { return _this.game.activateFighter(card.id); });
+            }
+        }) || this;
+        _this.game = game;
+        return _this;
     }
-    // gameui.cards.debugSeeAllCards()
-    Cards.prototype.debugSeeAllCards = function () {
-        var _this = this;
-        document.querySelectorAll('.card').forEach(function (card) { return card.remove(); });
-        var html = "<div id=\"all-cards\">";
-        html += "</div>";
-        dojo.place(html, 'full-table', 'before');
-        [1, 2, 3, 4, 5, 6].forEach(function (subType) {
-            var card = {
-                id: 10 + subType,
-                type: 1,
-                subType: subType,
-            };
-            _this.createMoveOrUpdateCard(card, "all-cards");
-        });
-        [2, 3, 4, 5, 6].forEach(function (type) {
-            return [1, 2, 3].forEach(function (subType) {
-                var card = {
-                    id: 10 * type + subType,
-                    type: type,
-                    subType: subType,
-                };
-                _this.createMoveOrUpdateCard(card, "all-cards");
-            });
-        });
-    };
-    Cards.prototype.createMoveOrUpdateCard = function (card, destinationId, instant, from) {
-        var _this = this;
-        if (instant === void 0) { instant = false; }
-        if (from === void 0) { from = null; }
-        var existingDiv = document.getElementById("card-".concat(card.id));
-        var side = card.category ? 'front' : 'back';
-        if (existingDiv) {
-            this.game.removeTooltip("card-".concat(card.id));
-            var oldType = Number(existingDiv.dataset.category);
-            existingDiv.classList.remove('selectable', 'selected', 'disabled');
-            if (existingDiv.parentElement.id != destinationId) {
-                if (instant) {
-                    document.getElementById(destinationId).appendChild(existingDiv);
-                }
-                else {
-                    slideToObjectAndAttach(this.game, existingDiv, destinationId);
-                }
+    return CardsManager;
+}(CardManager));
+var DiscoverTilesManager = /** @class */ (function (_super) {
+    __extends(DiscoverTilesManager, _super);
+    function DiscoverTilesManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return "discover-tile-".concat(card.id); },
+            setupDiv: function (card, div) { return div.classList.add('discover-tile'); },
+            setupFrontDiv: function (card, div) {
+                div.innerHTML = "".concat(card.type, " ").concat(card.subType);
             }
-            existingDiv.dataset.side = '' + side;
-            if (!oldType && card.category) {
-                this.setVisibleInformations(existingDiv, card);
-            }
-            else if (oldType && !card.category) {
-                if (instant) {
-                    this.removeVisibleInformations(existingDiv);
-                }
-                else {
-                    setTimeout(function () { return _this.removeVisibleInformations(existingDiv); }, 500); // so we don't change face while it is still visible
-                }
-            }
-            if (card.category) {
-                this.game.setTooltip(existingDiv.id, this.getTooltip(card.category, card.family) + "<br><br><i>".concat(this.COLORS[card.color], "</i>"));
-            }
-        }
-        else {
-            var div = document.createElement('div');
-            div.id = "card-".concat(card.id);
-            div.classList.add('card');
-            div.dataset.id = '' + card.id;
-            div.dataset.side = '' + side;
-            div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ";
-            document.getElementById(destinationId).appendChild(div);
-            div.addEventListener('click', function () { return _this.game.onCardClick(card); });
-            if (from) {
-                var fromCardId = document.getElementById(from).id;
-                slideFromObject(this.game, div, fromCardId);
-            }
-            if (card.category) {
-                this.setVisibleInformations(div, card);
-                if (!destinationId.startsWith('help-')) {
-                    this.game.setTooltip(div.id, this.getTooltip(card.category, card.family) + "<br><br><i>".concat(this.COLORS[card.color], "</i>"));
-                }
-            }
-        }
-    };
-    Cards.prototype.updateCard = function (card) {
-        var _this = this;
-        var existingDiv = document.getElementById("card-".concat(card.id));
-        var side = card.category ? 'front' : 'back';
-        if (existingDiv) {
-            this.game.removeTooltip("card-".concat(card.id));
-            var oldType = Number(existingDiv.dataset.category);
-            existingDiv.dataset.side = '' + side;
-            if (!oldType && card.category) {
-                this.setVisibleInformations(existingDiv, card);
-            }
-            else if (oldType && !card.category) {
-                setTimeout(function () { return _this.removeVisibleInformations(existingDiv); }, 500); // so we don't change face while it is still visible
-            }
-            if (card.category) {
-                this.game.setTooltip(existingDiv.id, this.getTooltip(card.category, card.family) + "<br><br><i>".concat(this.COLORS[card.color], "</i>"));
-            }
-        }
-    };
-    Cards.prototype.setVisibleInformations = function (div, card) {
-        div.dataset.category = '' + card.category;
-        div.dataset.family = '' + card.family;
-        div.dataset.color = '' + card.color;
-        div.dataset.index = '' + card.index;
-    };
-    Cards.prototype.removeVisibleInformations = function (div) {
-        div.removeAttribute('data-category');
-        div.removeAttribute('data-family');
-        div.removeAttribute('data-color');
-        div.removeAttribute('data-index');
-    };
-    Cards.prototype.getTooltip = function (category, family /*, withCount: boolean = false*/) {
-        var withCount = true;
-        switch (category) {
-            case 1:
-                return "\n                <div><strong>".concat(_("Mermaid"), "</strong> ").concat(withCount ? '(x4)' : '', "</div>\n                ").concat(_("1 point for each card of the color the player has the most of. If they have more mermaid cards, they must look at which of the other colors they have more of. The same color cannot be counted for more than one mermaid card."), "\n                <br><br>\n                <strong>").concat(_("Effect: If they place 4 mermaid cards, the player immediately wins the game."), "</strong>");
-            case 2:
-                if (family >= 4) {
-                    return "<div><strong>".concat(_("Swimmer"), "/").concat(_("Shark"), "</strong> ").concat(withCount ? '(' + _('${number} of each').replace('${number}', 'x5') + ')' : '', "</div>\n                    <div>").concat(_("1 point for each combination of swimmer and shark cards."), "</div><br>\n                    <div>").concat(_("Effect:"), " ").concat(_("The player steals a random card from another player and adds it to their hand."), "</div>");
-                }
-                var duoCards = [
-                    [_('Crab'), _("The player chooses a discard pile, consults it without shuffling it, and chooses a card from it to add to their hand. They do not have to show it to the other players."), 9],
-                    [_('Boat'), _("The player immediately takes another turn."), 8],
-                    [_('Fish'), _("The player adds the top card from the deck to their hand."), 7]
-                ];
-                var duo = duoCards[family - 1];
-                return "<div><strong>".concat(duo[0], "</strong> ").concat(withCount ? "(x".concat(duo[2], ")") : '', "</div>\n                <div>").concat(_("1 point for each pair of ${card} cards.").replace('${card}', duo[0]), "</div><br>\n                <div>").concat(_("Effect:"), " ").concat(_(duo[1]), "</div>");
-            case 3:
-                var collectorCards = [
-                    ['0, 2, 4, 6, 8, 10', '1, 2, 3, 4, 5, 6', _('Shell')],
-                    ['0, 3, 6, 9, 12', '1, 2, 3, 4, 5', _('Octopus')],
-                    ['1, 3, 5', '1, 2, 3', _('Penguin')],
-                    ['0, 5', '1,  2', _('Sailor')],
-                ];
-                var collector = collectorCards[family - 1];
-                return "<div><strong>".concat(collector[2], "</strong> ").concat(withCount ? "(x".concat(collector[0].split(',').length, ")") : '', "</div>\n                <div>").concat(_("${points} points depending on whether the player has ${numbers} ${card} cards.").replace('${points}', collector[0]).replace('${numbers}', collector[1]).replace('${card}', collector[2]), "</div>");
-            case 4:
-                var multiplierCards = [
-                    [_('The lighthouse'), _('Boat'), 1],
-                    [_('The shoal of fish'), _('Fish'), 1],
-                    [_('The penguin colony'), _('Penguin'), 2],
-                    [_('The captain'), _('Sailor'), 3],
-                ];
-                var multiplier = multiplierCards[family - 1];
-                return "<div><strong>".concat(multiplier[0], "</strong> (x1)</div>\n                <div>").concat(_("${points} point(s) per ${card} card.").replace('${points}', multiplier[2]).replace('${card}', multiplier[1]), "</div>\n                <div>").concat(_("This card does not count as a ${card} card.").replace('${card}', multiplier[1]), "</div>");
-        }
-    };
-    Cards.prototype.removeCard = function (div) {
-        if (!div) {
-            return;
-        }
-        div.id = "deleted".concat(div.id);
-        this.removeVisibleInformations(div);
-        div.remove();
-    };
-    return Cards;
-}());
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    return DiscoverTilesManager;
+}(CardManager));
 var Territory = /** @class */ (function () {
-    function Territory(id, lumens) {
+    function Territory(id, clipPath) {
         this.id = id;
-        this.lumens = lumens;
+        this.clipPath = clipPath;
     }
     return Territory;
 }());
 var Battlefield = /** @class */ (function () {
-    function Battlefield(id, territories, territoriesLinks) {
+    function Battlefield(id, territories) {
         this.id = id;
         this.territories = territories;
-        this.territoriesLinks = territoriesLinks;
     }
     return Battlefield;
 }());
+var BattlefieldPosition = /** @class */ (function () {
+    function BattlefieldPosition(battlefieldId, rotation, x, y) {
+        this.battlefieldId = battlefieldId;
+        this.rotation = rotation;
+        this.x = x;
+        this.y = y;
+    }
+    return BattlefieldPosition;
+}());
 var Scenario = /** @class */ (function () {
-    function Scenario(battlefieldsIds) {
-        this.battlefieldsIds = battlefieldsIds;
+    function Scenario(battlefields) {
+        this.battlefields = battlefields;
     }
     return Scenario;
 }());
+var BATTLEFIELDS = [
+    null,
+    new Battlefield(1, [
+        new Territory(11, 1),
+        new Territory(15, 5),
+    ]),
+    new Battlefield(2, [
+        new Territory(27, 7),
+    ]),
+    new Battlefield(3, [
+        new Territory(31, 1),
+        new Territory(33, 3),
+    ]),
+    new Battlefield(4, [
+        new Territory(41, 1),
+        new Territory(45, 5),
+    ]),
+    new Battlefield(5, [
+        new Territory(51, 1),
+        new Territory(53, 3),
+        new Territory(54, 3),
+    ]),
+    new Battlefield(6, [
+        new Territory(61, 1),
+        new Territory(63, 3),
+        new Territory(65, 5),
+    ]),
+    new Battlefield(6, [
+        new Territory(71, 1),
+        new Territory(73, 3),
+        new Territory(75, 5),
+    ]),
+];
+var SCENARIOS = [
+    null,
+    new Scenario([
+        new BattlefieldPosition(1, 0, 0, 0),
+        new BattlefieldPosition(2, 0, 0, 0),
+        new BattlefieldPosition(3, 0, 0, 0),
+        new BattlefieldPosition(4, 0, 0, 0),
+        new BattlefieldPosition(5, 0, 0, 0),
+        new BattlefieldPosition(6, 0, 0, 0),
+        new BattlefieldPosition(7, 0, 0, 0),
+    ]),
+];
 var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
         var _this = this;
         this.game = game;
-        // TODO TEMP
-        gamedatas.fightersOnTerritories.forEach(function (card) {
-            dojo.place("<div><button id=\"card-".concat(card.id, "-move\">move ").concat(card.id, "</button><button id=\"card-").concat(card.id, "-activate\">activate ").concat(card.id, "</button></div>"), "map");
-            document.getElementById("card-".concat(card.id, "-move")).addEventListener('click', function () { return _this.game.moveFighter(card.id); });
-            document.getElementById("card-".concat(card.id, "-activate")).addEventListener('click', function () { return _this.game.activateFighter(card.id); });
-        });
+        this.fightersStocks = [];
+        this.discoverTilesStocks = [];
+        var scenario = SCENARIOS[gamedatas.scenario];
+        this.addBattlefields(scenario.battlefields);
+        gamedatas.fightersOnTerritories.forEach(function (card) { return _this.fightersStocks[card.locationArg].addCard(card); });
+        gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile); });
     }
+    TableCenter.prototype.addBattlefields = function (battlefields) {
+        var _this = this;
+        var map = document.getElementById("map");
+        battlefields.forEach(function (battlefieldInfos) {
+            var battlefield = document.createElement('div');
+            battlefield.id = "battlefield-".concat(battlefieldInfos.battlefieldId);
+            battlefield.classList.add('battlefield');
+            battlefield.innerHTML = "battlefield-".concat(battlefieldInfos.battlefieldId);
+            map.appendChild(battlefield);
+            _this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield);
+        });
+    };
+    TableCenter.prototype.addTerritories = function (territories, battlefield) {
+        var _this = this;
+        territories.forEach(function (territoryInfos) {
+            var territory = document.createElement('div');
+            territory.id = "territory-".concat(territoryInfos.id);
+            territory.classList.add('territory');
+            territory.innerHTML = "\n            territory-".concat(territoryInfos.id, "\n            <div id=\"territory-").concat(territoryInfos.id, "-fighters\"></div>\n            <div id=\"territory-").concat(territoryInfos.id, "-discover-tiles\"></div>\n            ");
+            battlefield.appendChild(territory);
+            territory.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
+            _this.fightersStocks[territoryInfos.id] = new LineStock(_this.game.cards, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")));
+            _this.discoverTilesStocks[territoryInfos.id] = new LineStock(_this.game.discoverTiles, document.getElementById("territory-".concat(territoryInfos.id, "-discover-tiles")));
+        });
+    };
     TableCenter.prototype.moveFighter = function (fighter, territoryId) {
-        // TODO throw new Error("Method not implemented.");
+        // TODO
+        document.getElementById("territory-".concat(territoryId)).appendChild(document.getElementById("card-".concat(fighter.id)));
     };
     return TableCenter;
 }());
@@ -854,15 +791,16 @@ var PlayerTable = /** @class */ (function () {
             document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
             div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
         });
-        // TODO TEMP
-        player.reserve.forEach(function (card) {
-            dojo.place("<div><button id=\"card-".concat(card.id, "\">play reserve ").concat(card.id, "</button></div>"), "player-table-".concat(_this.playerId, "-reserve"));
-            document.getElementById("card-".concat(card.id)).addEventListener('click', function () { return _this.game.playFighter(card.id); });
+        this.reserve = new SlotStock(this.game.cards, document.getElementById("player-table-".concat(this.playerId, "-reserve")), {
+            slotsIds: [1, 2, 3],
+            mapCardToSlot: function (card) { return card.locationArg; }
         });
-        player.highCommand.forEach(function (card) {
-            dojo.place("<div><button id=\"card-".concat(card.id, "\">play highCommand ").concat(card.id, "</button></div>"), "player-table-".concat(_this.playerId, "-highCommand"));
-            document.getElementById("card-".concat(card.id)).addEventListener('click', function () { return _this.game.playFighter(card.id); });
+        this.reserve.addCards(player.reserve);
+        this.highCommand = new SlotStock(this.game.cards, document.getElementById("player-table-".concat(this.playerId, "-highCommand")), {
+            slotsIds: [1, 2, 3, 4, 5],
+            mapCardToSlot: function (card) { return card.locationArg; }
         });
+        this.highCommand.addCards(player.highCommand);
     }
     PlayerTable.prototype.setPossibleOperations = function (operations) {
         var _this = this;
@@ -956,7 +894,8 @@ var Lumen = /** @class */ (function () {
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
-        this.cards = new Cards(this);
+        this.cards = new CardsManager(this);
+        this.discoverTiles = new DiscoverTilesManager(this);
         this.tableCenter = new TableCenter(this, this.gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
@@ -1124,13 +1063,13 @@ var Lumen = /** @class */ (function () {
                         this.addActionButton("cancelOperation_button", _('Pass'), function () { return _this.pass(shouldntPass_1); }, null, null, shouldntPass_1 ? 'gray' : undefined);
                     }
                     break;
-                case 'chooseTerritory':
+                /*case 'chooseTerritory':
                     // TODO TEMP
-                    var chooseTerritoryArgs = args;
-                    chooseTerritoryArgs.territoriesIds.forEach(function (territoryId) {
-                        return _this.addActionButton("chooseTerritory".concat(territoryId, "_button"), "territory ".concat(territoryId), function () { return _this.chooseTerritory(territoryId); });
-                    });
-                    break;
+                    const chooseTerritoryArgs = args as EnteringChooseTerritoryArgs;
+                    chooseTerritoryArgs.territoriesIds.forEach(territoryId =>
+                    (this as any).addActionButton(`chooseTerritory${territoryId}_button`, `territory ${territoryId}`, () => this.chooseTerritory(territoryId))
+                    )
+                    break;*/
             }
         }
     };
@@ -1359,6 +1298,13 @@ var Lumen = /** @class */ (function () {
                 break;
             case 'chooseCellBrouillage':
                 this.chooseCellBrouillage(cell);
+                break;
+        }
+    };
+    Lumen.prototype.territoryClick = function (id) {
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseTerritory':
+                this.chooseTerritory(id);
                 break;
         }
     };

@@ -19,6 +19,7 @@
         "node_modules/bga-cards/src/stocks/slot-stock.ts",
         "node_modules/bga-cards/src/card-manager.ts",
         "src/cards.ts",
+        "src/discover-tiles.ts",
         "src/scenarios.ts",
         "src/table-center.ts",
         "src/player-table.ts",

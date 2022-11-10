@@ -54,7 +54,8 @@ interface LumenGamedatas {
 }
 
 interface LumenGame extends Game {
-    cards: Cards;
+    cards: CardsManager;
+    discoverTiles: DiscoverTilesManager;
 
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
@@ -65,6 +66,8 @@ interface LumenGame extends Game {
     playFighter(id: number): void;
     moveFighter(id: number): void;
     activateFighter(id: number): void;
+
+    territoryClick(id: number): void;
 }
 interface EnteringChooseOperationArgs {
     operations: { [operation: number]: {
