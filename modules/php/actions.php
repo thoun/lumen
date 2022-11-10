@@ -66,7 +66,8 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
         $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
-        if ($playerId === $firstPlayer) {
+        $isFirstPlayer = $playerId === $firstPlayer;
+        if ($isFirstPlayer) {
             $this->setGameStateValue(FIRST_PLAYER_OPERATION, $type);
         }
         $this->setGameStateValue(PLAYER_OPERATION, $type);
@@ -81,6 +82,7 @@ trait ActionTrait {
             'operation' => $type, // for log
             'type' => $type,
             'number' => intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type")),
+            'firstPlayer' => $isFirstPlayer,
         ]);
 
         /* TODO $this->incStat(1, 'operation'.$type);
@@ -301,9 +303,15 @@ trait ActionTrait {
         $this->checkAction('activateFighter'); 
         
         $playerId = intval($this->getActivePlayerId());
+        $usedTile = null;
 
         if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
-            throw new BgaUserException("No remaining action");
+            $tiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE);
+            if ($tiles > 0) {
+                $usedTile = $tiles[0];
+            } else {
+                throw new BgaUserException("No remaining action");
+            }
         }
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
             throw new BgaUserException("Impossible to activate a fighter now");
@@ -332,6 +340,10 @@ trait ActionTrait {
             $this->applyAction($fighter);
         } else {
             $this->applyActivateFighter($fighter);
+        }
+
+        if ($usedTile !== null) {
+            $this->discardDiscoverTile($usedTile);
         }
     }
 
@@ -456,5 +468,11 @@ trait ActionTrait {
         }
 
         $this->gamestate->nextState($nextState);
+    }
+
+    public function pass() {
+        $this->checkAction('pass'); 
+
+        $this->gamestate->nextState('nextPlayer');
     }
 }

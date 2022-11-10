@@ -11,7 +11,8 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
+        //$this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
+        $this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);
     }
 
     public function debugAddDiscoverTile(int $playerId, int $powerOrLumens, int $type = 2) {

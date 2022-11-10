@@ -158,8 +158,8 @@ $playerActionsGameStates = [
         "descriptionmyturn" => clienttranslate('${you} must choose a fighter to play, move or activate'),
         "descriptionOnlyPlay" => clienttranslate('${actplayer} must choose a fighter to play'),
         "descriptionmyturnOnlyPlay" => clienttranslate('${you} must choose a fighter to play'),
-        "descriptionOnlyMoveActivate" => clienttranslate('${actplayer} must choose a fighter to move or activate'),
-        "descriptionmyturnOnlyMoveActivate" => clienttranslate('${you} must choose a fighter to move or activate'),
+        "descriptionOnlyMoveActivate" => clienttranslate('${actplayer} must choose a fighter to move or activate ${optionalDetail}'),
+        "descriptionmyturnOnlyMoveActivate" => clienttranslate('${you} must choose a fighter to move or activate ${optionalDetail}'),
         "type" => "activeplayer",
         "args" => "argChooseFighter", 
         "possibleactions" => [ 
@@ -167,10 +167,12 @@ $playerActionsGameStates = [
             "moveFighter",
             "activateFighter",
             "chooseFighters",
+            "pass",
         ],
         "transitions" => [
             "chooseTerritory" => ST_PLAYER_CHOOSE_TERRITORY,
             "nextMove" => ST_NEXT_MOVE,
+            "nextPlayer" => ST_NEXT_PLAYER,
         ]
     ],
 
@@ -204,62 +206,6 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "nextMove" => ST_NEXT_MOVE,
-        ]
-    ],
-
-    ST_PLAYER_CHOOSE_FIGHTER_POWER => [
-        "name" => "chooseFighterPower",
-        "description" => clienttranslate('${actplayer} must choose a discard pile'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a discard pile'),
-        "type" => "activeplayer",
-        "args" => "argChooseFighterPower", 
-        "possibleactions" => [ 
-            "chooseFighter",
-        ],
-        "transitions" => [
-            "nextMove" => ST_NEXT_MOVE,
-        ]
-    ],
-
-    ST_PLAYER_ACTION_CHOOSE_TERRITORY => [
-        "name" => "actionChooseTerritory",
-        "description" => clienttranslate('${actplayer} must choose a card'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a card'),
-        "type" => "activeplayer", 
-        "args" => "argActionChooseTerritory", 
-        "possibleactions" => [ 
-            "actionChooseTerritory",
-        ],
-        "transitions" => [
-            //"playCards" => ST_PLAYER_PLAY_CARDS,
-        ]
-    ],
-
-    ST_PLAYER_ACTION_CHOOSE_FIGHTER => [
-        "name" => "actionChooseFighter",
-        "description" => clienttranslate('${actplayer} must choose a discard pile'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a discard pile'),
-        "type" => "activeplayer",
-        "args" => "argActionChooseFighter", 
-        "possibleactions" => [ 
-            "actionChooseFighter",
-        ],
-        "transitions" => [
-            //"chooseCard" => ST_PLAYER_CHOOSE_DISCARD_CARD,
-        ]
-    ],
-
-    ST_PLAYER_ACTION_CHOOSE_FIGHTER_TERRITORY => [
-        "name" => "actionChooseFighterTerritory",
-        "description" => clienttranslate('${actplayer} must choose a card'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a card'),
-        "type" => "activeplayer", 
-        "args" => "argActionChooseFighterTerritory", 
-        "possibleactions" => [ 
-            "actionChooseFighterTerritory",
-        ],
-        "transitions" => [
-            //"playCards" => ST_PLAYER_PLAY_CARDS,
         ]
     ],
 ];

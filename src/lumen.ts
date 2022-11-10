@@ -156,14 +156,18 @@ class Lumen implements LumenGame {
             }
 
             const subTitle = document.createElement('span');
-            let text = _('(${remainingPlays} fighters to add, ${remainingMoves} moves/activations)');
-            if (!args.remainingMoves) {
-                text = _('(${remainingPlays} fighters to add)');
-            } else if (!args.remainingPlays) {
-                text = _('(${remainingMoves} moves/activations)');
+            let texts = [];
+            if (args.remainingPlays) {
+                texts.push(_('${remainingPlays} fighters to add').replace('${remainingPlays}', args.remainingPlays));
+            }
+            if (args.remainingMoves) {
+                texts.push(_('${remainingMoves} moves/activations').replace('${remainingMoves}', args.remainingMoves));
+            }
+            if (args.remainingBonusMoves) {
+                texts.push(_('${remainingBonusMoves} moves/activations with Coup fourré').replace('${remainingBonusMoves}', args.remainingBonusMoves)); // TODO translate
             }
             subTitle.classList.add('subtitle');
-            subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
+            subTitle.innerHTML = '(' + texts.join(', ') + ')';
             document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
             document.getElementById(`pagemaintitletext`).appendChild(subTitle);
         }
@@ -225,6 +229,13 @@ class Lumen implements LumenGame {
                     break;
                 case 'chooseCell':
                     (this as any).addActionButton(`cancelOperation_button`, _('Cancel'), () => this.cancelOperation(), null, null, 'gray');
+                    break;
+                case 'chooseFighter':
+                    const chooseFighterArgs = args as EnteringChooseFighterArgs;
+                    if (!chooseFighterArgs.move) {
+                        const shouldntPass = chooseFighterArgs.remainingPlays > 0 || chooseFighterArgs.remainingMoves > 0;
+                        (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
+                    }
                     break;
                 case 'chooseTerritory':
                     // TODO TEMP
@@ -655,6 +666,22 @@ class Lumen implements LumenGame {
         });
     }
 
+    public pass(shouldntPass: boolean) {
+        if(!(this as any).checkAction('pass')) {
+            return;
+        }
+
+        if (shouldntPass) {
+            (this as any).confirmationDialog(
+                _("Are you sure you want to pass? You have remaining action(s)"), 
+                () => this.pass(false)
+            );
+            return;
+        }
+
+        this.takeAction('pass');
+    }
+
     public chooseTerritory(id: number) {
         if(!(this as any).checkAction('chooseTerritory')) {
             return;
@@ -754,7 +781,7 @@ class Lumen implements LumenGame {
     }
 
     notif_setPlayedOperation(notif: Notif<NotifSetPlayedOperationArgs>) {
-        this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number);
+        this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number, notif.args.firstPlayer);
     } 
 
     notif_setCancelledOperation(notif: Notif<NotifSetPlayedOperationArgs>) {

@@ -875,10 +875,11 @@ var PlayerTable = /** @class */ (function () {
             }
         });
     };
-    PlayerTable.prototype.setPlayedOperation = function (type, number) {
+    PlayerTable.prototype.setPlayedOperation = function (type, number, firstPlayer) {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-operation").concat(type, "-number").concat(number));
         circleDiv.classList.remove('ghost');
         circleDiv.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
+        // TODO set token to line if firstPlayer
     };
     PlayerTable.prototype.setCancelledOperation = function (type, number) {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-operation").concat(type, "-number").concat(number + 1));
@@ -1047,15 +1048,18 @@ var Lumen = /** @class */ (function () {
                 this.setGamestateDescription('OnlyMoveActivate');
             }
             var subTitle = document.createElement('span');
-            var text = _('(${remainingPlays} fighters to add, ${remainingMoves} moves/activations)');
-            if (!args.remainingMoves) {
-                text = _('(${remainingPlays} fighters to add)');
+            var texts = [];
+            if (args.remainingPlays) {
+                texts.push(_('${remainingPlays} fighters to add').replace('${remainingPlays}', args.remainingPlays));
             }
-            else if (!args.remainingPlays) {
-                text = _('(${remainingMoves} moves/activations)');
+            if (args.remainingMoves) {
+                texts.push(_('${remainingMoves} moves/activations').replace('${remainingMoves}', args.remainingMoves));
+            }
+            if (args.remainingBonusMoves) {
+                texts.push(_('${remainingBonusMoves} moves/activations with Coup fourré').replace('${remainingBonusMoves}', args.remainingBonusMoves)); // TODO translate
             }
             subTitle.classList.add('subtitle');
-            subTitle.innerHTML = text.replace('${remainingPlays}', args.remainingPlays).replace('${remainingMoves}', args.remainingMoves);
+            subTitle.innerHTML = '(' + texts.join(', ') + ')';
             document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
             document.getElementById("pagemaintitletext").appendChild(subTitle);
         }
@@ -1112,6 +1116,13 @@ var Lumen = /** @class */ (function () {
                     break;
                 case 'chooseCell':
                     this.addActionButton("cancelOperation_button", _('Cancel'), function () { return _this.cancelOperation(); }, null, null, 'gray');
+                    break;
+                case 'chooseFighter':
+                    var chooseFighterArgs = args;
+                    if (!chooseFighterArgs.move) {
+                        var shouldntPass_1 = chooseFighterArgs.remainingPlays > 0 || chooseFighterArgs.remainingMoves > 0;
+                        this.addActionButton("cancelOperation_button", _('Pass'), function () { return _this.pass(shouldntPass_1); }, null, null, shouldntPass_1 ? 'gray' : undefined);
+                    }
                     break;
                 case 'chooseTerritory':
                     // TODO TEMP
@@ -1439,6 +1450,17 @@ var Lumen = /** @class */ (function () {
             ids: ids.join(',')
         });
     };
+    Lumen.prototype.pass = function (shouldntPass) {
+        var _this = this;
+        if (!this.checkAction('pass')) {
+            return;
+        }
+        if (shouldntPass) {
+            this.confirmationDialog(_("Are you sure you want to pass? You have remaining action(s)"), function () { return _this.pass(false); });
+            return;
+        }
+        this.takeAction('pass');
+    };
     Lumen.prototype.chooseTerritory = function (id) {
         if (!this.checkAction('chooseTerritory')) {
             return;
@@ -1526,7 +1548,7 @@ var Lumen = /** @class */ (function () {
         });
     };
     Lumen.prototype.notif_setPlayedOperation = function (notif) {
-        this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number);
+        this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number, notif.args.firstPlayer);
     };
     Lumen.prototype.notif_setCancelledOperation = function (notif) {
         this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.number);

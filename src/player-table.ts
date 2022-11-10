@@ -71,10 +71,12 @@ class PlayerTable {
         })
     }
     
-    public setPlayedOperation(type: number, number: number) {
+    public setPlayedOperation(type: number, number: number, firstPlayer: boolean) {
         const circleDiv = document.getElementById(`player-table-${this.playerId}-operation${type}-number${number}`);
         circleDiv.classList.remove('ghost');
         circleDiv.innerHTML = `<img src="${g_gamethemeurl}img/mul.gif"/>`;
+
+        // TODO set token to line if firstPlayer
     }
     
     setCancelledOperation(type: number, number: number) {

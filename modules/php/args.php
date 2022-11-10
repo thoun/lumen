@@ -112,19 +112,25 @@ trait ArgsTrait {
 
         $possibleTerritoryFighters = [];
         $selectionSize = 1;
+        $optionalDetail = '';
 
         switch ($move) {
             case 0:
                 $remainingPlays = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
                 $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+                $remainingBonusMoves = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
 
                 $highCommand = $this->getCardsByLocation('highCommand'.$playerId);
                 $territoryFighters = $this->getCardsByLocation('territory', null, $playerId);
                 $possibleTerritoryFighters = $territoryFighters;
 
+                $optionalDetail = $remainingPlays == 0 && $remainingMoves == 0 && $remainingBonusMoves > 0 ?
+                    clienttranslate('(with Coup fourré)') : ''; // TODO check translation
+
                 $args = $args + [
                     'remainingPlays' => $remainingPlays,
                     'remainingMoves' => $remainingMoves,
+                    'remainingBonusMoves' => $remainingBonusMoves,
                     'possibleFightersToPlace' => array_merge(
                         $this->getCardsByLocation('reserve'.$playerId),
                         array_values(array_filter($highCommand, fn($fighter) => in_array($fighter->type, [1, 10])))
@@ -175,6 +181,8 @@ trait ArgsTrait {
         return $args + [
            'possibleTerritoryFighters' => $possibleTerritoryFighters,
            'selectionSize' => $selectionSize,
+           'optionalDetail' => $optionalDetail,
+           'i18n' => ['optionalDetail'],
         ];
     }
 
