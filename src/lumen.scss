@@ -165,3 +165,20 @@ html, .mode_3d #game_play_area_background {
     margin-right: 2px;
   }
 }
+
+.objective-token {
+  background: url('img/objective-tokens.png');
+  background-size: auto 100%;
+  background-position-x: 0%;
+  vertical-align: middle;
+  display: inline-block;
+  width: 101px;
+  height: 113px;
+
+  @for $index from 3 through 5 {
+    &[data-type="#{$index}"] {
+        background-position-x: #{($index - 2) * 33.333%};
+        background-position-y: 0%;
+    }
+  }
+}

@@ -8,11 +8,16 @@ class Battlefield {
 }
 
 class BattlefieldPosition {
-    public constructor(public battlefieldId: number, public rotation: number, public x: number, public y: number) {}
+    public constructor(public battlefieldId: number, public x: number, public y: number, public rotation: number) {}
 }
 
+class ObjectiveTokenPosition {
+    public constructor(public letter: string, public x: number, public y: number) {}
+}
+
+
 class Scenario {
-    public constructor(public battlefields: BattlefieldPosition[]) {
+    public constructor(public battlefields: BattlefieldPosition[], public objectiveTokens: ObjectiveTokenPosition[]) {
     }
 }
 
@@ -60,5 +65,8 @@ const SCENARIOS = [
       new BattlefieldPosition(5, 0, 0, 0),
       new BattlefieldPosition(6, 0, 0, 0),
       new BattlefieldPosition(7, 0, 0, 0),
+    ],[
+      new ObjectiveTokenPosition('B1', 300, 200),
+      new ObjectiveTokenPosition('B2', 600, 300),
     ]),
   ];

@@ -482,6 +482,9 @@ body > .card {
   min-width: 505px;
 }
 
+#map {
+  position: relative;
+}
 #map .battlefield {
   border: 1px solid green;
   display: grid;
@@ -492,6 +495,14 @@ body > .card {
 #map .battlefield .territory {
   border: 1px solid darkblue;
   padding: 5px;
+}
+#map .objective-token {
+  position: absolute;
+}
+#map #initiative-marker {
+  background: url("img/initiative-marker.png");
+  width: 294px;
+  height: 313px;
 }
 
 .player-board {
@@ -1032,4 +1043,26 @@ html, .mode_3d #game_play_area_background {
   height: 20px;
   margin-left: 2px;
   margin-right: 2px;
+}
+
+.objective-token {
+  background: url("img/objective-tokens.png");
+  background-size: auto 100%;
+  background-position-x: 0%;
+  vertical-align: middle;
+  display: inline-block;
+  width: 101px;
+  height: 113px;
+}
+.objective-token[data-type="3"] {
+  background-position-x: 33.333%;
+  background-position-y: 0%;
+}
+.objective-token[data-type="4"] {
+  background-position-x: 66.666%;
+  background-position-y: 0%;
+}
+.objective-token[data-type="5"] {
+  background-position-x: 99.999%;
+  background-position-y: 0%;
 }

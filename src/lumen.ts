@@ -856,7 +856,7 @@ class Lumen implements LumenGame {
     }
 
     notif_moveInitiativeMarker(notif: Notif<NotifMoveInitiativeMarkerArgs>) {
-        // TODO
+        this.tableCenter.moveInitiativeMarker(notif.args.territoryId);
     }
 
     notif_putBackInBag(notif: Notif<NotifPutBackInBagArgs>) {

@@ -11,6 +11,8 @@
 }
 
 #map {
+    position: relative;
+
     .battlefield {
         // TODO TEMP
         border: 1px solid green;        
@@ -24,5 +26,15 @@
             border: 1px solid darkblue;
             padding: 5px;
         }
+    }
+
+    .objective-token {
+        position: absolute;
+    }
+
+    #initiative-marker {
+        background: url('img/initiative-marker.png');
+        width: 294px;
+        height: 313px;
     }
 }

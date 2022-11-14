@@ -667,17 +667,26 @@ var Battlefield = /** @class */ (function () {
     return Battlefield;
 }());
 var BattlefieldPosition = /** @class */ (function () {
-    function BattlefieldPosition(battlefieldId, rotation, x, y) {
+    function BattlefieldPosition(battlefieldId, x, y, rotation) {
         this.battlefieldId = battlefieldId;
-        this.rotation = rotation;
         this.x = x;
         this.y = y;
+        this.rotation = rotation;
     }
     return BattlefieldPosition;
 }());
+var ObjectiveTokenPosition = /** @class */ (function () {
+    function ObjectiveTokenPosition(letter, x, y) {
+        this.letter = letter;
+        this.x = x;
+        this.y = y;
+    }
+    return ObjectiveTokenPosition;
+}());
 var Scenario = /** @class */ (function () {
-    function Scenario(battlefields) {
+    function Scenario(battlefields, objectiveTokens) {
         this.battlefields = battlefields;
+        this.objectiveTokens = objectiveTokens;
     }
     return Scenario;
 }());
@@ -724,6 +733,9 @@ var SCENARIOS = [
         new BattlefieldPosition(5, 0, 0, 0),
         new BattlefieldPosition(6, 0, 0, 0),
         new BattlefieldPosition(7, 0, 0, 0),
+    ], [
+        new ObjectiveTokenPosition('B1', 300, 200),
+        new ObjectiveTokenPosition('B2', 600, 300),
     ]),
 ];
 var TableCenter = /** @class */ (function () {
@@ -734,6 +746,8 @@ var TableCenter = /** @class */ (function () {
         this.discoverTilesStocks = [];
         var scenario = SCENARIOS[gamedatas.scenario];
         this.addBattlefields(scenario.battlefields);
+        this.addObjectiveTokens(scenario.objectiveTokens);
+        this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         gamedatas.fightersOnTerritories.forEach(function (card) { return _this.fightersStocks[card.locationArg].addCard(card, undefined, { visible: !card.played }); });
         gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, { visible: discoverTile.visible }); });
     }
@@ -761,6 +775,28 @@ var TableCenter = /** @class */ (function () {
             _this.fightersStocks[territoryInfos.id] = new LineStock(_this.game.cards, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")));
             _this.discoverTilesStocks[territoryInfos.id] = new LineStock(_this.game.discoverTiles, document.getElementById("territory-".concat(territoryInfos.id, "-discover-tiles")));
         });
+    };
+    TableCenter.prototype.addObjectiveTokens = function (objectiveTokens) {
+        var map = document.getElementById("map");
+        objectiveTokens.forEach(function (objectiveTokenInfos) {
+            var objectiveToken = document.createElement('div');
+            objectiveToken.id = "objective-token-".concat(objectiveTokenInfos.letter);
+            objectiveToken.classList.add('objective-token');
+            objectiveToken.style.left = "".concat(objectiveTokenInfos.x, "px");
+            objectiveToken.style.top = "".concat(objectiveTokenInfos.y, "px");
+            map.appendChild(objectiveToken);
+        });
+    };
+    TableCenter.prototype.addInitiativeMarker = function (initiativeMarkerTerritory) {
+        var territory = document.getElementById("territory-".concat(initiativeMarkerTerritory));
+        this.initiativeMarker = document.createElement('div');
+        this.initiativeMarker.id = "initiative-marker";
+        territory.appendChild(this.initiativeMarker);
+    };
+    TableCenter.prototype.moveInitiativeMarker = function (territoryId) {
+        // TODO animate
+        var territory = document.getElementById("territory-".concat(territoryId));
+        territory.appendChild(this.initiativeMarker);
     };
     TableCenter.prototype.moveFighter = function (fighter, territoryId) {
         // TODO
@@ -1553,7 +1589,7 @@ var Lumen = /** @class */ (function () {
         // TODO
     };
     Lumen.prototype.notif_moveInitiativeMarker = function (notif) {
-        // TODO
+        this.tableCenter.moveInitiativeMarker(notif.args.territoryId);
     };
     Lumen.prototype.notif_putBackInBag = function (notif) {
         // TODO

@@ -1,11 +1,14 @@
 class TableCenter {
     private fightersStocks: LineStock<Card>[] = [];
     private discoverTilesStocks: LineStock<DiscoverTile>[] = [];
+    private initiativeMarker: HTMLDivElement;
 
     constructor(private game: LumenGame, gamedatas: LumenGamedatas) {
         const scenario = SCENARIOS[gamedatas.scenario];
 
         this.addBattlefields(scenario.battlefields);
+        this.addObjectiveTokens(scenario.objectiveTokens);
+        this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         
         gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
         gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, {visible: discoverTile.visible}));
@@ -39,6 +42,31 @@ class TableCenter {
             this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cards, document.getElementById(`territory-${territoryInfos.id}-fighters`));
             this.discoverTilesStocks[territoryInfos.id] = new LineStock<DiscoverTile>(this.game.discoverTiles, document.getElementById(`territory-${territoryInfos.id}-discover-tiles`));
         });
+    }
+
+    private addObjectiveTokens(objectiveTokens: ObjectiveTokenPosition[]) {
+        const map = document.getElementById(`map`);
+        objectiveTokens.forEach(objectiveTokenInfos => {
+            const objectiveToken = document.createElement('div');
+            objectiveToken.id = `objective-token-${objectiveTokenInfos.letter}`;
+            objectiveToken.classList.add('objective-token');
+            objectiveToken.style.left = `${objectiveTokenInfos.x}px`;
+            objectiveToken.style.top = `${objectiveTokenInfos.y}px`;
+            map.appendChild(objectiveToken);
+        });
+    }
+
+    private addInitiativeMarker(initiativeMarkerTerritory: number) {
+        const territory = document.getElementById(`territory-${initiativeMarkerTerritory}`);
+        this.initiativeMarker = document.createElement('div');
+        this.initiativeMarker.id = `initiative-marker`;
+        territory.appendChild(this.initiativeMarker);
+    }
+    
+    public moveInitiativeMarker(territoryId: number) {
+        // TODO animate
+        const territory = document.getElementById(`territory-${territoryId}`);
+        territory.appendChild(this.initiativeMarker);
     }
     
     public moveFighter(fighter: Card, territoryId: number) {
