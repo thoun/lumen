@@ -683,12 +683,15 @@ var ObjectiveTokenPosition = /** @class */ (function () {
     }
     return ObjectiveTokenPosition;
 }());
-var Scenario = /** @class */ (function () {
-    function Scenario(battlefields, objectiveTokens) {
+var ScenarioInfos = /** @class */ (function () {
+    function ScenarioInfos(battlefields, objectiveTokens, synopsis, specialRules, objectives) {
         this.battlefields = battlefields;
         this.objectiveTokens = objectiveTokens;
+        this.synopsis = synopsis;
+        this.specialRules = specialRules;
+        this.objectives = objectives;
     }
-    return Scenario;
+    return ScenarioInfos;
 }());
 var BATTLEFIELDS = [
     null,
@@ -723,28 +726,62 @@ var BATTLEFIELDS = [
         new Territory(75, 5),
     ]),
 ];
-var SCENARIOS = [
-    null,
-    new Scenario([
-        new BattlefieldPosition(1, 0, 0, 0),
-        new BattlefieldPosition(2, 0, 0, 0),
-        new BattlefieldPosition(3, 0, 0, 0),
-        new BattlefieldPosition(4, 0, 0, 0),
-        new BattlefieldPosition(5, 0, 0, 0),
-        new BattlefieldPosition(6, 0, 0, 0),
-        new BattlefieldPosition(7, 0, 0, 0),
-    ], [
-        new ObjectiveTokenPosition('B1', 300, 200),
-        new ObjectiveTokenPosition('B2', 600, 300),
-    ]),
-];
+var Scenario = /** @class */ (function (_super) {
+    __extends(Scenario, _super);
+    function Scenario(number) {
+        return _super.call(this, Scenario.getBattlefields(number), Scenario.getObjectiveTokens(number), Scenario.getSynopsis(number), Scenario.getSpecialRules(number), Scenario.getObjectives(number)) || this;
+    }
+    Scenario.getBattlefields = function (number) {
+        switch (number) {
+            case 1:
+                return [
+                    new BattlefieldPosition(1, 0, 0, 0),
+                    new BattlefieldPosition(2, 0, 0, 0),
+                    new BattlefieldPosition(3, 0, 0, 0),
+                    new BattlefieldPosition(4, 0, 0, 0),
+                    new BattlefieldPosition(5, 0, 0, 0),
+                    new BattlefieldPosition(6, 0, 0, 0),
+                    new BattlefieldPosition(7, 0, 0, 0),
+                ];
+        }
+    };
+    Scenario.getObjectiveTokens = function (number) {
+        switch (number) {
+            case 1:
+                return [
+                    new ObjectiveTokenPosition('B1', 300, 200),
+                    new ObjectiveTokenPosition('B2', 600, 300),
+                ];
+        }
+    };
+    Scenario.getSynopsis = function (number) {
+        switch (number) {
+            case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
+        }
+    };
+    Scenario.getSpecialRules = function (number) {
+        switch (number) {
+            case 1: return [];
+        }
+    };
+    Scenario.getObjectives = function (number) {
+        switch (number) {
+            case 1: return [
+                '<strong>' + _("En cours de partie :") + '</strong>' + _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif."),
+                '<strong>' + _("En cours de partie :") + '</strong>' + '<strong>' + _("Frontières") + ' - </strong>' + _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."),
+                '<strong>' + _("En fin de partie :") + '</strong>' + _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre."),
+            ]; // TODO
+        }
+    };
+    return Scenario;
+}(ScenarioInfos));
 var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
         var _this = this;
         this.game = game;
         this.fightersStocks = [];
         this.discoverTilesStocks = [];
-        var scenario = SCENARIOS[gamedatas.scenario];
+        var scenario = game.scenario;
         this.addBattlefields(scenario.battlefields);
         this.addObjectiveTokens(scenario.objectiveTokens);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
@@ -812,7 +849,11 @@ var PlayerTable = /** @class */ (function () {
         this.game = game;
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\">\n            <div id=\"player-table-").concat(this.playerId, "-hand-cards\" class=\"hand cards\" data-player-id=\"").concat(this.playerId, "\" data-current-player=\"").concat(this.currentPlayer.toString(), "\" data-my-hand=\"").concat(this.currentPlayer.toString(), "\"></div>\n            <div class=\"name-wrapper\">\n                <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-operations\" class=\"operations\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-circles\" class=\"circles\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-reserve\" class=\"reserve\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-highCommand\" class=\"highCommand\">\n            </div>\n        </div>\n        ");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\">\n            <div class=\"background\" data-color=\"").concat(player.color, "\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-hand-cards\" class=\"hand cards\" data-player-id=\"").concat(this.playerId, "\" data-current-player=\"").concat(this.currentPlayer.toString(), "\" data-my-hand=\"").concat(this.currentPlayer.toString(), "\"></div>\n            <div class=\"name-wrapper\">\n                <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-checks\" class=\"checks\">");
+        for (var i = 1; i <= 7; i++) {
+            html += "<div id=\"player-table-".concat(this.playerId, "-check").concat(i, "\" class=\"check\" data-number=\"").concat(i, "\">").concat(player.checks >= i ? "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>") : '', "</div>");
+        }
+        html += "    \n            </div>\n            <div id=\"player-table-".concat(this.playerId, "-operations\" class=\"operations\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-circles\" class=\"circles\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-reserve\" class=\"reserve\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-highCommand\" class=\"highCommand\">\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         [1, 2, 3, 4, 5].forEach(function (operation) {
             (operation > 3 ? [1, 2, 3, 4] : [1, 2, 3]).forEach(function (number) {
@@ -822,6 +863,7 @@ var PlayerTable = /** @class */ (function () {
                 div.dataset.operation = '' + operation;
                 div.dataset.number = '' + number;
                 div.innerHTML = "".concat(player.operations[operation] >= number ? "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>") : '');
+                div.addEventListener('click', function () { return _this.game.operationClick(operation); });
                 document.getElementById("player-table-".concat(_this.playerId, "-operations")).appendChild(div);
             });
         });
@@ -839,13 +881,23 @@ var PlayerTable = /** @class */ (function () {
             slotsIds: [1, 2, 3],
             mapCardToSlot: function (card) { return card.locationArg; }
         });
+        this.reserve.onCardClick = function (card) { return _this.cardClick(card); };
         this.reserve.addCards(player.reserve);
         this.highCommand = new SlotStock(this.game.cards, document.getElementById("player-table-".concat(this.playerId, "-highCommand")), {
             slotsIds: [1, 2, 3, 4, 5],
             mapCardToSlot: function (card) { return card.locationArg; }
         });
+        this.highCommand.onCardClick = function (card) { return _this.cardClick(card); };
         this.highCommand.addCards(player.highCommand);
     }
+    PlayerTable.prototype.cardClick = function (card) {
+        if (card.type < 20) {
+            this.game.playFighter(card.id);
+        }
+        else if (card.type < 30) {
+            this.game.activateFighter(card.id);
+        }
+    };
     PlayerTable.prototype.setPossibleOperations = function (operations) {
         var _this = this;
         Object.keys(operations).forEach(function (key) {
@@ -883,11 +935,17 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.setPossibleCellLinks = function (possibleLinkCirclesIds, cellId) {
         // TODO throw new Error("Method not implemented.");
     };
-    PlayerTable.prototype.addHighCommandCard = function (card) {
-        // TODO throw new Error("Method not implemented.");
-    };
     PlayerTable.prototype.addCheck = function (checks) {
-        // TODO throw new Error("Method not implemented.");
+        var div = document.getElementById("player-table-".concat(this.playerId, "-check").concat(checks));
+        div.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
+    };
+    PlayerTable.prototype.refillReserve = function (fighter, slot) {
+        this.reserve.addCard(fighter, undefined, {
+            slot: slot
+        });
+    };
+    PlayerTable.prototype.addHighCommandCard = function (card) {
+        this.highCommand.addCard(card);
     };
     PlayerTable.prototype.setZone = function (circlesIds, zoneId) {
         var _this = this;
@@ -899,9 +957,6 @@ var PlayerTable = /** @class */ (function () {
         const left: circle1.Left;
         const top: circle1.Top;
         const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
-    };
-    PlayerTable.prototype.refillReserve = function (fighter, slot) {
-        // TODO throw new Error("Method not implemented.");
     };
     return PlayerTable;
 }());
@@ -940,7 +995,9 @@ var Lumen = /** @class */ (function () {
         log('gamedatas', gamedatas);
         this.cards = new CardsManager(this);
         this.discoverTiles = new DiscoverTilesManager(this);
+        this.scenario = new Scenario(gamedatas.scenario);
         this.tableCenter = new TableCenter(this, this.gamedatas);
+        this.setScenarioInformations();
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
         this.setupNotifications();
@@ -1243,6 +1300,11 @@ var Lumen = /** @class */ (function () {
         var table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
     };
+    Lumen.prototype.setScenarioInformations = function () {
+        document.getElementById("scenario-synopsis").innerHTML = this.scenario.synopsis;
+        document.getElementById("scenario-special-rules").innerHTML = "<ul>".concat(this.scenario.specialRules.map(function (text) { return "<li>".concat(text, "</li>"); }), "</ul>");
+        document.getElementById("scenario-objectives").innerHTML = "<ul>".concat(this.scenario.objectives.map(function (text) { return "<li>".concat(text, "</li>"); }), "</ul>");
+    };
     Lumen.prototype.onCardClick = function (card) {
         var cardDiv = document.getElementById("card-".concat(card.id));
         var parentDiv = cardDiv.parentElement;
@@ -1331,6 +1393,13 @@ var Lumen = /** @class */ (function () {
         newSelectedButton === null || newSelectedButton === void 0 ? void 0 : newSelectedButton.classList.add('bgabutton_blue');
         newSelectedButton === null || newSelectedButton === void 0 ? void 0 : newSelectedButton.classList.remove('bgabutton_gray');
         dojo.toggleClass("confirmSelectedPlanificationFaces-button", 'disabled', isNaN(this.selectedPlanificationDice['white']) || isNaN(this.selectedPlanificationDice['black']));
+    };
+    Lumen.prototype.operationClick = function (operation) {
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseOperation':
+                this.chooseOperation(operation);
+                break;
+        }
     };
     Lumen.prototype.cellClick = function (cell) {
         switch (this.gamedatas.gamestate.name) {

@@ -1,26 +1,41 @@
-$circleWidth: 50px;
+$circleWidth: 49.7px;
 
 .player-table {
-  width: 900px;
-  height: 350px;
+  width: 960px;
+  height: 393px;
   position: relative;
-  background: #FFFFFF66;
-  border: 2px solid white;
-  border-radius: 15px;
+
+  .background {
+    position: absolute;
+    top: 50px; // height: 
+    height: 343px;
+    //bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 10px;
+    background-size: contain;
+    &[data-color="f28700"] {
+      background-image: url('img/playerboard-day.png');
+    }
+    &[data-color="1f3067"] {
+      background-image: url('img/playerboard-night.png');
+    }
+  }
 
   .name-wrapper {
+    border-radius: 10px;
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 300px;
+    width: 400px;
     display: flex;
-    background: #FFFFFFAA;
+    background: #FFFFFFCC;
     padding: 5px;
     justify-content: center;
     align-items: center;
 
     .name {
-      font-size: 20pt;
+      font-size: 16pt;
       font-weight: bold;
     }
   }
@@ -34,20 +49,60 @@ $circleWidth: 50px;
 
   .reserve {
     position: absolute;
-    width: 320px;
+    width: 327px;
+    left: 20px;
+    justify-content: space-between !important;
   }
   .highCommand {
     position: absolute;
+    width: 548px;
+    left: 375px;
+    justify-content: space-between !important;
+  }
+
+  .checks {
+    position: absolute;
     width: 540px;
-    left: 350px;
+    left: 380px;
+    top: 111px;
+
+    .check {
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      @for $index from 1 through 2 {
+        &[data-number="#{$index}"] {
+            left: #{28px + ($index - 1) * 22px};
+        }
+      }
+      @for $index from 3 through 4 {
+        &[data-number="#{$index}"] {
+            left: #{139px + ($index - 3) * 22px};
+        }
+      }
+
+      @for $index from 5 through 7 {
+        &[data-number="#{$index}"] {
+            left: #{262px + ($index - 5) * 112px};
+        }
+      }
+
+      img {
+        transform: scale(0.25);
+      }
+    }
   }
 
   .operations {
     position: absolute;
     display: flex;
     flex-wrap: wrap;
-    left: 800px;
-    top: 100px;
+    left: 855px;
+    top: 181px;
 
     .operation-number {
       position: absolute;
@@ -56,7 +111,6 @@ $circleWidth: 50px;
       display: flex;
       justify-content: center;
       align-items: center;
-      border: 2px solid black;
 
       @for $index from 1 through 5 {
         &[data-operation="#{$index}"] {
@@ -84,9 +138,8 @@ $circleWidth: 50px;
     position: absolute;
     display: flex;
     flex-wrap: wrap;
-    left: 400px;
-    top: 100px;
-    width: 500px;
+    left: 416px;
+    top: 151px;
 
     .circle {
       position: absolute;
@@ -96,9 +149,8 @@ $circleWidth: 50px;
       display: flex;
       justify-content: center;
       align-items: center;
-      border: 2px solid black;
       font-family: "Messy";
-      font-size: 70px;
+      font-size: 60px;
 
       &.ghost {
         opacity: 0.2;
@@ -127,29 +179,29 @@ $circleWidth: 50px;
       }
       @for $index from 4 through 8 {
         &[data-circle="#{$index}"] {
-          top: 40px;
+          top: 42px;
           left: #{120px + ($circleWidth * ($index - 4))};
         }
       }
       @for $index from 9 through 14 {
         &[data-circle="#{$index}"] {
-          top: 80px;
+          top: 86px;
           left: #{45px + ($circleWidth * ($index - 9))};
         }
       }
       &[data-circle="15"] {
-        top: 105px;
+        top: 111px;
         left: 0;
       }
       @for $index from 16 through 18 {
         &[data-circle="#{$index}"] {
-          top: 130px;
+          top: 136px;
           left: #{45px + ($circleWidth * ($index - 16))};
         }
       }
       @for $index from 19 through 20 {
         &[data-circle="#{$index}"] {
-          top: 170px;
+          top: 180px;
           left: #{70px + ($circleWidth * ($index - 19))};
         }
       }

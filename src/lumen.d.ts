@@ -56,11 +56,13 @@ interface LumenGamedatas {
 interface LumenGame extends Game {
     cards: CardsManager;
     discoverTiles: DiscoverTilesManager;
+    scenario: Scenario;
 
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
 
-    setTooltip(id: string, html: string): void;
+    setTooltip(id: string, html: string): void;    
+    operationClick(operation: number): void;
     cellClick(cell: number): void;
 
     playFighter(id: number): void;

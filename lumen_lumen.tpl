@@ -29,6 +29,11 @@
             </div>
         </div>	
         <div id="map"></div>
+        <div id="scenario-informations">
+            <div id="scenario-synopsis"></div>
+            <div id="scenario-special-rules"></div>
+            <div id="scenario-objectives"></div>
+        </div>
         <div id="tables"></div>
     </div>
     <div id="zoom-controls">

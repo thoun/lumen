@@ -4,7 +4,7 @@ class TableCenter {
     private initiativeMarker: HTMLDivElement;
 
     constructor(private game: LumenGame, gamedatas: LumenGamedatas) {
-        const scenario = SCENARIOS[gamedatas.scenario];
+        const scenario = game.scenario;
 
         this.addBattlefields(scenario.battlefields);
         this.addObjectiveTokens(scenario.objectiveTokens);

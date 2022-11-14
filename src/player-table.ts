@@ -15,9 +15,16 @@ class PlayerTable {
 
         let html = `
         <div id="player-table-${this.playerId}" class="player-table">
+            <div class="background" data-color="${player.color}"></div>
             <div id="player-table-${this.playerId}-hand-cards" class="hand cards" data-player-id="${this.playerId}" data-current-player="${this.currentPlayer.toString()}" data-my-hand="${this.currentPlayer.toString()}"></div>
             <div class="name-wrapper">
                 <span class="name" style="color: #${player.color};">${player.name}</span>
+            </div>
+            <div id="player-table-${this.playerId}-checks" class="checks">`;
+        for (let i=1; i<=7; i++) {
+            html += `<div id="player-table-${this.playerId}-check${i}" class="check" data-number="${i}">${player.checks >= i ? `<img src="${g_gamethemeurl}img/mul.gif"/>` : ''}</div>`;
+        }
+        html += `    
             </div>
             <div id="player-table-${this.playerId}-operations" class="operations">
             </div>
@@ -39,6 +46,7 @@ class PlayerTable {
                 div.dataset.operation = ''+operation;
                 div.dataset.number = ''+number;
                 div.innerHTML = `${player.operations[operation] >= number ? `<img src="${g_gamethemeurl}img/mul.gif"/>` : ''}`;
+                div.addEventListener('click', () => this.game.operationClick(operation));
                 document.getElementById(`player-table-${this.playerId}-operations`).appendChild(div);
             });
         })
@@ -57,13 +65,24 @@ class PlayerTable {
             slotsIds: [1, 2, 3],
             mapCardToSlot: card => card.locationArg
         });
+        this.reserve.onCardClick = card => this.cardClick(card);
         this.reserve.addCards(player.reserve);
 
         this.highCommand = new SlotStock<Card>(this.game.cards, document.getElementById(`player-table-${this.playerId}-highCommand`), {
             slotsIds: [1, 2, 3, 4, 5],
             mapCardToSlot: card => card.locationArg
         });
+        this.highCommand.onCardClick = card => this.cardClick(card);
         this.highCommand.addCards(player.highCommand);
+
+    }
+
+    private cardClick(card: Card) {
+        if (card.type < 20) {
+            this.game.playFighter(card.id);
+        } else if (card.type < 30) {
+            this.game.activateFighter(card.id);
+        }
     }
 
     public setPossibleOperations(operations: { [operation: number]: { currentNumber: number; value: number; possible: boolean; }; }) {
@@ -108,12 +127,19 @@ class PlayerTable {
         // TODO throw new Error("Method not implemented.");
     }
 
-    public addHighCommandCard(card: Card) {
-        // TODO throw new Error("Method not implemented.");
+    public addCheck(checks: number) {
+        const div = document.getElementById(`player-table-${this.playerId}-check${checks}`);
+        div.innerHTML = `<img src="${g_gamethemeurl}img/mul.gif"/>`;
+    }
+    
+    public refillReserve(fighter: Card, slot: number) {
+        this.reserve.addCard(fighter, undefined, {
+            slot
+        });
     }
 
-    public addCheck(checks: number) {
-        // TODO throw new Error("Method not implemented.");
+    public addHighCommandCard(card: Card) {
+        this.highCommand.addCard(card);
     }
     
     public setZone(circlesIds: number[], zoneId: number) {
@@ -126,9 +152,5 @@ class PlayerTable {
 	    const left: circle1.Left;
         const top: circle1.Top;
         const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
-    }
-    
-    public refillReserve(fighter: Card, slot: number) {
-        // TODO throw new Error("Method not implemented.");
     }
 }

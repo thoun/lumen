@@ -16,6 +16,7 @@ class Lumen implements LumenGame {
     public zoom: number = 1;
     public cards: CardsManager;
     public discoverTiles: DiscoverTilesManager;
+    public scenario: Scenario;
 
     private gamedatas: LumenGamedatas;
     private tableCenter: TableCenter;
@@ -53,7 +54,9 @@ class Lumen implements LumenGame {
 
         this.cards = new CardsManager(this);
         this.discoverTiles = new DiscoverTilesManager(this);
+        this.scenario = new Scenario(gamedatas.scenario);
         this.tableCenter = new TableCenter(this, this.gamedatas);
+        this.setScenarioInformations();
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
 
@@ -401,6 +404,12 @@ class Lumen implements LumenGame {
         const table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
     }
+
+    private setScenarioInformations() {
+        document.getElementById(`scenario-synopsis`).innerHTML = this.scenario.synopsis;
+        document.getElementById(`scenario-special-rules`).innerHTML = `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`)}</ul>`;
+        document.getElementById(`scenario-objectives`).innerHTML = `<ul>${this.scenario.objectives.map(text => `<li>${text}</li>`)}</ul>`;
+    }
     
     public onCardClick(card: Card): void {
         const cardDiv = document.getElementById(`card-${card.id}`);
@@ -539,9 +548,17 @@ class Lumen implements LumenGame {
         newSelectedButton?.classList.remove('bgabutton_gray');
 
         dojo.toggleClass(`confirmSelectedPlanificationFaces-button`, 'disabled', isNaN(this.selectedPlanificationDice['white']) || isNaN(this.selectedPlanificationDice['black']));
+    } 
+    
+    public operationClick(operation: number): void {
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseOperation':
+                this.chooseOperation(operation);
+                break;
+        }
     }
 
-    public cellClick(cell: number) {
+    public cellClick(cell: number): void {
         switch (this.gamedatas.gamestate.name) {
             case 'chooseCell':
                 this.chooseCell(cell);

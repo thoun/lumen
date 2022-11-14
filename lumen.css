@@ -234,7 +234,6 @@
   position: relative;
   width: 100px;
   height: 100px;
-  margin: 5px;
   border-radius: 10px;
   text-align: center;
 }
@@ -535,26 +534,39 @@ body > .card {
 }
 
 .player-table {
-  width: 900px;
-  height: 350px;
+  width: 960px;
+  height: 393px;
   position: relative;
-  background: rgba(255, 255, 255, 0.4);
-  border: 2px solid white;
-  border-radius: 15px;
+}
+.player-table .background {
+  position: absolute;
+  top: 50px;
+  height: 343px;
+  left: 0;
+  right: 0;
+  border-radius: 10px;
+  background-size: contain;
+}
+.player-table .background[data-color=f28700] {
+  background-image: url("img/playerboard-day.png");
+}
+.player-table .background[data-color="1f3067"] {
+  background-image: url("img/playerboard-night.png");
 }
 .player-table .name-wrapper {
+  border-radius: 10px;
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 300px;
+  width: 400px;
   display: flex;
-  background: rgba(255, 255, 255, 0.6666666667);
+  background: rgba(255, 255, 255, 0.8);
   padding: 5px;
   justify-content: center;
   align-items: center;
 }
 .player-table .name-wrapper .name {
-  font-size: 20pt;
+  font-size: 16pt;
   font-weight: bold;
 }
 .player-table .slot-stock .slot {
@@ -563,19 +575,60 @@ body > .card {
 }
 .player-table .reserve {
   position: absolute;
-  width: 320px;
+  width: 327px;
+  left: 20px;
+  justify-content: space-between !important;
 }
 .player-table .highCommand {
   position: absolute;
+  width: 548px;
+  left: 375px;
+  justify-content: space-between !important;
+}
+.player-table .checks {
+  position: absolute;
   width: 540px;
-  left: 350px;
+  left: 380px;
+  top: 111px;
+}
+.player-table .checks .check {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.player-table .checks .check[data-number="1"] {
+  left: 28px;
+}
+.player-table .checks .check[data-number="2"] {
+  left: 50px;
+}
+.player-table .checks .check[data-number="3"] {
+  left: 139px;
+}
+.player-table .checks .check[data-number="4"] {
+  left: 161px;
+}
+.player-table .checks .check[data-number="5"] {
+  left: 262px;
+}
+.player-table .checks .check[data-number="6"] {
+  left: 374px;
+}
+.player-table .checks .check[data-number="7"] {
+  left: 486px;
+}
+.player-table .checks .check img {
+  transform: scale(0.25);
 }
 .player-table .operations {
   position: absolute;
   display: flex;
   flex-wrap: wrap;
-  left: 800px;
-  top: 100px;
+  left: 855px;
+  top: 181px;
 }
 .player-table .operations .operation-number {
   position: absolute;
@@ -584,7 +637,6 @@ body > .card {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2px solid black;
 }
 .player-table .operations .operation-number[data-operation="1"] {
   top: 0px;
@@ -624,21 +676,19 @@ body > .card {
   position: absolute;
   display: flex;
   flex-wrap: wrap;
-  left: 400px;
-  top: 100px;
-  width: 500px;
+  left: 416px;
+  top: 151px;
 }
 .player-table .circles .circle {
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 49.7px;
+  height: 49.7px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2px solid black;
   font-family: "Messy";
-  font-size: 70px;
+  font-size: 60px;
 }
 .player-table .circles .circle.ghost {
   opacity: 0.2;
@@ -677,83 +727,83 @@ body > .card {
 }
 .player-table .circles .circle[data-circle="2"] {
   top: 0px;
-  left: 195px;
+  left: 194.7px;
 }
 .player-table .circles .circle[data-circle="3"] {
   top: 0px;
-  left: 245px;
+  left: 244.4px;
 }
 .player-table .circles .circle[data-circle="3"] {
   top: 0px;
-  left: 295px;
+  left: 294.1px;
 }
 .player-table .circles .circle[data-circle="4"] {
-  top: 40px;
+  top: 42px;
   left: 120px;
 }
 .player-table .circles .circle[data-circle="5"] {
-  top: 40px;
-  left: 170px;
+  top: 42px;
+  left: 169.7px;
 }
 .player-table .circles .circle[data-circle="6"] {
-  top: 40px;
-  left: 220px;
+  top: 42px;
+  left: 219.4px;
 }
 .player-table .circles .circle[data-circle="7"] {
-  top: 40px;
-  left: 270px;
+  top: 42px;
+  left: 269.1px;
 }
 .player-table .circles .circle[data-circle="8"] {
-  top: 40px;
-  left: 320px;
+  top: 42px;
+  left: 318.8px;
 }
 .player-table .circles .circle[data-circle="9"] {
-  top: 80px;
+  top: 86px;
   left: 45px;
 }
 .player-table .circles .circle[data-circle="10"] {
-  top: 80px;
-  left: 95px;
+  top: 86px;
+  left: 94.7px;
 }
 .player-table .circles .circle[data-circle="11"] {
-  top: 80px;
-  left: 145px;
+  top: 86px;
+  left: 144.4px;
 }
 .player-table .circles .circle[data-circle="12"] {
-  top: 80px;
-  left: 195px;
+  top: 86px;
+  left: 194.1px;
 }
 .player-table .circles .circle[data-circle="13"] {
-  top: 80px;
-  left: 245px;
+  top: 86px;
+  left: 243.8px;
 }
 .player-table .circles .circle[data-circle="14"] {
-  top: 80px;
-  left: 295px;
+  top: 86px;
+  left: 293.5px;
 }
 .player-table .circles .circle[data-circle="15"] {
-  top: 105px;
+  top: 111px;
   left: 0;
 }
 .player-table .circles .circle[data-circle="16"] {
-  top: 130px;
+  top: 136px;
   left: 45px;
 }
 .player-table .circles .circle[data-circle="17"] {
-  top: 130px;
-  left: 95px;
+  top: 136px;
+  left: 94.7px;
 }
 .player-table .circles .circle[data-circle="18"] {
-  top: 130px;
-  left: 145px;
+  top: 136px;
+  left: 144.4px;
 }
 .player-table .circles .circle[data-circle="19"] {
-  top: 170px;
+  top: 180px;
   left: 70px;
 }
 .player-table .circles .circle[data-circle="20"] {
-  top: 170px;
-  left: 120px;
+  top: 180px;
+  left: 119.7px;
 }
 
 html[data-filling-pattern=true] .circle[data-zone="0"] {
