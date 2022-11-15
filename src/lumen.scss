@@ -183,6 +183,31 @@ html, .mode_3d #game_play_area_background {
   }
 }
 
+#scenario-synopsis {
+  background: url('img/description-background.jpg');
+  background-size: cover;
+  background-position: center center;
+  min-height: 50px;
+  padding: 20px;
+  margin: 10px;
+  box-shadow: inset 0 0 5px #a79572, 2px 2px 4px 0px #00000066;
+}
+
+#scenario-special-rules, #scenario-objectives {
+  background: #FFFFFFAA;
+  min-height: 50px;
+  padding: 20px;
+  margin: 10px;
+}
+
+#scenario-special-rules {
+  .title {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #008abd;
+  }
+}
+
 #scenario-objectives {
   .objective-description-token {
     position: relative;
@@ -198,6 +223,8 @@ html, .mode_3d #game_play_area_background {
     font-weight: bold;
     font-size: 2rem;
     color: #fff100;
+    margin: 5px;
+    margin-right: 10px;
 
     .number {
       position: absolute;

@@ -14,14 +14,17 @@ const LOCAL_STORAGE_ZOOM_KEY = 'Lumen-zoom';
 
 class Lumen implements LumenGame {
     public zoom: number = 1;
-    public cards: CardsManager;
-    public discoverTiles: DiscoverTilesManager;
+    public cardsManager: CardsManager;
+    public discoverTilesManager: DiscoverTilesManager;
+    public objectiveTokensManager: ObjectiveTokensManager;
     public scenario: Scenario;
 
     private gamedatas: LumenGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     private selectedPlanificationDice: { [color: string]: number } = {};
+    private discoverTilesStocks: LineStock<DiscoverTile>[] = [];
+    private objectiveTokensStocks: LineStock<ObjectiveToken>[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -52,8 +55,8 @@ class Lumen implements LumenGame {
 
         log('gamedatas', gamedatas);
 
-        this.cards = new CardsManager(this);
-        this.discoverTiles = new DiscoverTilesManager(this);
+        this.cardsManager = new CardsManager(this);
+        this.discoverTilesManager = new DiscoverTilesManager(this);
         this.scenario = new Scenario(gamedatas.scenario);
         this.tableCenter = new TableCenter(this, this.gamedatas);
         this.setScenarioInformations();
@@ -94,6 +97,9 @@ class Lumen implements LumenGame {
         log('Entering state: ' + stateName, args.args);
 
         switch (stateName) {
+            case 'newRound':
+                this.onEnteringNewRound();
+                break;
             case 'chooseOperation':
                 this.onEnteringChooseOperation(args.args);
                 break;
@@ -110,6 +116,10 @@ class Lumen implements LumenGame {
                 this.onEnteringChooseTerritory(args.args);
                 break;                
         }
+    }
+
+    private onEnteringNewRound() {
+        this.playersTables.forEach(playerTable => playerTable.removeFirstPlayerToken());
     }
 
     private onEnteringPlanificationChooseFaces() {
@@ -385,11 +395,18 @@ class Lumen implements LumenGame {
 
             dojo.place(`
             <div id="bag-${player.id}" class="bag" data-color="${player.color}"></div>
+            <div id="player-${player.id}-discover-tiles"></div>
+            <div id="player-${player.id}-objective-tokens"></div>
             
             <div id="first-player-token-wrapper-${player.id}" class="first-player-token-wrapper"></div>`, `player_board_${player.id}`);
             if (gamedatas.firstPlayer == playerId) {
-                dojo.place(`<div id="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
+                dojo.place(`<div id="first-player-token" class="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
             }
+
+            this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`));
+            this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean(player.discoverTiles[0]?.type) });
+            this.objectiveTokensStocks[playerId] = new LineStock<ObjectiveToken>(this.objectiveTokensManager, document.getElementById(`player-${player.id}-objective-tokens`));
+            this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean(player.objectiveTokens[0]?.type) });
         });
 
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
@@ -413,13 +430,13 @@ class Lumen implements LumenGame {
     }
 
     private createPlayerTable(gamedatas: LumenGamedatas, playerId: number) {
-        const table = new PlayerTable(this, gamedatas.players[playerId]);
+        const table = new PlayerTable(this, gamedatas.players[playerId], gamedatas.firstPlayer == playerId ? gamedatas.firstPlayerOperation : 0);
         this.playersTables.push(table);
     }
 
     private setScenarioInformations() {
         document.getElementById(`scenario-synopsis`).innerHTML = this.scenario.synopsis;
-        document.getElementById(`scenario-special-rules`).innerHTML = `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`).join('')}</ul>`;
+        document.getElementById(`scenario-special-rules`).innerHTML = `<div class="title">${_('Special rules')}</div>${this.scenario.specialRules.length ? `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`).join('')}</ul>` : _('Nothing')}`;
         document.getElementById(`scenario-objectives`).innerHTML = `<ul>${this.scenario.objectives.map(description => `<li><div class="objective-description-token">${description.letter}${description.number > 1 ? `<div class="number">x${description.number}</div>` : ``}</div>${description.text}</li>`).join('')}</ul>`;
     }
     
@@ -483,54 +500,48 @@ class Lumen implements LumenGame {
         helpDialog.create('lumenHelpDialog');
         helpDialog.setTitle(_("Card details").toUpperCase());
 
-        const duoCards = [1, 2, 3].map(family => `
+        const baseFighters = [1, 2, 3, 4, 5, 6].map(subType => `
         <div class="help-section">
-            <div id="help-pair-${family}"></div>
-            <div>${this.cards.getTooltip(2, family)}</div>
+            <div id="help-base-${subType}"></div>
+            <div>${this.cardsManager.getTooltip(subType)}</div>
         </div>
         `).join('');
 
-        const duoSection = `
-        ${duoCards}
+        const bonusCards = [11, 12, 13, 14, 15, 16, 17, 18].map(subType => `
         <div class="help-section">
-            <div id="help-pair-4"></div>
-            <div id="help-pair-5"></div>
-            <div>${this.cards.getTooltip(2, 4)}</div>
-        </div>
-        ${_("Note: The points for duo cards count whether the cards have been played or not. However, the effect is only applied when the player places the two cards in front of them.")}`;
-
-        const mermaidSection = `
-        <div class="help-section">
-            <div id="help-mermaid"></div>
-            <div>${this.cards.getTooltip(1)}</div>
-        </div>`;
-
-        const collectorSection = [1, 2, 3, 4].map(family => `
-        <div class="help-section">
-            <div id="help-collector-${family}"></div>
-            <div>${this.cards.getTooltip(3, family)}</div>
+            <div id="help-bonus-${subType}"></div>
+            <div>${this.cardsManager.getTooltip(subType)}</div>
         </div>
         `).join('');
 
-        const multiplierSection = [1, 2, 3, 4].map(family => `
+        const actions = [21, 22, 23].map(subType => `
         <div class="help-section">
-            <div id="help-multiplier-${family}"></div>
-            <div>${this.cards.getTooltip(4, family)}</div>
+            <div id="help-actions-${subType}"></div>
+            <div>${this.cardsManager.getTooltip(subType)}</div>
+        </div>
+        `).join('');
+
+        const missions = [31, 32, 33].map(subType => `
+        <div class="help-section">
+            <div id="help-missions-${subType}"></div>
+            <div>${this.cardsManager.getTooltip(subType)}</div>
         </div>
         `).join('');
         
+        // TODO
         let html = `
         <div id="help-popin">
-            ${_("<strong>Important:</strong> When it is said that the player counts or scores the points on their cards, it means both those in their hand and those in front of them.")}
-
-            <h1>${_("Duo cards")}</h1>
-            ${duoSection}
-            <h1>${_("Mermaid cards")}</h1>
-            ${mermaidSection}
-            <h1>${_("Collector cards")}</h1>
-            ${collectorSection}
-            <h1>${_("Point Multiplier cards")}</h1>
-            ${multiplierSection}
+            <h1>${_("LES COMBATANTS DE BASE")}</h1>
+            ${baseFighters}
+            <h1>${_("LES JETONS BONUS")}</h1>
+            <div>${_('TODO')}</div>
+            ${bonusCards}
+            <h1>${_("LES ACTIONS D’ÉCLAT")}</h1>
+            <div>${_('TODO')}</div>
+            ${actions}
+            <h1>${_("LES MISSIONS PERSONNELLES")}</h1>
+            <div>${_('TODO')}</div>
+            ${missions}
         </div>
         `;
         
@@ -539,14 +550,14 @@ class Lumen implements LumenGame {
 
         helpDialog.show();
 
-        // pair
+        /*// pair
         [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]].forEach(([family, color]) => this.cards.createMoveOrUpdateCard({id: 1020 + family, category: 2, family, color, index: 0 } as any, `help-pair-${family}`));
         // mermaid
         this.cards.createMoveOrUpdateCard({id: 1010, category: 1 } as any, `help-mermaid`);
         // collector
         [[1, 1], [2, 2], [3, 6], [4, 9]].forEach(([family, color]) => this.cards.createMoveOrUpdateCard({id: 1030 + family, category: 3, family, color, index: 0 } as any, `help-collector-${family}`));
         // multiplier
-        [1, 2, 3, 4].forEach(family => this.cards.createMoveOrUpdateCard({id: 1040 + family, category: 4, family } as any, `help-multiplier-${family}`));
+        [1, 2, 3, 4].forEach(family => this.cards.createMoveOrUpdateCard({id: 1040 + family, category: 4, family } as any, `help-multiplier-${family}`));*/
     }
 
     private onPlanificationDiceSelection(color: string, value: number) {
@@ -788,7 +799,7 @@ class Lumen implements LumenGame {
 
     notif_diceRoll(notif: Notif<NotifDiceRollArgs>) {
         [1, 2].forEach(number => {
-            var element = document.getElementById(`c_die_${number}`);
+            let element = document.getElementById(`c_die_${number}`);
                         
             if (element != null) {
                 element.className = "";
@@ -797,7 +808,7 @@ class Lumen implements LumenGame {
                 element.classList.add("show"+notif.args[`die${number}`]);        	 
             }
             
-            var element = document.getElementById(`d_die_${number}`);
+            element = document.getElementById(`d_die_${number}`);
             if (element != null) {
                 element.classList.remove("roll0", "roll1","roll2", "roll3");
                 void element.offsetWidth;
@@ -808,7 +819,7 @@ class Lumen implements LumenGame {
 
     notif_diceChange(notif: Notif<NotifDiceRollArgs>) {
         [1, 2].forEach(number => {
-            var element = document.getElementById(`c_die_${number}`);
+            const element = document.getElementById(`c_die_${number}`);
                         
             if (element != null) {
                 element.className = "";
@@ -861,7 +872,9 @@ class Lumen implements LumenGame {
     } 
 
     notif_takeObjectiveToken(notif: Notif<NotifTakeObjectiveTokenArgs>) {
-        // TODO check if value
+        const playerId = notif.args.playerId;
+
+        this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean(notif.args.tokens[0]?.type) });
     }
 
     notif_moveFighter(notif: Notif<NotifMoveFighterArgs>) {
@@ -873,11 +886,20 @@ class Lumen implements LumenGame {
     }
 
     notif_moveDiscoverTileToPlayer(notif: Notif<NotifMoveDiscoverTileToPlayerArgs>) {
-        // TODO
+        const playerId = notif.args.playerId;
+
+        this.discoverTilesStocks[playerId].addCard(notif.args.discoverTile, undefined, { visible: Boolean(notif.args.discoverTile.type) });
     }
 
     notif_discardDiscoverTile(notif: Notif<NotifDiscardDiscoverTileArgs>) {
-        // TODO
+        const stock = this.discoverTilesManager.getCardStock(notif.args.discoverTile);
+
+        if (stock) {
+            stock.removeCard(notif.args.discoverTile);
+        } else {
+            const element = this.discoverTilesManager.getCardElement(notif.args.discoverTile);
+            element.remove();
+        }
     }
 
     notif_revealDiscoverTile(notif: Notif<NotifRevealDiscoverTileArgs>) {
@@ -889,19 +911,40 @@ class Lumen implements LumenGame {
     }
 
     notif_putBackInBag(notif: Notif<NotifPutBackInBagArgs>) {
-        // TODO
+        notif.args.fighters.forEach(card => {
+            const element = this.cardsManager.getCardElement(card);
+            const fromElement = element.parentElement;
+            const bag = document.getElementById(`bag-${card.type == 1 ? card.playerId : 0}`);
+            bag.appendChild(element);
+            stockSlideAnimation({
+                element,
+                fromElement
+            });
+        });
+    }
+    
+    private setFightersSide(fighters: Card[], side: string) {
+        fighters.forEach(card => {
+            const element = this.cardsManager.getCardElement(card);
+            element.dataset.side = side;
+        });
     }
 
     notif_setFightersActivated(notif: Notif<NotifSetFightersActivatedArgs>) {
-        // TODO
+        this.setFightersSide(notif.args.fighters, 'back');        
     }
 
     notif_setFightersUnactivated(notif: Notif<NotifSetFightersActivatedArgs>) {
-        // TODO
+        this.setFightersSide(notif.args.fighters, 'front');
     }
 
     notif_exchangedFighters(notif: Notif<NotifSetFightersActivatedArgs>) {
-        // TODO
+        const card0 = notif.args.fighters[0];
+        const card1 = notif.args.fighters[1];
+        const stock0 = this.cardsManager.getCardStock(card0);
+        const stock1 = this.cardsManager.getCardStock(card1);
+        stock1.addCard(card0);
+        stock0.addCard(card1);
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

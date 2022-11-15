@@ -13,6 +13,7 @@ trait StateTrait {
 
     function stNewRound() {
         $playerId = intval($this->getActivePlayerId());
+        $this->setGameStateValue(FIRST_PLAYER_OPERATION, 0);
 
         $planificationTiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_PLANIFICATION);
         $canActivatePlanification = count($planificationTiles) > 0;

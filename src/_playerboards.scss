@@ -14,16 +14,22 @@
       background: white !important;
     }
   }
+
+  &#overall_player_board_0 {
+    background: url('img/description-background.jpg');
+    background-size: cover;
+    background-position: center center;
+  }
 }
 
 .first-player-token-wrapper {
   position: relative;
 }
 
-#first-player-token {
+.first-player-token {
   background: url('img/first-player.png');
-  width: 281px;
-  height: 161px;
+  width: 54px;
+  height: 31px;
 }
 
 /*.counters {
@@ -37,10 +43,12 @@
 }*/
 
 .bag {
-  width: 185px;
-  height: 200px;
+  width: 74px;
+  height: 80px;
+  margin: 5px;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   background: url('img/bag-neutral.png');
 
   &[data-color="f28700"] {

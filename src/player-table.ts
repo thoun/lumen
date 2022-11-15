@@ -9,7 +9,7 @@ class PlayerTable {
 
     private currentPlayer: boolean;
 
-    constructor(private game: LumenGame, player: LumenPlayer) {
+    constructor(private game: LumenGame, player: LumenPlayer, firstPlayerOperation: number) {
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
 
@@ -27,6 +27,7 @@ class PlayerTable {
         html += `    
             </div>
             <div id="player-table-${this.playerId}-operations" class="operations">
+                <div id="player-table-${this.playerId}-first-player-token" class="first-player-token" data-operation="${firstPlayerOperation}" data-visible="${(firstPlayerOperation > 0).toString()}"></div>
             </div>
             <div id="player-table-${this.playerId}-circles" class="circles">
             </div>
@@ -61,14 +62,14 @@ class PlayerTable {
             div.addEventListener('click', () => this.game.cellClick(circle.circleId));
         });
 
-        this.reserve = new SlotStock<Card>(this.game.cards, document.getElementById(`player-table-${this.playerId}-reserve`), {
+        this.reserve = new SlotStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-reserve`), {
             slotsIds: [1, 2, 3],
             mapCardToSlot: card => card.locationArg
         });
         this.reserve.onCardClick = card => this.cardClick(card);
         this.reserve.addCards(player.reserve);
 
-        this.highCommand = new SlotStock<Card>(this.game.cards, document.getElementById(`player-table-${this.playerId}-highCommand`), {
+        this.highCommand = new SlotStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-highCommand`), {
             slotsIds: [1, 2, 3, 4, 5],
             mapCardToSlot: card => card.locationArg
         });
@@ -101,7 +102,16 @@ class PlayerTable {
         circleDiv.classList.remove('ghost');
         circleDiv.innerHTML = `<img src="${g_gamethemeurl}img/mul.gif"/>`;
 
-        // TODO set token to line if firstPlayer
+        if (firstPlayer) {
+            const fpDiv = document.getElementById(`player-table-${this.playerId}-first-player-token`);
+            fpDiv.dataset.operation = ''+type;
+            fpDiv.dataset.visible = 'true';
+        }
+    }
+    
+    public removeFirstPlayerToken() {
+        const fpDiv = document.getElementById(`player-table-${this.playerId}-first-player-token`);
+        fpDiv.dataset.visible = 'false';
     }
     
     setCancelledOperation(type: number, number: number) {

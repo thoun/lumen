@@ -12,9 +12,14 @@ interface ICard {
 
 interface Card extends ICard {
     played: boolean;
+    playerId: number;
 }
 
 interface DiscoverTile extends ICard {
+    visible: boolean;
+}
+
+interface ObjectiveToken extends ICard {
     visible: boolean;
 }
 
@@ -31,6 +36,8 @@ interface LumenPlayer extends Player {
     highCommand: Card[];
     operations: { [type: number]: number };
     circles: Circle[];
+    discoverTiles: DiscoverTile[];
+    objectiveTokens: ObjectiveToken[];
 }
 
 interface LumenGamedatas {
@@ -51,11 +58,12 @@ interface LumenGamedatas {
     discoverTilesOnTerritories: DiscoverTile[];
     initiativeMarkerTerritory: number;
     firstPlayer: number;
+    firstPlayerOperation: number;
 }
 
 interface LumenGame extends Game {
-    cards: CardsManager;
-    discoverTiles: DiscoverTilesManager;
+    cardsManager: CardsManager;
+    discoverTilesManager: DiscoverTilesManager;
     scenario: Scenario;
 
     getPlayerId(): number;
@@ -154,6 +162,7 @@ interface NotifNewFirstPlayerArgs {
 interface NotifTakeObjectiveTokenArgs {
     playerId: number;
     value: number;
+    tokens: ObjectiveToken[];
 }
 
 interface NotifMoveFighterArgs {

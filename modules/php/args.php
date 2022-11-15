@@ -41,7 +41,9 @@ trait ArgsTrait {
             $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
             if ($playerId != $firstPlayer) {
                 $firstPlayerOperation = intval($this->getGameStateValue(FIRST_PLAYER_OPERATION));
-                $operations[$firstPlayerOperation]['possible'] = false;
+                if ($firstPlayerOperation > 0) {
+                    $operations[$firstPlayerOperation]['possible'] = false;
+                }
             }
         }
     
@@ -206,7 +208,7 @@ trait ArgsTrait {
             case MOVE_SUPER:
                 // territories neighbours to current fighter
                 $neighboursIds = $this->getTerritoryNeighboursIds($selectedFighter->locationArg);
-                $opponentId = $this->getOpponentId();
+                $opponentId = $this->getOpponentId($playerId);
                 foreach($neighboursIds as $neighbourId) {
                     $opponentRooteds = $this->getCardsByLocation($selectedFighter->location, $neighbourId, $opponentId, null, 16);
                     if (!$this->array_some($opponentRooteds, fn($opponentRooted) => $opponentRooted->played)) {

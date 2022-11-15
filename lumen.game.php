@@ -157,7 +157,7 @@ class Lumen extends Table {
     protected function getAllDatas() {
         $result = [];
     
-        $currentPlayerId = $this->getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $currentPlayerId = intval($this->getCurrentPlayerId());    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
@@ -175,6 +175,11 @@ class Lumen extends Table {
             $player['operations'] = array_map(fn($operation) => intval($operation['nb']), $operations);
             $player['circles'] = $this->getCircles($playerId);
             $player['links'] = $this->getCollectionFromDb("SELECT * FROM `link` WHERE player_id = $playerId");
+
+            $discoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
+            $player['discoverTiles'] = $playerId == $currentPlayerId ? $discoverTiles : DiscoverTile::onlyIds($discoverTiles);
+            $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
+            $player['objectiveTokens'] = $playerId == $currentPlayerId ? $objectiveTokens : ObjectiveToken::onlyIds($objectiveTokens);
         }
 
         $result['scenario'] = $this->getScenarioId();
@@ -182,6 +187,7 @@ class Lumen extends Table {
         $result['discoverTilesOnTerritories'] = $this->getDiscoverTilesByLocation('territory');
         $result['initiativeMarkerTerritory'] = intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY));
         $result['firstPlayer'] = intval($this->getGameStateValue(FIRST_PLAYER));
+        $result['firstPlayerOperation'] = intval($this->getGameStateValue(FIRST_PLAYER_OPERATION));
   
         return $result;
     }

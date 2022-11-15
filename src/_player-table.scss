@@ -64,7 +64,7 @@ $circleWidth: 49.7px;
     position: absolute;
     width: 540px;
     left: 380px;
-    top: 111px;
+    top: 106px;
 
     .check {
       position: absolute;
@@ -102,7 +102,7 @@ $circleWidth: 49.7px;
     display: flex;
     flex-wrap: wrap;
     left: 855px;
-    top: 181px;
+    top: 177px;
 
     .operation-number {
       position: absolute;
@@ -132,6 +132,29 @@ $circleWidth: 49.7px;
         cursor: pointer;
       }
     }
+
+    .first-player-token {
+      opacity: 0;
+      left: 55px;
+      position: absolute;
+      transition: opacity 0.5s;
+
+      &[data-visible="true"] {
+        opacity: 1;
+      }
+
+      @for $index from 1 through 5 {
+        &[data-operation="#{$index}"] {
+            top: #{($index - 1) * 20px - 5px};
+        }
+      }
+
+      @for $index from 4 through 5 {
+        &[data-operation="#{$index}"] {
+          left: 75px;
+        }
+      }
+    }
   }
 
   .circles {
@@ -150,7 +173,7 @@ $circleWidth: 49.7px;
       justify-content: center;
       align-items: center;
       font-family: "Messy";
-      font-size: 60px;
+      font-size: 48px;
 
       &.ghost {
         opacity: 0.2;

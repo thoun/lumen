@@ -66,7 +66,7 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
         $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
-        $isFirstPlayer = $playerId === $firstPlayer;
+        $isFirstPlayer = $playerId == $firstPlayer;
         if ($isFirstPlayer) {
             $this->setGameStateValue(FIRST_PLAYER_OPERATION, $type);
         }
@@ -287,7 +287,7 @@ trait ActionTrait {
         }
 
         if ($fighter->location === 'territory') {
-            $opponentTisseuses = $this->getCardsByLocation($fighter->location, $fighter->locationArg, $this->getOpponentId(), null, 15);
+            $opponentTisseuses = $this->getCardsByLocation($fighter->location, $fighter->locationArg, $this->getOpponentId($playerId), null, 15);
             if ($this->array_some($opponentTisseuses, fn($opponentTisseuse) => $opponentTisseuse->played)) {
                 throw new BgaUserException("An opponent Tisseuse prevents you to leave the territory");
             }
@@ -307,7 +307,7 @@ trait ActionTrait {
 
         if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
             $tiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE);
-            if ($tiles > 0) {
+            if (count($tiles) > 0) {
                 $usedTile = $tiles[0];
             } else {
                 throw new BgaUserException("No remaining action");

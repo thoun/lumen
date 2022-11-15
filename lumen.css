@@ -238,7 +238,7 @@
   text-align: center;
 }
 .card.fighter .card-sides .card-side {
-  border-radius: 5px;
+  border-radius: 24px;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
 }
 .card.fighter .card-sides .card-side button {
@@ -500,8 +500,8 @@ body > .card {
 }
 #map #initiative-marker {
   background: url("img/initiative-marker.png");
-  width: 294px;
-  height: 313px;
+  width: 57px;
+  height: 60px;
 }
 
 .player-board {
@@ -513,15 +513,20 @@ body > .card {
 .player-board.spectator-mode * {
   background: white !important;
 }
+.player-board#overall_player_board_0 {
+  background: url("img/description-background.jpg");
+  background-size: cover;
+  background-position: center center;
+}
 
 .first-player-token-wrapper {
   position: relative;
 }
 
-#first-player-token {
+.first-player-token {
   background: url("img/first-player.png");
-  width: 281px;
-  height: 161px;
+  width: 54px;
+  height: 31px;
 }
 
 /*.counters {
@@ -534,10 +539,12 @@ body > .card {
   }
 }*/
 .bag {
-  width: 185px;
-  height: 200px;
+  width: 74px;
+  height: 80px;
+  margin: 5px;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   background: url("img/bag-neutral.png");
 }
 .bag[data-color=f28700] {
@@ -603,7 +610,7 @@ body > .card {
   position: absolute;
   width: 540px;
   left: 380px;
-  top: 111px;
+  top: 106px;
 }
 .player-table .checks .check {
   position: absolute;
@@ -642,7 +649,7 @@ body > .card {
   display: flex;
   flex-wrap: wrap;
   left: 855px;
-  top: 181px;
+  top: 177px;
 }
 .player-table .operations .operation-number {
   position: absolute;
@@ -686,6 +693,36 @@ body > .card {
   opacity: 0.2;
   cursor: pointer;
 }
+.player-table .operations .first-player-token {
+  opacity: 0;
+  left: 55px;
+  position: absolute;
+  transition: opacity 0.5s;
+}
+.player-table .operations .first-player-token[data-visible=true] {
+  opacity: 1;
+}
+.player-table .operations .first-player-token[data-operation="1"] {
+  top: -5px;
+}
+.player-table .operations .first-player-token[data-operation="2"] {
+  top: 15px;
+}
+.player-table .operations .first-player-token[data-operation="3"] {
+  top: 35px;
+}
+.player-table .operations .first-player-token[data-operation="4"] {
+  top: 55px;
+}
+.player-table .operations .first-player-token[data-operation="5"] {
+  top: 75px;
+}
+.player-table .operations .first-player-token[data-operation="4"] {
+  left: 75px;
+}
+.player-table .operations .first-player-token[data-operation="5"] {
+  left: 75px;
+}
 .player-table .circles {
   position: absolute;
   display: flex;
@@ -702,7 +739,7 @@ body > .card {
   justify-content: center;
   align-items: center;
   font-family: "Messy";
-  font-size: 60px;
+  font-size: 48px;
 }
 .player-table .circles .circle.ghost {
   opacity: 0.2;
@@ -1131,6 +1168,29 @@ html, .mode_3d #game_play_area_background {
   background-position-y: 0%;
 }
 
+#scenario-synopsis {
+  background: url("img/description-background.jpg");
+  background-size: cover;
+  background-position: center center;
+  min-height: 50px;
+  padding: 20px;
+  margin: 10px;
+  box-shadow: inset 0 0 5px #a79572, 2px 2px 4px 0px rgba(0, 0, 0, 0.4);
+}
+
+#scenario-special-rules, #scenario-objectives {
+  background: rgba(255, 255, 255, 0.6666666667);
+  min-height: 50px;
+  padding: 20px;
+  margin: 10px;
+}
+
+#scenario-special-rules .title {
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #008abd;
+}
+
 #scenario-objectives .objective-description-token {
   position: relative;
   background: url("img/objective-tokens.png");
@@ -1145,6 +1205,8 @@ html, .mode_3d #game_play_area_background {
   font-weight: bold;
   font-size: 2rem;
   color: #fff100;
+  margin: 5px;
+  margin-right: 10px;
 }
 #scenario-objectives .objective-description-token .number {
   position: absolute;

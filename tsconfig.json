@@ -20,6 +20,7 @@
         "node_modules/bga-cards/src/card-manager.ts",
         "src/cards.ts",
         "src/discover-tiles.ts",
+        "src/objective-tokens.ts",
         "src/scenarios.ts",
         "src/table-center.ts",
         "src/player-table.ts",

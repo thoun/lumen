@@ -167,7 +167,7 @@ trait UtilTrait {
             $sql .= " AND `card_location_arg` = $location_arg";
         }
         if ($visible !== null) {
-            $sql .= " AND `visible` = ".strval($visible);
+            $sql .= " AND `visible` = ".($visible ? 'true' : 'false');
         }
         if ($type !== null) {
             $sql .= " AND `card_type` = $type";

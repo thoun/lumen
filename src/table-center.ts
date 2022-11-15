@@ -39,8 +39,8 @@ class TableCenter {
             battlefield.appendChild(territory);
             territory.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
-            this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cards, document.getElementById(`territory-${territoryInfos.id}-fighters`));
-            this.discoverTilesStocks[territoryInfos.id] = new LineStock<DiscoverTile>(this.game.discoverTiles, document.getElementById(`territory-${territoryInfos.id}-discover-tiles`));
+            this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
+            this.discoverTilesStocks[territoryInfos.id] = new LineStock<DiscoverTile>(this.game.discoverTilesManager, document.getElementById(`territory-${territoryInfos.id}-discover-tiles`));
         });
     }
 
@@ -78,7 +78,7 @@ class TableCenter {
     }
     
     public revealDiscoverTile(discoverTile: DiscoverTile) {
-        this.game.discoverTiles.setupFrontDiv(discoverTile);
-        this.game.discoverTiles.getCardElement(discoverTile).dataset.side = 'front';
+        this.game.discoverTilesManager.setupFrontDiv(discoverTile);
+        this.game.discoverTilesManager.getCardElement(discoverTile).dataset.side = 'front';
     }
 }
