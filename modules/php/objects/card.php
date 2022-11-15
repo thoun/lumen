@@ -43,6 +43,8 @@ class Card extends CardType {
             'card_location_arg' => $card->locationArg,
             'card_type' => null,
             'card_type_arg' => null,
+            'player_id' => null,
+            'played' => null,
         ], null);
     }
 

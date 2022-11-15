@@ -71,7 +71,8 @@ interface LumenGame extends Game {
 
     setTooltip(id: string, html: string): void;    
     operationClick(operation: number): void;
-    cellClick(cell: number): void;
+    cellClick(cell: number): void; 
+    chooseFightersClick(card: Card): void;   
 
     playFighter(id: number): void;
     moveFighter(id: number): void;

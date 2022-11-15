@@ -8,12 +8,7 @@ class CardsManager extends CardManager<Card> {
                 game.setTooltip(div.id, this.getTooltip(card.subType));
             },
             setupFrontDiv: (card, div) => {
-                div.innerHTML = `${this.getName(card.subType)}
-                <button id="card-${card.id}-move">move ${card.id}</button>
-                <button id="card-${card.id}-activate">activate ${card.id}</button>
-                `;
-                document.getElementById(`card-${card.id}-move`).addEventListener('click', () => this.game.moveFighter(card.id));
-                document.getElementById(`card-${card.id}-activate`).addEventListener('click', () => this.game.activateFighter(card.id));
+                div.innerHTML = `${this.getName(card.subType)}`;
             },
             setupBackDiv: (card, div) => {
                 div.innerHTML = `${this.getName(card.subType)}

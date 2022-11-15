@@ -622,9 +622,7 @@ var CardsManager = /** @class */ (function (_super) {
                 game.setTooltip(div.id, _this.getTooltip(card.subType));
             },
             setupFrontDiv: function (card, div) {
-                div.innerHTML = "".concat(_this.getName(card.subType), "\n                <button id=\"card-").concat(card.id, "-move\">move ").concat(card.id, "</button>\n                <button id=\"card-").concat(card.id, "-activate\">activate ").concat(card.id, "</button>\n                ");
-                document.getElementById("card-".concat(card.id, "-move")).addEventListener('click', function () { return _this.game.moveFighter(card.id); });
-                document.getElementById("card-".concat(card.id, "-activate")).addEventListener('click', function () { return _this.game.activateFighter(card.id); });
+                div.innerHTML = "".concat(_this.getName(card.subType));
             },
             setupBackDiv: function (card, div) {
                 div.innerHTML = "".concat(_this.getName(card.subType), "\n                <button id=\"card-").concat(card.id, "-move-back\">move ").concat(card.id, "</button>\n                ");
@@ -711,7 +709,11 @@ var DiscoverTilesManager = /** @class */ (function (_super) {
         var _this = _super.call(this, game, {
             getId: function (card) { return "discover-tile-".concat(card.id); },
             setupDiv: function (card, div) { return div.classList.add('discover-tile'); },
-            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); }
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) {
+                div.id = "discover-tile-".concat(card.id, "-back");
+                _this.game.setTooltip(div.id, _('Discover tile'));
+            }
         }) || this;
         _this.game = game;
         return _this;
@@ -720,10 +722,41 @@ var DiscoverTilesManager = /** @class */ (function (_super) {
         if (!div) {
             div = this.getCardElement(card).getElementsByClassName('front')[0];
         }
+        div.id = "discover-tile-".concat(card.id, "-front");
         if (card.type) {
             div.dataset.type = '' + card.type;
             div.dataset.subType = '' + card.subType;
         }
+        this.game.setTooltip(div.id, this.getTooltip(card.type, card.subType));
+    };
+    DiscoverTilesManager.prototype.getName = function (type, subType) {
+        switch (type) {
+            case 1: return _("Découvertes");
+            case 2:
+                switch (subType) {
+                    case 1: return _("Brouillage");
+                    case 2: return _("Planification");
+                    case 3: return _("Parachutage");
+                    case 4: return _("Message prioritaire");
+                    case 5: return _("Coup fourré");
+                }
+        }
+    };
+    DiscoverTilesManager.prototype.getDescription = function (type, subType) {
+        switch (type) {
+            case 1: return _("Découvertes");
+            case 2:
+                switch (subType) {
+                    case 1: return _("Brouillage");
+                    case 2: return _("Planification");
+                    case 3: return _("Parachutage");
+                    case 4: return _("Message prioritaire");
+                    case 5: return _("Coup fourré");
+                }
+        }
+    };
+    DiscoverTilesManager.prototype.getTooltip = function (type, subType) {
+        return "<h3>".concat(this.getName(type, subType), "</h3>\n        <p>").concat(this.getDescription(type, subType), "</p>\n        ");
     };
     return DiscoverTilesManager;
 }(CardManager));
@@ -915,6 +948,7 @@ var TableCenter = /** @class */ (function () {
             battlefield.appendChild(territory);
             territory.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.fightersStocks[territoryInfos.id] = new LineStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")));
+            _this.fightersStocks[territoryInfos.id].onCardClick = function (card) { return _this.territoryFighterClick(card); };
             _this.discoverTilesStocks[territoryInfos.id] = new LineStock(_this.game.discoverTilesManager, document.getElementById("territory-".concat(territoryInfos.id, "-discover-tiles")));
         });
     };
@@ -950,6 +984,36 @@ var TableCenter = /** @class */ (function () {
     TableCenter.prototype.revealDiscoverTile = function (discoverTile) {
         this.game.discoverTilesManager.setupFrontDiv(discoverTile);
         this.game.discoverTilesManager.getCardElement(discoverTile).dataset.side = 'front';
+    };
+    TableCenter.prototype.cancelFighterChoice = function () {
+        var oldChoice = document.getElementById("fighter-choice");
+        oldChoice === null || oldChoice === void 0 ? void 0 : oldChoice.parentElement.removeChild(oldChoice);
+    };
+    TableCenter.prototype.createFighterChoice = function (card) {
+        var _this = this;
+        var element = this.game.cardsManager.getCardElement(card);
+        dojo.place("<div id=\"fighter-choice\">\n            <button id=\"fighter-choice-move\">".concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\">").concat(_('Activate'), "</button>\n        </div>"), element);
+        document.getElementById("fighter-choice-move").addEventListener('click', function () {
+            _this.game.moveFighter(card.id);
+            _this.cancelFighterChoice();
+        });
+        document.getElementById("fighter-choice-cancel").addEventListener('click', function () { return _this.cancelFighterChoice(); });
+        document.getElementById("fighter-choice-activate").addEventListener('click', function () {
+            _this.game.activateFighter(card.id);
+            _this.cancelFighterChoice();
+        });
+    };
+    TableCenter.prototype.territoryFighterClick = function (card) {
+        this.cancelFighterChoice();
+        if (this.game.gamedatas.gamestate.name !== 'chooseFighter') {
+            return;
+        }
+        if (this.game.gamedatas.gamestate.args.move) {
+            this.game.chooseFightersClick(card);
+        }
+        else {
+            this.createFighterChoice(card);
+        }
     };
     return TableCenter;
 }());
@@ -1121,6 +1185,7 @@ var Lumen = /** @class */ (function () {
         log('gamedatas', gamedatas);
         this.cardsManager = new CardsManager(this);
         this.discoverTilesManager = new DiscoverTilesManager(this);
+        this.objectiveTokensManager = new ObjectiveTokensManager(this);
         this.scenario = new Scenario(gamedatas.scenario);
         this.tableCenter = new TableCenter(this, this.gamedatas);
         this.setScenarioInformations();
@@ -1553,6 +1618,11 @@ var Lumen = /** @class */ (function () {
                 this.chooseTerritory(id);
                 break;
         }
+    };
+    Lumen.prototype.chooseFightersClick = function (card) {
+        var args = this.gamedatas.gamestate.args;
+        // TODO
+        this.chooseFighters([card.id]);
     };
     Lumen.prototype.activatePlanification = function () {
         if (!this.checkAction('activatePlanification')) {

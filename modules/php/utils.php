@@ -546,7 +546,7 @@ trait UtilTrait {
     }
 
     function checkDiscoverTileControl(DiscoverTile &$discoverTile) {
-        $controlledBy = $this->getTerritoryControlledPlayer($discoverTile->locationArg, $discoverTile->typeArg);
+        $controlledBy = $this->getTerritoryControlledPlayer($discoverTile->locationArg, $discoverTile->subType);
         if ($controlledBy !== null) {
             $this->moveDiscoverTileToPlayer($discoverTile, $controlledBy);
         }

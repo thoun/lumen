@@ -40,6 +40,7 @@ class TableCenter {
             territory.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
             this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
+            this.fightersStocks[territoryInfos.id].onCardClick = card => this.territoryFighterClick(card);
             this.discoverTilesStocks[territoryInfos.id] = new LineStock<DiscoverTile>(this.game.discoverTilesManager, document.getElementById(`territory-${territoryInfos.id}-discover-tiles`));
         });
     }
@@ -80,5 +81,44 @@ class TableCenter {
     public revealDiscoverTile(discoverTile: DiscoverTile) {
         this.game.discoverTilesManager.setupFrontDiv(discoverTile);
         this.game.discoverTilesManager.getCardElement(discoverTile).dataset.side = 'front';
+    }
+
+    private cancelFighterChoice() {
+        const oldChoice = document.getElementById(`fighter-choice`);
+        oldChoice?.parentElement.removeChild(oldChoice);
+    }
+
+    private createFighterChoice(card: Card) {
+        const element = this.game.cardsManager.getCardElement(card);
+
+        dojo.place(`<div id="fighter-choice">
+            <button id="fighter-choice-move">${_('Move')}</button>
+            <button id="fighter-choice-cancel">✖</button>
+            <button id="fighter-choice-activate">${_('Activate')}</button>
+        </div>`, element);
+
+        document.getElementById(`fighter-choice-move`).addEventListener('click', () => {
+            this.game.moveFighter(card.id);
+            this.cancelFighterChoice();
+        });
+        document.getElementById(`fighter-choice-cancel`).addEventListener('click', () => this.cancelFighterChoice());
+        document.getElementById(`fighter-choice-activate`).addEventListener('click', () => {
+            this.game.activateFighter(card.id);
+            this.cancelFighterChoice();
+        });
+    }
+
+    private territoryFighterClick(card: Card): void {
+        this.cancelFighterChoice();
+
+        if ((this.game as any).gamedatas.gamestate.name !== 'chooseFighter') {
+            return;
+        }
+
+        if ((this.game as any).gamedatas.gamestate.args.move) {
+            this.game.chooseFightersClick(card);
+        } else {
+            this.createFighterChoice(card);
+        }
     }
 }

@@ -57,6 +57,7 @@ class Lumen implements LumenGame {
 
         this.cardsManager = new CardsManager(this);
         this.discoverTilesManager = new DiscoverTilesManager(this);
+        this.objectiveTokensManager = new ObjectiveTokensManager(this);
         this.scenario = new Scenario(gamedatas.scenario);
         this.tableCenter = new TableCenter(this, this.gamedatas);
         this.setScenarioInformations();
@@ -595,12 +596,18 @@ class Lumen implements LumenGame {
         }
     }
 
-    public  territoryClick(id: number): void {
+    public territoryClick(id: number): void {
         switch (this.gamedatas.gamestate.name) {
             case 'chooseTerritory':
                 this.chooseTerritory(id);
                 break;
         }
+    }
+    
+    public chooseFightersClick(card: Card): void {
+        const args: EnteringChooseFighterArgs = this.gamedatas.gamestate.args;
+        // TODO
+        this.chooseFighters([card.id]);
     }
 
     public activatePlanification() {
