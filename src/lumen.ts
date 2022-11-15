@@ -383,13 +383,25 @@ class Lumen implements LumenGame {
             //handCounter.setValue(player.handCards.length);
             this.handCounters[playerId] = handCounter;*/
 
-            dojo.place(`<div id="first-player-token-wrapper-${player.id}" class="first-player-token-wrapper"></div>`, `player_board_${player.id}`);
+            dojo.place(`
+            <div id="bag-${player.id}" class="bag" data-color="${player.color}"></div>
+            
+            <div id="first-player-token-wrapper-${player.id}" class="first-player-token-wrapper"></div>`, `player_board_${player.id}`);
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place(`<div id="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
             }
         });
 
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+
+        dojo.place(`
+        <div id="overall_player_board_0" class="player-board current-player-board">					
+            <div class="player_board_inner" id="player_board_inner_982fff">
+
+                <div id="bag-0" class="bag"></div>
+               
+            </div>
+        </div>`, `player_boards`, 'first');
     }
 
     private createPlayerTables(gamedatas: LumenGamedatas) {
@@ -407,8 +419,8 @@ class Lumen implements LumenGame {
 
     private setScenarioInformations() {
         document.getElementById(`scenario-synopsis`).innerHTML = this.scenario.synopsis;
-        document.getElementById(`scenario-special-rules`).innerHTML = `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`)}</ul>`;
-        document.getElementById(`scenario-objectives`).innerHTML = `<ul>${this.scenario.objectives.map(text => `<li>${text}</li>`)}</ul>`;
+        document.getElementById(`scenario-special-rules`).innerHTML = `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`).join('')}</ul>`;
+        document.getElementById(`scenario-objectives`).innerHTML = `<ul>${this.scenario.objectives.map(description => `<li><div class="objective-description-token">${description.letter}${description.number > 1 ? `<div class="number">x${description.number}</div>` : ``}</div>${description.text}</li>`).join('')}</ul>`;
     }
     
     public onCardClick(card: Card): void {
@@ -869,7 +881,7 @@ class Lumen implements LumenGame {
     }
 
     notif_revealDiscoverTile(notif: Notif<NotifRevealDiscoverTileArgs>) {
-        // TODO
+        this.tableCenter.revealDiscoverTile(notif.args.discoverTile);
     }
 
     notif_moveInitiativeMarker(notif: Notif<NotifMoveInitiativeMarkerArgs>) {

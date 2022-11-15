@@ -619,8 +619,7 @@ var CardsManager = /** @class */ (function (_super) {
             getId: function (card) { return "card-".concat(card.id); },
             setupDiv: function (card, div) { return div.classList.add('fighter'); },
             setupFrontDiv: function (card, div) {
-                div.innerHTML = "".concat(card.type, " ").concat(card.subType, "\n                <button id=\"card-").concat(card.id, "-play\">play ").concat(card.id, "</button>\n                <button id=\"card-").concat(card.id, "-move\">move ").concat(card.id, "</button>\n                <button id=\"card-").concat(card.id, "-activate\">activate ").concat(card.id, "</button>\n                ");
-                document.getElementById("card-".concat(card.id, "-play")).addEventListener('click', function () { return _this.game.playFighter(card.id); });
+                div.innerHTML = "".concat(card.type, " ").concat(card.subType, "\n                <button id=\"card-").concat(card.id, "-move\">move ").concat(card.id, "</button>\n                <button id=\"card-").concat(card.id, "-activate\">activate ").concat(card.id, "</button>\n                ");
                 document.getElementById("card-".concat(card.id, "-move")).addEventListener('click', function () { return _this.game.moveFighter(card.id); });
                 document.getElementById("card-".concat(card.id, "-activate")).addEventListener('click', function () { return _this.game.activateFighter(card.id); });
             },
@@ -640,16 +639,20 @@ var DiscoverTilesManager = /** @class */ (function (_super) {
         var _this = _super.call(this, game, {
             getId: function (card) { return "discover-tile-".concat(card.id); },
             setupDiv: function (card, div) { return div.classList.add('discover-tile'); },
-            setupFrontDiv: function (card, div) {
-                if (card.type) {
-                    div.dataset.type = '' + card.type;
-                    div.dataset.subType = '' + card.subType;
-                }
-            }
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); }
         }) || this;
         _this.game = game;
         return _this;
     }
+    DiscoverTilesManager.prototype.setupFrontDiv = function (card, div) {
+        if (!div) {
+            div = this.getCardElement(card).getElementsByClassName('front')[0];
+        }
+        if (card.type) {
+            div.dataset.type = '' + card.type;
+            div.dataset.subType = '' + card.subType;
+        }
+    };
     return DiscoverTilesManager;
 }(CardManager));
 var Territory = /** @class */ (function () {
@@ -682,6 +685,15 @@ var ObjectiveTokenPosition = /** @class */ (function () {
         this.y = y;
     }
     return ObjectiveTokenPosition;
+}());
+var ObjectiveDescription = /** @class */ (function () {
+    function ObjectiveDescription(letter, text, number) {
+        if (number === void 0) { number = 1; }
+        this.letter = letter;
+        this.text = text;
+        this.number = number;
+    }
+    return ObjectiveDescription;
 }());
 var ScenarioInfos = /** @class */ (function () {
     function ScenarioInfos(battlefields, objectiveTokens, synopsis, specialRules, objectives) {
@@ -767,9 +779,9 @@ var Scenario = /** @class */ (function (_super) {
     Scenario.getObjectives = function (number) {
         switch (number) {
             case 1: return [
-                '<strong>' + _("En cours de partie :") + '</strong>' + _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif."),
-                '<strong>' + _("En cours de partie :") + '</strong>' + '<strong>' + _("Frontières") + ' - </strong>' + _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."),
-                '<strong>' + _("En fin de partie :") + '</strong>' + _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre."),
+                new ObjectiveDescription('A', '<strong>' + _("En cours de partie :") + '</strong>' + _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
+                new ObjectiveDescription('B', '<strong>' + _("En cours de partie :") + '</strong>' + '<strong>' + _("Frontières") + ' - </strong>' + _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+                new ObjectiveDescription('C', '<strong>' + _("En fin de partie :") + '</strong>' + _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
             ]; // TODO
         }
     };
@@ -831,13 +843,20 @@ var TableCenter = /** @class */ (function () {
         territory.appendChild(this.initiativeMarker);
     };
     TableCenter.prototype.moveInitiativeMarker = function (territoryId) {
-        // TODO animate
+        var previousTerritory = this.initiativeMarker.parentElement;
         var territory = document.getElementById("territory-".concat(territoryId));
         territory.appendChild(this.initiativeMarker);
+        stockSlideAnimation({
+            element: this.initiativeMarker,
+            fromElement: previousTerritory,
+        });
     };
     TableCenter.prototype.moveFighter = function (fighter, territoryId) {
-        // TODO
-        document.getElementById("territory-".concat(territoryId)).appendChild(document.getElementById("card-".concat(fighter.id)));
+        this.fightersStocks[territoryId].addCard(fighter);
+    };
+    TableCenter.prototype.revealDiscoverTile = function (discoverTile) {
+        this.game.discoverTiles.setupFrontDiv(discoverTile);
+        this.game.discoverTiles.getCardElement(discoverTile).dataset.side = 'front';
     };
     return TableCenter;
 }());
@@ -940,12 +959,16 @@ var PlayerTable = /** @class */ (function () {
         div.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
     };
     PlayerTable.prototype.refillReserve = function (fighter, slot) {
-        this.reserve.addCard(fighter, undefined, {
+        this.reserve.addCard(fighter, {
+            fromElement: document.getElementById("bag-".concat(this.playerId))
+        }, {
             slot: slot
         });
     };
     PlayerTable.prototype.addHighCommandCard = function (card) {
-        this.highCommand.addCard(card);
+        this.highCommand.addCard(card, {
+            fromElement: document.getElementById("bag-0")
+        });
     };
     PlayerTable.prototype.setZone = function (circlesIds, zoneId) {
         var _this = this;
@@ -1282,12 +1305,13 @@ var Lumen = /** @class */ (function () {
             handCounter.create(`playerhand-counter-${playerId}`);
             //handCounter.setValue(player.handCards.length);
             this.handCounters[playerId] = handCounter;*/
-            dojo.place("<div id=\"first-player-token-wrapper-".concat(player.id, "\" class=\"first-player-token-wrapper\"></div>"), "player_board_".concat(player.id));
+            dojo.place("\n            <div id=\"bag-".concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"></div>\n            \n            <div id=\"first-player-token-wrapper-").concat(player.id, "\" class=\"first-player-token-wrapper\"></div>"), "player_board_".concat(player.id));
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place("<div id=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
             }
         });
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+        dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                <div id=\"bag-0\" class=\"bag\"></div>\n               \n            </div>\n        </div>", "player_boards", 'first');
     };
     Lumen.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
@@ -1302,8 +1326,8 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.setScenarioInformations = function () {
         document.getElementById("scenario-synopsis").innerHTML = this.scenario.synopsis;
-        document.getElementById("scenario-special-rules").innerHTML = "<ul>".concat(this.scenario.specialRules.map(function (text) { return "<li>".concat(text, "</li>"); }), "</ul>");
-        document.getElementById("scenario-objectives").innerHTML = "<ul>".concat(this.scenario.objectives.map(function (text) { return "<li>".concat(text, "</li>"); }), "</ul>");
+        document.getElementById("scenario-special-rules").innerHTML = "<ul>".concat(this.scenario.specialRules.map(function (text) { return "<li>".concat(text, "</li>"); }).join(''), "</ul>");
+        document.getElementById("scenario-objectives").innerHTML = "<ul>".concat(this.scenario.objectives.map(function (description) { return "<li><div class=\"objective-description-token\">".concat(description.letter).concat(description.number > 1 ? "<div class=\"number\">x".concat(description.number, "</div>") : "", "</div>").concat(description.text, "</li>"); }).join(''), "</ul>");
     };
     Lumen.prototype.onCardClick = function (card) {
         var cardDiv = document.getElementById("card-".concat(card.id));
@@ -1655,7 +1679,7 @@ var Lumen = /** @class */ (function () {
         // TODO
     };
     Lumen.prototype.notif_revealDiscoverTile = function (notif) {
-        // TODO
+        this.tableCenter.revealDiscoverTile(notif.args.discoverTile);
     };
     Lumen.prototype.notif_moveInitiativeMarker = function (notif) {
         this.tableCenter.moveInitiativeMarker(notif.args.territoryId);

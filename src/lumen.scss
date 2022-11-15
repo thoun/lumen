@@ -182,3 +182,30 @@ html, .mode_3d #game_play_area_background {
     }
   }
 }
+
+#scenario-objectives {
+  .objective-description-token {
+    position: relative;
+    background: url('img/objective-tokens.png');
+    background-size: auto 100%;
+    background-position-x: 0%;
+    vertical-align: middle;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 44px;
+    font-weight: bold;
+    font-size: 2rem;
+    color: #fff100;
+
+    .number {
+      position: absolute;
+      right: 0;
+      bottom: -4px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #ec212a;
+    }
+  }
+}

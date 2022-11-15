@@ -64,13 +64,21 @@ class TableCenter {
     }
     
     public moveInitiativeMarker(territoryId: number) {
-        // TODO animate
+        const previousTerritory = this.initiativeMarker.parentElement;
         const territory = document.getElementById(`territory-${territoryId}`);
         territory.appendChild(this.initiativeMarker);
+        stockSlideAnimation({
+            element: this.initiativeMarker,
+            fromElement: previousTerritory,
+        });
     }
     
     public moveFighter(fighter: Card, territoryId: number) {
-        // TODO
-        document.getElementById(`territory-${territoryId}`).appendChild(document.getElementById(`card-${fighter.id}`));
+        this.fightersStocks[territoryId].addCard(fighter);
+    }
+    
+    public revealDiscoverTile(discoverTile: DiscoverTile) {
+        this.game.discoverTiles.setupFrontDiv(discoverTile);
+        this.game.discoverTiles.getCardElement(discoverTile).dataset.side = 'front';
     }
 }

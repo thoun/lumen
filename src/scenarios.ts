@@ -15,6 +15,10 @@ class ObjectiveTokenPosition {
     public constructor(public letter: string, public x: number, public y: number) {}
 }
 
+class ObjectiveDescription {
+    public constructor(public letter: string, public text: string, public number: number = 1) {}
+}
+
 
 class ScenarioInfos {
     public constructor(
@@ -22,7 +26,7 @@ class ScenarioInfos {
       public objectiveTokens: ObjectiveTokenPosition[],
       public synopsis: string,
       public specialRules: string[],
-      public objectives: string[],
+      public objectives: ObjectiveDescription[],
     ) {}
 }
 
@@ -108,12 +112,12 @@ class Scenario extends ScenarioInfos {
     }
   }
 
-  private static getObjectives(number: number): string[] {
+  private static getObjectives(number: number): ObjectiveDescription[] {
     switch (number) {
       case 1: return [
-        '<strong>' + _("En cours de partie :") + '</strong>' + _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif."),
-        '<strong>' + _("En cours de partie :") + '</strong>' + '<strong>' + _("Frontières") + ' - </strong>' + _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."),
-        '<strong>' + _("En fin de partie :") + '</strong>' + _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre."),
+        new ObjectiveDescription('A', '<strong>' + _("En cours de partie :") + '</strong>' + _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
+        new ObjectiveDescription('B', '<strong>' + _("En cours de partie :") + '</strong>' + '<strong>' + _("Frontières") + ' - </strong>' + _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+        new ObjectiveDescription('C', '<strong>' + _("En fin de partie :") + '</strong>' + _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
       ]; // TODO
     }
   }

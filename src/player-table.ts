@@ -133,13 +133,17 @@ class PlayerTable {
     }
     
     public refillReserve(fighter: Card, slot: number) {
-        this.reserve.addCard(fighter, undefined, {
+        this.reserve.addCard(fighter, {
+            fromElement: document.getElementById(`bag-${this.playerId}`)
+        }, {
             slot
         });
     }
 
     public addHighCommandCard(card: Card) {
-        this.highCommand.addCard(card);
+        this.highCommand.addCard(card, {
+            fromElement: document.getElementById(`bag-0`)
+        });
     }
     
     public setZone(circlesIds: number[], zoneId: number) {

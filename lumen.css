@@ -524,13 +524,27 @@ body > .card {
   height: 161px;
 }
 
-.counters {
+/*.counters {
   display: flex;
   align-items: center;
   margin: 5px 0;
+
+  .icon {
+    margin-right: 5px;
+  }
+}*/
+.bag {
+  width: 185px;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background: url("img/bag-neutral.png");
 }
-.counters .icon {
-  margin-right: 5px;
+.bag[data-color=f28700] {
+  background-image: url("img/bag-day.png");
+}
+.bag[data-color="1f3067"] {
+  background-image: url("img/bag-night.png");
 }
 
 .player-table {
@@ -1115,4 +1129,28 @@ html, .mode_3d #game_play_area_background {
 .objective-token[data-type="5"] {
   background-position-x: 99.999%;
   background-position-y: 0%;
+}
+
+#scenario-objectives .objective-description-token {
+  position: relative;
+  background: url("img/objective-tokens.png");
+  background-size: auto 100%;
+  background-position-x: 0%;
+  vertical-align: middle;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 44px;
+  font-weight: bold;
+  font-size: 2rem;
+  color: #fff100;
+}
+#scenario-objectives .objective-description-token .number {
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #ec212a;
 }

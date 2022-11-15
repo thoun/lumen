@@ -26,12 +26,27 @@
   height: 161px;
 }
 
-.counters {
+/*.counters {
   display: flex;
   align-items: center;
   margin: 5px 0;
 
   .icon {
     margin-right: 5px;
+  }
+}*/
+
+.bag {
+  width: 185px;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background: url('img/bag-neutral.png');
+
+  &[data-color="f28700"] {
+    background-image: url('img/bag-day.png');
+  }
+  &[data-color="1f3067"] {
+    background-image: url('img/bag-night.png');
   }
 }
