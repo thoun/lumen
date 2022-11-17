@@ -201,3 +201,9 @@ interface NotifPutBackInBagArgs {
 interface NotifSetFightersActivatedArgs {
     fighters: Card[];
 }
+
+interface NotifScoreArgs {
+    playerId: number;
+    newScore: number;
+    incScore: number;
+}

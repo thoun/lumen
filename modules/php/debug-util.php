@@ -13,6 +13,27 @@ trait DebugUtilTrait {
 
         //$this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
         $this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);
+        $this->debugAddNeutralFighter(2343492, 11, 'highCommand2343492', 1);
+        $this->debugAddNeutralFighter(2343493, 12, 'territory', 11);
+    }
+
+    public function debugAddPlayerFighter(int $playerId, int $subType, string $location, $locationArg = null, $played = false) {
+        $cards = $this->getCardsByLocation('bag'.$playerId, null, null, null, $subType);
+        $card = $cards[0];
+        if ($played) {
+            self::DbQuery("update card set played = true where card_id = $card->id");
+        }
+        $this->cards->moveCard($card->id, $location, $locationArg);
+    }
+
+    public function debugAddNeutralFighter(int $playerId, int $subType, string $location, $locationArg = null, $played = false) {
+        $cards = $this->getCardsByLocation('bag0', null, null, null, $subType);
+        $card = $cards[0];
+        if ($played) {
+            self::DbQuery("update card set played = true where card_id = $card->id");
+        }
+        self::DbQuery("update card set player_id = $playerId where card_id = $card->id");
+        $this->cards->moveCard($card->id, $location, $locationArg);
     }
 
     public function debugAddDiscoverTile(int $playerId, int $powerOrLumens, int $type = 2) {

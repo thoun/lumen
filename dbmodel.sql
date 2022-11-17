@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `card` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `card_type` int(11) NOT NULL,
   `card_type_arg` int(11) NOT NULL,
-  `card_location` varchar(16) NOT NULL,
+  `card_location` varchar(30) NOT NULL,
   `card_location_arg` int(11) NOT NULL,
   `player_id` int(11) NOT NULL DEFAULT '0',
   `played` smallint(1) NOT NULL DEFAULT '0',

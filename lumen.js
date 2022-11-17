@@ -620,13 +620,24 @@ var CardsManager = /** @class */ (function (_super) {
             setupDiv: function (card, div) {
                 div.classList.add('fighter');
                 game.setTooltip(div.id, _this.getTooltip(card.subType));
+                if (card.type == 10) {
+                    var playerToken = document.createElement('div');
+                    playerToken.classList.add('player-token');
+                    playerToken.dataset.color = game.getPlayerColor(card.playerId);
+                    div.appendChild(playerToken);
+                }
             },
             setupFrontDiv: function (card, div) {
                 div.innerHTML = "".concat(_this.getName(card.subType));
+                if (card.type == 1) {
+                    div.style.background = "#".concat(game.getPlayerColor(card.playerId));
+                }
             },
             setupBackDiv: function (card, div) {
-                div.innerHTML = "".concat(_this.getName(card.subType), "\n                <button id=\"card-").concat(card.id, "-move-back\">move ").concat(card.id, "</button>\n                ");
-                document.getElementById("card-".concat(card.id, "-move-back")).addEventListener('click', function () { return _this.game.moveFighter(card.id); });
+                div.innerHTML = "".concat(_this.getName(card.subType));
+                if (card.type == 1) {
+                    div.style.background = "#".concat(game.getPlayerColor(card.playerId), "99");
+                }
             },
         }) || this;
         _this.game = game;
@@ -1772,6 +1783,7 @@ var Lumen = /** @class */ (function () {
             ['setFightersActivated', ANIMATION_MS],
             ['setFightersUnactivated', ANIMATION_MS],
             ['exchangedFighters', ANIMATION_MS],
+            ['score', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -1906,6 +1918,15 @@ var Lumen = /** @class */ (function () {
         var stock1 = this.cardsManager.getCardStock(card1);
         stock1.addCard(card0);
         stock0.addCard(card1);
+    };
+    Lumen.prototype.notif_score = function (notif) {
+        var _a;
+        var playerId = notif.args.playerId;
+        (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(notif.args.newScore);
+        /*const incScore = notif.args.incScore;
+        if (incScore != null && incScore !== undefined) {
+            (this as any).displayScoring(`player-table-${playerId}-table-cards`, this.getPlayerColor(playerId), incScore, ANIMATION_MS * 3);
+        }*/
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

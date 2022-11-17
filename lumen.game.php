@@ -45,7 +45,7 @@ class Lumen extends Table {
         self::initGameStateLabels([
             FIRST_PLAYER => FIRST_PLAYER,
             FIRST_PLAYER_OPERATION => FIRST_PLAYER_OPERATION,
-            INITIATIVE_MARKER_TERRITORY => INITIATIVE_MARKER_TERRITORY, // TODO quand et où est-il placé ?
+            INITIATIVE_MARKER_TERRITORY => INITIATIVE_MARKER_TERRITORY,
             DIE1 => DIE1,
             DIE2 => DIE2,
             PLAYER_OPERATION => PLAYER_OPERATION,

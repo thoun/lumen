@@ -240,20 +240,28 @@
 .card.fighter .card-sides .card-side {
   border-radius: 24px;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
-}
-.card.fighter .card-sides .card-side button {
-  margin: 5px;
-  padding: 2px;
-  max-width: 100%;
+  color: white;
 }
 .card.fighter .card-sides .card-side.front {
-  background: green;
+  background: gray;
 }
-.card.fighter .card-sides .card-side.front > * {
-  pointer-events: all;
+.card.fighter .card-sides .card-side.front {
+  background: lightgray;
 }
-.card.fighter .card-sides .card-side.back {
-  background: white;
+.card.fighter .player-token {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.6);
+}
+.card.fighter .player-token[data-color=f28700] {
+  background-image: url("img/faction-token-day.png");
+}
+.card.fighter .player-token[data-color="1f3067"] {
+  background-image: url("img/faction-token-night.png");
 }
 
 .card.discover-tile {

@@ -6,15 +6,21 @@ class CardsManager extends CardManager<Card> {
             setupDiv: (card, div) => {
                 div.classList.add('fighter');
                 game.setTooltip(div.id, this.getTooltip(card.subType));
+
+                if (card.type == 10) {
+                    const playerToken = document.createElement('div');
+                    playerToken.classList.add('player-token');
+                    playerToken.dataset.color = game.getPlayerColor(card.playerId);
+                    div.appendChild(playerToken);
+                }
             },
             setupFrontDiv: (card, div) => {
                 div.innerHTML = `${this.getName(card.subType)}`;
+                if (card.type == 1) { div.style.background = `#${game.getPlayerColor(card.playerId)}`; }
             },
             setupBackDiv: (card, div) => {
-                div.innerHTML = `${this.getName(card.subType)}
-                <button id="card-${card.id}-move-back">move ${card.id}</button>
-                `;
-                document.getElementById(`card-${card.id}-move-back`).addEventListener('click', () => this.game.moveFighter(card.id));
+                div.innerHTML = `${this.getName(card.subType)}`;
+                if (card.type == 1) { div.style.background = `#${game.getPlayerColor(card.playerId)}99`; }
             },
         });
     }  

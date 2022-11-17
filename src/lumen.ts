@@ -792,6 +792,7 @@ class Lumen implements LumenGame {
             ['setFightersActivated', ANIMATION_MS],
             ['setFightersUnactivated', ANIMATION_MS],
             ['exchangedFighters', ANIMATION_MS],
+            ['score', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -952,6 +953,16 @@ class Lumen implements LumenGame {
         const stock1 = this.cardsManager.getCardStock(card1);
         stock1.addCard(card0);
         stock0.addCard(card1);
+    }
+
+    notif_score(notif: Notif<NotifScoreArgs>) {
+        const playerId = notif.args.playerId;
+        (this as any).scoreCtrl[playerId]?.toValue(notif.args.newScore);
+
+        /*const incScore = notif.args.incScore;
+        if (incScore != null && incScore !== undefined) {
+            (this as any).displayScoring(`player-table-${playerId}-table-cards`, this.getPlayerColor(playerId), incScore, ANIMATION_MS * 3);
+        }*/
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

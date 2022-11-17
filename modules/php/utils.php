@@ -73,8 +73,24 @@ trait UtilTrait {
     function getFirstPlayerId() {
         return intval(self::getGameStateValue(FIRST_PLAYER));
     }
+    
     function getOpponentId(int $playerId) {
         return intval(self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id <> $playerId"));
+    }
+
+    function getPlayerScore(int $playerId) {
+        return intval($this->getUniqueValueFromDB("SELECT player_score FROM player where `player_id` = $playerId"));
+    }
+
+    function incPlayerScore(int $playerId, int $amount, $message = '', $args = []) {
+        $this->DbQuery("UPDATE player SET `player_score` = `player_score` + $amount WHERE player_id = $playerId");
+            
+        $this->notifyAllPlayers('score', $message, [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'newScore' => $this->getPlayerScore($playerId),
+            'incScore' => $amount,
+        ] + $args);
     }
 
     function getScenarioId() {
@@ -110,6 +126,15 @@ trait UtilTrait {
                 break;
         }
         return $value;
+    }
+
+    function getSeasonName(int $lumens) {
+        switch ($lumens) {
+            case 1: return clienttranslate('Winter');
+            case 3: return clienttranslate('Autumn');
+            case 5: return clienttranslate('Summer');
+            case 7: return clienttranslate('Spring');
+        }
     }
 
     function getCardById(int $id) {

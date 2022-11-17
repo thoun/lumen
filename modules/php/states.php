@@ -82,23 +82,33 @@ trait StateTrait {
         $this->gamestate->nextState($lastRound ? 'endScore' : 'newRound');
     }
 
-    function stEndScore() {
-        $playersIds = $this->getPlayersIds();
-
-        $scenarioId = $this->getScenarioId();
-        switch ($scenarioId) {
-            case 1:
-                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
-                if ($initiativeMarkerControlledPlayer !== null) {
-                    $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer, 'C');
-                    $this->setRealizedObjective('C');
+    function scoreTerritoryControl(Scenario $scenario) {
+        foreach ($scenario->battlefieldsIds as $battlefieldId) {
+            foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                $controlPlayer = $this->getTerritoryControlledPlayer($territory->id);
+                if ($controlPlayer !== null) {
+                    $this->incPlayerScore($controlPlayer, $territory->lumens, clienttranslate('${player_name} controls the ${season} territory on battlefield ${battlefieldId}'), [
+                        'scoreType' => 'endControlTerritory',
+                        'territoryId' => $territory->id,
+                        'season' => $this->getSeasonName($territory->lumens),
+                        'battlefieldId' => $battlefieldId,
+                        'i18n' => ['season'],
+                    ]);
+                } else {
+                    self::notifyAllPlayers('endUncontrolledTerritory', clienttranslate('Nobody controls the ${season} territory on battlefiled ${battlefieldId}'), [
+                        'territoryId' => $territory->id,
+                        'season' => $this->getSeasonName($territory->lumens),
+                        'battlefieldId' => $battlefieldId,
+                        'i18n' => ['season'],
+                    ]);
                 }
-                break;
+            }
         }
+    }
 
+    function scoreMissions(array $playersIds) {
         foreach ($playersIds as $playerId) {
             $missions = $this->getCardsByLocation('highCommand'.$playerId, null, null, 30);
-            $scenario = $this->getScenario();
 
             foreach ($missions as $mission) {
                 switch ($mission->power) {
@@ -139,29 +149,77 @@ trait StateTrait {
                 }
             }
         }
+    }
+
+    function scoreDiscoverTiles(array $playersIds) {
+        foreach ($playersIds as $playerId) {
+            $playerDiscoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
+
+            // TODO reveal discoverTiles
+
+            $points = 0;
+            foreach ($playerDiscoverTiles as $discoverTile) {
+                if ($discoverTile->type === 1) {
+                    $points += $discoverTile->subType;
+                }
+            }
+
+            $this->incPlayerScore($playerId, $points, clienttranslate('${player_name} gains ${vp} VP with discover tiles'), [
+                'scoreType' => 'discoverTiles',
+                'vp' => $points,
+            ]);
+        }
+    }
+
+    function scoreScenarioEndgameObjectives(int $scenarioId) {
+        switch ($scenarioId) {
+            case 1:
+                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+                if ($initiativeMarkerControlledPlayer !== null) {
+                    $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer, 'C');
+                    $this->setRealizedObjective('C');
+                }
+                break;
+        }
+    }
+
+    function scoreObjectiveTokens(array $playersIds) {
+        foreach ($playersIds as $playerId) {
+            $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
+            
+            // TODO reveal objectiveTokens
+
+            $points = 0;
+            foreach ($objectiveTokens as $objectiveToken) {
+                $points += $objectiveToken->type;
+            }
+
+            $this->incPlayerScore($playerId, $points, clienttranslate('${player_name} gains ${vp} VP with objective tokens'), [
+                'scoreType' => 'objectiveTokens',
+                'vp' => $points,
+            ]);
+        }
+    }
+
+    function stEndScore() {
+        $playersIds = $this->getPlayersIds();
+
+        $scenarioId = $this->getScenarioId();
+        $scenario = $this->getScenario();
+
+        $this->scoreMissions($playersIds);
+        $this->scoreTerritoryControl($scenario);
+        $this->scoreDiscoverTiles($playersIds);
+        $this->scoreScenarioEndgameObjectives($scenarioId);
+        $this->scoreObjectiveTokens($playersIds);
 
         // update player_score_aux
-        /*$endRound = intval($this->getGameStateValue(END_ROUND_TYPE));
-        $playerId = intval($this->getPlayerBefore($this->getActivePlayerId())); // if STOP, last player is the one before the newly activated player (next round starter)
-        if ($endRound == LAST_CHANCE) { // if LAST_CHANCE, it's the player before (before the Caller)
-            $playerId = intval($this->getPlayerBefore($playerId));
-        }
-        $scoreAux = count($playersIds);
-        while ($scoreAux >= 1) {
-            $this->DbQuery("UPDATE `player` SET `player_score_aux` = $scoreAux WHERE `player_id` = $playerId"); 
-            $playerId = intval($this->getPlayerBefore($playerId));
-            $scoreAux--;
+        $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+        if ($initiativeMarkerControlledPlayer !== null) {
+            $this->DbQuery("UPDATE `player` SET `player_score_aux` = 1 WHERE `player_id` = $initiativeMarkerControlledPlayer"); 
         }
 
-        foreach ($playersIds as $playerId) {
-            $mermaids = $this->getPlayerMermaids($playerId);
-            if (count($mermaids) == 4) {
-                $this->setPlayerScore($playerId, 100, clienttranslate('${player_name} placed 4 mermaid cards and immediately wins the game!'), []);
-
-                $this->setStat(1, 'winWithMermaids');
-                $this->setStat(1, 'winWithMermaids', $playerId);
-            }
-        }*/
+        // TODO stats
 
         $this->gamestate->nextState('endGame');
     }
