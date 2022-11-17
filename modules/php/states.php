@@ -106,7 +106,7 @@ trait StateTrait {
         }
     }
 
-    function scoreMissions(array $playersIds) {
+    function scoreMissions(array $playersIds, Scenario $scenario) {
         foreach ($playersIds as $playerId) {
             $missions = $this->getCardsByLocation('highCommand'.$playerId, null, null, 30);
 
@@ -171,7 +171,7 @@ trait StateTrait {
         }
     }
 
-    function scoreScenarioEndgameObjectives(int $scenarioId) {
+    function scoreScenarioEndgameObjectives(int $scenarioId, Scenario $scenario) {
         switch ($scenarioId) {
             case 1:
                 $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
@@ -179,6 +179,36 @@ trait StateTrait {
                     $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer, 'C');
                     $this->setRealizedObjective('C');
                 }
+                break;
+            case 2:
+                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+                $playersIds = $this->getPlayersIds();
+                $mostOrphans = null;
+                $orphansByPlayer = [];
+                foreach ($playersIds as $playerId) {
+                    $orphansByPlayer[$playerId] = 0;
+
+                    foreach ($scenario->battlefieldsIds as $battlefieldId) {
+                        foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                            $fightersOnTerritory = $this->getCardsByLocation('territory', $territory->id, $playerId);
+                            if (count($fightersOnTerritory) === 1) {
+                                $orphansByPlayer[$playerId]++;
+                            }
+                        }
+                    }
+                }
+
+                if ($orphansByPlayer[$playersIds[0]] > $orphansByPlayer[$playersIds[1]]) {
+                    $mostOrphans = $playersIds[0];
+                } else if ($orphansByPlayer[$playersIds[1]] > $orphansByPlayer[$playersIds[0]]) {
+                    $mostOrphans = $playersIds[1];
+                }
+
+                if ($mostOrphans !== null) {
+                    $this->takeScenarioObjectiveToken($mostOrphans, 'B');
+                    $this->setRealizedObjective('B');
+                }
+
                 break;
         }
     }
@@ -207,10 +237,10 @@ trait StateTrait {
         $scenarioId = $this->getScenarioId();
         $scenario = $this->getScenario();
 
-        $this->scoreMissions($playersIds);
+        $this->scoreMissions($playersIds, $scenario);
         $this->scoreTerritoryControl($scenario);
         $this->scoreDiscoverTiles($playersIds);
-        $this->scoreScenarioEndgameObjectives($scenarioId);
+        $this->scoreScenarioEndgameObjectives($scenarioId, $scenario);
         $this->scoreObjectiveTokens($playersIds);
 
         // update player_score_aux

@@ -73,7 +73,7 @@ trait UtilTrait {
     function getFirstPlayerId() {
         return intval(self::getGameStateValue(FIRST_PLAYER));
     }
-    
+
     function getOpponentId(int $playerId) {
         return intval(self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id <> $playerId"));
     }
@@ -524,10 +524,10 @@ trait UtilTrait {
         ]);
     }
 
-    function takeScenarioObjectiveToken(int $playerId, string $letter) {
+    function takeScenarioObjectiveToken(int $playerId, string $letter, $number = 1) {
         $this->takeObjectiveTokens(
             $playerId, 
-            1,
+            $number,
             clienttranslate('${player_name} get an objective token for objective ${letter}'), 
             [
                 'letter' => $letter
@@ -644,6 +644,8 @@ trait UtilTrait {
         $fighter = $this->getCardById(intval($cardDb['id']));
         $this->applyMoveFighter($fighter, $territoryId);
 
+        $this->checkEmptyBag($playerId);
+
         $this->discardDiscoverTile($discoverTile);
     }
 
@@ -696,6 +698,8 @@ trait UtilTrait {
                 ]);
             }
         }
+
+        $this->checkEmptyBag($playerId);
     }
 
     function setFightersActivated(array $fighters) {
@@ -819,5 +823,12 @@ trait UtilTrait {
         }
 
         $this->gamestate->nextState($nextState);
+    }
+
+    function checkEmptyBag(int $playerId) {
+        if ($this->getScenarioId() == 2 && intval($this->cards->countCardForLocation('bag'.$playerId)) == 0 && !$this->isRealizedObjective('A', $playerId)) {
+            $this->takeScenarioObjectiveToken($playerId, 'A', 2);
+            $this->setRealizedObjective('A', $playerId);
+        }
     }
 }
