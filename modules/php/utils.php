@@ -801,8 +801,8 @@ trait UtilTrait {
                 } else {
                     $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_KILL);
                     $nextState = 'chooseFighter';
-                    break;
                 }
+                break;
             case POWER_EMPLUME:
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_FLY);
                 $nextState = 'chooseTerritory';

@@ -25,6 +25,14 @@
             // TODO TEMP
             border: 1px solid darkblue;
             padding: 5px;
+
+            &.selectable {
+                box-shadow: 0 0 5px 3px white;
+            }
+        
+            &.selected {
+                box-shadow: 0 0 8px 8px red;
+            }
         }
     }
 

@@ -1026,6 +1026,16 @@ var TableCenter = /** @class */ (function () {
             this.createFighterChoice(card);
         }
     };
+    TableCenter.prototype.setSelectableCards = function (selectableCards, multiple) {
+        if (multiple === void 0) { multiple = false; }
+        this.fightersStocks.forEach(function (stock) {
+            stock.setSelectionMode(selectableCards.length ? (multiple ? 'multiple' : 'single') : 'none');
+            stock.getCards().forEach(function (card) { return stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(function (c) { return c.id == card.id; })); });
+        });
+    };
+    TableCenter.prototype.setSelectableTerritories = function (territoriesIds) {
+        territoriesIds.forEach(function (territoryId) { return document.getElementById("territory-".concat(territoryId)).classList.add('selectable'); });
+    };
     return TableCenter;
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
@@ -1156,6 +1166,12 @@ var PlayerTable = /** @class */ (function () {
         const left: circle1.Left;
         const top: circle1.Top;
         const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
+    };
+    PlayerTable.prototype.setSelectableCards = function (selectableCards) {
+        [this.reserve, this.highCommand].forEach(function (stock) {
+            stock.setSelectionMode(selectableCards.length ? 'single' : 'none');
+            stock.getCards().forEach(function (card) { return stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(function (c) { return c.id == card.id; })); });
+        });
     };
     return PlayerTable;
 }());
@@ -1288,6 +1304,7 @@ var Lumen = /** @class */ (function () {
         }
     };
     Lumen.prototype.onEnteringChooseFighter = function (args) {
+        var _a, _b;
         if (!args.move) {
             if (!args.remainingMoves) {
                 this.setGamestateDescription('OnlyPlay');
@@ -1311,9 +1328,19 @@ var Lumen = /** @class */ (function () {
             document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
             document.getElementById("pagemaintitletext").appendChild(subTitle);
         }
+        else {
+            this.setGamestateDescription('' + args.move);
+        }
+        var selectableCards = __spreadArray(__spreadArray(__spreadArray([], ((_a = args.possibleFightersToPlace) !== null && _a !== void 0 ? _a : []), true), ((_b = args.possibleFightersToActivate) !== null && _b !== void 0 ? _b : []), true), args.possibleTerritoryFighters, true);
+        this.getCurrentPlayerTable().setSelectableCards(selectableCards);
+        this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
     };
     Lumen.prototype.onEnteringChooseTerritory = function (args) {
         this.setGamestateDescription('' + args.move);
+        if (args.selectedFighter) {
+            this.cardsManager.getCardElement(args.selectedFighter).classList.add('selected');
+        }
+        this.tableCenter.setSelectableTerritories(args.territoriesIds);
     };
     Lumen.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
@@ -1327,6 +1354,12 @@ var Lumen = /** @class */ (function () {
             case 'chooseCell':
                 this.onLeavingGhostMark('circle');
                 break;
+            case 'chooseFighter':
+                this.onLeavingChooseFighter();
+                break;
+            case 'chooseTerritory':
+                this.onLeavingChooseTerritory();
+                break;
         }
     };
     Lumen.prototype.onLeavingPlanificationChooseFaces = function () {
@@ -1337,6 +1370,14 @@ var Lumen = /** @class */ (function () {
             elem.classList.remove('ghost');
             elem.innerHTML = '';
         });
+    };
+    Lumen.prototype.onLeavingChooseFighter = function () {
+        this.getCurrentPlayerTable().setSelectableCards([]);
+        this.tableCenter.setSelectableCards([]);
+    };
+    Lumen.prototype.onLeavingChooseTerritory = function () {
+        document.querySelectorAll('.fighter.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
+        document.querySelectorAll('.territory.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -1370,6 +1411,15 @@ var Lumen = /** @class */ (function () {
                     if (!chooseFighterArgs.move) {
                         var shouldntPass_1 = chooseFighterArgs.remainingPlays > 0 || chooseFighterArgs.remainingMoves > 0;
                         this.addActionButton("cancelOperation_button", _('Pass'), function () { return _this.pass(shouldntPass_1); }, null, null, shouldntPass_1 ? 'gray' : undefined);
+                    }
+                    else {
+                        switch (chooseFighterArgs.move) {
+                            case 5:
+                                if (!chooseFighterArgs.possibleTerritoryFighters.length) {
+                                    this.addActionButton("passAssassin_button", _('Pass (no possible fighter to assassinate)'), function () { return _this.passChooseFighters(); });
+                                }
+                                break;
+                        }
                     }
                     break;
                 /*case 'chooseTerritory':
@@ -1741,6 +1791,12 @@ var Lumen = /** @class */ (function () {
         this.takeAction('chooseTerritory', {
             id: id
         });
+    };
+    Lumen.prototype.passChooseFighters = function () {
+        if (!this.checkAction('passChooseFighters')) {
+            return;
+        }
+        this.takeAction('passChooseFighters');
     };
     Lumen.prototype.takeAction = function (action, data) {
         data = data || {};

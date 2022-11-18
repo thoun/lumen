@@ -160,6 +160,8 @@ $playerActionsGameStates = [
         "descriptionmyturnOnlyPlay" => clienttranslate('${you} must choose a fighter to play'),
         "descriptionOnlyMoveActivate" => clienttranslate('${actplayer} must choose a fighter to move or activate ${optionalDetail}'),
         "descriptionmyturnOnlyMoveActivate" => clienttranslate('${you} must choose a fighter to move or activate ${optionalDetail}'),
+        "description5" => clienttranslate('${actplayer} must choose a fighter to assassinate'),
+        "descriptionmyturn5" => clienttranslate('${you} must choose a fighter to assassinate'),
         "type" => "activeplayer",
         "args" => "argChooseFighter", 
         "possibleactions" => [ 
@@ -168,6 +170,7 @@ $playerActionsGameStates = [
             "activateFighter",
             "chooseFighters",
             "pass",
+            "passChooseFighters",
         ],
         "transitions" => [
             "chooseTerritory" => ST_PLAYER_CHOOSE_TERRITORY,
@@ -185,6 +188,8 @@ $playerActionsGameStates = [
         "descriptionmyturn1" => clienttranslate('${you} must choose a territory to place the new fighter'),
         "description2" => clienttranslate('${actplayer} must choose a territory to move the fighter'),
         "descriptionmyturn2" => clienttranslate('${you} must choose a territory to move the fighter'),
+        "description7" => clienttranslate('${actplayer} must choose a territory to move the fighter'),
+        "descriptionmyturn7" => clienttranslate('${you} must choose a territory to move the fighter'),
         "type" => "activeplayer", 
         "args" => "argChooseTerritory", 
         "possibleactions" => [ 
@@ -192,6 +197,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "chooseCellBrouillage" => ST_PLAYER_CHOOSE_CELL_BROUILLAGE,
+            "chooseFighter" => ST_PLAYER_CHOOSE_FIGHTER,
             "nextMove" => ST_NEXT_MOVE,
         ]
     ],

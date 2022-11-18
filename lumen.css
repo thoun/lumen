@@ -245,8 +245,14 @@
 .card.fighter .card-sides .card-side.front {
   background: gray;
 }
-.card.fighter .card-sides .card-side.front {
+.card.fighter .card-sides .card-side.back {
   background: lightgray;
+}
+.card.fighter.selectable .card-side {
+  box-shadow: 0 0 5px 3px white;
+}
+.card.fighter.selected .card-side {
+  box-shadow: 0 0 8px 8px red;
 }
 .card.fighter .player-token {
   position: absolute;
@@ -502,6 +508,12 @@ body > .card {
 #map .battlefield .territory {
   border: 1px solid darkblue;
   padding: 5px;
+}
+#map .battlefield .territory.selectable {
+  box-shadow: 0 0 5px 3px white;
+}
+#map .battlefield .territory.selected {
+  box-shadow: 0 0 8px 8px red;
 }
 #map .objective-token {
   position: absolute;
@@ -1089,6 +1101,7 @@ html, .mode_3d #game_play_area_background {
 
 #zoom-wrapper {
   position: relative;
+  margin-top: 40px;
 }
 #zoom-wrapper #zoom-controls {
   position: absolute;

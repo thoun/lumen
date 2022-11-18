@@ -121,4 +121,15 @@ class TableCenter {
             this.createFighterChoice(card);
         }
     }
+    
+    public setSelectableCards(selectableCards: Card[], multiple: boolean = false) {
+        this.fightersStocks.forEach(stock => {
+            stock.setSelectionMode(selectableCards.length ? (multiple ? 'multiple' : 'single') : 'none');
+            stock.getCards().forEach(card => stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(c => c.id == card.id)));
+        });
+    }
+    
+    public setSelectableTerritories(territoriesIds: number[]) {
+        territoriesIds.forEach(territoryId => document.getElementById(`territory-${territoryId}`).classList.add('selectable'));
+    }
 }

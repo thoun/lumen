@@ -68,6 +68,7 @@ html, .mode_3d #game_play_area_background {
 
 #zoom-wrapper {
   position: relative;
+  margin-top: 40px; // TODO see why it's needed
 
   #zoom-controls {
     position: absolute;

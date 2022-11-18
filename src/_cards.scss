@@ -16,11 +16,23 @@
             &.front {
                 background: gray;
             }
-            &.front {
+            &.back {
                 background: lightgray;
             }
         }
     } 
+
+    &.selectable {
+        .card-side {
+            box-shadow: 0 0 5px 3px white;
+        }
+    }
+
+    &.selected {
+        .card-side {
+            box-shadow: 0 0 8px 8px red;
+        }
+    }
 
     .player-token {
         position: absolute;

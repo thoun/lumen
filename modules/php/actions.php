@@ -401,6 +401,12 @@ trait ActionTrait {
         $this->gamestate->nextState($nextState);
     }
 
+    public function passChooseFighters() {        
+        $this->checkAction('passChooseFighters');
+
+        $this->gamestate->nextState('nextMove');
+    }
+
     public function chooseTerritory(int $territoryId) {
         $this->checkAction('chooseTerritory'); 
         

@@ -186,11 +186,21 @@ class Lumen implements LumenGame {
             subTitle.innerHTML = '(' + texts.join(', ') + ')';
             document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
             document.getElementById(`pagemaintitletext`).appendChild(subTitle);
+        } else {
+            this.setGamestateDescription(''+args.move);
         }
+
+        const selectableCards = [...(args.possibleFightersToPlace ?? []), ...(args.possibleFightersToActivate ?? []), ...args.possibleTerritoryFighters];
+        this.getCurrentPlayerTable().setSelectableCards(selectableCards);
+        this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
     }
 
     private onEnteringChooseTerritory(args: EnteringChooseTerritoryArgs) {
         this.setGamestateDescription(''+args.move);
+        if (args.selectedFighter) {
+            this.cardsManager.getCardElement(args.selectedFighter).classList.add('selected');
+        }
+        this.tableCenter.setSelectableTerritories(args.territoriesIds);
     }
 
     public onLeavingState(stateName: string) {
@@ -206,6 +216,12 @@ class Lumen implements LumenGame {
             case 'chooseCell':
                 this.onLeavingGhostMark('circle');
                 break;
+            case 'chooseFighter':
+                this.onLeavingChooseFighter();
+                break;
+            case 'chooseTerritory':
+                this.onLeavingChooseTerritory();
+                break;
         }
     }
 
@@ -218,6 +234,16 @@ class Lumen implements LumenGame {
             elem.classList.remove('ghost');
             elem.innerHTML = '';
         });
+    }
+    
+    private onLeavingChooseFighter() {
+        this.getCurrentPlayerTable().setSelectableCards([]);
+        this.tableCenter.setSelectableCards([]);
+    }
+
+    private onLeavingChooseTerritory() {
+        document.querySelectorAll('.fighter.selectable').forEach(elem => elem.classList.remove('selectable'));
+        document.querySelectorAll('.territory.selectable').forEach(elem => elem.classList.remove('selectable'));
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -251,6 +277,14 @@ class Lumen implements LumenGame {
                     if (!chooseFighterArgs.move) {
                         const shouldntPass = chooseFighterArgs.remainingPlays > 0 || chooseFighterArgs.remainingMoves > 0;
                         (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
+                    } else {
+                        switch (chooseFighterArgs.move) {
+                            case 5:
+                                if (!chooseFighterArgs.possibleTerritoryFighters.length) {
+                                    (this as any).addActionButton(`passAssassin_button`, _('Pass (no possible fighter to assassinate)'), () => this.passChooseFighters());
+                                }
+                                break;
+                        }
                     }
                     break;
                 /*case 'chooseTerritory':
@@ -747,6 +781,14 @@ class Lumen implements LumenGame {
         this.takeAction('chooseTerritory', {
             id
         });
+    }
+
+    public passChooseFighters() {
+        if(!(this as any).checkAction('passChooseFighters')) {
+            return;
+        }
+
+        this.takeAction('passChooseFighters');
     }
 
     public takeAction(action: string, data?: any) {

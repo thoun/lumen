@@ -168,12 +168,10 @@
       self::ajaxResponse();
     }
 
-    public function pushFighter() {
+    public function passChooseFighters() {
       self::setAjaxMode();
 
-      $id = self::getArg("id", AT_posint, true);
-
-      $this->game->pushFighter($id);
+      $this->game->passChooseFighters();
 
       self::ajaxResponse();
     }
