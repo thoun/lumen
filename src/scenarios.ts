@@ -1,16 +1,3 @@
-
-class Territory {
-    constructor(public id: number, public clipPath: string | any) {}
-}
-
-class Battlefield {
-    public constructor(public id: number, public territories: Territory[]) {}
-}
-
-class BattlefieldPosition {
-    public constructor(public battlefieldId: number, public x: number, public y: number, public rotation: number) {}
-}
-
 class ObjectiveTokenPosition {
     public constructor(public letter: string, public x: number, public y: number) {}
 }
@@ -18,7 +5,6 @@ class ObjectiveTokenPosition {
 class ObjectiveDescription {
     public constructor(public letter: string, public timing: string, public type: string | null, public text: string, public number: number = 1) {}
 }
-
 
 class ScenarioInfos {
     public constructor(
@@ -29,40 +15,6 @@ class ScenarioInfos {
       public objectives: ObjectiveDescription[],
     ) {}
 }
-
-const BATTLEFIELDS = [
-    null,
-    new Battlefield(1, [
-      new Territory(11, 1),
-      new Territory(15, 5),
-    ]),
-    new Battlefield(2, [
-      new Territory(27, 7),
-    ]),
-    new Battlefield(3, [
-      new Territory(31, 1),
-      new Territory(33, 3),
-    ]),
-    new Battlefield(4, [
-      new Territory(41, 1),
-      new Territory(45, 5),
-    ]),
-    new Battlefield(5, [
-      new Territory(51, 1),
-      new Territory(53, 3),
-      new Territory(54, 3),
-    ]),
-    new Battlefield(6, [
-      new Territory(61, 1),
-      new Territory(63, 3),
-      new Territory(65, 5),
-    ]),
-    new Battlefield(6, [
-      new Territory(71, 1),
-      new Territory(73, 3),
-      new Territory(75, 5),
-    ]),
-  ];
 
 class Scenario extends ScenarioInfos {
   constructor(number: number) {
@@ -79,23 +31,23 @@ class Scenario extends ScenarioInfos {
     switch (number) {
       case 1:
         return [
-          new BattlefieldPosition(1, 0, 0, 0),
-          new BattlefieldPosition(2, 0, 0, 0),
-          new BattlefieldPosition(3, 0, 0, 0),
-          new BattlefieldPosition(4, 0, 0, 0),
-          new BattlefieldPosition(5, 0, 0, 0),
-          new BattlefieldPosition(6, 0, 0, 0),
-          new BattlefieldPosition(7, 0, 0, 0),
+          new BattlefieldPosition(1, 300, 0, 180),
+          new BattlefieldPosition(2, 548, 213, 270),
+          new BattlefieldPosition(3, 829, 389, 90),
+          new BattlefieldPosition(4, 36, 21, 0),
+          new BattlefieldPosition(5, 601, 442, 180),
+          new BattlefieldPosition(6, 850, 655, 270),
+          new BattlefieldPosition(7, 89, 250, 90),
         ];
       case 2:
         return [
-          new BattlefieldPosition(1, 0, 0, 0),
-          new BattlefieldPosition(2, 0, 0, 0),
-          new BattlefieldPosition(3, 0, 0, 0),
-          new BattlefieldPosition(4, 0, 0, 0),
-          new BattlefieldPosition(5, 0, 0, 0),
-          new BattlefieldPosition(6, 0, 0, 0),
-          new BattlefieldPosition(7, 0, 0, 0),
+          new BattlefieldPosition(1, 692, -88, 270),
+          new BattlefieldPosition(2, 249, 213, 270),
+          new BattlefieldPosition(3, 973, 88, 90),
+          new BattlefieldPosition(4, 744, 140, 180),
+          new BattlefieldPosition(5, 531, 389, 90),
+          new BattlefieldPosition(6, 0, 0, 180),
+          new BattlefieldPosition(7, 478, 160, 0),
         ];
     }
   }
@@ -104,8 +56,8 @@ class Scenario extends ScenarioInfos {
     switch (number) {
       case 1:
         return [
-          new ObjectiveTokenPosition('B1', 300, 200), // TODO
-          new ObjectiveTokenPosition('B2', 600, 300), // TODO
+          new ObjectiveTokenPosition('B1', 200, 490),
+          new ObjectiveTokenPosition('B2', 1035, 800),
         ];
       case 2:
         return [];

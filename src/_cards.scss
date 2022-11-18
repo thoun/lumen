@@ -11,16 +11,49 @@
             border-radius: 24px;
             box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.5);
 
-            // TODO TEMP
-            color: white;
             &.front {
-                background: gray;
+                background-position-y: 0%;
             }
             &.back {
-                background: lightgray;
+                background-position-y: 0%;
             }
         }
     } 
+
+    @for $index from 1 through 6 {
+        
+        &[data-sub-type="#{$index}"][data-color="f28700"] .card-side {
+            background-image: url('img/cards-day.png');
+        }
+        &[data-sub-type="#{$index}"][data-color="1f3067"] .card-side {
+            background-image: url('img/cards-night.png');
+        }
+
+        &[data-sub-type="#{$index}"] .card-side {
+            background-position-x: #{($index - 1) * 100% / 5};
+        }
+    }
+
+    @for $index from 11 through 18 {
+        &[data-sub-type="#{$index}"] .card-side {
+            background-image: url('img/cards-neutral-fighters.png');
+            background-position-x: #{($index - 11) * 100% / 7};
+        }
+    }
+
+    @for $index from 21 through 23 {
+        &[data-sub-type="#{$index}"] .card-side {
+            background-image: url('img/cards-neutral-special.png');
+            background-position-x: #{($index - 21) * 100% / 5};
+        }
+    }
+
+    @for $index from 31 through 33 {
+        &[data-sub-type="#{$index}"] .card-side {
+            background-image: url('img/cards-neutral-special.png');
+            background-position-x: #{($index - 31 + 3) * 100% / 5};
+        }
+    }
 
     &.selectable {
         .card-side {

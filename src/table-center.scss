@@ -12,19 +12,63 @@
 
 #map {
     position: relative;
+    // TODO TEMP
+    width: 1500px;
+    height: 1000px;
 
     .battlefield {
-        // TODO TEMP
-        border: 1px solid green;        
+        position: absolute;
+        width: 282px;
+        height: 472px;
+        transform-origin: center center;
+        transform: translate(var(--x), var(--y)) rotate(var(--rotation));
+
+        .background {
+            position: absolute;
+            width: 282px;
+            height: 472px;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+        @for $index from 1 through 7 {
+            &[data-id="#{$index}"] .background {
+                background-image: url('img/battlefield#{$index}.png');
+            }
+        }
+
+        // TODO TEMP      
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        padding: 10px;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 10px;
 
         .territory {
+            position: absolute;
+            transform-origin: center center;
+            transform: rotate(calc(var(--rotation) * -1));
+            left: var(--x);
+            top: var(--y);
+            width: var(--width);
+            height: var(--height);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+
+            &[data-vertical="true"] {
+                flex-direction: column;
+            }
+
             // TODO TEMP
-            border: 1px solid darkblue;
-            padding: 5px;
+            /*&[data-lumens="1"] {
+                background: #FFFFFF88;
+            }
+            &[data-lumens="3"], &[data-lumens="4"] {
+                background: #FF000088;
+            }
+            &[data-lumens="5"] {
+                background: #00FF0088;
+            }*/
 
             &.selectable {
                 box-shadow: 0 0 5px 3px white;
@@ -59,7 +103,7 @@
         left: -60px;
         border-radius: 10px;
         box-shadow: 1px 1px 2px 1px #00000066;
-        z-index: 2;
+        z-index: 20;
 
         button {
             background: white;

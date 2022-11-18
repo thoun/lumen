@@ -240,13 +240,122 @@
 .card.fighter .card-sides .card-side {
   border-radius: 24px;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
-  color: white;
 }
 .card.fighter .card-sides .card-side.front {
-  background: gray;
+  background-position-y: 0%;
 }
 .card.fighter .card-sides .card-side.back {
-  background: lightgray;
+  background-position-y: 0%;
+}
+.card.fighter[data-sub-type="1"][data-color=f28700] .card-side {
+  background-image: url("img/cards-day.png");
+}
+.card.fighter[data-sub-type="1"][data-color="1f3067"] .card-side {
+  background-image: url("img/cards-night.png");
+}
+.card.fighter[data-sub-type="1"] .card-side {
+  background-position-x: 0%;
+}
+.card.fighter[data-sub-type="2"][data-color=f28700] .card-side {
+  background-image: url("img/cards-day.png");
+}
+.card.fighter[data-sub-type="2"][data-color="1f3067"] .card-side {
+  background-image: url("img/cards-night.png");
+}
+.card.fighter[data-sub-type="2"] .card-side {
+  background-position-x: 20%;
+}
+.card.fighter[data-sub-type="3"][data-color=f28700] .card-side {
+  background-image: url("img/cards-day.png");
+}
+.card.fighter[data-sub-type="3"][data-color="1f3067"] .card-side {
+  background-image: url("img/cards-night.png");
+}
+.card.fighter[data-sub-type="3"] .card-side {
+  background-position-x: 40%;
+}
+.card.fighter[data-sub-type="4"][data-color=f28700] .card-side {
+  background-image: url("img/cards-day.png");
+}
+.card.fighter[data-sub-type="4"][data-color="1f3067"] .card-side {
+  background-image: url("img/cards-night.png");
+}
+.card.fighter[data-sub-type="4"] .card-side {
+  background-position-x: 60%;
+}
+.card.fighter[data-sub-type="5"][data-color=f28700] .card-side {
+  background-image: url("img/cards-day.png");
+}
+.card.fighter[data-sub-type="5"][data-color="1f3067"] .card-side {
+  background-image: url("img/cards-night.png");
+}
+.card.fighter[data-sub-type="5"] .card-side {
+  background-position-x: 80%;
+}
+.card.fighter[data-sub-type="6"][data-color=f28700] .card-side {
+  background-image: url("img/cards-day.png");
+}
+.card.fighter[data-sub-type="6"][data-color="1f3067"] .card-side {
+  background-image: url("img/cards-night.png");
+}
+.card.fighter[data-sub-type="6"] .card-side {
+  background-position-x: 100%;
+}
+.card.fighter[data-sub-type="11"] .card-side {
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 0%;
+}
+.card.fighter[data-sub-type="12"] .card-side {
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 14.2857142857%;
+}
+.card.fighter[data-sub-type="13"] .card-side {
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 28.5714285714%;
+}
+.card.fighter[data-sub-type="14"] .card-side {
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 42.8571428571%;
+}
+.card.fighter[data-sub-type="15"] .card-side {
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 57.1428571429%;
+}
+.card.fighter[data-sub-type="16"] .card-side {
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 71.4285714286%;
+}
+.card.fighter[data-sub-type="17"] .card-side {
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 85.7142857143%;
+}
+.card.fighter[data-sub-type="18"] .card-side {
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 100%;
+}
+.card.fighter[data-sub-type="21"] .card-side {
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 0%;
+}
+.card.fighter[data-sub-type="22"] .card-side {
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 20%;
+}
+.card.fighter[data-sub-type="23"] .card-side {
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 40%;
+}
+.card.fighter[data-sub-type="31"] .card-side {
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 60%;
+}
+.card.fighter[data-sub-type="32"] .card-side {
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 80%;
+}
+.card.fighter[data-sub-type="33"] .card-side {
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 100%;
 }
 .card.fighter.selectable .card-side {
   box-shadow: 0 0 5px 3px white;
@@ -497,17 +606,72 @@ body > .card {
 
 #map {
   position: relative;
+  width: 1500px;
+  height: 1000px;
 }
 #map .battlefield {
-  border: 1px solid green;
+  position: absolute;
+  width: 282px;
+  height: 472px;
+  transform-origin: center center;
+  transform: translate(var(--x), var(--y)) rotate(var(--rotation));
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  padding: 10px;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
 }
+#map .battlefield .background {
+  position: absolute;
+  width: 282px;
+  height: 472px;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+#map .battlefield[data-id="1"] .background {
+  background-image: url("img/battlefield1.png");
+}
+#map .battlefield[data-id="2"] .background {
+  background-image: url("img/battlefield2.png");
+}
+#map .battlefield[data-id="3"] .background {
+  background-image: url("img/battlefield3.png");
+}
+#map .battlefield[data-id="4"] .background {
+  background-image: url("img/battlefield4.png");
+}
+#map .battlefield[data-id="5"] .background {
+  background-image: url("img/battlefield5.png");
+}
+#map .battlefield[data-id="6"] .background {
+  background-image: url("img/battlefield6.png");
+}
+#map .battlefield[data-id="7"] .background {
+  background-image: url("img/battlefield7.png");
+}
 #map .battlefield .territory {
-  border: 1px solid darkblue;
-  padding: 5px;
+  position: absolute;
+  transform-origin: center center;
+  transform: rotate(calc(var(--rotation) * -1));
+  left: var(--x);
+  top: var(--y);
+  width: var(--width);
+  height: var(--height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+  /*&[data-lumens="1"] {
+      background: #FFFFFF88;
+  }
+  &[data-lumens="3"], &[data-lumens="4"] {
+      background: #FF000088;
+  }
+  &[data-lumens="5"] {
+      background: #00FF0088;
+  }*/
+}
+#map .battlefield .territory[data-vertical=true] {
+  flex-direction: column;
 }
 #map .battlefield .territory.selectable {
   box-shadow: 0 0 5px 3px white;
@@ -536,7 +700,7 @@ body > .card {
   left: -60px;
   border-radius: 10px;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.4);
-  z-index: 2;
+  z-index: 20;
 }
 #map #fighter-choice button {
   background: white;

@@ -5,6 +5,9 @@ class CardsManager extends CardManager<Card> {
             getId: card => `card-${card.id}`,
             setupDiv: (card, div) => {
                 div.classList.add('fighter');
+                div.dataset.type = ''+card.type;
+                div.dataset.subType = ''+card.subType;
+                div.dataset.color = game.getPlayerColor(card.playerId);
                 game.setTooltip(div.id, this.getTooltip(card.subType));
 
                 if (card.type == 10) {
@@ -13,14 +16,6 @@ class CardsManager extends CardManager<Card> {
                     playerToken.dataset.color = game.getPlayerColor(card.playerId);
                     div.appendChild(playerToken);
                 }
-            },
-            setupFrontDiv: (card, div) => {
-                div.innerHTML = `${this.getName(card.subType)}`;
-                if (card.type == 1) { div.style.background = `#${game.getPlayerColor(card.playerId)}`; }
-            },
-            setupBackDiv: (card, div) => {
-                div.innerHTML = `${this.getName(card.subType)}`;
-                if (card.type == 1) { div.style.background = `#${game.getPlayerColor(card.playerId)}99`; }
             },
         });
     }  

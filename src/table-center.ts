@@ -19,19 +19,42 @@ class TableCenter {
         battlefields.forEach(battlefieldInfos => {
             const battlefield = document.createElement('div');
             battlefield.id = `battlefield-${battlefieldInfos.battlefieldId}`;
+            battlefield.dataset.id = `${battlefieldInfos.battlefieldId}`;
             battlefield.classList.add('battlefield');
+            battlefield.style.setProperty('--x', `${battlefieldInfos.x}px`);
+            battlefield.style.setProperty('--y', `${battlefieldInfos.y}px`);
+
+            // TODO TEMP
+            if (!battlefieldInfos.x && !battlefieldInfos.y) {
+                battlefield.style.display = 'none';
+            }
+
+            battlefield.style.setProperty('--rotation', `${battlefieldInfos.rotation}deg`);
+            const background = document.createElement('div');
+            background.classList.add('background');
+            battlefield.appendChild(background);
             map.appendChild(battlefield);
-            this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield);
+            this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield, battlefieldInfos.rotation);
         });
     }
     
-    private addTerritories(territories: Territory[], battlefield: HTMLDivElement) {
+    private addTerritories(territories: Territory[], battlefield: HTMLDivElement, rotation: number) {
         territories.forEach(territoryInfos => {
             const territory = document.createElement('div');
             territory.id = `territory-${territoryInfos.id}`;
+            territory.dataset.lumens = ''+(territoryInfos.id % 10);
             territory.classList.add('territory');
+            territory.style.setProperty('--x', `${territoryInfos.x}px`);
+            territory.style.setProperty('--y', `${territoryInfos.y}px`);
+            const angle90 = rotation % 180 == 90;
+            territory.style.setProperty('--width', `${angle90 ? territoryInfos.height : territoryInfos.width}px`);
+            territory.style.setProperty('--height', `${angle90 ? territoryInfos.width : territoryInfos.height}px`);
+            let vertical = territoryInfos.height > territoryInfos.width;
+            if (angle90) {
+                vertical = !vertical;
+            }
+            territory.dataset.vertical = vertical.toString();
             territory.innerHTML = `
-            territory-${territoryInfos.id}
             <div id="territory-${territoryInfos.id}-fighters"></div>
             <div id="territory-${territoryInfos.id}-discover-tiles"></div>
             `;

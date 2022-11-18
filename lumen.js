@@ -619,24 +619,15 @@ var CardsManager = /** @class */ (function (_super) {
             getId: function (card) { return "card-".concat(card.id); },
             setupDiv: function (card, div) {
                 div.classList.add('fighter');
+                div.dataset.type = '' + card.type;
+                div.dataset.subType = '' + card.subType;
+                div.dataset.color = game.getPlayerColor(card.playerId);
                 game.setTooltip(div.id, _this.getTooltip(card.subType));
                 if (card.type == 10) {
                     var playerToken = document.createElement('div');
                     playerToken.classList.add('player-token');
                     playerToken.dataset.color = game.getPlayerColor(card.playerId);
                     div.appendChild(playerToken);
-                }
-            },
-            setupFrontDiv: function (card, div) {
-                div.innerHTML = "".concat(_this.getName(card.subType));
-                if (card.type == 1) {
-                    div.style.background = "#".concat(game.getPlayerColor(card.playerId));
-                }
-            },
-            setupBackDiv: function (card, div) {
-                div.innerHTML = "".concat(_this.getName(card.subType));
-                if (card.type == 1) {
-                    div.style.background = "#".concat(game.getPlayerColor(card.playerId), "99");
                 }
             },
         }) || this;
@@ -793,8 +784,12 @@ var ObjectiveTokensManager = /** @class */ (function (_super) {
     return ObjectiveTokensManager;
 }(CardManager));
 var Territory = /** @class */ (function () {
-    function Territory(id, clipPath) {
+    function Territory(id, x, y, width, height, clipPath) {
         this.id = id;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
         this.clipPath = clipPath;
     }
     return Territory;
@@ -815,6 +810,39 @@ var BattlefieldPosition = /** @class */ (function () {
     }
     return BattlefieldPosition;
 }());
+var BATTLEFIELDS = [
+    null,
+    new Battlefield(1, [
+        new Territory(11, 16, 0, 202, 194, 1),
+        new Territory(15, 0, 100, 272, 358, 5),
+    ]),
+    new Battlefield(2, [
+        new Territory(27, 0, 0, 282, 472, 7),
+    ]),
+    new Battlefield(3, [
+        new Territory(31, 55, 220, 225, 252, 1),
+        new Territory(33, 0, 0, 278, 255, 3),
+    ]),
+    new Battlefield(4, [
+        new Territory(41, 151, 86, 132, 286, 1),
+        new Territory(45, 0, 0, 472, 222, 5),
+    ]),
+    new Battlefield(5, [
+        new Territory(51, 0, 0, 176, 252, 1),
+        new Territory(53, 148, 85, 130, 185, 3),
+        new Territory(54, 55, 252, 226, 220, 3),
+    ]),
+    new Battlefield(6, [
+        new Territory(61, 55, 282, 146, 190, 1),
+        new Territory(63, 0, 0, 150, 178, 3),
+        new Territory(65, 44, 86, 237, 295, 5),
+    ]),
+    new Battlefield(6, [
+        new Territory(71, 53, 226, 206, 172, 1),
+        new Territory(73, 0, 0, 211, 263, 3),
+        new Territory(75, 80, 8, 202, 464, 5),
+    ]),
+];
 var ObjectiveTokenPosition = /** @class */ (function () {
     function ObjectiveTokenPosition(letter, x, y) {
         this.letter = letter;
@@ -844,39 +872,6 @@ var ScenarioInfos = /** @class */ (function () {
     }
     return ScenarioInfos;
 }());
-var BATTLEFIELDS = [
-    null,
-    new Battlefield(1, [
-        new Territory(11, 1),
-        new Territory(15, 5),
-    ]),
-    new Battlefield(2, [
-        new Territory(27, 7),
-    ]),
-    new Battlefield(3, [
-        new Territory(31, 1),
-        new Territory(33, 3),
-    ]),
-    new Battlefield(4, [
-        new Territory(41, 1),
-        new Territory(45, 5),
-    ]),
-    new Battlefield(5, [
-        new Territory(51, 1),
-        new Territory(53, 3),
-        new Territory(54, 3),
-    ]),
-    new Battlefield(6, [
-        new Territory(61, 1),
-        new Territory(63, 3),
-        new Territory(65, 5),
-    ]),
-    new Battlefield(6, [
-        new Territory(71, 1),
-        new Territory(73, 3),
-        new Territory(75, 5),
-    ]),
-];
 var Scenario = /** @class */ (function (_super) {
     __extends(Scenario, _super);
     function Scenario(number) {
@@ -886,23 +881,23 @@ var Scenario = /** @class */ (function (_super) {
         switch (number) {
             case 1:
                 return [
-                    new BattlefieldPosition(1, 0, 0, 0),
-                    new BattlefieldPosition(2, 0, 0, 0),
-                    new BattlefieldPosition(3, 0, 0, 0),
-                    new BattlefieldPosition(4, 0, 0, 0),
-                    new BattlefieldPosition(5, 0, 0, 0),
-                    new BattlefieldPosition(6, 0, 0, 0),
-                    new BattlefieldPosition(7, 0, 0, 0),
+                    new BattlefieldPosition(1, 300, 0, 180),
+                    new BattlefieldPosition(2, 548, 213, 270),
+                    new BattlefieldPosition(3, 829, 389, 90),
+                    new BattlefieldPosition(4, 36, 21, 0),
+                    new BattlefieldPosition(5, 601, 442, 180),
+                    new BattlefieldPosition(6, 850, 655, 270),
+                    new BattlefieldPosition(7, 89, 250, 90),
                 ];
             case 2:
                 return [
-                    new BattlefieldPosition(1, 0, 0, 0),
-                    new BattlefieldPosition(2, 0, 0, 0),
-                    new BattlefieldPosition(3, 0, 0, 0),
-                    new BattlefieldPosition(4, 0, 0, 0),
-                    new BattlefieldPosition(5, 0, 0, 0),
-                    new BattlefieldPosition(6, 0, 0, 0),
-                    new BattlefieldPosition(7, 0, 0, 0),
+                    new BattlefieldPosition(1, 692, -88, 270),
+                    new BattlefieldPosition(2, 249, 213, 270),
+                    new BattlefieldPosition(3, 973, 88, 90),
+                    new BattlefieldPosition(4, 744, 140, 180),
+                    new BattlefieldPosition(5, 531, 389, 90),
+                    new BattlefieldPosition(6, 0, 0, 180),
+                    new BattlefieldPosition(7, 478, 160, 0),
                 ];
         }
     };
@@ -910,8 +905,8 @@ var Scenario = /** @class */ (function (_super) {
         switch (number) {
             case 1:
                 return [
-                    new ObjectiveTokenPosition('B1', 300, 200),
-                    new ObjectiveTokenPosition('B2', 600, 300), // TODO
+                    new ObjectiveTokenPosition('B1', 200, 490),
+                    new ObjectiveTokenPosition('B2', 1035, 800),
                 ];
             case 2:
                 return [];
@@ -966,18 +961,40 @@ var TableCenter = /** @class */ (function () {
         battlefields.forEach(function (battlefieldInfos) {
             var battlefield = document.createElement('div');
             battlefield.id = "battlefield-".concat(battlefieldInfos.battlefieldId);
+            battlefield.dataset.id = "".concat(battlefieldInfos.battlefieldId);
             battlefield.classList.add('battlefield');
+            battlefield.style.setProperty('--x', "".concat(battlefieldInfos.x, "px"));
+            battlefield.style.setProperty('--y', "".concat(battlefieldInfos.y, "px"));
+            // TODO TEMP
+            if (!battlefieldInfos.x && !battlefieldInfos.y) {
+                battlefield.style.display = 'none';
+            }
+            battlefield.style.setProperty('--rotation', "".concat(battlefieldInfos.rotation, "deg"));
+            var background = document.createElement('div');
+            background.classList.add('background');
+            battlefield.appendChild(background);
             map.appendChild(battlefield);
-            _this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield);
+            _this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield, battlefieldInfos.rotation);
         });
     };
-    TableCenter.prototype.addTerritories = function (territories, battlefield) {
+    TableCenter.prototype.addTerritories = function (territories, battlefield, rotation) {
         var _this = this;
         territories.forEach(function (territoryInfos) {
             var territory = document.createElement('div');
             territory.id = "territory-".concat(territoryInfos.id);
+            territory.dataset.lumens = '' + (territoryInfos.id % 10);
             territory.classList.add('territory');
-            territory.innerHTML = "\n            territory-".concat(territoryInfos.id, "\n            <div id=\"territory-").concat(territoryInfos.id, "-fighters\"></div>\n            <div id=\"territory-").concat(territoryInfos.id, "-discover-tiles\"></div>\n            ");
+            territory.style.setProperty('--x', "".concat(territoryInfos.x, "px"));
+            territory.style.setProperty('--y', "".concat(territoryInfos.y, "px"));
+            var angle90 = rotation % 180 == 90;
+            territory.style.setProperty('--width', "".concat(angle90 ? territoryInfos.height : territoryInfos.width, "px"));
+            territory.style.setProperty('--height', "".concat(angle90 ? territoryInfos.width : territoryInfos.height, "px"));
+            var vertical = territoryInfos.height > territoryInfos.width;
+            if (angle90) {
+                vertical = !vertical;
+            }
+            territory.dataset.vertical = vertical.toString();
+            territory.innerHTML = "\n            <div id=\"territory-".concat(territoryInfos.id, "-fighters\"></div>\n            <div id=\"territory-").concat(territoryInfos.id, "-discover-tiles\"></div>\n            ");
             battlefield.appendChild(territory);
             territory.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.fightersStocks[territoryInfos.id] = new LineStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")));
