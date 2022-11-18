@@ -471,8 +471,17 @@ class Lumen implements LumenGame {
 
     private setScenarioInformations() {
         document.getElementById(`scenario-synopsis`).innerHTML = this.scenario.synopsis;
-        document.getElementById(`scenario-special-rules`).innerHTML = `<div class="title">${_('Special rules')}</div>${this.scenario.specialRules.length ? `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`).join('')}</ul>` : _('Nothing')}`;
-        document.getElementById(`scenario-objectives`).innerHTML = `<ul>${this.scenario.objectives.map(description => `<li><div class="objective-description-token">${description.letter}${description.number > 1 ? `<div class="number">x${description.number}</div>` : ``}</div>${description.text}</li>`).join('')}</ul>`;
+        document.getElementById(`scenario-special-rules`).innerHTML = `<div class="title">${_('Special rules')}</div>${this.scenario.specialRules.length ? 
+            `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`).join('')}</ul>` : 
+            _('Nothing')}`;
+        document.getElementById(`scenario-objectives`).innerHTML = `<ul>${this.scenario.objectives.map(description => 
+            `<li>
+                <div class="objective-description-token">${description.letter}${description.number > 1 ? `<div class="number">x${description.number}</div>` : ``}</div>
+                <strong>${description.timing}</strong>
+                <strong>${description.type ?? ''}</strong>
+                ${description.text}
+            </li>`
+            ).join('')}</ul>`;
     }
     
     public onCardClick(card: Card): void {

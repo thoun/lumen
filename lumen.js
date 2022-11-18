@@ -824,9 +824,11 @@ var ObjectiveTokenPosition = /** @class */ (function () {
     return ObjectiveTokenPosition;
 }());
 var ObjectiveDescription = /** @class */ (function () {
-    function ObjectiveDescription(letter, text, number) {
+    function ObjectiveDescription(letter, timing, type, text, number) {
         if (number === void 0) { number = 1; }
         this.letter = letter;
+        this.timing = timing;
+        this.type = type;
         this.text = text;
         this.number = number;
     }
@@ -914,11 +916,13 @@ var Scenario = /** @class */ (function (_super) {
         }
     };
     Scenario.getObjectives = function (number) {
+        var DURING_GAME = _('En cours de partie :');
+        var END_GAME = _('En fin de partie :');
         switch (number) {
             case 1: return [
-                new ObjectiveDescription('A', '<strong>' + _("En cours de partie :") + '</strong>' + _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
-                new ObjectiveDescription('B', '<strong>' + _("En cours de partie :") + '</strong>' + '<strong>' + _("Frontières") + ' - </strong>' + _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
-                new ObjectiveDescription('C', '<strong>' + _("En fin de partie :") + '</strong>' + _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
+                new ObjectiveDescription('A', DURING_GAME, null, _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
+                new ObjectiveDescription('B', DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+                new ObjectiveDescription('C', END_GAME, null, _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
             ]; // TODO
         }
     };
@@ -1567,8 +1571,13 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.setScenarioInformations = function () {
         document.getElementById("scenario-synopsis").innerHTML = this.scenario.synopsis;
-        document.getElementById("scenario-special-rules").innerHTML = "<div class=\"title\">".concat(_('Special rules'), "</div>").concat(this.scenario.specialRules.length ? "<ul>".concat(this.scenario.specialRules.map(function (text) { return "<li>".concat(text, "</li>"); }).join(''), "</ul>") : _('Nothing'));
-        document.getElementById("scenario-objectives").innerHTML = "<ul>".concat(this.scenario.objectives.map(function (description) { return "<li><div class=\"objective-description-token\">".concat(description.letter).concat(description.number > 1 ? "<div class=\"number\">x".concat(description.number, "</div>") : "", "</div>").concat(description.text, "</li>"); }).join(''), "</ul>");
+        document.getElementById("scenario-special-rules").innerHTML = "<div class=\"title\">".concat(_('Special rules'), "</div>").concat(this.scenario.specialRules.length ?
+            "<ul>".concat(this.scenario.specialRules.map(function (text) { return "<li>".concat(text, "</li>"); }).join(''), "</ul>") :
+            _('Nothing'));
+        document.getElementById("scenario-objectives").innerHTML = "<ul>".concat(this.scenario.objectives.map(function (description) {
+            var _a;
+            return "<li>\n                <div class=\"objective-description-token\">".concat(description.letter).concat(description.number > 1 ? "<div class=\"number\">x".concat(description.number, "</div>") : "", "</div>\n                <strong>").concat(description.timing, "</strong>\n                <strong>").concat((_a = description.type) !== null && _a !== void 0 ? _a : '', "</strong>\n                ").concat(description.text, "\n            </li>");
+        }).join(''), "</ul>");
     };
     Lumen.prototype.onCardClick = function (card) {
         var cardDiv = document.getElementById("card-".concat(card.id));
