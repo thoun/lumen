@@ -146,7 +146,7 @@ class PlayerTable {
     }
 
     public setPossibleCellLinks(possibleLinkCirclesIds: number[], cellId: number) {
-        // TODO throw new Error("Method not implemented.");
+        possibleLinkCirclesIds.forEach(destId => this.setLink(cellId, destId, true));
     }
 
     public addCheck(checks: number) {
@@ -172,18 +172,28 @@ class PlayerTable {
         circlesIds.forEach(circleId => document.getElementById(`player-table-${this.playerId}-circle${circleId}`).dataset.zone = ''+zoneId);
     }
     
-    public setLink(index1: number, index2: number) {
+    public setLink(index1: number, index2: number, selectable: boolean = false) {
         const circle1 = CIRCLES[index1];
         const circle2 = CIRCLES[index2];
 
         const angle = Math.atan2(circle2[0] - circle1[0], circle2[1] - circle1[1]) * 180 / Math.PI - 90;
 	    const left = circle1[1] + CIRCLE_WIDTH/2 - 5;
         const top = circle1[0] + CIRCLE_WIDTH/2 + 3;
-        const html = `<div id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg);">
-            <img src="${g_gamethemeurl}img/num1.gif" />
-        </div>`;
-        dojo.place(html, `player-table-${this.playerId}-circles`);
-        console.log(html);
+        const link = document.createElement('div');
+        link.id = `link_${this.playerId}_${index1}_${index2}`;
+        link.classList.add('link', 'chiffres');
+        if (selectable) {
+            link.classList.add('selectable');
+        }
+        link.style.left = `${left}px`;
+        link.style.top = `${top}px`;
+        link.style.transform = `rotate(${angle}deg)`;
+        link.innerHTML = `<img src="${g_gamethemeurl}img/num1.gif" />`;
+        document.getElementById(`player-table-${this.playerId}-circles`).appendChild(link);
+        
+        if (selectable) {
+            link.addEventListener('click', () => this.game.cellClick(index2));
+        }
     }
     
     public setSelectableCards(selectableCards: Card[]) {

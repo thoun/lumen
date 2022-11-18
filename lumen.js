@@ -1179,7 +1179,8 @@ var PlayerTable = /** @class */ (function () {
         circleDiv.innerHTML = value === -1 ? 'X' /* TODO Brouillage*/ : '' + value;
     };
     PlayerTable.prototype.setPossibleCellLinks = function (possibleLinkCirclesIds, cellId) {
-        // TODO throw new Error("Method not implemented.");
+        var _this = this;
+        possibleLinkCirclesIds.forEach(function (destId) { return _this.setLink(cellId, destId, true); });
     };
     PlayerTable.prototype.addCheck = function (checks) {
         var div = document.getElementById("player-table-".concat(this.playerId, "-check").concat(checks));
@@ -1201,15 +1202,28 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         circlesIds.forEach(function (circleId) { return document.getElementById("player-table-".concat(_this.playerId, "-circle").concat(circleId)).dataset.zone = '' + zoneId; });
     };
-    PlayerTable.prototype.setLink = function (index1, index2) {
+    PlayerTable.prototype.setLink = function (index1, index2, selectable) {
+        var _this = this;
+        if (selectable === void 0) { selectable = false; }
         var circle1 = CIRCLES[index1];
         var circle2 = CIRCLES[index2];
         var angle = Math.atan2(circle2[0] - circle1[0], circle2[1] - circle1[1]) * 180 / Math.PI - 90;
         var left = circle1[1] + CIRCLE_WIDTH / 2 - 5;
         var top = circle1[0] + CIRCLE_WIDTH / 2 + 3;
-        var html = "<div id=\"link_".concat(this.playerId, "_").concat(index1, "_").concat(index2, "\" class=\"link chiffres\" style=\"left:").concat(left, "px; top:").concat(top, "px; transform: rotate(").concat(angle, "deg);\">\n            <img src=\"").concat(g_gamethemeurl, "img/num1.gif\" />\n        </div>");
-        dojo.place(html, "player-table-".concat(this.playerId, "-circles"));
-        console.log(html);
+        var link = document.createElement('div');
+        link.id = "link_".concat(this.playerId, "_").concat(index1, "_").concat(index2);
+        link.classList.add('link', 'chiffres');
+        if (selectable) {
+            link.classList.add('selectable');
+        }
+        link.style.left = "".concat(left, "px");
+        link.style.top = "".concat(top, "px");
+        link.style.transform = "rotate(".concat(angle, "deg)");
+        link.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/num1.gif\" />");
+        document.getElementById("player-table-".concat(this.playerId, "-circles")).appendChild(link);
+        if (selectable) {
+            link.addEventListener('click', function () { return _this.game.cellClick(index2); });
+        }
     };
     PlayerTable.prototype.setSelectableCards = function (selectableCards) {
         [this.reserve, this.highCommand].forEach(function (stock) {
@@ -1404,6 +1418,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseCell':
                 this.onLeavingGhostMark('circle');
                 break;
+            case 'chooseCellLink':
+                this.onLeavingChooseCellLink();
+                break;
             case 'chooseFighter':
                 this.onLeavingChooseFighter();
                 break;
@@ -1428,6 +1445,9 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.onLeavingChooseTerritory = function () {
         document.querySelectorAll('.fighter.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
         document.querySelectorAll('.territory.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
+    };
+    Lumen.prototype.onLeavingChooseCellLink = function () {
+        document.querySelectorAll('.link.selectable').forEach(function (elem) { return elem.remove(); });
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).

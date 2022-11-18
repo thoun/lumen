@@ -223,6 +223,9 @@ class Lumen implements LumenGame {
             case 'chooseCell':
                 this.onLeavingGhostMark('circle');
                 break;
+            case 'chooseCellLink':
+                this.onLeavingChooseCellLink();
+                break;
             case 'chooseFighter':
                 this.onLeavingChooseFighter();
                 break;
@@ -251,6 +254,10 @@ class Lumen implements LumenGame {
     private onLeavingChooseTerritory() {
         document.querySelectorAll('.fighter.selectable').forEach(elem => elem.classList.remove('selectable'));
         document.querySelectorAll('.territory.selectable').forEach(elem => elem.classList.remove('selectable'));
+    }
+
+    private onLeavingChooseCellLink() {
+        document.querySelectorAll('.link.selectable').forEach(elem => elem.remove());
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
