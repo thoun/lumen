@@ -64,6 +64,13 @@ class Lumen implements LumenGame {
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
 
+        this.notif_diceChange({
+            args: {
+                die1: gamedatas.die1,
+                die2: gamedatas.die2,
+            }
+        } as any);
+
         this.setupNotifications();
         this.setupPreferences();
         this.addHelp();

@@ -1,6 +1,16 @@
 const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
+const CIRCLE_WIDTH = 49.7;
+const CIRCLES = [];
+
+[1, 2, 3].forEach(index => CIRCLES[index] = [0, 145 + CIRCLE_WIDTH * (index == 3 ? 3 : index - 1)]);
+[4, 5, 6, 7, 8].forEach(index => CIRCLES[index] = [42, 120 + CIRCLE_WIDTH * (index - 4)]);
+[9, 10, 11, 12, 13, 14].forEach(index => CIRCLES[index] = [86, 45 + CIRCLE_WIDTH * (index - 9)]);
+CIRCLES[15] = [111, 0];
+[16, 17, 18].forEach(index => CIRCLES[index] = [136, 45 + CIRCLE_WIDTH * (index - 16)]);
+[19, 20].forEach(index => CIRCLES[index] = [180, 70 + CIRCLE_WIDTH * (index - 19)]);
+
 class PlayerTable {
     public playerId: number;
 
@@ -61,6 +71,8 @@ class PlayerTable {
             document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
             div.addEventListener('click', () => this.game.cellClick(circle.circleId));
         });
+
+        player.links.forEach(link => this.setLink(Number(link.index1), Number(link.index2)));
 
         this.reserve = new SlotStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-reserve`), {
             slotsIds: [1, 2, 3],
@@ -161,11 +173,17 @@ class PlayerTable {
     }
     
     public setLink(index1: number, index2: number) {
-        /*const angle = Math.atan2(circle2.Top - circle1.Top, circle2.Left - circle1.Left) * 180 / Math.PI - 90;
-        TODO
-	    const left: circle1.Left;
-        const top: circle1.Top;
-        const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
+        const circle1 = CIRCLES[index1];
+        const circle2 = CIRCLES[index2];
+
+        const angle = Math.atan2(circle2[0] - circle1[0], circle2[1] - circle1[1]) * 180 / Math.PI - 90;
+	    const left = circle1[1] + CIRCLE_WIDTH/2 - 5;
+        const top = circle1[0] + CIRCLE_WIDTH/2 + 3;
+        const html = `<div id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg);">
+            <img src="${g_gamethemeurl}img/num1.gif" />
+        </div>`;
+        dojo.place(html, `player-table-${this.playerId}-circles`);
+        console.log(html);
     }
     
     public setSelectableCards(selectableCards: Card[]) {

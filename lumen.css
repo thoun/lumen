@@ -779,6 +779,7 @@ body > .card {
   align-items: center;
   font-family: "Messy";
   font-size: 48px;
+  color: #3d3d3d;
 }
 .player-table .circles .circle.ghost {
   opacity: 0.2;
@@ -894,6 +895,24 @@ body > .card {
 .player-table .circles .circle[data-circle="20"] {
   top: 180px;
   left: 119.7px;
+}
+.player-table .circles .link {
+  position: absolute;
+  object-fit: none;
+  width: 8px;
+  height: 47px;
+  transform-origin: top center;
+  z-index: 1;
+  pointer-events: none;
+}
+.player-table .circles .link img {
+  transform-origin: center center;
+  transform: translate(-46px, -24px) scale(0.25);
+}
+.player-table .circles .link.selectable {
+  opacity: 0.4;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 html[data-filling-pattern=true] .circle[data-zone="0"] {

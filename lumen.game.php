@@ -174,7 +174,7 @@ class Lumen extends Table {
             $operations = $this->getCollectionFromDb("SELECT `operation`, `nb` FROM `operation` WHERE player_id = $playerId ORDER BY `operation`");
             $player['operations'] = array_map(fn($operation) => intval($operation['nb']), $operations);
             $player['circles'] = $this->getCircles($playerId);
-            $player['links'] = $this->getCollectionFromDb("SELECT * FROM `link` WHERE player_id = $playerId");
+            $player['links'] = array_values($this->getCollectionFromDb("SELECT * FROM `link` WHERE player_id = $playerId"));
 
             $discoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
             $player['discoverTiles'] = $playerId == $currentPlayerId ? $discoverTiles : DiscoverTile::onlyIds($discoverTiles);
@@ -188,6 +188,8 @@ class Lumen extends Table {
         $result['initiativeMarkerTerritory'] = intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY));
         $result['firstPlayer'] = intval($this->getGameStateValue(FIRST_PLAYER));
         $result['firstPlayerOperation'] = intval($this->getGameStateValue(FIRST_PLAYER_OPERATION));
+        $result['die1'] = intval($this->getGameStateValue(DIE1));
+        $result['die2'] = intval($this->getGameStateValue(DIE2));
   
         return $result;
     }

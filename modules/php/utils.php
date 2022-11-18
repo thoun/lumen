@@ -826,7 +826,7 @@ trait UtilTrait {
     }
 
     function checkEmptyBag(int $playerId) {
-        if ($this->getScenarioId() == 2 && intval($this->cards->countCardForLocation('bag'.$playerId)) == 0 && !$this->isRealizedObjective('A', $playerId)) {
+        if ($this->getScenarioId() == 2 && intval($this->cards->countCardInLocation('bag'.$playerId)) == 0 && !$this->isRealizedObjective('A', $playerId)) {
             $this->takeScenarioObjectiveToken($playerId, 'A', 2);
             $this->setRealizedObjective('A', $playerId);
         }

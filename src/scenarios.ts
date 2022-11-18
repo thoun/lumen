@@ -87,6 +87,16 @@ class Scenario extends ScenarioInfos {
           new BattlefieldPosition(6, 0, 0, 0),
           new BattlefieldPosition(7, 0, 0, 0),
         ];
+      case 2:
+        return [
+          new BattlefieldPosition(1, 0, 0, 0),
+          new BattlefieldPosition(2, 0, 0, 0),
+          new BattlefieldPosition(3, 0, 0, 0),
+          new BattlefieldPosition(4, 0, 0, 0),
+          new BattlefieldPosition(5, 0, 0, 0),
+          new BattlefieldPosition(6, 0, 0, 0),
+          new BattlefieldPosition(7, 0, 0, 0),
+        ];
     }
   }
 
@@ -94,21 +104,26 @@ class Scenario extends ScenarioInfos {
     switch (number) {
       case 1:
         return [
-          new ObjectiveTokenPosition('B1', 300, 200),
-          new ObjectiveTokenPosition('B2', 600, 300),
+          new ObjectiveTokenPosition('B1', 300, 200), // TODO
+          new ObjectiveTokenPosition('B2', 600, 300), // TODO
         ];
+      case 2:
+        return [];
     }
   }
 
   private static getSynopsis(number: number): string {
     switch (number) {
       case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
+      case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
     }
   }
 
   private static getSpecialRules(number: number): string[] {
     switch (number) {
-      case 1: return [];
+      case 1: 
+      case 2:
+        return [];
     }
   }
 

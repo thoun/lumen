@@ -51,11 +51,12 @@ CREATE TABLE IF NOT EXISTS `objective_token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
  CREATE TABLE IF NOT EXISTS `link` (
+   `link_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
    `player_id` int(11) NOT NULL,
    `index1` int(5) NOT NULL,
    `index2` int(5) NOT NULL,
    `middle` int(5) NOT NULL DEFAULT '-1',
-   PRIMARY KEY (`player_id`, `index1`, `index2`)
+   PRIMARY KEY (`link_id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
   
  CREATE TABLE IF NOT EXISTS `circle` (

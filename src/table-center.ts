@@ -20,7 +20,6 @@ class TableCenter {
             const battlefield = document.createElement('div');
             battlefield.id = `battlefield-${battlefieldInfos.battlefieldId}`;
             battlefield.classList.add('battlefield');
-            battlefield.innerHTML = `battlefield-${battlefieldInfos.battlefieldId}`;
             map.appendChild(battlefield);
             this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield);
         });
@@ -40,7 +39,14 @@ class TableCenter {
             territory.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
             this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
-            this.fightersStocks[territoryInfos.id].onCardClick = card => this.territoryFighterClick(card);
+            this.fightersStocks[territoryInfos.id].onCardClick = card => {
+                const canClick = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleTerritoryFighters?.some(fighter => fighter.id == card.id);
+                if (canClick) {
+                    this.territoryFighterClick(card);
+                } else {
+                    this.fightersStocks[territoryInfos.id].unselectCard(card);
+                }
+            }
             this.discoverTilesStocks[territoryInfos.id] = new LineStock<DiscoverTile>(this.game.discoverTilesManager, document.getElementById(`territory-${territoryInfos.id}-discover-tiles`));
         });
     }
@@ -91,10 +97,12 @@ class TableCenter {
     private createFighterChoice(card: Card) {
         const element = this.game.cardsManager.getCardElement(card);
 
+        const canActivate = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleFightersToActivate.some(activateFighter => activateFighter.id == card.id);
+
         dojo.place(`<div id="fighter-choice">
             <button id="fighter-choice-move">${_('Move')}</button>
             <button id="fighter-choice-cancel">✖</button>
-            <button id="fighter-choice-activate">${_('Activate')}</button>
+            <button id="fighter-choice-activate" ${canActivate ? '' : ' disabled="disabled"'}>${_('Activate')}</button>
         </div>`, element);
 
         document.getElementById(`fighter-choice-move`).addEventListener('click', () => {

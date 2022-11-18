@@ -894,6 +894,16 @@ var Scenario = /** @class */ (function (_super) {
                     new BattlefieldPosition(6, 0, 0, 0),
                     new BattlefieldPosition(7, 0, 0, 0),
                 ];
+            case 2:
+                return [
+                    new BattlefieldPosition(1, 0, 0, 0),
+                    new BattlefieldPosition(2, 0, 0, 0),
+                    new BattlefieldPosition(3, 0, 0, 0),
+                    new BattlefieldPosition(4, 0, 0, 0),
+                    new BattlefieldPosition(5, 0, 0, 0),
+                    new BattlefieldPosition(6, 0, 0, 0),
+                    new BattlefieldPosition(7, 0, 0, 0),
+                ];
         }
     };
     Scenario.getObjectiveTokens = function (number) {
@@ -901,18 +911,23 @@ var Scenario = /** @class */ (function (_super) {
             case 1:
                 return [
                     new ObjectiveTokenPosition('B1', 300, 200),
-                    new ObjectiveTokenPosition('B2', 600, 300),
+                    new ObjectiveTokenPosition('B2', 600, 300), // TODO
                 ];
+            case 2:
+                return [];
         }
     };
     Scenario.getSynopsis = function (number) {
         switch (number) {
             case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
+            case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
         }
     };
     Scenario.getSpecialRules = function (number) {
         switch (number) {
-            case 1: return [];
+            case 1:
+            case 2:
+                return [];
         }
     };
     Scenario.getObjectives = function (number) {
@@ -952,7 +967,6 @@ var TableCenter = /** @class */ (function () {
             var battlefield = document.createElement('div');
             battlefield.id = "battlefield-".concat(battlefieldInfos.battlefieldId);
             battlefield.classList.add('battlefield');
-            battlefield.innerHTML = "battlefield-".concat(battlefieldInfos.battlefieldId);
             map.appendChild(battlefield);
             _this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield);
         });
@@ -967,7 +981,16 @@ var TableCenter = /** @class */ (function () {
             battlefield.appendChild(territory);
             territory.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.fightersStocks[territoryInfos.id] = new LineStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")));
-            _this.fightersStocks[territoryInfos.id].onCardClick = function (card) { return _this.territoryFighterClick(card); };
+            _this.fightersStocks[territoryInfos.id].onCardClick = function (card) {
+                var _a;
+                var canClick = (_a = _this.game.gamedatas.gamestate.args.possibleTerritoryFighters) === null || _a === void 0 ? void 0 : _a.some(function (fighter) { return fighter.id == card.id; });
+                if (canClick) {
+                    _this.territoryFighterClick(card);
+                }
+                else {
+                    _this.fightersStocks[territoryInfos.id].unselectCard(card);
+                }
+            };
             _this.discoverTilesStocks[territoryInfos.id] = new LineStock(_this.game.discoverTilesManager, document.getElementById("territory-".concat(territoryInfos.id, "-discover-tiles")));
         });
     };
@@ -1011,7 +1034,8 @@ var TableCenter = /** @class */ (function () {
     TableCenter.prototype.createFighterChoice = function (card) {
         var _this = this;
         var element = this.game.cardsManager.getCardElement(card);
-        dojo.place("<div id=\"fighter-choice\">\n            <button id=\"fighter-choice-move\">".concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\">").concat(_('Activate'), "</button>\n        </div>"), element);
+        var canActivate = this.game.gamedatas.gamestate.args.possibleFightersToActivate.some(function (activateFighter) { return activateFighter.id == card.id; });
+        dojo.place("<div id=\"fighter-choice\">\n            <button id=\"fighter-choice-move\">".concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\" ").concat(canActivate ? '' : ' disabled="disabled"', ">").concat(_('Activate'), "</button>\n        </div>"), element);
         document.getElementById("fighter-choice-move").addEventListener('click', function () {
             _this.game.moveFighter(card.id);
             _this.cancelFighterChoice();
@@ -1048,6 +1072,14 @@ var TableCenter = /** @class */ (function () {
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 var log = isDebug ? console.log.bind(window.console) : function () { };
+var CIRCLE_WIDTH = 49.7;
+var CIRCLES = [];
+[1, 2, 3].forEach(function (index) { return CIRCLES[index] = [0, 145 + CIRCLE_WIDTH * (index == 3 ? 3 : index - 1)]; });
+[4, 5, 6, 7, 8].forEach(function (index) { return CIRCLES[index] = [42, 120 + CIRCLE_WIDTH * (index - 4)]; });
+[9, 10, 11, 12, 13, 14].forEach(function (index) { return CIRCLES[index] = [86, 45 + CIRCLE_WIDTH * (index - 9)]; });
+CIRCLES[15] = [111, 0];
+[16, 17, 18].forEach(function (index) { return CIRCLES[index] = [136, 45 + CIRCLE_WIDTH * (index - 16)]; });
+[19, 20].forEach(function (index) { return CIRCLES[index] = [180, 70 + CIRCLE_WIDTH * (index - 19)]; });
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, firstPlayerOperation) {
         var _this = this;
@@ -1082,6 +1114,7 @@ var PlayerTable = /** @class */ (function () {
             document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
             div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
         });
+        player.links.forEach(function (link) { return _this.setLink(Number(link.index1), Number(link.index2)); });
         this.reserve = new SlotStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-reserve")), {
             slotsIds: [1, 2, 3],
             mapCardToSlot: function (card) { return card.locationArg; }
@@ -1169,11 +1202,14 @@ var PlayerTable = /** @class */ (function () {
         circlesIds.forEach(function (circleId) { return document.getElementById("player-table-".concat(_this.playerId, "-circle").concat(circleId)).dataset.zone = '' + zoneId; });
     };
     PlayerTable.prototype.setLink = function (index1, index2) {
-        /*const angle = Math.atan2(circle2.Top - circle1.Top, circle2.Left - circle1.Left) * 180 / Math.PI - 90;
-        TODO
-        const left: circle1.Left;
-        const top: circle1.Top;
-        const html = `<img id="link_${this.playerId}_${index1}_${index2}" class="link chiffres" src="${g_gamethemeurl}img/num1.gif" style="left:${left}px; top:${top}px; transform: rotate(${angle}deg) scaleX(0.5) scaleY(0.5) translateY(17px);" />`;*/
+        var circle1 = CIRCLES[index1];
+        var circle2 = CIRCLES[index2];
+        var angle = Math.atan2(circle2[0] - circle1[0], circle2[1] - circle1[1]) * 180 / Math.PI - 90;
+        var left = circle1[1] + CIRCLE_WIDTH / 2 - 5;
+        var top = circle1[0] + CIRCLE_WIDTH / 2 + 3;
+        var html = "<div id=\"link_".concat(this.playerId, "_").concat(index1, "_").concat(index2, "\" class=\"link chiffres\" style=\"left:").concat(left, "px; top:").concat(top, "px; transform: rotate(").concat(angle, "deg);\">\n            <img src=\"").concat(g_gamethemeurl, "img/num1.gif\" />\n        </div>");
+        dojo.place(html, "player-table-".concat(this.playerId, "-circles"));
+        console.log(html);
     };
     PlayerTable.prototype.setSelectableCards = function (selectableCards) {
         [this.reserve, this.highCommand].forEach(function (stock) {
@@ -1226,6 +1262,12 @@ var Lumen = /** @class */ (function () {
         this.setScenarioInformations();
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
+        this.notif_diceChange({
+            args: {
+                die1: gamedatas.die1,
+                die2: gamedatas.die2,
+            }
+        });
         this.setupNotifications();
         this.setupPreferences();
         this.addHelp();

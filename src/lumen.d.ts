@@ -29,6 +29,11 @@ interface Circle {
     zone: number;
 }
 
+interface Link {
+    index1: string;
+    index2: string;
+}
+
 interface LumenPlayer extends Player {
     playerNo: number;
     checks: number;
@@ -36,6 +41,7 @@ interface LumenPlayer extends Player {
     highCommand: Card[];
     operations: { [type: number]: number };
     circles: Circle[];
+    links: Link[];
     discoverTiles: DiscoverTile[];
     objectiveTokens: ObjectiveToken[];
 }
@@ -59,6 +65,8 @@ interface LumenGamedatas {
     initiativeMarkerTerritory: number;
     firstPlayer: number;
     firstPlayerOperation: number;
+    die1: number;
+    die2: number;
 }
 
 interface LumenGame extends Game {
