@@ -2,18 +2,20 @@ $circleWidth: 49.7px;
 
 .player-table {
   width: 960px;
-  height: 393px;
+  height: 410px;
   position: relative;
+  margin: 10px;
 
   .background {
     position: absolute;
-    top: 50px; // height: 
-    height: 343px;
+    top: 33px; // height: 
+    height: 377px;
     //bottom: 0;
     left: 0;
     right: 0;
     border-radius: 10px;
-    background-size: contain;
+    box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.5);
+
     &[data-color="f28700"] {
       background-image: url('img/playerboard-day.png');
     }
