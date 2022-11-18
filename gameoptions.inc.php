@@ -35,6 +35,10 @@ $game_options = [
                 'name' => totranslate('A : First Contact'),
                 'tmdisplay' => totranslate('A : First Contact'),
             ],
+            2 => [
+                'name' => totranslate('B : La grosse cavalerie'), // TODO
+                'tmdisplay' => totranslate('B : La grosse cavalerie'), // TODO
+            ],
         ],
         'default' => 1,
     ],
