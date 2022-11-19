@@ -597,6 +597,26 @@ trait UtilTrait {
         // every time a fighter moves, we check if it makes a control to a visible Discover tile
         $this->checkTerritoriesDiscoverTileControl();
 
+        $scenarioId = $this->getScenarioId();
+        switch ($scenarioId) {
+            case 5:
+                if (!$this->isRealizedObjective('B') && $territoryId == 61) {
+                    $this->takeScenarioObjectiveToken($fighter->playerId, 'B');
+                    $this->setRealizedObjective('B');
+                }
+                break;
+            case 7: 
+                if (!$this->isRealizedObjective('B') && in_array($territoryId, [65, 75])) {
+                    $players = $this->loadPlayersBasicInfos();
+                    $playerNo = intval($this->array_find($players, fn($player) => intval($player['player_id']) == $fighter->playerId)['player_table_order']);
+                    if (($playerNo == 1 && $territoryId == 75) || ($playerNo == 2 && $territoryId == 65)) {
+                        $this->takeScenarioObjectiveToken($fighter->playerId, 'B', 3);
+                        $this->setRealizedObjective('B');
+                    }
+                }
+                break;
+        }
+
         return $redirectBrouillage;
     }
 

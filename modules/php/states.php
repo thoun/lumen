@@ -210,6 +210,28 @@ trait StateTrait {
                 }
 
                 break;
+            case 6:
+                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+                $playersIds = $this->getPlayersIds();
+                $monstWinterFighters = null;
+                $winterFightersCountByPlayer = [];
+                foreach ($playersIds as $playerId) {
+                    $playerFighters = $this->getCardsByLocation('territory', null, $playerId);
+                    $winterFightersCountByPlayer[$playerId] = count(array_filter($playerFighters, fn($fighter) => $fighter->locationArg % 10 == 1));
+                }
+
+                if ($winterFightersCountByPlayer[$playersIds[0]] > $winterFightersCountByPlayer[$playersIds[1]]) {
+                    $monstWinterFighters = $playersIds[0];
+                } else if ($winterFightersCountByPlayer[$playersIds[1]] > $winterFightersCountByPlayer[$playersIds[0]]) {
+                    $monstWinterFighters = $playersIds[1];
+                }
+
+                if ($monstWinterFighters !== null) {
+                    $this->takeScenarioObjectiveToken($monstWinterFighters, 'B');
+                    $this->setRealizedObjective('B');
+                }
+
+                break;
         }
     }
 

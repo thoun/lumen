@@ -273,7 +273,7 @@ trait ActionTrait {
             throw new BgaUserException("Invalid fighter");
         }
 
-        if ($fighter->power === POWER_BAVEUX) {
+        if ($fighter->power === POWER_BAVEUX && $this->getScenarioId() != 5) {
             throw new BgaUserException("The Baveux cannot be moved");
         }
         if ($fighter->power === POWER_TISSEUSE && $fighter->played) {
@@ -290,6 +290,10 @@ trait ActionTrait {
             $opponentTisseuses = $this->getCardsByLocation($fighter->location, $fighter->locationArg, $this->getOpponentId($playerId), null, 15);
             if ($this->array_some($opponentTisseuses, fn($opponentTisseuse) => $opponentTisseuse->played)) {
                 throw new BgaUserException("An opponent Tisseuse prevents you to leave the territory");
+            }
+
+            if ($fighter->locationArg % 10 == 5 && $this->getScenarioId() == 5 && $fighter->power !== POWER_BAVEUX) {
+                throw new BgaUserException("Only Baveux can move from a green territory");
             }
         }
 

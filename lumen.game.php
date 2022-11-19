@@ -192,7 +192,7 @@ class Lumen extends Table {
         $result['die2'] = intval($this->getGameStateValue(DIE2));
   
         return $result;
-    } // TODO regles speciales et objectifs scenarios 5 6 7
+    }
 
     /*
         getGameProgression:

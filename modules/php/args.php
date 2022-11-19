@@ -126,6 +126,17 @@ trait ArgsTrait {
                 $territoryFighters = $this->getCardsByLocation('territory', null, $playerId);
                 $possibleTerritoryFighters = $territoryFighters;
 
+                $possibleFightersToActivate = array_values(array_filter($territoryFighters, fn($fighter) => !$fighter->played));
+                $scenarioId = $this->getScenarioId();
+                switch ($scenarioId) {
+                    case 5:
+                        $possibleFightersToActivate = array_values(array_filter($possibleFightersToActivate, fn($fighter) => $fighter->power !== POWER_EMPLUME));
+                        break;
+                    case 6:
+                        $possibleFightersToActivate = array_values(array_filter($possibleFightersToActivate, fn($fighter) => $fighter->location != 'territory' || $fighter->locationArg % 10 != 1));
+                        break;
+                }
+
                 $optionalDetail = $remainingPlays == 0 && $remainingMoves == 0 && $remainingBonusMoves > 0 ?
                     clienttranslate('(with Coup fourré)') : ''; // TODO check translation
 
@@ -138,7 +149,7 @@ trait ArgsTrait {
                         array_values(array_filter($highCommand, fn($fighter) => in_array($fighter->type, [1, 10])))
                     ),
                     'possibleActions' => array_values(array_filter($highCommand, fn($fighter) => $fighter->type === 20)),
-                    'possibleFightersToActivate' => array_values(array_filter($territoryFighters, fn($fighter) => !$fighter->played)),
+                    'possibleFightersToActivate' => $possibleFightersToActivate,
                 ];
                 break;
             case MOVE_PUSH:
@@ -246,10 +257,16 @@ trait ArgsTrait {
                             break;
                     }
                 }
-
                 break;
             case MOVE_FLY:
                 $battlefieldsIds = $this->getBattlefieldsIds($selectedFighter->locationArg);
+                if ($this->getScenarioId() == 7) {
+                    if (in_array($selectedFighter->locationArg % 10, [6, 1, 3])) {
+                        $battlefieldsIds = [6, 1, 3];
+                    } else if (in_array($selectedFighter->locationArg % 10, [5, 4, 7])) {
+                        $battlefieldsIds = [5, 4, 7];
+                    }
+                } // TODO check si on peut s'arrpeter sur le 2 depuis 1 3 6 ou si on doit d'arrêter avant. Et si on peut voler depuis le 2
                 foreach ($battlefieldsIds as $battlefieldId) {
                     foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
                         $territoriesIds[] = $territory->id;
