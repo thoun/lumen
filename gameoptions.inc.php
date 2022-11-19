@@ -43,6 +43,22 @@ $game_options = [
                 'name' => totranslate('C - UN TERRITOIRE TROP LOIN'), // TODO
                 'tmdisplay' => totranslate('C - UN TERRITOIRE TROP LOIN'), // TODO
             ],
+            4 => [
+                'name' => totranslate('D - LA POSSIBILITÉ D’UNE ÎLE'), // TODO
+                'tmdisplay' => totranslate('D - LA POSSIBILITÉ D’UNE ÎLE'), // TODO
+            ],
+            5 => [
+                'name' => totranslate('E - APRÈS MOI LE DÉLUGE'), // TODO
+                'tmdisplay' => totranslate('E - APRÈS MOI LE DÉLUGE'), // TODO
+            ],
+            6 => [
+                'name' => totranslate('F - LE SOLDAT DE L’HIVER'), // TODO
+                'tmdisplay' => totranslate('F - LE SOLDAT DE L’HIVER'), // TODO
+            ],
+            7 => [
+                'name' => totranslate('G - LA GRANDE TRAVERSÉE'), // TODO
+                'tmdisplay' => totranslate('G - LA GRANDE TRAVERSÉE'), // TODO
+            ],
         ],
         'default' => 1,
     ],

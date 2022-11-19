@@ -911,6 +911,16 @@ var Scenario = /** @class */ (function (_super) {
                     new BattlefieldPosition(6, 450, 382, 270),
                     new BattlefieldPosition(7, 402, 85, 90),
                 ];
+            case 4:
+                return [
+                    new BattlefieldPosition(1, 559, 596, 180),
+                    new BattlefieldPosition(2, 720, -90, 270),
+                    new BattlefieldPosition(3, 112, 376, 90),
+                    new BattlefieldPosition(4, 59, 148, 0),
+                    new BattlefieldPosition(5, 773, 138, 180),
+                    new BattlefieldPosition(6, 133, 641, 270),
+                    new BattlefieldPosition(7, 788, 543, 90),
+                ];
         }
     };
     Scenario.getObjectiveTokens = function (number) {
@@ -927,6 +937,8 @@ var Scenario = /** @class */ (function (_super) {
                     new ObjectiveTokenPosition('A1', 486, 322),
                     new ObjectiveTokenPosition('A2', 681, 508),
                 ];
+            case 4:
+                return [];
         }
     };
     Scenario.getTitle = function (number) {
@@ -934,6 +946,7 @@ var Scenario = /** @class */ (function (_super) {
             case 1: return _("A : First Contact");
             case 2: return _("B : La grosse cavalerie"); // TODO
             case 3: return _("C - UN TERRITOIRE TROP LOIN"); // TODO
+            case 4: return _("D - LA POSSIBILITÉ D’UNE ÎLE"); // TODO
         }
     };
     Scenario.getSynopsis = function (number) {
@@ -941,6 +954,7 @@ var Scenario = /** @class */ (function (_super) {
             case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
             case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
             case 3: return _("Quand une zone s’apauvrie en Lumens il est necéssaire de s’aventurer dans des zones souvent inaccessibles."); // TODO
+            case 4: return _("Les freluquets, combattants de base et non moins malins, arpentent les îles à la recherche de lumens via un réseau de galerie existant sous le Monde Perdu."); // TODO
         }
     };
     Scenario.getSpecialRules = function (number) {
@@ -953,6 +967,11 @@ var Scenario = /** @class */ (function (_super) {
                     _("Traverser la rivière par voie terrestre coûte 2 actions."),
                     _("On peut voler au dessus de la rivière."),
                     _("Un jeton poussé dans la rivière est remis dans le sac de son propriétaire"), // TODO
+                ];
+            case 4:
+                return [
+                    _("Les effets spéciaux (vol, tir, ..) sont autorisés à l’intérieur d’une île, mais pas d’une île à une autre"),
+                    _("Les territoires d’hiver sont tous connectés par des galeries empruntables UNIQUEMENT par les freluquets."), // TODO
                 ];
         }
     };
@@ -972,6 +991,9 @@ var Scenario = /** @class */ (function (_super) {
             case 3: return [
                 new ObjectiveDescription('A', DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
             ]; // TODO
+            case 4: return [
+                new ObjectiveDescription('A', END_GAME, _("Sur chaque île :"), _("une pierre pour celui qui a le plus grand nombre de combattants - Une pierre supplémentaire si un joueur est seul sur l’île !")),
+            ]; // TODO
         }
     };
     Scenario.getDiceLeft = function (number) {
@@ -979,6 +1001,7 @@ var Scenario = /** @class */ (function (_super) {
             case 1: return 700;
             case 2: return 300;
             case 3: return 700;
+            case 4: return 300;
         }
     };
     return Scenario;

@@ -149,8 +149,14 @@ trait ArgsTrait {
             case MOVE_KILL:
                 $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
                 $selectedFighter = $this->getCardById($selectedFighterId);
-                $territoryFilter = $selectedFighter->power == POWER_BOMBARDE ? null : $selectedFighter->locationArg;
-                $possibleTerritoryFighters = $this->getCardsByLocation('territory', $territoryFilter, $this->getOpponentId($playerId));
+                if ($selectedFighter->power == POWER_BOMBARDE) {
+                    $battlefieldsIds = $this->getBattlefieldsIds($selectedFighter->locationArg);                    
+                    $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $this->getOpponentId($playerId));
+                    $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => in_array($fighter->locationArg % 10, $battlefieldsIds)));
+                } else {
+                    $possibleTerritoryFighters = $this->getCardsByLocation('territory', $selectedFighter->locationArg, $this->getOpponentId($playerId));
+                }
+
                 $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->power != POWER_BAVEUX));
                 break;
             case MOVE_UNACTIVATE:
@@ -216,18 +222,35 @@ trait ArgsTrait {
                     }
                 }
 
-                if ($move == MOVE_MOVE && $this->getScenarioId() == 3) {
-                    $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
-                    $remainingBonusMoves = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
-                    if ($remainingMoves + $remainingBonusMoves >= 2) {
-                        $territoriesIds = array_merge($territoriesIds, $this->RIVER_CROSS_TERRITORIES[$selectedFighter->locationArg]);
+                if ($move == MOVE_MOVE) {
+                    $scenarioId = $this->getScenarioId();
+                    switch ($scenarioId) {
+                        case 3:
+                            $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+                            $remainingBonusMoves = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
+                            if ($remainingMoves + $remainingBonusMoves >= 2) {
+                                $territoriesIds = array_merge($territoriesIds, $this->RIVER_CROSS_TERRITORIES[$selectedFighter->locationArg]);
+                            }
+                            break;
+                        case 4:
+                            if ($selectedFighter->subType == 1 && $selectedFighter->locationArg % 10 == 1) {
+                                $scenario = $this->getScenario();
+                                foreach ($scenario->battlefieldsIds as $battlefieldId) {
+                                    foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                                        if ($territory->id != $selectedFighter->locationArg && $territory->lumens == 1) {
+                                            $territoriesIds[] = $territory->id;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
                     }
                 }
 
                 break;
             case MOVE_FLY:
-                $scenario = $this->getScenario();
-                foreach ($scenario->battlefieldsIds as $battlefieldId) {
+                $battlefieldsIds = $this->getBattlefieldsIds($selectedFighter->locationArg);
+                foreach ($battlefieldsIds as $battlefieldId) {
                     foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
                         $territoriesIds[] = $territory->id;
                     }

@@ -838,4 +838,14 @@ trait UtilTrait {
             $this->setRealizedObjective('A', $playerId);
         }
     }
+
+    function getBattlefieldsIds(int $territory) {
+        if ($this->getScenarioId() == 4) {
+            $battlefield = $territory % 10;
+            return [$battlefield, $this->BATTLEFIELDS_IN_SAME_ISLAND[$battlefield]];
+        }
+
+        $scenario = $this->getScenario();
+        return $scenario->battlefieldsIds;
+    }
 }
