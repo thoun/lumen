@@ -921,6 +921,34 @@ var Scenario = /** @class */ (function (_super) {
                     new BattlefieldPosition(6, 133, 641, 270),
                     new BattlefieldPosition(7, 788, 543, 90),
                 ];
+            case 5:
+                return [
+                    new BattlefieldPosition(1, 0, 301, 180),
+                    new BattlefieldPosition(3, 228, 249, 90),
+                    new BattlefieldPosition(4, 690, 212, 270),
+                    new BattlefieldPosition(5, 249, 514, 270),
+                    new BattlefieldPosition(6, 441, 0, 180),
+                    new BattlefieldPosition(7, 477, 461, 0),
+                ];
+            case 6:
+                return [
+                    new BattlefieldPosition(1, 99, 531, 90),
+                    new BattlefieldPosition(3, 540, 229, 90),
+                    new BattlefieldPosition(4, 560, 495, 270),
+                    new BattlefieldPosition(5, 312, 282, 180),
+                    new BattlefieldPosition(6, 259, 53, 270),
+                    new BattlefieldPosition(7, 487, 0, 0),
+                ];
+            case 7:
+                return [
+                    new BattlefieldPosition(1, 228, 551, 90),
+                    new BattlefieldPosition(2, 669, 249, 90),
+                    new BattlefieldPosition(3, 441, 302, 180),
+                    new BattlefieldPosition(4, 1131, 212, 270),
+                    new BattlefieldPosition(5, 882, 0, 180),
+                    new BattlefieldPosition(6, 0, 604, 180),
+                    new BattlefieldPosition(7, 1360, 159, 0),
+                ];
         }
     };
     Scenario.getObjectiveTokens = function (number) {
@@ -939,14 +967,32 @@ var Scenario = /** @class */ (function (_super) {
                 ];
             case 4:
                 return [];
+            case 5:
+                return [
+                    new ObjectiveTokenPosition('A1', 163, 699),
+                    new ObjectiveTokenPosition('A2', 603, 508),
+                    new ObjectiveTokenPosition('B', 558, 0),
+                ];
+            case 6:
+                return [
+                    new ObjectiveTokenPosition('A1', 407, 639),
+                    new ObjectiveTokenPosition('A2', 525, 266),
+                ];
+            case 7:
+                return [
+                    new ObjectiveTokenPosition('A', 906, 148),
+                ];
         }
     };
     Scenario.getTitle = function (number) {
         switch (number) {
-            case 1: return _("A : First Contact");
+            case 1: return _("A : First Contact"); // TODO
             case 2: return _("B : La grosse cavalerie"); // TODO
             case 3: return _("C - UN TERRITOIRE TROP LOIN"); // TODO
             case 4: return _("D - LA POSSIBILITÉ D’UNE ÎLE"); // TODO
+            case 5: return _("E - APRÈS MOI LE DÉLUGE"); // TODO
+            case 6: return _("F - LE SOLDAT DE L’HIVER"); // TODO
+            case 7: return _("G - LA GRANDE TRAVERSÉE"); // TODO
         }
     };
     Scenario.getSynopsis = function (number) {
@@ -955,6 +1001,9 @@ var Scenario = /** @class */ (function (_super) {
             case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
             case 3: return _("Quand une zone s’apauvrie en Lumens il est necéssaire de s’aventurer dans des zones souvent inaccessibles."); // TODO
             case 4: return _("Les freluquets, combattants de base et non moins malins, arpentent les îles à la recherche de lumens via un réseau de galerie existant sous le Monde Perdu."); // TODO
+            case 5: return _("Le Monde Perdu subit des intempéries hors du commun. certains peuple profiteront plus que d’autres de la situation !"); // TODO
+            case 6: return _("Certains territoires du Monde Perdu subissent un hiver rude et localisé. Les combattants affronteront la rudesse du terrain… ou tenteront de la contourner !"); // TODO
+            case 7: return _("Le printemps est rare sur le Monde Perdu mais source d’une grande quantité de lumens. Les peuples le savent et savent aussi qu’ils ne sont jamais seuls dans cette course aux lumens. Les plus rapides prennent souvent une option sur la victoire !"); // TODO
         }
     };
     Scenario.getSpecialRules = function (number) {
@@ -972,6 +1021,20 @@ var Scenario = /** @class */ (function (_super) {
                 return [
                     _("Les effets spéciaux (vol, tir, ..) sont autorisés à l’intérieur d’une île, mais pas d’une île à une autre"),
                     _("Les territoires d’hiver sont tous connectés par des galeries empruntables UNIQUEMENT par les freluquets."), // TODO
+                ];
+            case 5:
+                return [
+                    _("Sauts interdits."),
+                    _("Les baveux peuvent faire des déplacements terrestres."),
+                    _("Les territoires verts sont boueux : impossible d’en sortir sauf pour les baveux ou en se faisant pousser."), // TODO
+                ];
+            case 6:
+                return [
+                    _("Les combattants dans les territoires de l’hiver ne peuvent pas utiliser leurs capacités spéciales."), // TODO
+                ];
+            case 7:
+                return [
+                    _("Vol par dessus le territoire de printemps interdit."), // TODO
                 ];
         }
     };
@@ -994,6 +1057,18 @@ var Scenario = /** @class */ (function (_super) {
             case 4: return [
                 new ObjectiveDescription('A', END_GAME, _("Sur chaque île :"), _("une pierre pour celui qui a le plus grand nombre de combattants - Une pierre supplémentaire si un joueur est seul sur l’île !")),
             ]; // TODO
+            case 5: return [
+                new ObjectiveDescription('A', DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+                new ObjectiveDescription('B', DURING_GAME, null, _("Un jeton Objectif pour le premier joueur à atteindre ce territoire hiver.")),
+            ]; // TODO
+            case 6: return [
+                new ObjectiveDescription('A', DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+                new ObjectiveDescription('B', END_GAME, null, _("2 jetons Objectifs pour le joueur qui a le plus de combattants dans les territoires de l’hiver.")),
+            ]; // TODO
+            case 7: return [
+                new ObjectiveDescription('A', DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+                new ObjectiveDescription('B', END_GAME, _("LA GRANDE TRAVERSÉE :"), _("3 jetons Objectifs pour le 1er joueur à atteindre le territoire de départ de son adversaire avec un de ses combattant.")),
+            ]; // TODO
         }
     };
     Scenario.getDiceLeft = function (number) {
@@ -1002,6 +1077,9 @@ var Scenario = /** @class */ (function (_super) {
             case 2: return 300;
             case 3: return 700;
             case 4: return 300;
+            case 5:
+            case 6: return 100;
+            case 7: return 300;
         }
     };
     return Scenario;

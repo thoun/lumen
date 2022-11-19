@@ -117,7 +117,7 @@ class Lumen extends Table {
         self::DbQuery($sql);
 
 
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        //self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
@@ -192,7 +192,7 @@ class Lumen extends Table {
         $result['die2'] = intval($this->getGameStateValue(DIE2));
   
         return $result;
-    }
+    } // TODO regles speciales et objectifs scenarios 5 6 7
 
     /*
         getGameProgression:
