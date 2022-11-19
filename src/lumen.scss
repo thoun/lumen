@@ -29,6 +29,11 @@ html, .mode_3d #game_play_area_background {
  src: url("img/KGLifeisMessy.ttf")
 }
 
+@font-face {
+  font-family: "URW Bernhard Gothic W01 Ultra";
+  src: url("img/URWBernhardGothicW01Ultra.ttf") format("truetype");
+}
+
 .operation-icon {
   background: url('img/operations.png');
   background-size: auto 100%;
@@ -68,7 +73,6 @@ html, .mode_3d #game_play_area_background {
 
 #zoom-wrapper {
   position: relative;
-  margin-top: 40px; // TODO see why it's needed
 
   #zoom-controls {
     position: absolute;
@@ -103,33 +107,12 @@ html, .mode_3d #game_play_area_background {
     position: relative;
     transform-origin: left top;
 
-    #centered-table {
+    #tables {
       display: flex;
       justify-content: center;
-    }
-
-    #tables-and-center {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: start;
+      flex-wrap: wrap;
       gap: 20px;
-
-      #tables {
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-      }
     }
-  }
-}
-
-@media (max-width: 1165px) { 
-  #tables-and-center {
-    flex-wrap: wrap;
   }
 }
 
@@ -184,14 +167,26 @@ html, .mode_3d #game_play_area_background {
   }
 }
 
-#scenario-synopsis {
+#scenario-name, #scenario-synopsis {
   background: url('img/description-background.jpg');
   background-size: cover;
   background-position: center center;
-  min-height: 50px;
-  padding: 20px;
   margin: 10px;
   box-shadow: inset 0 0 5px #a79572, 2px 2px 4px 0px #00000066;
+}
+
+#scenario-name {
+  font-family: "URW Bernhard Gothic W01 Ultra", sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 1.8rem;
+  padding: 10px;
+}
+
+#scenario-synopsis {
+  min-height: 50px;
+  padding: 20px;
 }
 
 #scenario-special-rules, #scenario-objectives {
@@ -199,6 +194,12 @@ html, .mode_3d #game_play_area_background {
   min-height: 50px;
   padding: 20px;
   margin: 10px;
+}
+
+.dijitTooltipContents {
+  #scenario-special-rules, #scenario-objectives {
+    background: url('img/background.jpg');
+  }
 }
 
 #scenario-special-rules {

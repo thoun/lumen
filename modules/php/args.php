@@ -215,6 +215,15 @@ trait ArgsTrait {
                         $territoriesIds[] = $neighbourId;
                     }
                 }
+
+                if ($move == MOVE_MOVE && $this->getScenarioId() == 3) {
+                    $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+                    $remainingBonusMoves = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
+                    if ($remainingMoves + $remainingBonusMoves >= 2) {
+                        $territoriesIds = array_merge($territoriesIds, $this->RIVER_CROSS_TERRITORIES[$selectedFighter->locationArg]);
+                    }
+                }
+
                 break;
             case MOVE_FLY:
                 $scenario = $this->getScenario();

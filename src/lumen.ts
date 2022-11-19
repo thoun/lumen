@@ -409,7 +409,7 @@ class Lumen implements LumenGame {
       
     private onPreferenceChange(prefId: number, prefValue: number) {
         switch (prefId) {
-            case 200: 
+            case 201: 
                 (document.getElementsByTagName('html')[0] as HTMLHtmlElement).dataset.fillingPattern = (prefValue == 2).toString();
                 break;
         }
@@ -484,11 +484,16 @@ class Lumen implements LumenGame {
     }
 
     private setScenarioInformations() {
-        document.getElementById(`scenario-synopsis`).innerHTML = this.scenario.synopsis;
-        document.getElementById(`scenario-special-rules`).innerHTML = `<div class="title">${_('Special rules')}</div>${this.scenario.specialRules.length ? 
+        const scenarioName = document.getElementById(`scenario-name`);
+        const scenarioSynopsis = document.getElementById(`scenario-synopsis`);
+        const scenarioSpecialRules = document.getElementById(`scenario-special-rules`);
+        const scenarioObjectives = document.getElementById(`scenario-objectives`);
+        scenarioName.innerHTML = this.scenario.title;
+        scenarioSynopsis.innerHTML = this.scenario.synopsis;
+        scenarioSpecialRules.innerHTML = `<div class="title">${_('Special rules')}</div>${this.scenario.specialRules.length ? 
             `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`).join('')}</ul>` : 
             _('Nothing')}`;
-        document.getElementById(`scenario-objectives`).innerHTML = `<ul>${this.scenario.objectives.map(description => 
+        scenarioObjectives.innerHTML = `<ul>${this.scenario.objectives.map(description => 
             `<li>
                 <div class="objective-description-token">${description.letter}${description.number > 1 ? `<div class="number">x${description.number}</div>` : ``}</div>
                 <strong>${description.timing}</strong>
@@ -496,6 +501,10 @@ class Lumen implements LumenGame {
                 ${description.text}
             </li>`
             ).join('')}</ul>`;
+
+        document.getElementById(`dice`).style.left = `${this.scenario.diceLeft}px`;
+
+        this.setTooltip(scenarioName.id, scenarioSynopsis.outerHTML + scenarioSpecialRules.outerHTML +  scenarioObjectives.outerHTML);
     }
     
     public onCardClick(card: Card): void {

@@ -2,14 +2,11 @@ $dieBlack: #212322;
 $dieWhite: #FFFFFF;
 
 .dices {
-    width: 340px;
-   height: 120px;
-    margin: 5px;
-    margin-bottom : 30px;
-    margin-top : -40px;
-      position: relative;
-      z-index: 2;
-  }
+  width: 340px;
+  height: 120px;
+  position: absolute;
+  z-index: 30;
+}
   
   .die { 
       margin: 20px;

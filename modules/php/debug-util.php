@@ -12,9 +12,9 @@ trait DebugUtilTrait {
         } 
 
         //$this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
-        $this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);
-        $this->debugAddNeutralFighter(2343492, 11, 'highCommand2343492', 1);
-        $this->debugAddNeutralFighter(2343493, 12, 'territory', 11);
+        //$this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);
+        //$this->debugAddNeutralFighter(2343492, 11, 'highCommand2343492', 1);
+        //$this->debugAddNeutralFighter(2343493, 12, 'territory', 11);
     }
 
     public function debugAddPlayerFighter(int $playerId, int $subType, string $location, $locationArg = null, $played = false) {

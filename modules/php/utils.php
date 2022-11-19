@@ -559,6 +559,13 @@ trait UtilTrait {
     }
 
     function applyMoveFighter(Card &$fighter, int $territoryId) { // return redirected for brouillage
+        if ($territoryId == 0) {
+            // pushed to the river
+            $this->putBackInBag([$fighter]);
+            $this->checkTerritoriesDiscoverTileControl();
+            return false;
+        }
+
         $this->cards->moveCard($fighter->id, 'territory', $territoryId);
         $fighter = $this->getCardById($fighter->id);
 
@@ -611,7 +618,7 @@ trait UtilTrait {
                 }
 
                 if (count(array_unique($controlledBy, SORT_REGULAR)) === 1 && $controlledBy[0] !== null) {
-                    $this->takeScenarioObjectiveToken($controlledBy[0], 'B');
+                    $this->takeScenarioObjectiveToken($controlledBy[0], substr($letter, 0, 1));
                     $this->setRealizedObjective($letter);
                 }
             }
@@ -720,7 +727,7 @@ trait UtilTrait {
         ]);
     }
 
-    function putBackInBag(array $fighters, int $bag) {
+    function putBackInBag(array $fighters) {
         $bags = [];
         $movedFighters = [];
         foreach($fighters as &$fighter) {

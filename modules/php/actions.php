@@ -439,7 +439,14 @@ trait ActionTrait {
                 if ($redirectBrouillage) {
                     $nextState = 'chooseCellBrouillage';
                 }
-                $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, -1);
+
+                $inc = -1;
+
+                if ($this->getScenarioId() == 3 && array_key_exists($selectedFighter->locationArg, $this->RIVER_CROSS_TERRITORIES) && in_array($territoryId, $this->RIVER_CROSS_TERRITORIES[$selectedFighter->locationArg])) {
+                    $inc = -2;
+                }
+                // TODO handle mix with coup fourre
+                $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, $inc);
                 break;
             case MOVE_SUPER:
                 $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);

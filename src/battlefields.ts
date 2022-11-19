@@ -26,7 +26,7 @@ const BATTLEFIELDS = [
   ]),
   new Battlefield(4, [
     new Territory(41, 151, 86, 132, 286, 1),
-    new Territory(45, 0, 0, 472, 222, 5),
+    new Territory(45, 0, 0, 222, 472, 5),
   ]),
   new Battlefield(5, [
     new Territory(51, 0, 0, 176, 252, 1),

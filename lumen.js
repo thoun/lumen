@@ -825,7 +825,7 @@ var BATTLEFIELDS = [
     ]),
     new Battlefield(4, [
         new Territory(41, 151, 86, 132, 286, 1),
-        new Territory(45, 0, 0, 472, 222, 5),
+        new Territory(45, 0, 0, 222, 472, 5),
     ]),
     new Battlefield(5, [
         new Territory(51, 0, 0, 176, 252, 1),
@@ -863,19 +863,21 @@ var ObjectiveDescription = /** @class */ (function () {
     return ObjectiveDescription;
 }());
 var ScenarioInfos = /** @class */ (function () {
-    function ScenarioInfos(battlefields, objectiveTokens, synopsis, specialRules, objectives) {
+    function ScenarioInfos(battlefields, objectiveTokens, title, synopsis, specialRules, objectives, diceLeft) {
         this.battlefields = battlefields;
         this.objectiveTokens = objectiveTokens;
+        this.title = title;
         this.synopsis = synopsis;
         this.specialRules = specialRules;
         this.objectives = objectives;
+        this.diceLeft = diceLeft;
     }
     return ScenarioInfos;
 }());
 var Scenario = /** @class */ (function (_super) {
     __extends(Scenario, _super);
     function Scenario(number) {
-        return _super.call(this, Scenario.getBattlefields(number), Scenario.getObjectiveTokens(number), Scenario.getSynopsis(number), Scenario.getSpecialRules(number), Scenario.getObjectives(number)) || this;
+        return _super.call(this, Scenario.getBattlefields(number), Scenario.getObjectiveTokens(number), Scenario.getTitle(number), Scenario.getSynopsis(number), Scenario.getSpecialRules(number), Scenario.getObjectives(number), Scenario.getDiceLeft(number)) || this;
     }
     Scenario.getBattlefields = function (number) {
         switch (number) {
@@ -899,6 +901,16 @@ var Scenario = /** @class */ (function (_super) {
                     new BattlefieldPosition(6, 0, 0, 180),
                     new BattlefieldPosition(7, 478, 160, 0),
                 ];
+            case 3:
+                return [
+                    new BattlefieldPosition(1, 173, 138, 180),
+                    new BattlefieldPosition(2, 120, -90, 270),
+                    new BattlefieldPosition(3, 731, 559, 90),
+                    new BattlefieldPosition(4, 679, 330, 0),
+                    new BattlefieldPosition(5, 943, 310, 180),
+                    new BattlefieldPosition(6, 450, 382, 270),
+                    new BattlefieldPosition(7, 402, 85, 90),
+                ];
         }
     };
     Scenario.getObjectiveTokens = function (number) {
@@ -910,12 +922,25 @@ var Scenario = /** @class */ (function (_super) {
                 ];
             case 2:
                 return [];
+            case 3:
+                return [
+                    new ObjectiveTokenPosition('A1', 486, 322),
+                    new ObjectiveTokenPosition('A2', 681, 508),
+                ];
+        }
+    };
+    Scenario.getTitle = function (number) {
+        switch (number) {
+            case 1: return _("A : First Contact");
+            case 2: return _("B : La grosse cavalerie"); // TODO
+            case 3: return _("C - UN TERRITOIRE TROP LOIN"); // TODO
         }
     };
     Scenario.getSynopsis = function (number) {
         switch (number) {
             case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
             case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
+            case 3: return _("Quand une zone s’apauvrie en Lumens il est necéssaire de s’aventurer dans des zones souvent inaccessibles."); // TODO
         }
     };
     Scenario.getSpecialRules = function (number) {
@@ -923,6 +948,12 @@ var Scenario = /** @class */ (function (_super) {
             case 1:
             case 2:
                 return [];
+            case 3:
+                return [
+                    _("Traverser la rivière par voie terrestre coûte 2 actions."),
+                    _("On peut voler au dessus de la rivière."),
+                    _("Un jeton poussé dans la rivière est remis dans le sac de son propriétaire"), // TODO
+                ];
         }
     };
     Scenario.getObjectives = function (number) {
@@ -938,6 +969,16 @@ var Scenario = /** @class */ (function (_super) {
                 new ObjectiveDescription('A', DURING_GAME, null, _("Chaque joueur qui réussit à vider son sac gagne 2 jetons Objectifs.")),
                 new ObjectiveDescription('B', END_GAME, null, _("Le joueur qui a le moins d’orphelins gagne 1 jeton Objectif.")),
             ]; // TODO
+            case 3: return [
+                new ObjectiveDescription('A', DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+            ]; // TODO
+        }
+    };
+    Scenario.getDiceLeft = function (number) {
+        switch (number) {
+            case 1: return 700;
+            case 2: return 300;
+            case 3: return 700;
         }
     };
     return Scenario;
@@ -949,12 +990,24 @@ var TableCenter = /** @class */ (function () {
         this.fightersStocks = [];
         this.discoverTilesStocks = [];
         var scenario = game.scenario;
+        if (gamedatas.scenario == 3) {
+            this.addRiver();
+        }
         this.addBattlefields(scenario.battlefields);
         this.addObjectiveTokens(scenario.objectiveTokens);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         gamedatas.fightersOnTerritories.forEach(function (card) { return _this.fightersStocks[card.locationArg].addCard(card, undefined, { visible: !card.played }); });
         gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, { visible: discoverTile.visible }); });
+        this.setMapSize(scenario.battlefields);
     }
+    TableCenter.prototype.addRiver = function () {
+        var _this = this;
+        var map = document.getElementById("map");
+        var river = document.createElement('div');
+        river.id = "river";
+        river.addEventListener('click', function () { return _this.game.territoryClick(0); });
+        map.appendChild(river);
+    };
     TableCenter.prototype.addBattlefields = function (battlefields) {
         var _this = this;
         var map = document.getElementById("map");
@@ -984,9 +1037,16 @@ var TableCenter = /** @class */ (function () {
             territory.id = "territory-".concat(territoryInfos.id);
             territory.dataset.lumens = '' + (territoryInfos.id % 10);
             territory.classList.add('territory');
-            territory.style.setProperty('--x', "".concat(territoryInfos.x, "px"));
-            territory.style.setProperty('--y', "".concat(territoryInfos.y, "px"));
             var angle90 = rotation % 180 == 90;
+            var deltaX = 0;
+            var deltaY = 0;
+            if (angle90) {
+                var diff = (territoryInfos.height - territoryInfos.width) / 2;
+                deltaX = -diff;
+                deltaY = diff;
+            }
+            territory.style.setProperty('--x', "".concat(territoryInfos.x + deltaX, "px"));
+            territory.style.setProperty('--y', "".concat(territoryInfos.y + deltaY, "px"));
             territory.style.setProperty('--width', "".concat(angle90 ? territoryInfos.height : territoryInfos.width, "px"));
             territory.style.setProperty('--height', "".concat(angle90 ? territoryInfos.width : territoryInfos.height, "px"));
             var vertical = territoryInfos.height > territoryInfos.width;
@@ -1084,6 +1144,23 @@ var TableCenter = /** @class */ (function () {
     };
     TableCenter.prototype.setSelectableTerritories = function (territoriesIds) {
         territoriesIds.forEach(function (territoryId) { return document.getElementById("territory-".concat(territoryId)).classList.add('selectable'); });
+    };
+    TableCenter.prototype.setMapSize = function (battlefields) {
+        var maxRight = 0;
+        var maxBottom = 0;
+        battlefields.forEach(function (battlefield) {
+            var right = battlefield.x + 472;
+            var bottom = battlefield.y + 472;
+            if (right > maxRight) {
+                maxRight = right;
+            }
+            if (bottom > maxBottom) {
+                maxBottom = bottom;
+            }
+        });
+        var map = document.getElementById('map');
+        map.style.width = "".concat(maxRight, "px");
+        map.style.height = "".concat(maxBottom, "px");
     };
     return TableCenter;
 }());
@@ -1599,7 +1676,7 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.onPreferenceChange = function (prefId, prefValue) {
         switch (prefId) {
-            case 200:
+            case 201:
                 document.getElementsByTagName('html')[0].dataset.fillingPattern = (prefValue == 2).toString();
                 break;
         }
@@ -1653,14 +1730,21 @@ var Lumen = /** @class */ (function () {
         this.playersTables.push(table);
     };
     Lumen.prototype.setScenarioInformations = function () {
-        document.getElementById("scenario-synopsis").innerHTML = this.scenario.synopsis;
-        document.getElementById("scenario-special-rules").innerHTML = "<div class=\"title\">".concat(_('Special rules'), "</div>").concat(this.scenario.specialRules.length ?
+        var scenarioName = document.getElementById("scenario-name");
+        var scenarioSynopsis = document.getElementById("scenario-synopsis");
+        var scenarioSpecialRules = document.getElementById("scenario-special-rules");
+        var scenarioObjectives = document.getElementById("scenario-objectives");
+        scenarioName.innerHTML = this.scenario.title;
+        scenarioSynopsis.innerHTML = this.scenario.synopsis;
+        scenarioSpecialRules.innerHTML = "<div class=\"title\">".concat(_('Special rules'), "</div>").concat(this.scenario.specialRules.length ?
             "<ul>".concat(this.scenario.specialRules.map(function (text) { return "<li>".concat(text, "</li>"); }).join(''), "</ul>") :
             _('Nothing'));
-        document.getElementById("scenario-objectives").innerHTML = "<ul>".concat(this.scenario.objectives.map(function (description) {
+        scenarioObjectives.innerHTML = "<ul>".concat(this.scenario.objectives.map(function (description) {
             var _a;
             return "<li>\n                <div class=\"objective-description-token\">".concat(description.letter).concat(description.number > 1 ? "<div class=\"number\">x".concat(description.number, "</div>") : "", "</div>\n                <strong>").concat(description.timing, "</strong>\n                <strong>").concat((_a = description.type) !== null && _a !== void 0 ? _a : '', "</strong>\n                ").concat(description.text, "\n            </li>");
         }).join(''), "</ul>");
+        document.getElementById("dice").style.left = "".concat(this.scenario.diceLeft, "px");
+        this.setTooltip(scenarioName.id, scenarioSynopsis.outerHTML + scenarioSpecialRules.outerHTML + scenarioObjectives.outerHTML);
     };
     Lumen.prototype.onCardClick = function (card) {
         var cardDiv = document.getElementById("card-".concat(card.id));

@@ -10,9 +10,11 @@ class ScenarioInfos {
     public constructor(
       public battlefields: BattlefieldPosition[], 
       public objectiveTokens: ObjectiveTokenPosition[],
+      public title: string,
       public synopsis: string,
       public specialRules: string[],
-      public objectives: ObjectiveDescription[],
+      public objectives: ObjectiveDescription[],      
+      public diceLeft: number,
     ) {}
 }
 
@@ -21,9 +23,11 @@ class Scenario extends ScenarioInfos {
     super(
       Scenario.getBattlefields(number),
       Scenario.getObjectiveTokens(number),
+      Scenario.getTitle(number),
       Scenario.getSynopsis(number),
       Scenario.getSpecialRules(number),
-      Scenario.getObjectives(number)
+      Scenario.getObjectives(number),      
+      Scenario.getDiceLeft(number),
     );
   }
 
@@ -49,6 +53,16 @@ class Scenario extends ScenarioInfos {
           new BattlefieldPosition(6, 0, 0, 180),
           new BattlefieldPosition(7, 478, 160, 0),
         ];
+      case 3:
+        return [
+          new BattlefieldPosition(1, 173, 138, 180),
+          new BattlefieldPosition(2, 120, -90, 270),
+          new BattlefieldPosition(3, 731, 559, 90),
+          new BattlefieldPosition(4, 679, 330, 0),
+          new BattlefieldPosition(5, 943, 310, 180),
+          new BattlefieldPosition(6, 450, 382, 270),
+          new BattlefieldPosition(7, 402, 85, 90),
+        ];
     }
   }
 
@@ -61,6 +75,19 @@ class Scenario extends ScenarioInfos {
         ];
       case 2:
         return [];
+      case 3:
+        return [
+          new ObjectiveTokenPosition('A1', 486, 322),
+          new ObjectiveTokenPosition('A2', 681, 508),
+        ];
+    }
+  }
+
+  private static getTitle(number: number): string {
+    switch (number) {
+      case 1: return _("A : First Contact");
+      case 2: return _("B : La grosse cavalerie"); // TODO
+      case 3: return _("C - UN TERRITOIRE TROP LOIN"); // TODO
     }
   }
 
@@ -68,6 +95,7 @@ class Scenario extends ScenarioInfos {
     switch (number) {
       case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
       case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
+      case 3: return _("Quand une zone s’apauvrie en Lumens il est necéssaire de s’aventurer dans des zones souvent inaccessibles."); // TODO
     }
   }
 
@@ -76,6 +104,12 @@ class Scenario extends ScenarioInfos {
       case 1: 
       case 2:
         return [];
+      case 3:
+        return [
+          _("Traverser la rivière par voie terrestre coûte 2 actions."), // TODO
+          _("On peut voler au dessus de la rivière."), // TODO
+          _("Un jeton poussé dans la rivière est remis dans le sac de son propriétaire"), // TODO
+        ];
     }
   }
 
@@ -93,6 +127,17 @@ class Scenario extends ScenarioInfos {
         new ObjectiveDescription('A', DURING_GAME, null, _("Chaque joueur qui réussit à vider son sac gagne 2 jetons Objectifs.")),
         new ObjectiveDescription('B',  END_GAME, null, _("Le joueur qui a le moins d’orphelins gagne 1 jeton Objectif.")),
       ]; // TODO
+      case 3: return [
+        new ObjectiveDescription('A',  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+      ]; // TODO
+    }
+  }
+
+  private static getDiceLeft(number: number): number {
+    switch (number) {
+      case 1: return 700;
+      case 2: return 300;
+      case 3: return 700;
     }
   }
 }

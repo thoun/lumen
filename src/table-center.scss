@@ -16,6 +16,17 @@
     width: 1500px;
     height: 1000px;
 
+    #river {
+        position: absolute;
+        top: 289px;
+        left: 275px;
+        width: 558px;
+        height: 559px;
+        background: url('img/river.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
     .battlefield {
         position: absolute;
         width: 282px;
@@ -35,11 +46,6 @@
                 background-image: url('img/battlefield#{$index}.png');
             }
         }
-
-        // TODO TEMP      
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 10px;
 
         .territory {
             position: absolute;

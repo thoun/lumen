@@ -6,12 +6,25 @@ class TableCenter {
     constructor(private game: LumenGame, gamedatas: LumenGamedatas) {
         const scenario = game.scenario;
 
+        if (gamedatas.scenario == 3) {
+            this.addRiver();
+        }
         this.addBattlefields(scenario.battlefields);
         this.addObjectiveTokens(scenario.objectiveTokens);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         
         gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
         gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, {visible: discoverTile.visible}));
+
+        this.setMapSize(scenario.battlefields);
+    }
+    
+    private addRiver() {
+        const map = document.getElementById(`map`);
+        const river = document.createElement('div');
+        river.id = `river`;
+        river.addEventListener('click', () => this.game.territoryClick(0));
+        map.appendChild(river);
     }
     
     private addBattlefields(battlefields: BattlefieldPosition[]) {
@@ -44,9 +57,16 @@ class TableCenter {
             territory.id = `territory-${territoryInfos.id}`;
             territory.dataset.lumens = ''+(territoryInfos.id % 10);
             territory.classList.add('territory');
-            territory.style.setProperty('--x', `${territoryInfos.x}px`);
-            territory.style.setProperty('--y', `${territoryInfos.y}px`);
             const angle90 = rotation % 180 == 90;
+            let deltaX = 0;
+            let deltaY = 0;
+            if (angle90) {
+                const diff = (territoryInfos.height - territoryInfos.width) / 2;
+                deltaX = -diff;
+                deltaY = diff;
+            }
+            territory.style.setProperty('--x', `${territoryInfos.x + deltaX}px`);
+            territory.style.setProperty('--y', `${territoryInfos.y + deltaY}px`);
             territory.style.setProperty('--width', `${angle90 ? territoryInfos.height : territoryInfos.width}px`);
             territory.style.setProperty('--height', `${angle90 ? territoryInfos.width : territoryInfos.height}px`);
             let vertical = territoryInfos.height > territoryInfos.width;
@@ -162,5 +182,24 @@ class TableCenter {
     
     public setSelectableTerritories(territoriesIds: number[]) {
         territoriesIds.forEach(territoryId => document.getElementById(`territory-${territoryId}`).classList.add('selectable'));
+    }
+    
+    private setMapSize(battlefields: BattlefieldPosition[]) {
+        let maxRight = 0;
+        let maxBottom = 0;
+        battlefields.forEach(battlefield => {
+            const right = battlefield.x + 472;
+            const bottom = battlefield.y + 472;
+            if (right > maxRight) {
+                maxRight = right;
+            }
+            if (bottom > maxBottom) {
+                maxBottom = bottom;
+            }
+        });
+
+        const map = document.getElementById('map');
+        map.style.width = `${maxRight}px`;
+        map.style.height = `${maxBottom}px`;
     }
 }

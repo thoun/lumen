@@ -32,12 +32,16 @@ $game_options = [
         'name' => totranslate('Scenario'),
         'values' => [
             1 => [
-                'name' => totranslate('A : First Contact'),
-                'tmdisplay' => totranslate('A : First Contact'),
+                'name' => totranslate('A - First Contact'),
+                'tmdisplay' => totranslate('A - First Contact'),
             ],
             2 => [
-                'name' => totranslate('B : La grosse cavalerie'), // TODO
-                'tmdisplay' => totranslate('B : La grosse cavalerie'), // TODO
+                'name' => totranslate('B - La grosse cavalerie'), // TODO
+                'tmdisplay' => totranslate('B - La grosse cavalerie'), // TODO
+            ],
+            3 => [
+                'name' => totranslate('C - UN TERRITOIRE TROP LOIN'), // TODO
+                'tmdisplay' => totranslate('C - UN TERRITOIRE TROP LOIN'), // TODO
             ],
         ],
         'default' => 1,
@@ -45,21 +49,12 @@ $game_options = [
 ];
 
 $game_preferences = [
-    200 => [
+    201 => [
         'name' => totranslate('Zone filling'),
         'needReload' => false,
         'values' => [
             1 => [ 'name' => totranslate( 'Color' ) ],
             2 => [ 'name' => totranslate( 'Pattern' ) ],
-        ],
-        'default' => 1,
-    ],
-    201 => [
-        'name' => totranslate('Writing animation'),
-        'needReload' => false,
-        'values' => [
-            1 => [ 'name' => totranslate( 'Enabled' ) ],
-            2 => [ 'name' => totranslate( 'Disabled' ) ],
         ],
         'default' => 1,
     ],
