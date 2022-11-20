@@ -211,6 +211,17 @@ html, .mode_3d #game_play_area_background {
   }
 }
 
+.token-with-letter {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "URW Bernhard Gothic W01 Ultra", sans-serif;
+  font-weight: bold;
+  font-size: 2rem;
+  color: #fff100;
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
+}
+
 #scenario-objectives {
   .objective-description-token {
     position: relative;
@@ -218,14 +229,8 @@ html, .mode_3d #game_play_area_background {
     background-size: auto 100%;
     background-position-x: 0%;
     vertical-align: middle;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
     width: 40px;
     height: 44px;
-    font-weight: bold;
-    font-size: 2rem;
-    color: #fff100;
     margin: 5px;
     margin-right: 10px;
 
@@ -236,6 +241,7 @@ html, .mode_3d #game_play_area_background {
       font-weight: bold;
       font-size: 1rem;
       color: #ec212a;
+      text-shadow: none;
     }
   }
 }

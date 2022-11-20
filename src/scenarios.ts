@@ -35,71 +35,71 @@ class Scenario extends ScenarioInfos {
     switch (number) {
       case 1:
         return [
-          new BattlefieldPosition(1, 300, 0, 180),
-          new BattlefieldPosition(2, 548, 213, 270),
-          new BattlefieldPosition(3, 829, 389, 90),
-          new BattlefieldPosition(4, 36, 21, 0),
-          new BattlefieldPosition(5, 601, 442, 180),
-          new BattlefieldPosition(6, 850, 655, 270),
-          new BattlefieldPosition(7, 89, 250, 90),
+          new BattlefieldPosition(1, 452, 1, 180),
+          new BattlefieldPosition(2, 824, 319, 270),
+          new BattlefieldPosition(3, 1246, 584, 90),
+          new BattlefieldPosition(4, 54, 31, 0),
+          new BattlefieldPosition(5, 903, 662, 180),
+          new BattlefieldPosition(6, 1276, 981, 270),
+          new BattlefieldPosition(7, 133, 375, 90),
         ];
       case 2:
         return [
-          new BattlefieldPosition(1, 692, -88, 270),
-          new BattlefieldPosition(2, 249, 213, 270),
-          new BattlefieldPosition(3, 973, 88, 90),
-          new BattlefieldPosition(4, 744, 140, 180),
-          new BattlefieldPosition(5, 531, 389, 90),
+          new BattlefieldPosition(1, 1037, -133, 270),
+          new BattlefieldPosition(2, 373, 319, 270),
+          new BattlefieldPosition(3, 1459, 132, 90),
+          new BattlefieldPosition(4, 1116, 210, 180),
+          new BattlefieldPosition(5, 796, 583, 90),
           new BattlefieldPosition(6, 0, 0, 180),
-          new BattlefieldPosition(7, 478, 160, 0),
+          new BattlefieldPosition(7, 717, 240, 0),
         ];
       case 3:
         return [
-          new BattlefieldPosition(1, 173, 138, 180),
-          new BattlefieldPosition(2, 120, -90, 270),
-          new BattlefieldPosition(3, 731, 559, 90),
-          new BattlefieldPosition(4, 679, 330, 0),
-          new BattlefieldPosition(5, 943, 310, 180),
-          new BattlefieldPosition(6, 450, 382, 270),
-          new BattlefieldPosition(7, 402, 85, 90),
+          new BattlefieldPosition(1, 259, 207, 180),
+          new BattlefieldPosition(2, 180, -135, 270),
+          new BattlefieldPosition(3, 1096, 838, 90),
+          new BattlefieldPosition(4, 1018, 495, 0),
+          new BattlefieldPosition(5, 1414, 465, 180),
+          new BattlefieldPosition(6, 675, 573, 270),
+          new BattlefieldPosition(7, 601, 128, 90),
         ];
       case 4:
         return [
-          new BattlefieldPosition(1, 559, 596, 180),
-          new BattlefieldPosition(2, 720, -90, 270),
-          new BattlefieldPosition(3, 112, 376, 90),
-          new BattlefieldPosition(4, 59, 148, 0),
-          new BattlefieldPosition(5, 773, 138, 180),
-          new BattlefieldPosition(6, 133, 641, 270),
-          new BattlefieldPosition(7, 788, 543, 90),
+          new BattlefieldPosition(1, 838, 894, 180),
+          new BattlefieldPosition(2, 1080, -135, 270),
+          new BattlefieldPosition(3, 168, 564, 90),
+          new BattlefieldPosition(4, 89, 222, 0),
+          new BattlefieldPosition(5, 1159, 207, 180),
+          new BattlefieldPosition(6, 199, 961, 270),
+          new BattlefieldPosition(7, 1181, 816, 90),
         ];
       case 5:
         return [
-          new BattlefieldPosition(1, 0, 301, 180),
-          new BattlefieldPosition(3, 228, 249, 90),
-          new BattlefieldPosition(4, 690, 212, 270),
-          new BattlefieldPosition(5, 249, 514, 270),
-          new BattlefieldPosition(6, 441, 0, 180),
-          new BattlefieldPosition(7, 477, 461, 0),
+          new BattlefieldPosition(1, 0, 451, 180),
+          new BattlefieldPosition(3, 342, 373, 90),
+          new BattlefieldPosition(4, 1034, 319, 270),
+          new BattlefieldPosition(5, 373, 771, 270),
+          new BattlefieldPosition(6, 661, 0, 180),
+          new BattlefieldPosition(7, 713, 693, 0),
         ];
       case 6:
         return [
-          new BattlefieldPosition(1, 99, 531, 90),
-          new BattlefieldPosition(3, 540, 229, 90),
-          new BattlefieldPosition(4, 560, 495, 270),
-          new BattlefieldPosition(5, 312, 282, 180),
-          new BattlefieldPosition(6, 259, 53, 270),
-          new BattlefieldPosition(7, 487, 0, 0),
+          new BattlefieldPosition(1, 153, 796, 90),
+          new BattlefieldPosition(3, 810, 344, 90),
+          new BattlefieldPosition(4, 840, 742, 270),
+          new BattlefieldPosition(5, 466, 423, 180),
+          new BattlefieldPosition(6, 388, 79, 270),
+          new BattlefieldPosition(7, 731, 0, 0),
         ];
       case 7:
         return [
-          new BattlefieldPosition(1, 228, 551, 90),
-          new BattlefieldPosition(2, 669, 249, 90),
-          new BattlefieldPosition(3, 441, 302, 180),
-          new BattlefieldPosition(4, 1131, 212, 270),
-          new BattlefieldPosition(5, 882, 0, 180),
-          new BattlefieldPosition(6, 0, 604, 180),
-          new BattlefieldPosition(7, 1360, 159, 0),
+          new BattlefieldPosition(1, 342, 826, 90),
+          new BattlefieldPosition(2, 1004, 375, 90),
+          new BattlefieldPosition(3, 661, 453, 180),
+          new BattlefieldPosition(4, 1697, 319, 270),
+          new BattlefieldPosition(5, 1324, 1, 180),
+          new BattlefieldPosition(6, 0, 906, 180),
+          new BattlefieldPosition(7, 2041, 240, 0),
         ];
     }
   }
@@ -108,32 +108,32 @@ class Scenario extends ScenarioInfos {
     switch (number) {
       case 1:
         return [
-          new ObjectiveTokenPosition('B1', 200, 490),
-          new ObjectiveTokenPosition('B2', 1035, 800),
+          new ObjectiveTokenPosition('B1', 286, 772),
+          new ObjectiveTokenPosition('B2', 1570, 1205),
         ];
       case 2:
         return [];
       case 3:
         return [
-          new ObjectiveTokenPosition('A1', 486, 322),
-          new ObjectiveTokenPosition('A2', 681, 508),
+          new ObjectiveTokenPosition('A1', 746, 530),
+          new ObjectiveTokenPosition('A2', 1042, 782),
         ];
       case 4:
         return [];
       case 5:
         return [
-          new ObjectiveTokenPosition('A1', 163, 699),
-          new ObjectiveTokenPosition('A2', 603, 508),
-          new ObjectiveTokenPosition('B', 558, 0),
+          new ObjectiveTokenPosition('A1', 273, 1088),
+          new ObjectiveTokenPosition('A2', 920, 780),
+          new ObjectiveTokenPosition('B', 890, 24),
         ];
       case 6:
         return [
-          new ObjectiveTokenPosition('A1', 407, 639),
-          new ObjectiveTokenPosition('A2', 525, 266),
+          new ObjectiveTokenPosition('A1', 654, 988),
+          new ObjectiveTokenPosition('A2', 824, 418),
         ];
       case 7:
         return [
-          new ObjectiveTokenPosition('A', 906, 148),
+          new ObjectiveTokenPosition('A', 1382, 256),
         ];
     }
   }
@@ -232,12 +232,12 @@ class Scenario extends ScenarioInfos {
 
   private static getDiceLeft(number: number): number {
     switch (number) {
-      case 1: return 700;
-      case 2: return 300;
-      case 3: return 700;
-      case 4: return 300;
-      case 5: case 6: return 100;
-      case 7: return 300;
+      case 1: return 1050;
+      case 2: return 450;
+      case 3: return 1050;
+      case 4: return 450;
+      case 5: case 6: return 150;
+      case 7: return 450;
     }
   }
 }

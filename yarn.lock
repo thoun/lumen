@@ -10,9 +10,9 @@ anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-bga-cards@thoun/bga-cards:
+bga-cards@thoun/bga-cards#main:
   version "1.0.0"
-  resolved "https://codeload.github.com/thoun/bga-cards/tar.gz/33bdada0c6eeabc6749452c7775c229a14a15966"
+  resolved "https://codeload.github.com/thoun/bga-cards/tar.gz/bbdbdfce5a578b86d1585c6266461bd941e37453"
 
 binary-extensions@^2.0.0:
   version "2.2.0"

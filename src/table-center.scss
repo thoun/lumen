@@ -12,16 +12,13 @@
 
 #map {
     position: relative;
-    // TODO TEMP
-    width: 1500px;
-    height: 1000px;
 
     #river {
         position: absolute;
-        top: 289px;
-        left: 275px;
-        width: 558px;
-        height: 559px;
+        top: 433px;
+        left: 412px;
+        width: 837px;
+        height: 838px;
         background: url('img/river.svg');
         background-size: contain;
         background-repeat: no-repeat;
@@ -29,15 +26,15 @@
 
     .battlefield {
         position: absolute;
-        width: 282px;
-        height: 472px;
+        width: 423px;
+        height: 708px;
         transform-origin: center center;
         transform: translate(var(--x), var(--y)) rotate(var(--rotation));
 
         .background {
             position: absolute;
-            width: 282px;
-            height: 472px;
+            width: 423px;
+            height: 708px;
             background-position: center center;
             background-repeat: no-repeat;
         }
@@ -88,6 +85,10 @@
 
     .objective-token {
         position: absolute;
+
+        &.token-with-letter {
+            font-size: 5rem;
+        }
     }
 
     #initiative-marker {

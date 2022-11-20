@@ -495,7 +495,7 @@ class Lumen implements LumenGame {
             _('Nothing')}`;
         scenarioObjectives.innerHTML = `<ul>${this.scenario.objectives.map(description => 
             `<li>
-                <div class="objective-description-token">${description.letter}${description.number > 1 ? `<div class="number">x${description.number}</div>` : ``}</div>
+                <div class="objective-description-token token-with-letter">${description.letter}${description.number > 1 ? `<div class="number">x${description.number}</div>` : ``}</div>
                 <strong>${description.timing}</strong>
                 <strong>${description.type ?? ''}</strong>
                 ${description.text}

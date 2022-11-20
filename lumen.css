@@ -544,6 +544,14 @@ body > .card {
   margin-left: calc(-1 * var(--card-overlap));
 }
 
+.card-stock.manual-position-stock {
+  position: relative;
+}
+
+.card-stock.manual-position-stock .card {
+  position: absolute;
+}
+
 .card-stock.deck {
   position: relative;
   width: var(--width);
@@ -603,30 +611,28 @@ body > .card {
 
 #map {
   position: relative;
-  width: 1500px;
-  height: 1000px;
 }
 #map #river {
   position: absolute;
-  top: 289px;
-  left: 275px;
-  width: 558px;
-  height: 559px;
+  top: 433px;
+  left: 412px;
+  width: 837px;
+  height: 838px;
   background: url("img/river.svg");
   background-size: contain;
   background-repeat: no-repeat;
 }
 #map .battlefield {
   position: absolute;
-  width: 282px;
-  height: 472px;
+  width: 423px;
+  height: 708px;
   transform-origin: center center;
   transform: translate(var(--x), var(--y)) rotate(var(--rotation));
 }
 #map .battlefield .background {
   position: absolute;
-  width: 282px;
-  height: 472px;
+  width: 423px;
+  height: 708px;
   background-position: center center;
   background-repeat: no-repeat;
 }
@@ -685,6 +691,9 @@ body > .card {
 }
 #map .objective-token {
   position: absolute;
+}
+#map .objective-token.token-with-letter {
+  font-size: 5rem;
 }
 #map #initiative-marker {
   background: url("img/initiative-marker.png");
@@ -1421,20 +1430,25 @@ html, .mode_3d #game_play_area_background {
   margin-bottom: 5px;
 }
 
+.token-with-letter {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "URW Bernhard Gothic W01 Ultra", sans-serif;
+  font-weight: bold;
+  font-size: 2rem;
+  color: #fff100;
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
+}
+
 #scenario-objectives .objective-description-token {
   position: relative;
   background: url("img/objective-tokens.png");
   background-size: auto 100%;
   background-position-x: 0%;
   vertical-align: middle;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
   width: 40px;
   height: 44px;
-  font-weight: bold;
-  font-size: 2rem;
-  color: #fff100;
   margin: 5px;
   margin-right: 10px;
 }
@@ -1445,4 +1459,5 @@ html, .mode_3d #game_play_area_background {
   font-weight: bold;
   font-size: 1rem;
   color: #ec212a;
+  text-shadow: none;
 }

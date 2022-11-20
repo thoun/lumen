@@ -36,12 +36,6 @@ class TableCenter {
             battlefield.classList.add('battlefield');
             battlefield.style.setProperty('--x', `${battlefieldInfos.x}px`);
             battlefield.style.setProperty('--y', `${battlefieldInfos.y}px`);
-
-            // TODO TEMP
-            if (!battlefieldInfos.x && !battlefieldInfos.y) {
-                battlefield.style.display = 'none';
-            }
-
             battlefield.style.setProperty('--rotation', `${battlefieldInfos.rotation}deg`);
             const background = document.createElement('div');
             background.classList.add('background');
@@ -99,9 +93,10 @@ class TableCenter {
         objectiveTokens.forEach(objectiveTokenInfos => {
             const objectiveToken = document.createElement('div');
             objectiveToken.id = `objective-token-${objectiveTokenInfos.letter}`;
-            objectiveToken.classList.add('objective-token');
+            objectiveToken.classList.add('objective-token', 'token-with-letter');
             objectiveToken.style.left = `${objectiveTokenInfos.x}px`;
             objectiveToken.style.top = `${objectiveTokenInfos.y}px`;
+            objectiveToken.innerHTML = objectiveTokenInfos.letter.substring(0, 1);
             map.appendChild(objectiveToken);
         });
     }
@@ -188,8 +183,8 @@ class TableCenter {
         let maxRight = 0;
         let maxBottom = 0;
         battlefields.forEach(battlefield => {
-            const right = battlefield.x + 472;
-            const bottom = battlefield.y + 472;
+            const right = battlefield.x + 708;
+            const bottom = battlefield.y + 708;
             if (right > maxRight) {
                 maxRight = right;
             }

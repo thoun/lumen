@@ -14,33 +14,33 @@ class BattlefieldPosition {
 const BATTLEFIELDS = [
   null,
   new Battlefield(1, [
-    new Territory(11, 16, 0, 202, 194, 1),
-    new Territory(15, 0, 100, 272, 358, 5),
+    new Territory(11, 24, 0, 303, 291, 1),
+    new Territory(15, 0, 150, 408, 537, 5),
   ]),
   new Battlefield(2, [
-    new Territory(27, 0, 0, 282, 472, 7),
+    new Territory(27, 0, 0, 423, 708, 7),
   ]),
   new Battlefield(3, [
-    new Territory(31, 55, 220, 225, 252, 1),
-    new Territory(33, 0, 0, 278, 255, 3),
+    new Territory(31, 82, 330, 337, 378, 1),
+    new Territory(33, 0, 0, 417, 382, 3),
   ]),
   new Battlefield(4, [
-    new Territory(41, 151, 86, 132, 286, 1),
-    new Territory(45, 0, 0, 222, 472, 5),
+    new Territory(41, 226, 129, 198, 384, 1),
+    new Territory(45, 0, 0, 333, 708, 5),
   ]),
   new Battlefield(5, [
-    new Territory(51, 0, 0, 176, 252, 1),
-    new Territory(53, 148, 85, 130, 185, 3),
-    new Territory(54, 55, 252, 226, 220, 3),
+    new Territory(51, 0, 0, 264, 378, 1),
+    new Territory(53, 222, 127, 195, 277, 3),
+    new Territory(54, 82, 378, 339, 330, 3),
   ]),
   new Battlefield(6, [
-    new Territory(61, 55, 282, 146, 190, 1),
-    new Territory(63, 0, 0, 150, 178, 3),
-    new Territory(65, 44, 86, 237, 295, 5),
+    new Territory(61, 82, 423, 219, 285, 1),
+    new Territory(63, 0, 0, 225, 267, 3),
+    new Territory(65, 66, 129, 355, 442, 5),
   ]),
   new Battlefield(6, [
-    new Territory(71, 53, 226, 206, 172, 1),
-    new Territory(73, 0, 0, 211, 263, 3),
-    new Territory(75, 80, 8, 202, 464, 5),
+    new Territory(71, 79, 339, 309, 258, 1),
+    new Territory(73, 0, 0, 316, 394, 3),
+    new Territory(75, 120, 12, 303, 696, 5),
   ]),
 ];
