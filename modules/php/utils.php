@@ -337,7 +337,7 @@ trait UtilTrait {
         $slot = $this->SLOTS_BY_CHECKS[$checks];
 
         if ($slot > 0) {
-            $this->cards->pickCardForLocation('bag'.$playerId, 'highCommand'.$playerId, $slot); // TODO check translation
+            $this->cards->pickCardForLocation('bag0', 'highCommand'.$playerId, $slot); // TODO check translation
             $card = $this->getCardsByLocation('highCommand'.$playerId, $slot)[0];
             self::DbQuery("update card set player_id = $playerId WHERE card_id=$card->id");
             $card->playerId = $playerId;

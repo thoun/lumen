@@ -393,13 +393,13 @@
   border-radius: 40%;
 }
 .card.discover-tile .card-sides .card-side.front[data-type="1"][data-sub-type="3"] {
-  background-position-x: 0%;
-}
-.card.discover-tile .card-sides .card-side.front[data-type="1"][data-sub-type="4"] {
   background-position-x: 12.5%;
 }
-.card.discover-tile .card-sides .card-side.front[data-type="1"][data-sub-type="5"] {
+.card.discover-tile .card-sides .card-side.front[data-type="1"][data-sub-type="4"] {
   background-position-x: 25%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="1"][data-sub-type="5"] {
+  background-position-x: 37.5%;
 }
 .card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="1"] {
   background-position-x: 50%;
@@ -628,6 +628,7 @@ body > .card {
   height: 708px;
   transform-origin: center center;
   transform: translate(var(--x), var(--y)) rotate(var(--rotation));
+  pointer-events: none;
 }
 #map .battlefield .background {
   position: absolute;
@@ -635,6 +636,7 @@ body > .card {
   height: 708px;
   background-position: center center;
   background-repeat: no-repeat;
+  pointer-events: none;
 }
 #map .battlefield[data-id="1"] .background {
   background-image: url("img/battlefield1.png");
@@ -670,6 +672,7 @@ body > .card {
   align-items: center;
   gap: 10px;
   z-index: 2;
+  pointer-events: all;
   /*&[data-lumens="1"] {
       background: #FFFFFF88;
   }

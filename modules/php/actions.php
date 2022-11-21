@@ -359,16 +359,20 @@ trait ActionTrait {
             throw new BgaUserException("Invalid selection size");
         }
         $fighters = [];
+        $possibleTerritoryFightersIds = array_map(fn($fighter) => $fighter->id, $args['possibleTerritoryFighters']);
         foreach($ids as $id) {
-            if (!in_array($id, $args['possibleTerritoryFighters'])) {
+            if (!in_array($id, $possibleTerritoryFightersIds)) {
                 throw new BgaUserException("Invalid fighter");
             }
             $fighters[] = $this->getCardById($id);
         }
         $fighter = $fighters[0];
 
+        $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+        $selectedFighter = $this->getCardById($selectedFighterId);
+
         $nextState = 'nextMove';
-        switch ($fighter->power) {
+        switch ($selectedFighter->power) {
             case POWER_PUSHER:                 
                 $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $fighter->id);
                 $nextState = 'chooseTerritory';

@@ -30,6 +30,7 @@
         height: 708px;
         transform-origin: center center;
         transform: translate(var(--x), var(--y)) rotate(var(--rotation));
+        pointer-events: none;
 
         .background {
             position: absolute;
@@ -37,6 +38,7 @@
             height: 708px;
             background-position: center center;
             background-repeat: no-repeat;
+            pointer-events: none;
         }
         @for $index from 1 through 7 {
             &[data-id="#{$index}"] .background {
@@ -57,6 +59,7 @@
             align-items: center;
             gap: 10px;
             z-index: 2;
+            pointer-events: all;
 
             &[data-vertical="true"] {
                 flex-direction: column;

@@ -67,7 +67,7 @@ class PlayerTable {
             div.id = `player-table-${this.playerId}-circle${circle.circleId}`;
             div.dataset.circle = `${circle.circleId}`;
             div.classList.add('circle');
-            div.innerHTML = `${circle.value ?? ''}`;
+            div.innerHTML = `${circle.value ? (circle.value === -1 ? 'X' /* TODO Brouillage*/ : circle.value) : ''}`;
             document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
             div.addEventListener('click', () => this.game.cellClick(circle.circleId));
         });

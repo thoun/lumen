@@ -1336,12 +1336,11 @@ var PlayerTable = /** @class */ (function () {
             });
         });
         player.circles.forEach(function (circle) {
-            var _a;
             var div = document.createElement('div');
             div.id = "player-table-".concat(_this.playerId, "-circle").concat(circle.circleId);
             div.dataset.circle = "".concat(circle.circleId);
             div.classList.add('circle');
-            div.innerHTML = "".concat((_a = circle.value) !== null && _a !== void 0 ? _a : '');
+            div.innerHTML = "".concat(circle.value ? (circle.value === -1 ? 'X' /* TODO Brouillage*/ : circle.value) : '');
             document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
             div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
         });

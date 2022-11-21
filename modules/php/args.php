@@ -126,7 +126,7 @@ trait ArgsTrait {
                 $territoryFighters = $this->getCardsByLocation('territory', null, $playerId);
                 $possibleTerritoryFighters = $territoryFighters;
 
-                $possibleFightersToActivate = array_values(array_filter($territoryFighters, fn($fighter) => !$fighter->played));
+                $possibleFightersToActivate = array_values(array_filter($territoryFighters, fn($fighter) => !$fighter->played && $fighter->power !== null && $fighter->power !== POWER_BAVEUX));
                 $scenarioId = $this->getScenarioId();
                 switch ($scenarioId) {
                     case 5:
@@ -156,6 +156,7 @@ trait ArgsTrait {
                 $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
                 $selectedFighter = $this->getCardById($selectedFighterId);
                 $possibleTerritoryFighters = $this->getCardsByLocation('territory', $selectedFighter->locationArg);
+                $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->id  != $selectedFighter->id));
                 break;
             case MOVE_KILL:
                 $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
