@@ -37,9 +37,14 @@ class TableCenter {
             battlefield.style.setProperty('--x', `${battlefieldInfos.x}px`);
             battlefield.style.setProperty('--y', `${battlefieldInfos.y}px`);
             battlefield.style.setProperty('--rotation', `${battlefieldInfos.rotation}deg`);
+
             const background = document.createElement('div');
-            background.classList.add('background');
-            battlefield.appendChild(background);
+            background.dataset.id = `${battlefieldInfos.battlefieldId}`;
+            background.classList.add('battlefield-background');
+            background.style.setProperty('--x', `${battlefieldInfos.x}px`);
+            background.style.setProperty('--y', `${battlefieldInfos.y}px`);
+            background.style.setProperty('--rotation', `${battlefieldInfos.rotation}deg`);
+            map.appendChild(background);
             map.appendChild(battlefield);
             this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield, battlefieldInfos.rotation);
         });
@@ -75,6 +80,7 @@ class TableCenter {
             battlefield.appendChild(territory);
 
             const territoryMask = document.createElement('div');
+            territoryMask.id = `territory-mask-${territoryInfos.id}`;
             territoryMask.dataset.id = ''+territoryInfos.id;
             territoryMask.classList.add('territory-mask');
             battlefield.appendChild(territoryMask);
@@ -181,7 +187,7 @@ class TableCenter {
     }
     
     public setSelectableTerritories(territoriesIds: number[]) {
-        territoriesIds.forEach(territoryId => document.getElementById(`territory-${territoryId}`).classList.add('selectable'));
+        territoriesIds.forEach(territoryId => document.getElementById(`territory-mask-${territoryId}`).classList.add('selectable'));
     }
     
     private setMapSize(battlefields: BattlefieldPosition[]) {

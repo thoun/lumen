@@ -622,7 +622,7 @@ body > .card {
   background-size: contain;
   background-repeat: no-repeat;
 }
-#map .battlefield {
+#map .battlefield, #map .battlefield-background {
   position: absolute;
   width: 423px;
   height: 708px;
@@ -630,34 +630,33 @@ body > .card {
   transform: translate(var(--x), var(--y)) rotate(var(--rotation));
   pointer-events: none;
 }
-#map .battlefield .background {
-  position: absolute;
-  width: 423px;
-  height: 708px;
+#map .battlefield-background {
   background-position: center center;
   background-repeat: no-repeat;
-  pointer-events: none;
 }
-#map .battlefield[data-id="1"] .background {
+#map .battlefield-background[data-id="1"] {
   background-image: url("img/battlefield1.png");
 }
-#map .battlefield[data-id="2"] .background {
+#map .battlefield-background[data-id="2"] {
   background-image: url("img/battlefield2.png");
 }
-#map .battlefield[data-id="3"] .background {
+#map .battlefield-background[data-id="3"] {
   background-image: url("img/battlefield3.png");
 }
-#map .battlefield[data-id="4"] .background {
+#map .battlefield-background[data-id="4"] {
   background-image: url("img/battlefield4.png");
 }
-#map .battlefield[data-id="5"] .background {
+#map .battlefield-background[data-id="5"] {
   background-image: url("img/battlefield5.png");
 }
-#map .battlefield[data-id="6"] .background {
+#map .battlefield-background[data-id="6"] {
   background-image: url("img/battlefield6.png");
 }
-#map .battlefield[data-id="7"] .background {
+#map .battlefield-background[data-id="7"] {
   background-image: url("img/battlefield7.png");
+}
+#map .battlefield {
+  z-index: 2;
 }
 #map .battlefield .territory {
   position: absolute;
@@ -701,6 +700,9 @@ body > .card {
   bottom: 0;
   right: 0;
   pointer-events: all;
+}
+#map .battlefield .territory-mask.selectable {
+  animation: selectable-territory-animation 1s alternate infinite ease-in-out;
 }
 #map .battlefield .territory-mask[data-id="11"] {
   clip-path: polygon(43% 2%, 30% 5%, 21% 1%, 9% 1%, 6% 7%, 17% 18%, 29% 35%, 33% 36%, 44% 36%, 64% 42%, 67% 43%, 82% 25%, 80% 23%, 79% 20%, 74% 19%, 55% 24%, 47% 24%, 41% 21%, 42% 15%, 48% 9%, 47% 5%);
@@ -781,6 +783,14 @@ body > .card {
   height: 30px;
 }
 
+@keyframes selectable-territory-animation {
+  0% {
+    background: rgba(255, 255, 255, 0);
+  }
+  100% {
+    background: rgba(255, 255, 255, 0.7);
+  }
+}
 .player-board {
   color: white;
 }

@@ -24,28 +24,29 @@
         background-repeat: no-repeat;
     }
 
-    .battlefield {
+    .battlefield, .battlefield-background {
         position: absolute;
         width: 423px;
         height: 708px;
         transform-origin: center center;
         transform: translate(var(--x), var(--y)) rotate(var(--rotation));
         pointer-events: none;
+    }
 
-        .background {
-            position: absolute;
-            width: 423px;
-            height: 708px;
-            background-position: center center;
-            background-repeat: no-repeat;
-            pointer-events: none;
-        }
+    .battlefield-background {
+        background-position: center center;
+        background-repeat: no-repeat;
+
         @for $index from 1 through 7 {
-            &[data-id="#{$index}"] .background {
+            &[data-id="#{$index}"] {
                 background-image: url('img/battlefield#{$index}.png');
             }
         }
+    }
 
+    .battlefield {
+        z-index: 2;
+        
         .territory {
             position: absolute;
             transform-origin: center center;
@@ -95,6 +96,10 @@
             bottom: 0;
             right: 0;
             pointer-events: all;
+
+            &.selectable {
+                animation: selectable-territory-animation 1s alternate infinite ease-in-out;
+            }
 
             &[data-id="11"] {
                 clip-path: polygon(43% 2%, 30% 5%, 21% 1%, 9% 1%, 6% 7%, 17% 18%, 29% 35%, 33% 36%, 44% 36%, 64% 42%, 67% 43%, 82% 25%, 80% 23%, 79% 20%, 74% 19%, 55% 24%, 47% 24%, 41% 21%, 42% 15%, 48% 9%, 47% 5%);
@@ -182,3 +187,13 @@
         }
     }
 }
+
+
+@keyframes selectable-territory-animation {
+    0% { 
+        background: rgba(255, 255, 255, 0);
+    }
+    100% { 
+        background: rgba(255, 255, 255, 0.7);
+    }
+  }

@@ -253,7 +253,7 @@ class Lumen implements LumenGame {
 
     private onLeavingChooseTerritory() {
         document.querySelectorAll('.fighter.selectable').forEach(elem => elem.classList.remove('selectable'));
-        document.querySelectorAll('.territory.selectable').forEach(elem => elem.classList.remove('selectable'));
+        document.querySelectorAll('.territory-mask.selectable').forEach(elem => elem.classList.remove('selectable'));
     }
 
     private onLeavingChooseCellLink() {

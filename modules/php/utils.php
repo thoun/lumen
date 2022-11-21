@@ -472,7 +472,7 @@ trait UtilTrait {
 
         foreach ($circle->neighbours as $neighbourId) {
             $neighbour = $this->array_find($circles, fn($c) => $c->circleId == $neighbourId);
-            if ($neighbour->value == $value - $direction) {
+            if ($neighbour->value === $value - $direction) {
                 $linkedCirclesIds = [];
                 foreach ($links as $link) {
                     if ($neighbour->circleId == $link->index1) {

@@ -1160,8 +1160,12 @@ var TableCenter = /** @class */ (function () {
             battlefield.style.setProperty('--y', "".concat(battlefieldInfos.y, "px"));
             battlefield.style.setProperty('--rotation', "".concat(battlefieldInfos.rotation, "deg"));
             var background = document.createElement('div');
-            background.classList.add('background');
-            battlefield.appendChild(background);
+            background.dataset.id = "".concat(battlefieldInfos.battlefieldId);
+            background.classList.add('battlefield-background');
+            background.style.setProperty('--x', "".concat(battlefieldInfos.x, "px"));
+            background.style.setProperty('--y', "".concat(battlefieldInfos.y, "px"));
+            background.style.setProperty('--rotation', "".concat(battlefieldInfos.rotation, "deg"));
+            map.appendChild(background);
             map.appendChild(battlefield);
             _this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield, battlefieldInfos.rotation);
         });
@@ -1193,6 +1197,7 @@ var TableCenter = /** @class */ (function () {
             territory.innerHTML = "\n            <div id=\"territory-".concat(territoryInfos.id, "-fighters\"></div>\n            <div id=\"territory-").concat(territoryInfos.id, "-discover-tiles\"></div>\n            ");
             battlefield.appendChild(territory);
             var territoryMask = document.createElement('div');
+            territoryMask.id = "territory-mask-".concat(territoryInfos.id);
             territoryMask.dataset.id = '' + territoryInfos.id;
             territoryMask.classList.add('territory-mask');
             battlefield.appendChild(territoryMask);
@@ -1284,7 +1289,7 @@ var TableCenter = /** @class */ (function () {
         });
     };
     TableCenter.prototype.setSelectableTerritories = function (territoriesIds) {
-        territoriesIds.forEach(function (territoryId) { return document.getElementById("territory-".concat(territoryId)).classList.add('selectable'); });
+        territoriesIds.forEach(function (territoryId) { return document.getElementById("territory-mask-".concat(territoryId)).classList.add('selectable'); });
     };
     TableCenter.prototype.setMapSize = function (battlefields) {
         var maxRight = 0;
@@ -1678,7 +1683,7 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.onLeavingChooseTerritory = function () {
         document.querySelectorAll('.fighter.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
-        document.querySelectorAll('.territory.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
+        document.querySelectorAll('.territory-mask.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
     };
     Lumen.prototype.onLeavingChooseCellLink = function () {
         document.querySelectorAll('.link.selectable').forEach(function (elem) { return elem.remove(); });
