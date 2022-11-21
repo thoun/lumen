@@ -73,7 +73,12 @@ class TableCenter {
             <div id="territory-${territoryInfos.id}-discover-tiles"></div>
             `;
             battlefield.appendChild(territory);
-            territory.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
+
+            const territoryMask = document.createElement('div');
+            territoryMask.dataset.id = ''+territoryInfos.id;
+            territoryMask.classList.add('territory-mask');
+            battlefield.appendChild(territoryMask);
+            territoryMask.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
             this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
             this.fightersStocks[territoryInfos.id].onCardClick = card => {

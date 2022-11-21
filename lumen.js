@@ -1192,7 +1192,11 @@ var TableCenter = /** @class */ (function () {
             territory.dataset.vertical = vertical.toString();
             territory.innerHTML = "\n            <div id=\"territory-".concat(territoryInfos.id, "-fighters\"></div>\n            <div id=\"territory-").concat(territoryInfos.id, "-discover-tiles\"></div>\n            ");
             battlefield.appendChild(territory);
-            territory.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
+            var territoryMask = document.createElement('div');
+            territoryMask.dataset.id = '' + territoryInfos.id;
+            territoryMask.classList.add('territory-mask');
+            battlefield.appendChild(territoryMask);
+            territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.fightersStocks[territoryInfos.id] = new LineStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")));
             _this.fightersStocks[territoryInfos.id].onCardClick = function (card) {
                 var _a;
