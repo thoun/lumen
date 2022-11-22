@@ -1365,8 +1365,9 @@ var TableCenter = /** @class */ (function () {
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.direction, territoryInfos.curve, rotation, "territory-".concat(territoryInfos.id, "-discover-tiles"));
             _this.territoriesStocks[territoryInfos.id].onCardClick = function (card) {
-                var _a;
-                var canClick = (_a = _this.game.gamedatas.gamestate.args.possibleTerritoryFighters) === null || _a === void 0 ? void 0 : _a.some(function (fighter) { return fighter.id == card.id; });
+                var selectableCards = _this.game.getChooseFighterSelectableCards();
+                var canClick = selectableCards === null || selectableCards === void 0 ? void 0 : selectableCards.some(function (fighter) { return fighter.id == card.id; });
+                console.log(selectableCards, card, canClick);
                 if (canClick) {
                     _this.territoryFighterClick(card);
                 }
@@ -1426,8 +1427,9 @@ var TableCenter = /** @class */ (function () {
     TableCenter.prototype.createFighterChoice = function (card) {
         var _this = this;
         var element = this.game.cardsManager.getCardElement(card);
+        var canMove = this.game.gamedatas.gamestate.args.possibleFightersToMove.some(function (moveFighter) { return moveFighter.id == card.id; });
         var canActivate = this.game.gamedatas.gamestate.args.possibleFightersToActivate.some(function (activateFighter) { return activateFighter.id == card.id; });
-        dojo.place("<div id=\"fighter-choice\">\n            <button id=\"fighter-choice-move\">".concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\" ").concat(canActivate ? '' : ' disabled="disabled"', ">").concat(_('Activate'), "</button>\n        </div>"), element);
+        dojo.place("<div id=\"fighter-choice\">\n            <button id=\"fighter-choice-move\" ".concat(canMove ? '' : ' disabled="disabled"', ">").concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\" ").concat(canActivate ? '' : ' disabled="disabled"', ">").concat(_('Activate'), "</button>\n        </div>"), element);
         document.getElementById("fighter-choice-move").addEventListener('click', function () {
             _this.game.moveFighter(card.id);
             _this.cancelFighterChoice();
@@ -1779,8 +1781,15 @@ var Lumen = /** @class */ (function () {
             (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setPossibleCellLinks(args.possibleLinkCirclesIds, args.cellId);
         }
     };
+    Lumen.prototype.getChooseFighterSelectableCards = function (args) {
+        if (this.gamedatas.gamestate.name !== 'chooseFighter') {
+            return [];
+        }
+        args = args !== null && args !== void 0 ? args : this.gamedatas.gamestate.args;
+        return args.move ?
+            args.possibleTerritoryFighters : __spreadArray(__spreadArray([], args.possibleFightersToMove, true), args.possibleFightersToActivate, true);
+    };
     Lumen.prototype.onEnteringChooseFighter = function (args) {
-        var _a, _b;
         if (!args.move) {
             if (!args.remainingMoves) {
                 this.setGamestateDescription('OnlyPlay');
@@ -1807,16 +1816,20 @@ var Lumen = /** @class */ (function () {
         else {
             this.setGamestateDescription('' + args.move);
         }
-        var selectableCards = __spreadArray(__spreadArray(__spreadArray([], ((_a = args.possibleFightersToPlace) !== null && _a !== void 0 ? _a : []), true), ((_b = args.possibleFightersToActivate) !== null && _b !== void 0 ? _b : []), true), args.possibleTerritoryFighters, true);
-        this.getCurrentPlayerTable().setSelectableCards(selectableCards);
-        this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+        if (this.isCurrentPlayerActive()) {
+            var selectableCards = this.getChooseFighterSelectableCards(args);
+            this.getCurrentPlayerTable().setSelectableCards(selectableCards);
+            this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+        }
     };
     Lumen.prototype.onEnteringChooseTerritory = function (args) {
         this.setGamestateDescription('' + args.move);
         if (args.selectedFighter) {
             this.cardsManager.getCardElement(args.selectedFighter).classList.add('selected');
         }
-        this.tableCenter.setSelectableTerritories(args.territoriesIds);
+        if (this.isCurrentPlayerActive()) {
+            this.tableCenter.setSelectableTerritories(args.territoriesIds);
+        }
     };
     Lumen.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
@@ -2443,13 +2456,14 @@ var Lumen = /** @class */ (function () {
         var _this = this;
         notif.args.fighters.forEach(function (card) {
             var element = _this.cardsManager.getCardElement(card);
+            var stock = _this.cardsManager.getCardStock(card);
             var fromElement = element.parentElement;
             var bag = document.getElementById("bag-".concat(card.type == 1 ? card.playerId : 0));
             bag.appendChild(element);
             stockSlideAnimation({
                 element: element,
                 fromElement: fromElement
-            });
+            }).then(function () { return stock.removeCard(card); });
         });
     };
     Lumen.prototype.setFightersSide = function (fighters, side) {
@@ -2495,6 +2509,9 @@ var Lumen = /** @class */ (function () {
                 }
                 if (args.operation && args.operation[0] != '<') {
                     args.operation = "<div class=\"operation-icon\" data-type=\"".concat(args.operation, "\"></div>");
+                }
+                if (args.discover_tile == '' && args.discoverTile) {
+                    args.discover_tile = "<div class=\"discover-tile\" data-type=\"".concat(args.discoverTile.type, "\" data-sub-type=\"").concat(args.discoverTile.subType, "\"></div>");
                 }
                 /*['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(field => {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {

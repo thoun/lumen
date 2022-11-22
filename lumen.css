@@ -242,7 +242,7 @@
   background-position-y: 0%;
 }
 .card.fighter .card-sides .card-side.back {
-  background-position-y: 0%;
+  background-position-y: 100%;
 }
 .card.fighter[data-sub-type="1"][data-color=f28700] .card-side {
   background-image: url("img/cards-day.png");
@@ -382,8 +382,6 @@
   width: 100px;
   height: 100px;
   margin: 5px;
-  border-radius: 10px;
-  text-align: center;
   border-radius: 40%;
 }
 .card.discover-tile .card-sides .card-side {
@@ -1475,6 +1473,41 @@ html, .mode_3d #game_play_area_background {
   height: 20px;
   margin-left: 2px;
   margin-right: 2px;
+}
+.log .discover-tile, .gamelogreview .discover-tile {
+  display: inline-block;
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  border-radius: 40%;
+  vertical-align: middle;
+  background: url("img/discover-tiles.png");
+  background-size: auto 100%;
+}
+.log .discover-tile[data-type="1"][data-sub-type="3"], .gamelogreview .discover-tile[data-type="1"][data-sub-type="3"] {
+  background-position-x: 12.5%;
+}
+.log .discover-tile[data-type="1"][data-sub-type="4"], .gamelogreview .discover-tile[data-type="1"][data-sub-type="4"] {
+  background-position-x: 25%;
+}
+.log .discover-tile[data-type="1"][data-sub-type="5"], .gamelogreview .discover-tile[data-type="1"][data-sub-type="5"] {
+  background-position-x: 37.5%;
+}
+.log .discover-tile[data-type="2"][data-sub-type="1"], .gamelogreview .discover-tile[data-type="2"][data-sub-type="1"] {
+  background-position-x: 50%;
+}
+.log .discover-tile[data-type="2"][data-sub-type="2"], .gamelogreview .discover-tile[data-type="2"][data-sub-type="2"] {
+  background-position-x: 62.5%;
+}
+.log .discover-tile[data-type="2"][data-sub-type="3"], .gamelogreview .discover-tile[data-type="2"][data-sub-type="3"] {
+  background-position-x: 75%;
+}
+.log .discover-tile[data-type="2"][data-sub-type="4"], .gamelogreview .discover-tile[data-type="2"][data-sub-type="4"] {
+  background-position-x: 87.5%;
+}
+.log .discover-tile[data-type="2"][data-sub-type="5"], .gamelogreview .discover-tile[data-type="2"][data-sub-type="5"] {
+  background-position-x: 100%;
 }
 
 .objective-token {

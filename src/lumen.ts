@@ -169,6 +169,17 @@ class Lumen implements LumenGame {
             this.getCurrentPlayerTable()?.setPossibleCellLinks(args.possibleLinkCirclesIds, args.cellId);
         }
     }
+
+    public getChooseFighterSelectableCards(args?: EnteringChooseFighterArgs): Card[] {
+        if (this.gamedatas.gamestate.name !== 'chooseFighter') {
+            return [];
+        }
+
+        args = args ?? this.gamedatas.gamestate.args as EnteringChooseFighterArgs;
+        return args.move ? 
+            args.possibleTerritoryFighters : 
+            [...args.possibleFightersToMove, ...args.possibleFightersToActivate];
+    }
     
     private onEnteringChooseFighter(args: EnteringChooseFighterArgs) {
         if (!args.move) {
@@ -197,9 +208,11 @@ class Lumen implements LumenGame {
             this.setGamestateDescription(''+args.move);
         }
 
-        const selectableCards = [...(args.possibleFightersToPlace ?? []), ...(args.possibleFightersToActivate ?? []), ...args.possibleTerritoryFighters];
-        this.getCurrentPlayerTable().setSelectableCards(selectableCards);
-        this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+        if ((this as any).isCurrentPlayerActive()) {
+            const selectableCards = this.getChooseFighterSelectableCards(args);
+            this.getCurrentPlayerTable().setSelectableCards(selectableCards);
+            this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+        }
     }
 
     private onEnteringChooseTerritory(args: EnteringChooseTerritoryArgs) {
@@ -207,7 +220,9 @@ class Lumen implements LumenGame {
         if (args.selectedFighter) {
             this.cardsManager.getCardElement(args.selectedFighter).classList.add('selected');
         }
-        this.tableCenter.setSelectableTerritories(args.territoriesIds);
+        if ((this as any).isCurrentPlayerActive()) {
+            this.tableCenter.setSelectableTerritories(args.territoriesIds);
+        }
     }
 
     public onLeavingState(stateName: string) {
@@ -1001,13 +1016,14 @@ class Lumen implements LumenGame {
     notif_putBackInBag(notif: Notif<NotifPutBackInBagArgs>) {
         notif.args.fighters.forEach(card => {
             const element = this.cardsManager.getCardElement(card);
+            const stock = this.cardsManager.getCardStock(card);
             const fromElement = element.parentElement;
             const bag = document.getElementById(`bag-${card.type == 1 ? card.playerId : 0}`);
             bag.appendChild(element);
             stockSlideAnimation({
                 element,
                 fromElement
-            });
+            }).then(() => stock.removeCard(card));
         });
     }
     
@@ -1058,6 +1074,10 @@ class Lumen implements LumenGame {
                 }
                 if (args.operation && args.operation[0] != '<') {
                     args.operation = `<div class="operation-icon" data-type="${args.operation}"></div>`;
+                }
+
+                if (args.discover_tile == '' && args.discoverTile) {
+                    args.discover_tile = `<div class="discover-tile" data-type="${args.discoverTile.type}" data-sub-type="${args.discoverTile.subType}"></div>`;
                 }
 
                 /*['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(field => {

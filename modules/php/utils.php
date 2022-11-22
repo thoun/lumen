@@ -683,8 +683,12 @@ trait UtilTrait {
     function revealDiscoverTile(DiscoverTile &$discoverTile, int $playerId, int $territoryId) { // return redirected for brouillage
         self::DbQuery("update discover_tile set visible = true where card_id = $discoverTile->id");
         $discoverTile->visible = true;
-        self::notifyAllPlayers("revealDiscoverTile", '', [
+        self::notifyAllPlayers("revealDiscoverTile", clienttranslate('${player_name} reveals discover tile ${discover_tile}'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
             'discoverTile' => $discoverTile,
+            'discover_tile' => '',
+            'preserve' => ['discoverTile', 'discover_tile'],
         ]);
 
         switch ($discoverTile->type) {

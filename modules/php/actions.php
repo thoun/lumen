@@ -258,7 +258,7 @@ trait ActionTrait {
     public function moveFighter(int $id) {
         $this->checkAction('moveFighter'); 
         
-        $playerId = intval($this->getActivePlayerId());
+        //$playerId = intval($this->getActivePlayerId());
 
         if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
             throw new BgaUserException("No remaining action");
@@ -266,9 +266,16 @@ trait ActionTrait {
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
             throw new BgaUserException("Impossible to move a fighter now");
         }
+        
+        $args = $this->argChooseFighter();
+        $possibleFightersToMove = $args['possibleFightersToMove'];
+        if (!$this->array_some($possibleFightersToMove, fn($fighter) => $fighter->id == $id)) {
+            throw new BgaUserException("Impossible to move this fighter");
+        }
 
         $fighter = $this->getCardById($id);
         
+        /* checked with possibleFightersToActivate 
         if ($fighter->playerId != $playerId || $fighter->location != 'territory') {
             throw new BgaUserException("Invalid fighter");
         }
@@ -296,6 +303,7 @@ trait ActionTrait {
                 throw new BgaUserException("Only Baveux can move from a green territory");
             }
         }
+        */
 
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_MOVE);
@@ -320,9 +328,16 @@ trait ActionTrait {
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
             throw new BgaUserException("Impossible to activate a fighter now");
         }
+        
+        $args = $this->argChooseFighter();
+        $possibleFightersToActivate = $args['possibleFightersToActivate'];
+        if (!$this->array_some($possibleFightersToActivate, fn($fighter) => $fighter->id == $id)) {
+            throw new BgaUserException("Impossible to activate this fighter");
+        }
 
         $fighter = $this->getCardById($id);
 
+        /* checked with possibleFightersToActivate 
         $action = $fighter->type === 20;
         if ($action) {
             if ($fighter->location != 'highCommand'.$playerId) {
@@ -338,9 +353,9 @@ trait ActionTrait {
         }
         if (!$fighter->power || $fighter->power === POWER_BAVEUX) {
             throw new BgaUserException("This fighter has no activable power");
-        }
+        }*/
 
-        if ($action) {
+        if ($fighter->type === 20) {
             $this->applyAction($fighter);
         } else {
             $this->applyActivateFighter($fighter);

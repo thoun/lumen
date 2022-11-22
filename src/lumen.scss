@@ -148,6 +148,29 @@ html, .mode_3d #game_play_area_background {
     margin-left: 2px;
     margin-right: 2px;
   }
+
+  .discover-tile {
+    display: inline-block;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border-radius: 40%;
+    vertical-align: middle;
+    background: url('img/discover-tiles.png');
+    background-size: auto 100%;
+
+    @for $index from 3 through 5 {
+        &[data-type="1"][data-sub-type="#{$index}"] {
+            background-position-x: #{($index - 2) * 12.5%};
+        }
+    }
+    @for $index from 1 through 5 {
+        &[data-type="2"][data-sub-type="#{$index}"] {
+            background-position-x: #{($index + 3) * 12.5%};
+        }
+    }
+  }
 }
 
 .objective-token {

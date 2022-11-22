@@ -104,12 +104,51 @@ trait ArgsTrait {
         ];
     }
 
-    function canActivateFighter(Card $fighter, int $scenarioId) {
+    function canMoveFighter(int $playerId, Card $fighter, int $scenarioId) {
+        $canMove = $fighter->playerId == $playerId && $fighter->location == 'territory';
+
+        if ($canMove && $fighter->power === POWER_BAVEUX && $scenarioId != 5) {
+            $canMove = false;
+        }
+        if (in_array($fighter->power, [POWER_TISSEUSE, POWER_ROOTED]) && $fighter->played) {
+            $canMove = false;
+        }
+        if ($fighter->power === POWER_METAMORPH && !$fighter->played) {
+            $canMove = false;
+        }
+
+        if ($fighter->location === 'territory') {
+            $opponentTisseuses = $this->getCardsByLocation($fighter->location, $fighter->locationArg, $this->getOpponentId($playerId), null, 15);
+            if ($this->array_some($opponentTisseuses, fn($opponentTisseuse) => $opponentTisseuse->played)) {
+                $canMove = false;
+            }
+
+            if ($fighter->locationArg % 10 == 5 && $scenarioId == 5 && $fighter->power !== POWER_BAVEUX) {
+                $canMove = false;
+            }
+        }
+
+        return $canMove;
+    }
+
+
+    function canActivateFighter(int $playerId, Card $fighter, int $scenarioId) {
         $canActivate = !$fighter->played && $fighter->power !== null && $fighter->power !== POWER_BAVEUX;
 
         if ($canActivate && $fighter->power == POWER_ASSASSIN) {
             $opponentFighters = $this->getCardsByLocation('territory', $fighter->locationArg, $this->getOpponentId($fighter->playerId));
             $canActivate = count($opponentFighters) > 0 && $this->array_some($opponentFighters, fn($opponentFighter) => $opponentFighter->power !== POWER_BAVEUX);
+        }
+        
+        $action = $fighter->type === 20;
+        if ($action) {
+            if ($fighter->location != 'highCommand'.$playerId) {
+                $canActivate = false;
+            }
+        } else {
+            if ($fighter->playerId != $playerId || $fighter->location != 'territory') {
+                $canActivate = false;
+            }
         }
 
         if ($canActivate) {
@@ -152,8 +191,9 @@ trait ArgsTrait {
                 $possibleTerritoryFighters = $territoryFighters;
 
                 $scenarioId = $this->getScenarioId();
-                $possibleFightersToActivate = array_values(array_filter($territoryFighters, fn($fighter) => $this->canActivateFighter($fighter, $scenarioId)));
-
+                $possibleFightersToMove = array_values(array_filter($territoryFighters, fn($fighter) => $this->canMoveFighter($playerId, $fighter, $scenarioId)));
+                $possibleFightersToActivate = array_values(array_filter(array_merge($territoryFighters, $highCommand), fn($fighter) => $this->canActivateFighter($playerId, $fighter, $scenarioId)));
+                
                 $optionalDetail = $remainingPlays == 0 && $remainingMoves == 0 && $remainingBonusMoves > 0 ?
                     clienttranslate('(with Coup fourré)') : ''; // TODO check translation
 
@@ -166,6 +206,7 @@ trait ArgsTrait {
                         array_values(array_filter($highCommand, fn($fighter) => in_array($fighter->type, [1, 10])))
                     ),
                     'possibleActions' => array_values(array_filter($highCommand, fn($fighter) => $fighter->type === 20)),
+                    'possibleFightersToMove' => $possibleFightersToMove,
                     'possibleFightersToActivate' => $possibleFightersToActivate,
                 ];
                 break;

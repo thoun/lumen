@@ -82,7 +82,9 @@ interface LumenGame extends Game {
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
 
-    setTooltip(id: string, html: string): void;    
+    setTooltip(id: string, html: string): void;   
+    getChooseFighterSelectableCards(): Card[];
+
     operationClick(operation: number): void;
     cellClick(cell: number): void; 
     chooseFightersClick(card: Card): void;   
@@ -119,6 +121,7 @@ interface EnteringChooseFighterArgs {
     possibleTerritoryFighters: Card[];
     possibleFightersToPlace?: Card[];
     possibleActions?: Card[];
+    possibleFightersToMove?: Card[];
     possibleFightersToActivate?: Card[];
     selectionSize: number;
 }

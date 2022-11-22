@@ -86,7 +86,9 @@ class TableCenter {
 
             this.territoriesStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.direction, territoryInfos.curve, rotation, `territory-${territoryInfos.id}-discover-tiles`);
             this.territoriesStocks[territoryInfos.id].onCardClick = card => {
-                const canClick = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleTerritoryFighters?.some(fighter => fighter.id == card.id);
+                const selectableCards = this.game.getChooseFighterSelectableCards();
+                const canClick = selectableCards?.some(fighter => fighter.id == card.id);
+                console.log(selectableCards, card, canClick);
                 if (canClick) {
                     this.territoryFighterClick(card);
                 } else {
@@ -153,10 +155,11 @@ class TableCenter {
     private createFighterChoice(card: Card) {
         const element = this.game.cardsManager.getCardElement(card);
 
+        const canMove = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleFightersToMove.some(moveFighter => moveFighter.id == card.id);
         const canActivate = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleFightersToActivate.some(activateFighter => activateFighter.id == card.id);
 
         dojo.place(`<div id="fighter-choice">
-            <button id="fighter-choice-move">${_('Move')}</button>
+            <button id="fighter-choice-move" ${canMove ? '' : ' disabled="disabled"'}>${_('Move')}</button>
             <button id="fighter-choice-cancel">✖</button>
             <button id="fighter-choice-activate" ${canActivate ? '' : ' disabled="disabled"'}>${_('Activate')}</button>
         </div>`, element);
