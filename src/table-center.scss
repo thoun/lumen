@@ -69,6 +69,19 @@
                 flex-direction: column;
             }
 
+            // TODO TEMP ?
+            .territory-stock {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                right: 0;
+
+                .card {
+                    transition: left 0.5s, top 0.5s;
+                }
+            }
+
             // TODO TEMP
             /*&[data-lumens="1"] {
                 background: #FFFFFF88;
@@ -78,7 +91,7 @@
             }
             &[data-lumens="5"] {
                 background: #00FF0088;
-            }*/
+            }
 
             &.selectable {
                 box-shadow: 0 0 5px 3px white;
@@ -86,6 +99,17 @@
         
             &.selected {
                 box-shadow: 0 0 8px 8px red;
+            }*/
+
+            // TODO TEMP
+
+            canvas {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                pointer-events: none;
             }
         }
 

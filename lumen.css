@@ -679,6 +679,14 @@ body > .card {
   }
   &[data-lumens="5"] {
       background: #00FF0088;
+  }
+
+  &.selectable {
+      box-shadow: 0 0 5px 3px white;
+  }
+
+  &.selected {
+      box-shadow: 0 0 8px 8px red;
   }*/
 }
 #map .battlefield .territory > div {
@@ -687,11 +695,23 @@ body > .card {
 #map .battlefield .territory[data-vertical=true] {
   flex-direction: column;
 }
-#map .battlefield .territory.selectable {
-  box-shadow: 0 0 5px 3px white;
+#map .battlefield .territory .territory-stock {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
 }
-#map .battlefield .territory.selected {
-  box-shadow: 0 0 8px 8px red;
+#map .battlefield .territory .territory-stock .card {
+  transition: left 0.5s, top 0.5s;
+}
+#map .battlefield .territory canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
 }
 #map .battlefield .territory-mask {
   position: absolute;

@@ -1,5 +1,5 @@
 class TableCenter {
-    private fightersStocks: LineStock<Card>[] = [];
+    private fightersStocks: TerritoryStock[] = [];
     private discoverTilesStocks: LineStock<DiscoverTile>[] = [];
     private initiativeMarker: HTMLDivElement;
 
@@ -86,7 +86,8 @@ class TableCenter {
             battlefield.appendChild(territoryMask);
             territoryMask.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
-            this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
+            //this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
+            this.fightersStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.direction, territoryInfos.curve, rotation >= 180);
             this.fightersStocks[territoryInfos.id].onCardClick = card => {
                 const canClick = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleTerritoryFighters?.some(fighter => fighter.id == card.id);
                 if (canClick) {

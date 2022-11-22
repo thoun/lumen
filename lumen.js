@@ -823,13 +823,14 @@ var ObjectiveTokensManager = /** @class */ (function (_super) {
     return ObjectiveTokensManager;
 }(CardManager));
 var Territory = /** @class */ (function () {
-    function Territory(id, x, y, width, height, clipPath) {
+    function Territory(id, x, y, width, height, direction, curve) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.clipPath = clipPath;
+        this.direction = direction;
+        this.curve = curve;
     }
     return Territory;
 }());
@@ -852,34 +853,34 @@ var BattlefieldPosition = /** @class */ (function () {
 var BATTLEFIELDS = [
     null,
     new Battlefield(1, [
-        new Territory(11, 24, 0, 303, 291, 1),
-        new Territory(15, 0, 150, 408, 537, 5),
+        new Territory(11, 24, 0, 303, 291, 'horizontal', [[0, 4], [6, 4], [10, 10]]),
+        new Territory(15, 0, 150, 408, 537, 'vertical', [[5, 0], [5, 3], [2, 6], [6, 7], [10, 10]]),
     ]),
     new Battlefield(2, [
-        new Territory(27, 0, 0, 423, 708, 7),
+        new Territory(27, 0, 0, 423, 708, 'vertical', [[2, 0], [4, 4], [9, 5], [9, 8], [5, 10], [6, 12]]),
     ]),
     new Battlefield(3, [
-        new Territory(31, 82, 330, 337, 378, 1),
-        new Territory(33, 0, 0, 417, 382, 3),
+        new Territory(31, 82, 330, 337, 378, 'vertical', [[9, 0], [8, 4], [1, 12]]),
+        new Territory(33, 0, 0, 417, 382, 'horizontal', [[0, 0], [4, 8], [12, 8]]),
     ]),
     new Battlefield(4, [
-        new Territory(41, 226, 129, 198, 384, 1),
-        new Territory(45, 0, 0, 333, 708, 5),
+        new Territory(41, 226, 129, 198, 384, 'vertical', [[4, 0], [8, 6], [9, 12]]),
+        new Territory(45, 0, 0, 333, 708, 'vertical', [[3, 0], [9, 6], [8, 12]]),
     ]),
     new Battlefield(5, [
-        new Territory(51, 0, 0, 264, 378, 1),
-        new Territory(53, 222, 127, 195, 277, 3),
-        new Territory(54, 82, 378, 339, 330, 3),
+        new Territory(51, 0, 0, 264, 378, 'vertical', [[2, 0], [8, 6], [6, 12]]),
+        new Territory(53, 222, 127, 195, 277, 'vertical', [[6, 0], [5, 6], [8, 12]]),
+        new Territory(54, 82, 378, 339, 330, 'vertical', [[8, 0], [7, 6], [3, 12]]),
     ]),
     new Battlefield(6, [
-        new Territory(61, 82, 423, 219, 285, 1),
-        new Territory(63, 0, 0, 225, 267, 3),
-        new Territory(65, 66, 129, 355, 442, 5),
+        new Territory(61, 82, 423, 219, 285, 'vertical', [[10, 0], [5, 6], [10, 12]]),
+        new Territory(63, 0, 0, 225, 267, 'vertical', [[5, 0], [6, 6], [5, 12]]),
+        new Territory(65, 66, 129, 355, 442, 'vertical', [[7, 0], [7, 6], [10, 12]]),
     ]),
-    new Battlefield(6, [
-        new Territory(71, 79, 339, 309, 258, 1),
-        new Territory(73, 0, 0, 316, 394, 3),
-        new Territory(75, 120, 12, 303, 696, 5),
+    new Battlefield(7, [
+        new Territory(71, 79, 339, 258, 309, 'vertical', [[10, 0], [8, 4], [0, 12]]),
+        new Territory(73, 0, 0, 316, 394, 'vertical', [[2, 0], [3, 6], [5, 9], [12, 12]]),
+        new Territory(75, 120, 12, 303, 696, 'vertical', [[1, 0], [2, 4], [10, 5], [10, 8], [5, 10], [4, 12]]),
     ]),
 ];
 var ObjectiveTokenPosition = /** @class */ (function () {
@@ -1123,6 +1124,96 @@ var Scenario = /** @class */ (function (_super) {
     };
     return Scenario;
 }(ScenarioInfos));
+//const curvePoints = [[0, 0], [10, 10]];//[[0, 2], [2, 3], [3, 4], [4, 2], [5, 6], [10, 5]];
+var cardWidth = 100;
+var cardHeight = 100;
+function getYFromX(curvePoints, x) {
+    for (var i = 0; i < curvePoints.length - 1; i++) {
+        if (x >= curvePoints[i][0] && x <= curvePoints[i + 1][0]) {
+            var relativeDistance = (x - curvePoints[i][0]) / (curvePoints[i + 1][0] - curvePoints[i][0]);
+            return curvePoints[i][1] + (curvePoints[i + 1][1] - curvePoints[i][1]) * relativeDistance;
+        }
+    }
+    throw new Error("invalid x (".concat(x, "), curve : ").concat(curvePoints.toString()));
+}
+function getXFromY(curvePoints, y) {
+    for (var i = 0; i < curvePoints.length - 1; i++) {
+        if (y >= curvePoints[i][1] && y <= curvePoints[i + 1][1]) {
+            var relativeDistance = (y - curvePoints[i][1]) / (curvePoints[i + 1][1] - curvePoints[i][1]);
+            return curvePoints[i][0] + (curvePoints[i + 1][0] - curvePoints[i][0]) * relativeDistance;
+        }
+    }
+    throw new Error("invalid y (".concat(y, "), curve : ").concat(curvePoints.toString()));
+}
+var TerritoryStock = /** @class */ (function (_super) {
+    __extends(TerritoryStock, _super);
+    function TerritoryStock(manager, element, direction, curve, flipCoordinates) {
+        var _this = _super.call(this, manager, element, direction === 'horizontal' ? function (_, cards) { return _this.manualPositionHorizontal(cards); } : function (_, cards) { return _this.manualPositionVertical(cards); }) || this;
+        _this.manager = manager;
+        _this.element = element;
+        _this.direction = direction;
+        _this.curve = curve;
+        element.classList.add('territory-stock');
+        if (flipCoordinates) {
+            _this.flipCoordinates();
+        }
+        //const points = this.curve;
+        _this.canvasWidth = element.clientWidth;
+        _this.canvasHeight = element.clientHeight;
+        _this.curveXScale = _this.canvasWidth / 12;
+        _this.curveYScale = _this.canvasHeight / 12;
+        return _this;
+        /*//var cv = document.getElementById("curveCanvas") as HTMLCanvasElement;
+        const cv = document.createElement('canvas');
+        element.prepend(cv);
+        cv.style.width = `${element.clientWidth}px`;
+        cv.style.height = `${element.clientHeight}px`;
+        //setTimeout(() => {
+            var ctx = cv.getContext("2d");
+            ctx.moveTo(points[0][0] * this.curveXScale, points[0][1] * this.curveYScale);
+            
+            for (var i = 1; i < points.length; i ++) {
+                /_*var x_mid = (points[i][0] + points[i+1][0]) / 2 * this.curveXScale;
+                var y_mid = (points[i][1] + points[i+1][1]) / 2 * this.curveYScale;
+                var cp_x1 = (x_mid + points[i][0] * this.curveXScale) / 2;
+                var cp_x2 = (x_mid + points[i+1][0] * this.curveXScale) / 2;
+                ctx.quadraticCurveTo(cp_x1,points[i][1] * this.curveYScale ,x_mid, y_mid);
+                ctx.quadraticCurveTo(cp_x2,points[i+1][1] * this.curveYScale,points[i+1][0] * this.curveXScale, points[i+1][1] * this.curveYScale);*_/
+                ctx.lineTo(points[i][0] * this.curveXScale, points[i][1] * this.curveYScale);
+            }
+            ctx.stroke();
+        //}, 200);*/
+    }
+    TerritoryStock.prototype.flipCoordinates = function () {
+        this.curve = this.curve.slice().reverse();
+        for (var i = 0; i < this.curve.length; i++) {
+            this.curve[i] = [12 - this.curve[i][0], 12 - this.curve[i][1]];
+        }
+    };
+    TerritoryStock.prototype.manualPositionHorizontal = function (cards) {
+        var _this = this;
+        this.getCards().forEach(function (card, index) {
+            var cardDiv = _this.getCardElement(card);
+            var left = _this.canvasWidth / 2 + ((cardWidth + 10) * (index - (cards.length) / 2));
+            var x = (left + cardWidth / 2) / _this.curveXScale;
+            var y = getYFromX(_this.curve, x);
+            cardDiv.style.left = "".concat(left, "px");
+            cardDiv.style.top = "".concat(y * _this.curveYScale - cardHeight / 2, "px");
+        });
+    };
+    TerritoryStock.prototype.manualPositionVertical = function (cards) {
+        var _this = this;
+        this.getCards().forEach(function (card, index) {
+            var cardDiv = _this.getCardElement(card);
+            var top = _this.canvasHeight / 2 + ((cardHeight + 10) * (index - (cards.length) / 2));
+            var y = (top + cardHeight / 2) / _this.curveYScale;
+            var x = getXFromY(_this.curve, y);
+            cardDiv.style.top = "".concat(top, "px");
+            cardDiv.style.left = "".concat(x * _this.curveXScale - cardWidth / 2, "px");
+        });
+    };
+    return TerritoryStock;
+}(ManualPositionStock));
 var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
         var _this = this;
@@ -1202,7 +1293,8 @@ var TableCenter = /** @class */ (function () {
             territoryMask.classList.add('territory-mask');
             battlefield.appendChild(territoryMask);
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
-            _this.fightersStocks[territoryInfos.id] = new LineStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")));
+            //this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
+            _this.fightersStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.direction, territoryInfos.curve, rotation >= 180);
             _this.fightersStocks[territoryInfos.id].onCardClick = function (card) {
                 var _a;
                 var canClick = (_a = _this.game.gamedatas.gamestate.args.possibleTerritoryFighters) === null || _a === void 0 ? void 0 : _a.some(function (fighter) { return fighter.id == card.id; });
