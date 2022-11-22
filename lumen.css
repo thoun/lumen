@@ -705,6 +705,9 @@ body > .card {
 #map .battlefield .territory .territory-stock .card {
   transition: left 0.5s, top 0.5s;
 }
+#map .battlefield .territory .discover-tile-stock {
+  position: absolute;
+}
 #map .battlefield .territory canvas {
   position: absolute;
   left: 0;

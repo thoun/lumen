@@ -1,6 +1,5 @@
 class TableCenter {
-    private fightersStocks: TerritoryStock[] = [];
-    private discoverTilesStocks: LineStock<DiscoverTile>[] = [];
+    private territoriesStocks: TerritoryStock[] = [];
     private initiativeMarker: HTMLDivElement;
 
     constructor(private game: LumenGame, gamedatas: LumenGamedatas) {
@@ -13,8 +12,8 @@ class TableCenter {
         this.addObjectiveTokens(scenario.objectiveTokens);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         
-        // TODO TEMP gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
-        gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, {visible: discoverTile.visible}));
+        gamedatas.fightersOnTerritories.forEach(card => this.territoriesStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
+        gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.territoriesStocks[discoverTile.locationArg].discoverTileStock.addCard(discoverTile, undefined, {visible: discoverTile.visible}));
 
         this.setMapSize(scenario.battlefields);
     }
@@ -75,7 +74,6 @@ class TableCenter {
             territory.dataset.vertical = vertical.toString();
             territory.innerHTML = `
             <div id="territory-${territoryInfos.id}-fighters"></div>
-            <div id="territory-${territoryInfos.id}-discover-tiles"></div>
             `;
             battlefield.appendChild(territory);
 
@@ -86,24 +84,22 @@ class TableCenter {
             battlefield.appendChild(territoryMask);
             territoryMask.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
-            //this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
-            this.fightersStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.direction, territoryInfos.curve, rotation);
-            this.fightersStocks[territoryInfos.id].onCardClick = card => {
+            this.territoriesStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.direction, territoryInfos.curve, rotation, `territory-${territoryInfos.id}-discover-tiles`);
+            this.territoriesStocks[territoryInfos.id].onCardClick = card => {
                 const canClick = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleTerritoryFighters?.some(fighter => fighter.id == card.id);
                 if (canClick) {
                     this.territoryFighterClick(card);
                 } else {
-                    this.fightersStocks[territoryInfos.id].unselectCard(card);
+                    this.territoriesStocks[territoryInfos.id].unselectCard(card);
                 }
-            }
-            this.discoverTilesStocks[territoryInfos.id] = new LineStock<DiscoverTile>(this.game.discoverTilesManager, document.getElementById(`territory-${territoryInfos.id}-discover-tiles`));
+            }            
 
-            // TODO TEMP
-            this.fightersStocks[territoryInfos.id].addCards([
+            /*// TODO TEMP
+            this.territoriesStocks[territoryInfos.id].addCards([
                 { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
                 { id: 1000 * territoryInfos.id + 2, type: 1, subType: 1, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
                 { id: 1000 * territoryInfos.id + 3, type: 1, subType: 2, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
-            ])
+            ])*/
         });
     }
 
@@ -125,7 +121,7 @@ class TableCenter {
         this.initiativeMarker = document.createElement('div');
         this.initiativeMarker.id = `initiative-marker`;
         territory.appendChild(this.initiativeMarker);
-        this.fightersStocks[initiativeMarkerTerritory].addInitiativeMarker();
+        this.territoriesStocks[initiativeMarkerTerritory].addInitiativeMarker();
     }
     
     public moveInitiativeMarker(territoryId: number) {
@@ -136,12 +132,12 @@ class TableCenter {
             element: this.initiativeMarker,
             fromElement: previousTerritory,
         });
-        this.fightersStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
-        this.fightersStocks[territoryId].addInitiativeMarker();
+        this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
+        this.territoriesStocks[territoryId].addInitiativeMarker();
     }
     
     public moveFighter(fighter: Card, territoryId: number) {
-        this.fightersStocks[territoryId].addCard(fighter);
+        this.territoriesStocks[territoryId].addCard(fighter);
     }
     
     public revealDiscoverTile(discoverTile: DiscoverTile) {
@@ -191,7 +187,7 @@ class TableCenter {
     }
     
     public setSelectableCards(selectableCards: Card[], multiple: boolean = false) {
-        this.fightersStocks.forEach(stock => {
+        this.territoriesStocks.forEach(stock => {
             stock.setSelectionMode(selectableCards.length ? (multiple ? 'multiple' : 'single') : 'none');
             stock.getCards().forEach(card => stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(c => c.id == card.id)));
         });

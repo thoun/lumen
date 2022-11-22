@@ -1126,9 +1126,29 @@ var Scenario = /** @class */ (function (_super) {
 }(ScenarioInfos));
 var cardWidth = 100;
 var cardHeight = 100;
+var DiscoverTileStock = /** @class */ (function (_super) {
+    __extends(DiscoverTileStock, _super);
+    function DiscoverTileStock(manager, element, updateDisplay) {
+        var _this = _super.call(this, manager, element) || this;
+        _this.manager = manager;
+        _this.element = element;
+        _this.updateDisplay = updateDisplay;
+        return _this;
+    }
+    DiscoverTileStock.prototype.addCard = function (card, animation, settings) {
+        var promise = _super.prototype.addCard.call(this, card, animation, settings);
+        this.updateDisplay();
+        return promise;
+    };
+    DiscoverTileStock.prototype.cardRemoved = function (card) {
+        _super.prototype.cardRemoved.call(this, card);
+        this.updateDisplay();
+    };
+    return DiscoverTileStock;
+}(CardStock));
 var TerritoryStock = /** @class */ (function (_super) {
     __extends(TerritoryStock, _super);
-    function TerritoryStock(manager, element, direction, curve, rotation) {
+    function TerritoryStock(manager, element, direction, curve, rotation, discoverTileStockId) {
         var _this = _super.call(this, manager, element, function (_, cards) { return _this.manualPosition(); }) || this;
         _this.manager = manager;
         _this.element = element;
@@ -1148,7 +1168,6 @@ var TerritoryStock = /** @class */ (function (_super) {
         _this.canvasHeight = element.clientHeight;
         _this.curveXScale = _this.canvasWidth / 12;
         _this.curveYScale = _this.canvasHeight / 12;
-        return _this;
         /*if (this.canvasWidth == 708) {
             //var cv = document.getElementById("curveCanvas") as HTMLCanvasElement;
             const cv = document.createElement('canvas');
@@ -1170,6 +1189,12 @@ var TerritoryStock = /** @class */ (function (_super) {
             }
             ctx.stroke();
         }*/
+        _this.discoverTileStockDiv = document.createElement('div');
+        _this.discoverTileStockDiv.id = discoverTileStockId;
+        _this.discoverTileStockDiv.classList.add('discover-tile-stock');
+        element.appendChild(_this.discoverTileStockDiv);
+        _this.discoverTileStock = new DiscoverTileStock(_this.manager.game.discoverTilesManager, _this.discoverTileStockDiv, function () { return _this.manualPosition(); });
+        return _this;
     }
     TerritoryStock.prototype.rotateCoordinates = function () {
         this.curve = this.curve.slice();
@@ -1193,6 +1218,9 @@ var TerritoryStock = /** @class */ (function (_super) {
     TerritoryStock.prototype.getElements = function () {
         var _this = this;
         var elements = this.getCards().map(function (card) { return _this.getCardElement(card); });
+        if (!this.discoverTileStock.isEmpty()) {
+            elements.push(this.discoverTileStockDiv);
+        }
         if (this.initiativeMarker) {
             elements.push(document.getElementById("initiative-marker"));
         }
@@ -1261,8 +1289,7 @@ var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
         var _this = this;
         this.game = game;
-        this.fightersStocks = [];
-        this.discoverTilesStocks = [];
+        this.territoriesStocks = [];
         var scenario = game.scenario;
         if (gamedatas.scenario == 3) {
             this.addRiver();
@@ -1270,8 +1297,8 @@ var TableCenter = /** @class */ (function () {
         this.addBattlefields(scenario.battlefields);
         this.addObjectiveTokens(scenario.objectiveTokens);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
-        // TODO TEMP gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
-        gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, { visible: discoverTile.visible }); });
+        gamedatas.fightersOnTerritories.forEach(function (card) { return _this.territoriesStocks[card.locationArg].addCard(card, undefined, { visible: !card.played }); });
+        gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.territoriesStocks[discoverTile.locationArg].discoverTileStock.addCard(discoverTile, undefined, { visible: discoverTile.visible }); });
         this.setMapSize(scenario.battlefields);
     }
     TableCenter.prototype.addRiver = function () {
@@ -1328,7 +1355,7 @@ var TableCenter = /** @class */ (function () {
                 vertical = !vertical;
             }
             territory.dataset.vertical = vertical.toString();
-            territory.innerHTML = "\n            <div id=\"territory-".concat(territoryInfos.id, "-fighters\"></div>\n            <div id=\"territory-").concat(territoryInfos.id, "-discover-tiles\"></div>\n            ");
+            territory.innerHTML = "\n            <div id=\"territory-".concat(territoryInfos.id, "-fighters\"></div>\n            ");
             battlefield.appendChild(territory);
             var territoryMask = document.createElement('div');
             territoryMask.id = "territory-mask-".concat(territoryInfos.id);
@@ -1336,25 +1363,23 @@ var TableCenter = /** @class */ (function () {
             territoryMask.classList.add('territory-mask');
             battlefield.appendChild(territoryMask);
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
-            //this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
-            _this.fightersStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.direction, territoryInfos.curve, rotation);
-            _this.fightersStocks[territoryInfos.id].onCardClick = function (card) {
+            _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.direction, territoryInfos.curve, rotation, "territory-".concat(territoryInfos.id, "-discover-tiles"));
+            _this.territoriesStocks[territoryInfos.id].onCardClick = function (card) {
                 var _a;
                 var canClick = (_a = _this.game.gamedatas.gamestate.args.possibleTerritoryFighters) === null || _a === void 0 ? void 0 : _a.some(function (fighter) { return fighter.id == card.id; });
                 if (canClick) {
                     _this.territoryFighterClick(card);
                 }
                 else {
-                    _this.fightersStocks[territoryInfos.id].unselectCard(card);
+                    _this.territoriesStocks[territoryInfos.id].unselectCard(card);
                 }
             };
-            _this.discoverTilesStocks[territoryInfos.id] = new LineStock(_this.game.discoverTilesManager, document.getElementById("territory-".concat(territoryInfos.id, "-discover-tiles")));
-            // TODO TEMP
-            _this.fightersStocks[territoryInfos.id].addCards([
-                { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg: territoryInfos.id },
-                { id: 1000 * territoryInfos.id + 2, type: 1, subType: 1, played: false, playerId: 2343492, location: 'territory', locationArg: territoryInfos.id },
-                { id: 1000 * territoryInfos.id + 3, type: 1, subType: 2, played: false, playerId: 2343492, location: 'territory', locationArg: territoryInfos.id },
-            ]);
+            /*// TODO TEMP
+            this.territoriesStocks[territoryInfos.id].addCards([
+                { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
+                { id: 1000 * territoryInfos.id + 2, type: 1, subType: 1, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
+                { id: 1000 * territoryInfos.id + 3, type: 1, subType: 2, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
+            ])*/
         });
     };
     TableCenter.prototype.addObjectiveTokens = function (objectiveTokens) {
@@ -1374,7 +1399,7 @@ var TableCenter = /** @class */ (function () {
         this.initiativeMarker = document.createElement('div');
         this.initiativeMarker.id = "initiative-marker";
         territory.appendChild(this.initiativeMarker);
-        this.fightersStocks[initiativeMarkerTerritory].addInitiativeMarker();
+        this.territoriesStocks[initiativeMarkerTerritory].addInitiativeMarker();
     };
     TableCenter.prototype.moveInitiativeMarker = function (territoryId) {
         var previousTerritory = this.initiativeMarker.parentElement;
@@ -1384,11 +1409,11 @@ var TableCenter = /** @class */ (function () {
             element: this.initiativeMarker,
             fromElement: previousTerritory,
         });
-        this.fightersStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
-        this.fightersStocks[territoryId].addInitiativeMarker();
+        this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
+        this.territoriesStocks[territoryId].addInitiativeMarker();
     };
     TableCenter.prototype.moveFighter = function (fighter, territoryId) {
-        this.fightersStocks[territoryId].addCard(fighter);
+        this.territoriesStocks[territoryId].addCard(fighter);
     };
     TableCenter.prototype.revealDiscoverTile = function (discoverTile) {
         this.game.discoverTilesManager.setupFrontDiv(discoverTile);
@@ -1427,7 +1452,7 @@ var TableCenter = /** @class */ (function () {
     };
     TableCenter.prototype.setSelectableCards = function (selectableCards, multiple) {
         if (multiple === void 0) { multiple = false; }
-        this.fightersStocks.forEach(function (stock) {
+        this.territoriesStocks.forEach(function (stock) {
             stock.setSelectionMode(selectableCards.length ? (multiple ? 'multiple' : 'single') : 'none');
             stock.getCards().forEach(function (card) { return stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(function (c) { return c.id == card.id; })); });
         });

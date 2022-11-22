@@ -1,6 +1,23 @@
 const cardWidth = 100;
 const cardHeight = 100;
 
+class DiscoverTileStock extends CardStock<DiscoverTile> {
+    constructor(protected manager: CardManager<DiscoverTile>, protected element: HTMLElement, protected updateDisplay: () => void) {
+        super(manager, element);
+    }
+
+    public addCard(card: DiscoverTile, animation?: CardAnimation<DiscoverTile>, settings?: AddCardSettings): Promise<boolean> {
+        const promise = super.addCard(card, animation, settings);
+        this.updateDisplay();
+        return promise;
+    }
+
+    public cardRemoved(card: DiscoverTile): void {
+        super.cardRemoved(card);
+        this.updateDisplay();
+    }
+}
+
 class TerritoryStock extends ManualPositionStock<Card> {
     tempOriginalCurve: number[][];
 
@@ -9,8 +26,16 @@ class TerritoryStock extends ManualPositionStock<Card> {
     private canvasWidth: number;
     private canvasHeight: number;
     private initiativeMarker: boolean;
+    private discoverTileStockDiv: HTMLDivElement;
+    public discoverTileStock: DiscoverTileStock;
 
-    constructor(protected manager: CardManager<Card>, protected element: HTMLElement, protected direction: 'horizontal' | 'vertical', protected curve: number[][], protected rotation: 0 | 90 | 180 | 270) {
+    constructor(
+        protected manager: CardManager<Card>, 
+        protected element: HTMLElement, 
+        protected direction: 'horizontal' | 'vertical', 
+        protected curve: number[][], 
+        protected rotation: 0 | 90 | 180 | 270,
+        discoverTileStockId: string) {
         super(manager, element, (_, cards) => this.manualPosition());
         element.classList.add('territory-stock');
 
@@ -50,6 +75,12 @@ class TerritoryStock extends ManualPositionStock<Card> {
             }
             ctx.stroke();
         }*/
+
+        this.discoverTileStockDiv = document.createElement('div');
+        this.discoverTileStockDiv.id = discoverTileStockId;
+        this.discoverTileStockDiv.classList.add('discover-tile-stock');
+        element.appendChild(this.discoverTileStockDiv);
+        this.discoverTileStock = new DiscoverTileStock((this.manager.game as LumenGame).discoverTilesManager, this.discoverTileStockDiv, () => this.manualPosition());
     }
 
     private rotateCoordinates() {
@@ -76,6 +107,9 @@ class TerritoryStock extends ManualPositionStock<Card> {
 
     private getElements(): HTMLElement[] {
         const elements = this.getCards().map(card => this.getCardElement(card));
+        if (!this.discoverTileStock.isEmpty()) {
+            elements.push(this.discoverTileStockDiv);
+        }
 
         if (this.initiativeMarker) {
             elements.push(document.getElementById(`initiative-marker`));
