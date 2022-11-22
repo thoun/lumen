@@ -81,14 +81,13 @@ class TableCenter {
             territoryMask.id = `territory-mask-${territoryInfos.id}`;
             territoryMask.dataset.id = ''+territoryInfos.id;
             territoryMask.classList.add('territory-mask');
-            battlefield.appendChild(territoryMask);
+            battlefield.prepend(territoryMask);
             territoryMask.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
             this.territoriesStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.direction, territoryInfos.curve, rotation, `territory-${territoryInfos.id}-discover-tiles`);
             this.territoriesStocks[territoryInfos.id].onCardClick = card => {
                 const selectableCards = this.game.getChooseFighterSelectableCards();
                 const canClick = selectableCards?.some(fighter => fighter.id == card.id);
-                console.log(selectableCards, card, canClick);
                 if (canClick) {
                     this.territoryFighterClick(card);
                 } else {
@@ -139,7 +138,7 @@ class TableCenter {
     }
     
     public moveFighter(fighter: Card, territoryId: number) {
-        this.territoriesStocks[territoryId].addCard(fighter);
+        this.territoriesStocks[territoryId].addCard(fighter, undefined, {visible: !fighter.played});
     }
     
     public revealDiscoverTile(discoverTile: DiscoverTile) {

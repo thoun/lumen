@@ -493,6 +493,12 @@ trait ActionTrait {
                     $nextState = 'chooseCellBrouillage';
                 }
                 break;
+            case MOVE_FLY:
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                if ($redirectBrouillage) {
+                    $nextState = 'chooseCellBrouillage';
+                }
+                break;
             case POWER_IMPATIENT:
                 $this->setGameStateValue(INITIATIVE_MARKER_TERRITORY, $territoryId);
                 self::notifyAllPlayers('moveInitiativeMarker', clienttranslate('${player_name} moves the initiative marker'), [
