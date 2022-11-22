@@ -57,7 +57,9 @@ class PlayerTable {
                 div.dataset.operation = ''+operation;
                 div.dataset.number = ''+number;
                 div.innerHTML = `${player.operations[operation] >= number ? `<img src="${g_gamethemeurl}img/mul.gif"/>` : ''}`;
-                div.addEventListener('click', () => this.game.operationClick(operation));
+                if (this.currentPlayer) {
+                    div.addEventListener('click', () => this.game.operationClick(operation));
+                }
                 document.getElementById(`player-table-${this.playerId}-operations`).appendChild(div);
             });
         })
@@ -69,7 +71,9 @@ class PlayerTable {
             div.classList.add('circle');
             div.innerHTML = `${circle.value ? (circle.value === -1 ? 'X' /* TODO Brouillage*/ : circle.value) : ''}`;
             document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
-            div.addEventListener('click', () => this.game.cellClick(circle.circleId));
+            if (this.currentPlayer) {
+                div.addEventListener('click', () => this.game.cellClick(circle.circleId));
+            }
         });
 
         player.links.forEach(link => this.setLink(Number(link.index1), Number(link.index2)));

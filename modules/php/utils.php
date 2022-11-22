@@ -283,10 +283,13 @@ trait UtilTrait {
         return boolval(self::getUniqueValueFromDB($sql));
     }
 
-    
+    function getRealizedObjectives() {
+        $dbResults = $this->getCollectionFromDb("SELECT `letter` FROM `realized_objective`");
+        return array_values(array_map(fn($dbResult) => $dbResult['letter'], $dbResults));
+    }    
 
     function setRealizedObjective(string $letter, int $playerId = 0) {
-        self::DbQuery("update `realized_objective` set player_id = $playerId WHERE `letter` = '$letter'");
+        self::DbQuery("INSERT INTO `realized_objective`(`letter`, `player_id`) VALUES ('$letter', $playerId )");
     }
 
     function getTerritoryNeighboursIds(int $territoryId) {
@@ -530,7 +533,8 @@ trait UtilTrait {
             $number,
             clienttranslate('${player_name} get an objective token for objective ${letter}'), 
             [
-                'letter' => $letter
+                'letterId' => $letter,
+                'letter' => substr($letter, 0, 1),
             ]
         );
     }
@@ -638,7 +642,7 @@ trait UtilTrait {
                 }
 
                 if (count(array_unique($controlledBy, SORT_REGULAR)) === 1 && $controlledBy[0] !== null) {
-                    $this->takeScenarioObjectiveToken($controlledBy[0], substr($letter, 0, 1));
+                    $this->takeScenarioObjectiveToken($controlledBy[0], $letter);
                     $this->setRealizedObjective($letter);
                 }
             }

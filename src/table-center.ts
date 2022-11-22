@@ -9,7 +9,7 @@ class TableCenter {
             this.addRiver();
         }
         this.addBattlefields(scenario.battlefields);
-        this.addObjectiveTokens(scenario.objectiveTokens);
+        this.addObjectiveTokens(scenario.objectiveTokens, gamedatas.realizedObjectives);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         
         gamedatas.fightersOnTerritories.forEach(card => this.territoriesStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
@@ -103,9 +103,9 @@ class TableCenter {
         });
     }
 
-    private addObjectiveTokens(objectiveTokens: ObjectiveTokenPosition[]) {
+    private addObjectiveTokens(objectiveTokens: ObjectiveTokenPosition[], realizedObjectives: string[]) {
         const map = document.getElementById(`map`);
-        objectiveTokens.forEach(objectiveTokenInfos => {
+        objectiveTokens.filter(objectiveTokenInfos => !realizedObjectives.includes(objectiveTokenInfos.letter)).forEach(objectiveTokenInfos => {
             const objectiveToken = document.createElement('div');
             objectiveToken.id = `objective-token-${objectiveTokenInfos.letter}`;
             objectiveToken.classList.add('objective-token', 'token-with-letter');

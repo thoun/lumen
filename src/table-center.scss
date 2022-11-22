@@ -76,7 +76,7 @@
                 bottom: 0;
                 right: 0;
 
-                .card {
+                > * {
                     transition: left 0.5s, top 0.5s;
                 }
             }
@@ -179,6 +179,15 @@
     }
 
     .objective-token {
+        vertical-align: middle;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 101px;
+        height: 113px;
+        background: url('img/objective-tokens.png');
+        background-size: auto 100%;
+        background-position-x: 0%;
         position: absolute;
 
         &.token-with-letter {
@@ -211,6 +220,11 @@
         button {
             background: white;
             height: 30px;
+            cursor: pointer;
+
+            &[disabled] {
+                cursor: not-allowed;
+            }
         }
     }
 }

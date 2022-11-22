@@ -816,8 +816,8 @@ var ObjectiveTokensManager = /** @class */ (function (_super) {
         if (!div) {
             div = this.getCardElement(card).getElementsByClassName('front')[0];
         }
-        if (card.type) {
-            div.dataset.type = '' + card.type;
+        if (card.lumens) {
+            div.dataset.lumens = '' + card.lumens;
         }
     };
     return ObjectiveTokensManager;
@@ -1295,7 +1295,7 @@ var TableCenter = /** @class */ (function () {
             this.addRiver();
         }
         this.addBattlefields(scenario.battlefields);
-        this.addObjectiveTokens(scenario.objectiveTokens);
+        this.addObjectiveTokens(scenario.objectiveTokens, gamedatas.realizedObjectives);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         gamedatas.fightersOnTerritories.forEach(function (card) { return _this.territoriesStocks[card.locationArg].addCard(card, undefined, { visible: !card.played }); });
         gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.territoriesStocks[discoverTile.locationArg].discoverTileStock.addCard(discoverTile, undefined, { visible: discoverTile.visible }); });
@@ -1382,9 +1382,9 @@ var TableCenter = /** @class */ (function () {
             ])*/
         });
     };
-    TableCenter.prototype.addObjectiveTokens = function (objectiveTokens) {
+    TableCenter.prototype.addObjectiveTokens = function (objectiveTokens, realizedObjectives) {
         var map = document.getElementById("map");
-        objectiveTokens.forEach(function (objectiveTokenInfos) {
+        objectiveTokens.filter(function (objectiveTokenInfos) { return !realizedObjectives.includes(objectiveTokenInfos.letter); }).forEach(function (objectiveTokenInfos) {
             var objectiveToken = document.createElement('div');
             objectiveToken.id = "objective-token-".concat(objectiveTokenInfos.letter);
             objectiveToken.classList.add('objective-token', 'token-with-letter');
@@ -1509,7 +1509,9 @@ var PlayerTable = /** @class */ (function () {
                 div.dataset.operation = '' + operation;
                 div.dataset.number = '' + number;
                 div.innerHTML = "".concat(player.operations[operation] >= number ? "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>") : '');
-                div.addEventListener('click', function () { return _this.game.operationClick(operation); });
+                if (_this.currentPlayer) {
+                    div.addEventListener('click', function () { return _this.game.operationClick(operation); });
+                }
                 document.getElementById("player-table-".concat(_this.playerId, "-operations")).appendChild(div);
             });
         });
@@ -1520,7 +1522,9 @@ var PlayerTable = /** @class */ (function () {
             div.classList.add('circle');
             div.innerHTML = "".concat(circle.value ? (circle.value === -1 ? 'X' /* TODO Brouillage*/ : circle.value) : '');
             document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
-            div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
+            if (_this.currentPlayer) {
+                div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
+            }
         });
         player.links.forEach(function (link) { return _this.setLink(Number(link.index1), Number(link.index2)); });
         this.reserve = new SlotStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-reserve")), {
@@ -2027,7 +2031,7 @@ var Lumen = /** @class */ (function () {
             _this.discoverTilesStocks[playerId] = new LineStock(_this.discoverTilesManager, document.getElementById("player-".concat(player.id, "-discover-tiles")));
             _this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean((_a = player.discoverTiles[0]) === null || _a === void 0 ? void 0 : _a.type) });
             _this.objectiveTokensStocks[playerId] = new LineStock(_this.objectiveTokensManager, document.getElementById("player-".concat(player.id, "-objective-tokens")));
-            _this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean((_b = player.objectiveTokens[0]) === null || _b === void 0 ? void 0 : _b.type) });
+            _this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean((_b = player.objectiveTokens[0]) === null || _b === void 0 ? void 0 : _b.lumens) });
         });
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
         dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                <div id=\"bag-0\" class=\"bag\"></div>\n               \n            </div>\n        </div>", "player_boards", 'first');
@@ -2336,7 +2340,7 @@ var Lumen = /** @class */ (function () {
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
         this.notifqueue.setIgnoreNotificationCheck('takeObjectiveToken', function (notif) {
-            return notif.args.playerId == _this.getPlayerId() && !notif.args.value;
+            return notif.args.playerId == _this.getPlayerId() && !notif.args.tokens[0].lumens;
         });
     };
     Lumen.prototype.notif_diceRoll = function (notif) {
@@ -2403,7 +2407,11 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.notif_takeObjectiveToken = function (notif) {
         var _a;
         var playerId = notif.args.playerId;
-        this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean((_a = notif.args.tokens[0]) === null || _a === void 0 ? void 0 : _a.type) });
+        this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean((_a = notif.args.tokens[0]) === null || _a === void 0 ? void 0 : _a.lumens) });
+        if (notif.args.letterId) {
+            document.getElementById("objective-token-".concat(notif.args.letterId)).remove();
+        }
+        console.log('takeObjectiveToken', notif.args);
     };
     Lumen.prototype.notif_moveFighter = function (notif) {
         this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId);

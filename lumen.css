@@ -702,7 +702,7 @@ body > .card {
   bottom: 0;
   right: 0;
 }
-#map .battlefield .territory .territory-stock .card {
+#map .battlefield .territory .territory-stock > * {
   transition: left 0.5s, top 0.5s;
 }
 #map .battlefield .territory .discover-tile-stock {
@@ -777,6 +777,15 @@ body > .card {
   clip-path: polygon(30% 5%, 31% 10%, 29% 21%, 41% 39%, 64% 38%, 71% 40%, 76% 53%, 79% 58%, 78% 60%, 53% 73%, 48% 79%, 46% 88%, 43% 92%, 50% 97%, 58% 99%, 65% 97%, 70% 81%, 77% 77%, 87% 78%, 93% 76%, 95% 70%, 99% 68%, 98% 62%, 94% 56%, 98% 40%, 93% 31%, 93% 27%, 83% 26%, 80% 24%, 78% 19%, 73% 18%, 56% 24%, 48% 24%, 42% 21%, 43% 14%, 48% 10%, 43% 2%);
 }
 #map .objective-token {
+  vertical-align: middle;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 101px;
+  height: 113px;
+  background: url("img/objective-tokens.png");
+  background-size: auto 100%;
+  background-position-x: 0%;
   position: absolute;
 }
 #map .objective-token.token-with-letter {
@@ -806,6 +815,10 @@ body > .card {
 #map #fighter-choice button {
   background: white;
   height: 30px;
+  cursor: pointer;
+}
+#map #fighter-choice button[disabled] {
+  cursor: not-allowed;
 }
 
 @keyframes selectable-territory-animation {
@@ -1465,23 +1478,27 @@ html, .mode_3d #game_play_area_background {
 }
 
 .objective-token {
-  background: url("img/objective-tokens.png");
-  background-size: auto 100%;
-  background-position-x: 0%;
   vertical-align: middle;
   display: inline-block;
   width: 101px;
   height: 113px;
+  position: relative;
 }
-.objective-token[data-type="3"] {
+.objective-token .card-sides .card-side {
+  background: url("img/objective-tokens.png");
+  background-size: auto 100%;
+  background-position-x: 0%;
+  box-shadow: none;
+}
+.objective-token .card-sides .card-side.front[data-lumens="3"] {
   background-position-x: 33.333%;
   background-position-y: 0%;
 }
-.objective-token[data-type="4"] {
+.objective-token .card-sides .card-side.front[data-lumens="4"] {
   background-position-x: 66.666%;
   background-position-y: 0%;
 }
-.objective-token[data-type="5"] {
+.objective-token .card-sides .card-side.front[data-lumens="5"] {
   background-position-x: 99.999%;
   background-position-y: 0%;
 }

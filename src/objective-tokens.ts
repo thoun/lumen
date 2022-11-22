@@ -8,13 +8,13 @@ class ObjectiveTokensManager extends CardManager<ObjectiveToken> {
         })
     }  
 
-    public setupFrontDiv(card: DiscoverTile, div?: HTMLDivElement) {
+    public setupFrontDiv(card: ObjectiveToken, div?: HTMLDivElement) {
         if (!div) {
             div = this.getCardElement(card).getElementsByClassName('front')[0] as HTMLDivElement;
         }
 
-        if (card.type) {
-            div.dataset.type = ''+card.type;
+        if (card.lumens) {
+            div.dataset.lumens = ''+card.lumens;
         }
     }
 }

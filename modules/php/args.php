@@ -104,6 +104,31 @@ trait ArgsTrait {
         ];
     }
 
+    function canActivateFighter(Card $fighter, int $scenarioId) {
+        $canActivate = !$fighter->played && $fighter->power !== null && $fighter->power !== POWER_BAVEUX;
+
+        if ($canActivate && $fighter->power == POWER_ASSASSIN) {
+            $opponentFighters = $this->getCardsByLocation('territory', $fighter->locationArg, $this->getOpponentId($fighter->playerId));
+            $canActivate = count($opponentFighters) > 0 && $this->array_some($opponentFighters, fn($opponentFighter) => $opponentFighter->power !== POWER_BAVEUX);
+        }
+
+        if ($canActivate) {
+            switch ($scenarioId) {
+                case 5:
+                    if ($fighter->power === POWER_EMPLUME) {
+                        $canActivate = false;
+                    }
+                    break;
+                case 6:
+                    if ($fighter->location == 'territory' || $fighter->locationArg % 10 == 1) {
+                        $canActivate = false;
+                    }
+                    break;
+            }
+        }
+        return $canActivate;
+    }
+
     function argChooseFighter() {
         $playerId = intval($this->getActivePlayerId());
 
@@ -126,16 +151,8 @@ trait ArgsTrait {
                 $territoryFighters = $this->getCardsByLocation('territory', null, $playerId);
                 $possibleTerritoryFighters = $territoryFighters;
 
-                $possibleFightersToActivate = array_values(array_filter($territoryFighters, fn($fighter) => !$fighter->played && $fighter->power !== null && $fighter->power !== POWER_BAVEUX));
                 $scenarioId = $this->getScenarioId();
-                switch ($scenarioId) {
-                    case 5:
-                        $possibleFightersToActivate = array_values(array_filter($possibleFightersToActivate, fn($fighter) => $fighter->power !== POWER_EMPLUME));
-                        break;
-                    case 6:
-                        $possibleFightersToActivate = array_values(array_filter($possibleFightersToActivate, fn($fighter) => $fighter->location != 'territory' || $fighter->locationArg % 10 != 1));
-                        break;
-                }
+                $possibleFightersToActivate = array_values(array_filter($territoryFighters, fn($fighter) => $this->canActivateFighter($fighter, $scenarioId)));
 
                 $optionalDetail = $remainingPlays == 0 && $remainingMoves == 0 && $remainingBonusMoves > 0 ?
                     clienttranslate('(with Coup fourré)') : ''; // TODO check translation

@@ -190,6 +190,8 @@ class Lumen extends Table {
         $result['firstPlayerOperation'] = intval($this->getGameStateValue(FIRST_PLAYER_OPERATION));
         $result['die1'] = intval($this->getGameStateValue(DIE1));
         $result['die2'] = intval($this->getGameStateValue(DIE2));
+        $result['realizedObjectives'] = $this->getRealizedObjectives();
+        
   
         return $result;
     }

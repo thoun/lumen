@@ -19,7 +19,11 @@ interface DiscoverTile extends ICard {
     visible: boolean;
 }
 
-interface ObjectiveToken extends ICard {
+interface ObjectiveToken {
+    id: number;
+    lumens: number;
+    location: string;
+    locationArg: number;
     visible: boolean;
 }
 
@@ -67,6 +71,7 @@ interface LumenGamedatas {
     firstPlayerOperation: number;
     die1: number;
     die2: number;
+    realizedObjectives: string[];
 }
 
 interface LumenGame extends Game {
@@ -172,6 +177,7 @@ interface NotifTakeObjectiveTokenArgs {
     playerId: number;
     value: number;
     tokens: ObjectiveToken[];
+    letterId?: string;
 }
 
 interface NotifMoveFighterArgs {

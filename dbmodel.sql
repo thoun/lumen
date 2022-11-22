@@ -75,9 +75,10 @@ CREATE TABLE IF NOT EXISTS `objective_token` (
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `realized_objective` (
-  `letter` varchar(1)NOT NULL,
+  `realized_objective_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `letter` varchar(2) NOT NULL,
   `player_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`letter`)
+  PRIMARY KEY (`realized_objective_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- Example 2: add a custom field to the standard "player" table

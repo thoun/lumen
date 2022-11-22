@@ -455,7 +455,7 @@ class Lumen implements LumenGame {
             this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`));
             this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean(player.discoverTiles[0]?.type) });
             this.objectiveTokensStocks[playerId] = new LineStock<ObjectiveToken>(this.objectiveTokensManager, document.getElementById(`player-${player.id}-objective-tokens`));
-            this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean(player.objectiveTokens[0]?.type) });
+            this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean(player.objectiveTokens[0]?.lumens) });
         });
 
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
@@ -874,9 +874,9 @@ class Lumen implements LumenGame {
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
         
-        (this as any).notifqueue.setIgnoreNotificationCheck('takeObjectiveToken', (notif: Notif<NotifTakeObjectiveTokenArgs>) => 
-            notif.args.playerId == this.getPlayerId() && !notif.args.value
-        );
+        (this as any).notifqueue.setIgnoreNotificationCheck('takeObjectiveToken', (notif: Notif<NotifTakeObjectiveTokenArgs>) => {
+            return notif.args.playerId == this.getPlayerId() && !notif.args.tokens[0].lumens;
+        });
     }
 
     notif_diceRoll(notif: Notif<NotifDiceRollArgs>) {
@@ -956,7 +956,13 @@ class Lumen implements LumenGame {
     notif_takeObjectiveToken(notif: Notif<NotifTakeObjectiveTokenArgs>) {
         const playerId = notif.args.playerId;
 
-        this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean(notif.args.tokens[0]?.type) });
+        this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean(notif.args.tokens[0]?.lumens) });
+
+        if (notif.args.letterId) {
+            document.getElementById(`objective-token-${notif.args.letterId}`).remove();
+        }
+
+        console.log('takeObjectiveToken', notif.args);
     }
 
     notif_moveFighter(notif: Notif<NotifMoveFighterArgs>) {
