@@ -135,7 +135,7 @@ trait ArgsTrait {
     function canActivateFighter(int $playerId, Card $fighter, int $scenarioId) {
         $canActivate = !$fighter->played && $fighter->power !== null && $fighter->power !== POWER_BAVEUX;
 
-        if ($canActivate && $fighter->power == POWER_ASSASSIN) {
+        if ($canActivate && $fighter->type == 1 && $fighter->power == POWER_ASSASSIN) {
             $opponentFighters = $this->getCardsByLocation('territory', $fighter->locationArg, $this->getOpponentId($fighter->playerId));
             $canActivate = count($opponentFighters) > 0 && $this->array_some($opponentFighters, fn($opponentFighter) => $opponentFighter->power !== POWER_BAVEUX);
         }
@@ -147,6 +147,13 @@ trait ArgsTrait {
             }
         } else {
             if ($fighter->playerId != $playerId || $fighter->location != 'territory') {
+                $canActivate = false;
+            }
+        }
+
+        if ($fighter->location === 'territory' && $fighter->subType == 6) {
+            $opponentTisseuses = $this->getCardsByLocation($fighter->location, $fighter->locationArg, $this->getOpponentId($playerId), null, 15);
+            if ($this->array_some($opponentTisseuses, fn($opponentTisseuse) => $opponentTisseuse->played)) {
                 $canActivate = false;
             }
         }
@@ -175,6 +182,8 @@ trait ArgsTrait {
         $args = [
             'move' => $move,
         ];
+
+        $canCancel = $move > 0;
 
         $possibleTerritoryFighters = [];
         $selectionSize = 1;
@@ -236,7 +245,7 @@ trait ArgsTrait {
                 $opponentId = $this->getOpponentId($playerId);
                 foreach($territoriesIds as $territoryId) {
                     $opponentFighters = $this->getCardsByLocation('territory', $territoryId, $opponentId);
-                    $opponentFighters = array_values(array_filter($opponentFighters, fn($fighter) => !$fighter->played));
+                    $opponentFighters = array_values(array_filter($opponentFighters, fn($fighter) => !$fighter->played && $fighter->power != POWER_BAVEUX && $fighter->power !== null));
                     $possibleTerritoryFighters = array_merge($possibleTerritoryFighters, $opponentFighters);
                 }
                 $selectionSize = -1;
@@ -257,6 +266,7 @@ trait ArgsTrait {
 
 
         return $args + [
+           'canCancel' => $canCancel,
            'possibleTerritoryFighters' => $possibleTerritoryFighters,
            'selectionSize' => $selectionSize,
            'optionalDetail' => $optionalDetail,
@@ -266,12 +276,18 @@ trait ArgsTrait {
 
     function argChooseTerritory() {
         $playerId = intval($this->getActivePlayerId());
-        $canCancel = true; // TODO make unavailable when a supper already moved
 
         $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
-        $selectedFighter = $this->getCardById($selectedFighterId);
+        $selectedTargetId = intval($this->getGameStateValue(PLAYER_SELECTED_TARGET));
+        $selectedFighter = $this->getCardById($selectedTargetId > 0 ?  $selectedTargetId : $selectedFighterId);
 
         $move = intval($this->getGameStateValue(PLAYER_CURRENT_MOVE));
+
+        $canCancel = true;
+        if (intval($this->getGameStateValue(PLAYER_SELECTED_TARGET)) > 0 && $this->getCardById(PLAYER_SELECTED_FIGHTER)->type == 10 && $move == MOVE_PUSH) {
+            // super pusher after his move, can't cancel
+            $canCancel = false;
+        }
 
         $territoriesIds = [];
         switch ($move) {

@@ -150,6 +150,14 @@
       self::ajaxResponse();
     }
 
+    public function cancelChooseFighters() {
+      self::setAjaxMode();
+
+      $this->game->cancelChooseFighters();
+
+      self::ajaxResponse();
+    }
+
     public function pass() {
       self::setAjaxMode();
 

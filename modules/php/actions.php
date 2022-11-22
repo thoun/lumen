@@ -370,7 +370,7 @@ trait ActionTrait {
         $this->checkAction('chooseFighters'); 
 
         $args = $this->argChooseFighter();
-        if ($args['selectionSize'] != count($ids)) {
+        if (!in_array($args['selectionSize'], [-1, count($ids)])) {
             throw new BgaUserException("Invalid selection size");
         }
         $fighters = [];
@@ -389,10 +389,11 @@ trait ActionTrait {
         $nextState = 'nextMove';
         switch ($selectedFighter->power) {
             case POWER_PUSHER:                 
-                $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $fighter->id);
+                $this->setGameStateValue(PLAYER_SELECTED_TARGET, $fighter->id);
                 $nextState = 'chooseTerritory';
                 break;
             case POWER_ASSASSIN:
+            case POWER_BOMBARDE:
                 $this->putBackInBag([$fighter]);
                 $this->checkTerritoriesDiscoverTileControl();
                 break;
@@ -401,18 +402,19 @@ trait ActionTrait {
                 break;
             case ACTION_FURY:
                 if ($fighters[0]->locationArg == $fighters[1]->locationArg) {
-                    throw new BgaUserException("You must select fighters of different trritories");
+                    throw new BgaUserException("You must select fighters of different territories");
                 }
-                $this->putBackInBag($fighters);
+                $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
                 $this->checkTerritoriesDiscoverTileControl();
                 break;
             case ACTION_RESET:
-                $fighters = $this->getCardsByLocation($fighter->location, $fighter->locationArg);
-                $this->putBackInBag($fighters);
+                $fighters = $this->getCardsByLocation($fighter->location, $fighter->locationArg); // TODO check if it battlefield or territory
+                $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
                 break;
             case ACTION_TELEPORT:
                 $this->cards->moveCard($fighters[0]->id, 'territory', $fighters[1]->locationArg);
                 $this->cards->moveCard($fighters[1]->id, 'territory', $fighters[0]->locationArg);
+                $this->putBackInBag([$selectedFighter]);
                 $this->checkTerritoriesDiscoverTileControl();
         
                 self::notifyAllPlayers("exchangedFighters", '', [
@@ -422,6 +424,15 @@ trait ActionTrait {
         }
 
         $this->gamestate->nextState($nextState);
+    }
+
+    public function cancelChooseFighters() {
+        $this->checkAction('cancelChooseFighters');
+
+        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
+        $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
+
+        $this->gamestate->nextState('cancel');
     }
 
     public function passChooseFighters() {        
@@ -500,7 +511,7 @@ trait ActionTrait {
                     $nextState = 'chooseCellBrouillage';
                 }
                 break;
-            case POWER_IMPATIENT:
+            case MOVE_IMPATIENT:
                 $this->setGameStateValue(INITIATIVE_MARKER_TERRITORY, $territoryId);
                 self::notifyAllPlayers('moveInitiativeMarker', clienttranslate('${player_name} moves the initiative marker'), [
                     'playerId' => $playerId,

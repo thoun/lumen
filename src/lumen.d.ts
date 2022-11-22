@@ -114,6 +114,7 @@ interface EnteringChooseCellLinkArgs {
 }
 
 interface EnteringChooseFighterArgs {
+    canCancel: boolean;
     move: number;
     remainingPlays?: number;
     remainingMoves?: number;

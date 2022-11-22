@@ -1336,6 +1336,7 @@ var TableCenter = /** @class */ (function () {
         territories.forEach(function (territoryInfos) {
             var territory = document.createElement('div');
             territory.id = "territory-".concat(territoryInfos.id);
+            territory.dataset.id = '' + territoryInfos.id;
             territory.dataset.lumens = '' + (territoryInfos.id % 10);
             territory.classList.add('territory');
             var angle90 = rotation % 180 == 90;
@@ -1402,13 +1403,14 @@ var TableCenter = /** @class */ (function () {
         this.territoriesStocks[initiativeMarkerTerritory].addInitiativeMarker();
     };
     TableCenter.prototype.moveInitiativeMarker = function (territoryId) {
-        var previousTerritory = this.initiativeMarker.parentElement;
+        var previousTerritory = this.initiativeMarker.parentElement.parentElement;
         var territory = document.getElementById("territory-".concat(territoryId));
         territory.appendChild(this.initiativeMarker);
         stockSlideAnimation({
             element: this.initiativeMarker,
             fromElement: previousTerritory,
         });
+        console.log(previousTerritory, previousTerritory.dataset);
         this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
         this.territoriesStocks[territoryId].addInitiativeMarker();
     };
@@ -1658,6 +1660,7 @@ var Lumen = /** @class */ (function () {
         this.selectedPlanificationDice = {};
         this.discoverTilesStocks = [];
         this.objectiveTokensStocks = [];
+        this.chosenFighters = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -1816,15 +1819,17 @@ var Lumen = /** @class */ (function () {
             this.setGamestateDescription('' + args.move);
         }
         if (this.isCurrentPlayerActive()) {
+            this.chosenFighters = [];
             var selectableCards = this.getChooseFighterSelectableCards(args);
             this.getCurrentPlayerTable().setSelectableCards(selectableCards);
             this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
         }
     };
     Lumen.prototype.onEnteringChooseTerritory = function (args) {
+        var _a;
         this.setGamestateDescription('' + args.move);
         if (args.selectedFighter) {
-            this.cardsManager.getCardElement(args.selectedFighter).classList.add('selected');
+            (_a = this.cardsManager.getCardElement(args.selectedFighter)) === null || _a === void 0 ? void 0 : _a.classList.add('selected');
         }
         if (this.isCurrentPlayerActive()) {
             this.tableCenter.setSelectableTerritories(args.territoriesIds);
@@ -1914,7 +1919,23 @@ var Lumen = /** @class */ (function () {
                                     this.addActionButton("passAssassin_button", _('Pass (no possible fighter to assassinate)'), function () { return _this.passChooseFighters(); });
                                 }
                                 break;
+                            case 9:
+                                if (chooseFighterArgs.selectionSize == -1) {
+                                    this.addActionButton("chooseFighters_button", _('Disable selected fighters'), function () { return _this.chooseFighters(_this.chosenFighters); });
+                                }
+                                break;
+                            case 21:
+                                this.addActionButton("chooseFighters_button", _('Remove selected fighters'), function () { return _this.chooseFighters(_this.chosenFighters); });
+                                document.getElementById("chooseFighters_button").classList.add('disabled');
+                                break;
+                            case 23:
+                                this.addActionButton("chooseFighters_button", _('Swap selected fighters'), function () { return _this.chooseFighters(_this.chosenFighters); });
+                                document.getElementById("chooseFighters_button").classList.add('disabled');
+                                break;
                         }
+                    }
+                    if (chooseFighterArgs.canCancel) {
+                        this.addActionButton("cancelChooseFighters_button", _('Cancel'), function () { return _this.cancelChooseFighters(); }, null, null, 'gray');
                     }
                     break;
                 case 'chooseTerritory':
@@ -2188,8 +2209,21 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.chooseFightersClick = function (card) {
         var args = this.gamedatas.gamestate.args;
-        // TODO
-        this.chooseFighters([card.id]);
+        if (args.selectionSize == 1) {
+            this.chooseFighters([card.id]);
+        }
+        else {
+            var index = this.chosenFighters.indexOf(card.id);
+            if (index == -1) {
+                this.chosenFighters.push(card.id);
+            }
+            else {
+                this.chosenFighters.splice(index, 1);
+            }
+            if ([21, 23].includes(args.move)) {
+                document.getElementById("chooseFighters_button").classList.toggle('disabled', this.chosenFighters.length !== args.selectionSize);
+            }
+        }
     };
     Lumen.prototype.activatePlanification = function () {
         if (!this.checkAction('activatePlanification')) {
@@ -2278,6 +2312,12 @@ var Lumen = /** @class */ (function () {
         this.takeAction('chooseFighters', {
             ids: ids.join(',')
         });
+    };
+    Lumen.prototype.cancelChooseFighters = function () {
+        if (!this.checkAction('cancelChooseFighters')) {
+            return;
+        }
+        this.takeAction('cancelChooseFighters');
     };
     Lumen.prototype.pass = function (shouldntPass) {
         var _this = this;
@@ -2429,7 +2469,6 @@ var Lumen = /** @class */ (function () {
         if (notif.args.letterId) {
             (_b = document.getElementById("objective-token-".concat(notif.args.letterId))) === null || _b === void 0 ? void 0 : _b.remove();
         }
-        console.log('takeObjectiveToken', notif.args);
     };
     Lumen.prototype.notif_moveFighter = function (notif) {
         this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId);

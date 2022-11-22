@@ -42,6 +42,7 @@ trait StateTrait {
 
     function stNextMove() {
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
+        $this->setGameStateValue(PLAYER_SELECTED_TARGET, 0);
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
         
         $canDoAction =  (

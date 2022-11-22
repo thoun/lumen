@@ -246,7 +246,6 @@ trait UtilTrait {
             foreach ($playerFighters as $playerNo => $fightersSubType) {
                 foreach($fightersSubType as $fighterSubType) {
                     $playerId = $playersIdsByPlayerNo[$playerNo];
-                    //$this->debug($playerId);
                     $cards = $this->getCardsByLocation('bag'.$playerId, null, null, null, $fighterSubType);
                     $this->cards->moveCard($cards[0]->id, 'territory', $territoryId);
                     $territoriesWithFighters[] = $territoryId;
@@ -788,6 +787,8 @@ trait UtilTrait {
     }
     
     function applyAction(Card &$action) {
+        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $action->id);
+
         $nextState = 'chooseFighter';
         switch ($action->power) {
             case ACTION_FURY:

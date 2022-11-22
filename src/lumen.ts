@@ -25,6 +25,7 @@ class Lumen implements LumenGame {
     private selectedPlanificationDice: { [color: string]: number } = {};
     private discoverTilesStocks: LineStock<DiscoverTile>[] = [];
     private objectiveTokensStocks: LineStock<ObjectiveToken>[] = [];
+    private chosenFighters: number[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -209,6 +210,7 @@ class Lumen implements LumenGame {
         }
 
         if ((this as any).isCurrentPlayerActive()) {
+            this.chosenFighters = [];
             const selectableCards = this.getChooseFighterSelectableCards(args);
             this.getCurrentPlayerTable().setSelectableCards(selectableCards);
             this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
@@ -218,7 +220,7 @@ class Lumen implements LumenGame {
     private onEnteringChooseTerritory(args: EnteringChooseTerritoryArgs) {
         this.setGamestateDescription(''+args.move);
         if (args.selectedFighter) {
-            this.cardsManager.getCardElement(args.selectedFighter).classList.add('selected');
+            this.cardsManager.getCardElement(args.selectedFighter)?.classList.add('selected');
         }
         if ((this as any).isCurrentPlayerActive()) {
             this.tableCenter.setSelectableTerritories(args.territoriesIds);
@@ -314,7 +316,23 @@ class Lumen implements LumenGame {
                                     (this as any).addActionButton(`passAssassin_button`, _('Pass (no possible fighter to assassinate)'), () => this.passChooseFighters());
                                 }
                                 break;
+                            case 9:
+                                if (chooseFighterArgs.selectionSize == -1) {
+                                    (this as any).addActionButton(`chooseFighters_button`, _('Disable selected fighters'), () => this.chooseFighters(this.chosenFighters));
+                                }
+                                break;
+                            case 21:
+                                (this as any).addActionButton(`chooseFighters_button`, _('Remove selected fighters'), () => this.chooseFighters(this.chosenFighters));
+                                document.getElementById(`chooseFighters_button`).classList.add('disabled');
+                                break;
+                            case 23:
+                                (this as any).addActionButton(`chooseFighters_button`, _('Swap selected fighters'), () => this.chooseFighters(this.chosenFighters));
+                                document.getElementById(`chooseFighters_button`).classList.add('disabled');
+                                break;
                         }
+                    }
+                    if (chooseFighterArgs.canCancel) { 
+                        (this as any).addActionButton(`cancelChooseFighters_button`, _('Cancel'), () => this.cancelChooseFighters(), null, null, 'gray');
                     }
                     break;
                 case 'chooseTerritory':
@@ -687,8 +705,20 @@ class Lumen implements LumenGame {
     
     public chooseFightersClick(card: Card): void {
         const args: EnteringChooseFighterArgs = this.gamedatas.gamestate.args;
-        // TODO
-        this.chooseFighters([card.id]);
+        if (args.selectionSize == 1) {
+            this.chooseFighters([card.id]);
+        } else {
+            const index = this.chosenFighters.indexOf(card.id);
+            if (index == -1) {
+                this.chosenFighters.push(card.id);
+            } else {
+                this.chosenFighters.splice(index, 1);
+            }
+
+            if ([21, 23].includes(args.move)) {
+                document.getElementById(`chooseFighters_button`).classList.toggle('disabled', this.chosenFighters.length !== args.selectionSize);
+            }
+        }
     }
 
     public activatePlanification() {
@@ -802,6 +832,14 @@ class Lumen implements LumenGame {
         this.takeAction('chooseFighters', {
             ids: ids.join(',')
         });
+    }
+
+    public cancelChooseFighters() {
+        if(!(this as any).checkAction('cancelChooseFighters')) {
+            return;
+        }
+
+        this.takeAction('cancelChooseFighters');
     }
 
     public pass(shouldntPass: boolean) {
@@ -984,8 +1022,6 @@ class Lumen implements LumenGame {
         if (notif.args.letterId) {
             document.getElementById(`objective-token-${notif.args.letterId}`)?.remove();
         }
-
-        console.log('takeObjectiveToken', notif.args);
     }
 
     notif_moveFighter(notif: Notif<NotifMoveFighterArgs>) {

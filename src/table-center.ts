@@ -53,6 +53,7 @@ class TableCenter {
         territories.forEach(territoryInfos => {
             const territory = document.createElement('div');
             territory.id = `territory-${territoryInfos.id}`;
+            territory.dataset.id = ''+territoryInfos.id;
             territory.dataset.lumens = ''+(territoryInfos.id % 10);
             territory.classList.add('territory');
             const angle90 = rotation % 180 == 90;
@@ -126,13 +127,14 @@ class TableCenter {
     }
     
     public moveInitiativeMarker(territoryId: number) {
-        const previousTerritory = this.initiativeMarker.parentElement;
+        const previousTerritory = this.initiativeMarker.parentElement.parentElement;
         const territory = document.getElementById(`territory-${territoryId}`);
         territory.appendChild(this.initiativeMarker);
         stockSlideAnimation({
             element: this.initiativeMarker,
             fromElement: previousTerritory,
         });
+        console.log(previousTerritory, previousTerritory.dataset);
         this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
         this.territoriesStocks[territoryId].addInitiativeMarker();
     }
