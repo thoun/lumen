@@ -55,13 +55,13 @@
             top: var(--y);
             width: var(--width);
             height: var(--height);
-            display: flex;
+            /*display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 10px;*/
             z-index: 2;
 
-            .card {
+            .card, #initiative-marker {
                 pointer-events: all;
             }
 
@@ -183,6 +183,7 @@
     }
 
     #initiative-marker {
+        position: absolute;
         background: url('img/initiative-marker.png');
         width: 100px;
         height: 100px;

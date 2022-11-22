@@ -666,10 +666,10 @@ body > .card {
   top: var(--y);
   width: var(--width);
   height: var(--height);
-  display: flex;
+  /*display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 10px;*/
   z-index: 2;
   /*&[data-lumens="1"] {
       background: #FFFFFF88;
@@ -689,7 +689,7 @@ body > .card {
       box-shadow: 0 0 8px 8px red;
   }*/
 }
-#map .battlefield .territory .card {
+#map .battlefield .territory .card, #map .battlefield .territory #initiative-marker {
   pointer-events: all;
 }
 #map .battlefield .territory[data-vertical=true] {
@@ -780,6 +780,7 @@ body > .card {
   font-size: 5rem;
 }
 #map #initiative-marker {
+  position: absolute;
   background: url("img/initiative-marker.png");
   width: 100px;
   height: 100px;

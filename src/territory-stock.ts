@@ -1,5 +1,3 @@
-
-//const curvePoints = [[0, 0], [10, 10]];//[[0, 2], [2, 3], [3, 4], [4, 2], [5, 6], [10, 5]];
 const cardWidth = 100;
 const cardHeight = 100;
 
@@ -10,9 +8,10 @@ class TerritoryStock extends ManualPositionStock<Card> {
     private curveYScale: number;
     private canvasWidth: number;
     private canvasHeight: number;
+    private initiativeMarker: boolean;
 
     constructor(protected manager: CardManager<Card>, protected element: HTMLElement, protected direction: 'horizontal' | 'vertical', protected curve: number[][], protected rotation: 0 | 90 | 180 | 270) {
-        super(manager, element, (_, cards) => this.manualPosition(cards));
+        super(manager, element, (_, cards) => this.manualPosition());
         element.classList.add('territory-stock');
 
         this.tempOriginalCurve = curve.slice();
@@ -67,47 +66,44 @@ class TerritoryStock extends ManualPositionStock<Card> {
         }
     }
 
-    private manualPosition(cards: Card[]) {
+    private manualPosition() {
         let vertical = this.direction !== 'horizontal';
         if ([90, 270].includes(this.rotation)) {
             vertical = !vertical;
         }
-        return vertical ? this.manualPositionVertical(cards) : this.manualPositionHorizontal(cards);
+        return vertical ? this.manualPositionVertical() : this.manualPositionHorizontal();
     }
 
-    private manualPositionHorizontal(cards: Card[]) {
-        this.getCards().forEach((card, index) => {
-            const cardDiv = this.getCardElement(card);
-            let left = this.canvasWidth / 2 + ((cardWidth + 10) * (index - (cards.length) / 2));
-            if (left < 0) {
-                left = 0;
-            }
-            if (left > this.canvasWidth) {
-                left = this.canvasWidth;
-            }
+    private getElements(): HTMLElement[] {
+        const elements = this.getCards().map(card => this.getCardElement(card));
+
+        if (this.initiativeMarker) {
+            elements.push(document.getElementById(`initiative-marker`));
+        }
+
+        return elements;
+    }
+
+    private manualPositionHorizontal() {
+        const elements = this.getElements();
+        elements.forEach((cardDiv, index) => {
+            const left = this.canvasWidth / 2 + ((cardWidth + 10) * (index - elements.length / 2));
             const x = (left + cardWidth / 2) / this.curveXScale;
     
-            const y = this.getYFromX(x);
+            const y = this.getYFromX(Math.max(0, Math.min(x, 12)));
     
             cardDiv.style.left = `${left}px`;
             cardDiv.style.top = `${y * this.curveYScale - cardHeight / 2}px`;
         });
     }
 
-    private manualPositionVertical(cards: Card[]) {
-        this.getCards().forEach((card, index) => {
-            const cardDiv = this.getCardElement(card);
-            let top = this.canvasHeight / 2 + ((cardHeight + 10) * (index - (cards.length) / 2));
-            if (top < 0) {
-                top = 0;
-            }
-            if (top > this.canvasHeight) {
-                top = this.canvasHeight;
-            }
-
+    private manualPositionVertical() {
+        const elements = this.getElements();
+        elements.forEach((cardDiv, index) => {
+            const top = this.canvasHeight / 2 + ((cardHeight + 10) * (index - elements.length / 2));
             const y = (top + cardHeight / 2) / this.curveYScale;
     
-            const x = this.getXFromY(y);
+            const x = this.getXFromY(Math.max(0, Math.min(y, 12)));
     
             cardDiv.style.top = `${top}px`;
             cardDiv.style.left = `${x * this.curveXScale - cardWidth / 2}px`;
@@ -144,5 +140,16 @@ class TerritoryStock extends ManualPositionStock<Card> {
         }
     
         throw new Error(`invalid y (${y}), curve : ${JSON.stringify(curvePoints)}, originalCurve : ${JSON.stringify(this.tempOriginalCurve)}, rotation : ${this.rotation}`);
+    }
+
+    public addInitiativeMarker() {
+        this.initiativeMarker = true;
+        this.element.appendChild(document.getElementById(`initiative-marker`));
+        this.manualPosition();
+    }
+
+    public initiativeMarkerRemoved() {
+        this.initiativeMarker = false;
+        this.manualPosition();
     }
 }

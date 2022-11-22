@@ -14,7 +14,7 @@ class TableCenter {
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         
         // TODO TEMP gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
-        // TODO TEMP gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, {visible: discoverTile.visible}));
+        gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, {visible: discoverTile.visible}));
 
         this.setMapSize(scenario.battlefields);
     }
@@ -125,6 +125,7 @@ class TableCenter {
         this.initiativeMarker = document.createElement('div');
         this.initiativeMarker.id = `initiative-marker`;
         territory.appendChild(this.initiativeMarker);
+        this.fightersStocks[initiativeMarkerTerritory].addInitiativeMarker();
     }
     
     public moveInitiativeMarker(territoryId: number) {
@@ -135,6 +136,8 @@ class TableCenter {
             element: this.initiativeMarker,
             fromElement: previousTerritory,
         });
+        this.fightersStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
+        this.fightersStocks[territoryId].addInitiativeMarker();
     }
     
     public moveFighter(fighter: Card, territoryId: number) {
