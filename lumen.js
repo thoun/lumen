@@ -1917,13 +1917,12 @@ var Lumen = /** @class */ (function () {
                         }
                     }
                     break;
-                /*case 'chooseTerritory':
-                    // TODO TEMP
-                    const chooseTerritoryArgs = args as EnteringChooseTerritoryArgs;
-                    chooseTerritoryArgs.territoriesIds.forEach(territoryId =>
-                    (this as any).addActionButton(`chooseTerritory${territoryId}_button`, `territory ${territoryId}`, () => this.chooseTerritory(territoryId))
-                    )
-                    break;*/
+                case 'chooseTerritory':
+                    var chooseTerritoryArgs = args;
+                    if (chooseTerritoryArgs.canCancel) {
+                        this.addActionButton("cancelChooseTerritory_button", _('Cancel'), function () { return _this.cancelChooseTerritory(); }, null, null, 'gray');
+                    }
+                    break;
             }
         }
     };
@@ -2299,6 +2298,12 @@ var Lumen = /** @class */ (function () {
             id: id
         });
     };
+    Lumen.prototype.cancelChooseTerritory = function () {
+        if (!this.checkAction('cancelChooseTerritory')) {
+            return;
+        }
+        this.takeAction('cancelChooseTerritory');
+    };
     Lumen.prototype.passChooseFighters = function () {
         if (!this.checkAction('passChooseFighters')) {
             return;
@@ -2418,11 +2423,11 @@ var Lumen = /** @class */ (function () {
         }
     };
     Lumen.prototype.notif_takeObjectiveToken = function (notif) {
-        var _a;
+        var _a, _b;
         var playerId = notif.args.playerId;
         this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean((_a = notif.args.tokens[0]) === null || _a === void 0 ? void 0 : _a.lumens) });
         if (notif.args.letterId) {
-            document.getElementById("objective-token-".concat(notif.args.letterId)).remove();
+            (_b = document.getElementById("objective-token-".concat(notif.args.letterId))) === null || _b === void 0 ? void 0 : _b.remove();
         }
         console.log('takeObjectiveToken', notif.args);
     };

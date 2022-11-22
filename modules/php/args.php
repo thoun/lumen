@@ -159,7 +159,7 @@ trait ArgsTrait {
                     }
                     break;
                 case 6:
-                    if ($fighter->location == 'territory' || $fighter->locationArg % 10 == 1) {
+                    if ($fighter->location == 'territory' && $fighter->locationArg % 10 == 1) {
                         $canActivate = false;
                     }
                     break;
@@ -266,6 +266,7 @@ trait ArgsTrait {
 
     function argChooseTerritory() {
         $playerId = intval($this->getActivePlayerId());
+        $canCancel = true; // TODO make unavailable when a supper already moved
 
         $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
         $selectedFighter = $this->getCardById($selectedFighterId);
@@ -323,9 +324,10 @@ trait ArgsTrait {
             case MOVE_FLY:
                 $battlefieldsIds = $this->getBattlefieldsIds($selectedFighter->locationArg);
                 if ($this->getScenarioId() == 7) {
-                    if (in_array($selectedFighter->locationArg % 10, [6, 1, 3])) {
+                    $currentBattlefield = floor($selectedFighter->locationArg / 10);
+                    if (in_array($currentBattlefield, [6, 1, 3])) {
                         $battlefieldsIds = [6, 1, 3];
-                    } else if (in_array($selectedFighter->locationArg % 10, [5, 4, 7])) {
+                    } else if (in_array($currentBattlefield, [5, 4, 7])) {
                         $battlefieldsIds = [5, 4, 7];
                     }
                 } // TODO check si on peut s'arrpeter sur le 2 depuis 1 3 6 ou si on doit d'arrêter avant. Et si on peut voler depuis le 2
@@ -343,6 +345,7 @@ trait ArgsTrait {
         }
 
         return [
+            'canCancel' => $canCancel,
             'selectedFighter' => $selectedFighter,
             'move' => $move,
             'territoriesIds' => $territoriesIds,

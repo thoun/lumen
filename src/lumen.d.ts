@@ -127,6 +127,7 @@ interface EnteringChooseFighterArgs {
 }
 
 interface EnteringChooseTerritoryArgs {
+    canCancel: boolean;
     move: number;
     selectedFighter: Card;
     territoriesIds: number[];

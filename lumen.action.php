@@ -168,6 +168,14 @@
       self::ajaxResponse();
     }
 
+    public function cancelChooseTerritory() {
+      self::setAjaxMode();
+
+      $this->game->cancelChooseTerritory();
+
+      self::ajaxResponse();
+    }
+
     public function passChooseFighters() {
       self::setAjaxMode();
 

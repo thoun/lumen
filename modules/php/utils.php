@@ -612,7 +612,7 @@ trait UtilTrait {
             case 7: 
                 if (!$this->isRealizedObjective('B') && in_array($territoryId, [65, 75])) {
                     $players = $this->loadPlayersBasicInfos();
-                    $playerNo = intval($this->array_find($players, fn($player) => intval($player['player_id']) == $fighter->playerId)['player_table_order']);
+                    $playerNo = intval($this->array_find($players, fn($player) => intval($player['player_id']) == $fighter->playerId)['player_no']);
                     if (($playerNo == 1 && $territoryId == 75) || ($playerNo == 2 && $territoryId == 65)) {
                         $this->takeScenarioObjectiveToken($fighter->playerId, 'B', 3);
                         $this->setRealizedObjective('B');
@@ -738,6 +738,10 @@ trait UtilTrait {
     }
 
     function setFightersActivated(array $fighters) {
+        if (count($fighters) == 0) {
+            return; // TODO log or block ?
+        }
+        
         $fightersIds = array_map(fn($fighter) => $fighter->id, $fighters);
         self::DbQuery("update card set played = true where card_id IN (".implode(',', $fightersIds).")");
 
@@ -747,6 +751,10 @@ trait UtilTrait {
     }
 
     function setFightersUnactivated(array $fighters) {
+        if (count($fighters) == 0) {
+            return; // TODO log or block ?
+        }
+
         $fightersIds = array_map(fn($fighter) => $fighter->id, $fighters);
         self::DbQuery("update card set played = false where card_id IN (".implode(',', $fightersIds).")");
 

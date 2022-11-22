@@ -513,6 +513,20 @@ trait ActionTrait {
         $this->gamestate->nextState($nextState);
     }
 
+    public function cancelChooseTerritory() {
+        $this->checkAction('cancelChooseTerritory'); 
+
+        $args = $this->argChooseTerritory();
+        if(!$args['canCancel']) {
+            throw new BgaUserException("Cancel is not available");
+        }
+
+        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
+        $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
+
+        $this->gamestate->nextState('cancel');
+    }
+
     public function pass() {
         $this->checkAction('pass'); 
 

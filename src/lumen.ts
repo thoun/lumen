@@ -317,13 +317,12 @@ class Lumen implements LumenGame {
                         }
                     }
                     break;
-                /*case 'chooseTerritory':
-                    // TODO TEMP
+                case 'chooseTerritory':
                     const chooseTerritoryArgs = args as EnteringChooseTerritoryArgs;
-                    chooseTerritoryArgs.territoriesIds.forEach(territoryId => 
-                    (this as any).addActionButton(`chooseTerritory${territoryId}_button`, `territory ${territoryId}`, () => this.chooseTerritory(territoryId))
-                    )
-                    break;*/
+                    if (chooseTerritoryArgs.canCancel) { 
+                        (this as any).addActionButton(`cancelChooseTerritory_button`, _('Cancel'), () => this.cancelChooseTerritory(), null, null, 'gray');
+                    }
+                    break;
             }
         }
     }
@@ -831,6 +830,14 @@ class Lumen implements LumenGame {
         });
     }
 
+    public cancelChooseTerritory() {
+        if(!(this as any).checkAction('cancelChooseTerritory')) {
+            return;
+        }
+
+        this.takeAction('cancelChooseTerritory');
+    }
+
     public passChooseFighters() {
         if(!(this as any).checkAction('passChooseFighters')) {
             return;
@@ -975,7 +982,7 @@ class Lumen implements LumenGame {
         this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean(notif.args.tokens[0]?.lumens) });
 
         if (notif.args.letterId) {
-            document.getElementById(`objective-token-${notif.args.letterId}`).remove();
+            document.getElementById(`objective-token-${notif.args.letterId}`)?.remove();
         }
 
         console.log('takeObjectiveToken', notif.args);

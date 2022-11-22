@@ -200,8 +200,10 @@ $playerActionsGameStates = [
         "args" => "argChooseTerritory", 
         "possibleactions" => [ 
             "chooseTerritory",
+            "cancelChooseTerritory",
         ],
         "transitions" => [
+            "cancel" => ST_PLAYER_CHOOSE_FIGHTER,
             "chooseCellBrouillage" => ST_PLAYER_CHOOSE_CELL_BROUILLAGE,
             "chooseFighter" => ST_PLAYER_CHOOSE_FIGHTER,
             "nextMove" => ST_NEXT_MOVE,
