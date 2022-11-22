@@ -22,15 +22,15 @@ class BattlefieldPosition {
       public battlefieldId: number, 
       public x: number, 
       public y: number, 
-      public rotation: number
+      public rotation: 0 | 90 | 180 | 270
     ) {}
 }
 
 const BATTLEFIELDS = [
   null,
   new Battlefield(1, [
-    new Territory(11, 24, 0, 303, 291, 'horizontal', [[0, 4], [6, 4], [10, 10]]),
-    new Territory(15, 0, 150, 408, 537, 'vertical', [[5, 0], [5, 3], [2, 6], [6, 7], [10, 10]]),
+    new Territory(11, 24, 0, 303, 291, 'horizontal', [[0, 0], [2, 1], [5, 9], [12, 8]]),
+    new Territory(15, 0, 150, 408, 537, 'vertical', [[0, 0], [3, 3], [8, 7], [5, 9], [4, 12]]),
   ]),
   new Battlefield(2, [
     new Territory(27, 0, 0, 423, 708, 'vertical', [[2, 0], [4, 4], [9, 5], [9, 8], [5, 10], [6, 12]]),

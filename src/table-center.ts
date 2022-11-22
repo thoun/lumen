@@ -13,8 +13,8 @@ class TableCenter {
         this.addObjectiveTokens(scenario.objectiveTokens);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         
-        gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
-        gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, {visible: discoverTile.visible}));
+        // TODO TEMP gamedatas.fightersOnTerritories.forEach(card => this.fightersStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
+        // TODO TEMP gamedatas.discoverTilesOnTerritories.forEach(discoverTile => this.discoverTilesStocks[discoverTile.locationArg].addCard(discoverTile, undefined, {visible: discoverTile.visible}));
 
         this.setMapSize(scenario.battlefields);
     }
@@ -50,7 +50,7 @@ class TableCenter {
         });
     }
     
-    private addTerritories(territories: Territory[], battlefield: HTMLDivElement, rotation: number) {
+    private addTerritories(territories: Territory[], battlefield: HTMLDivElement, rotation: 0 | 90 | 180 | 270) {
         territories.forEach(territoryInfos => {
             const territory = document.createElement('div');
             territory.id = `territory-${territoryInfos.id}`;
@@ -87,7 +87,7 @@ class TableCenter {
             territoryMask.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
             //this.fightersStocks[territoryInfos.id] = new LineStock<Card>(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`));
-            this.fightersStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.direction, territoryInfos.curve, rotation >= 180);
+            this.fightersStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.direction, territoryInfos.curve, rotation);
             this.fightersStocks[territoryInfos.id].onCardClick = card => {
                 const canClick = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleTerritoryFighters?.some(fighter => fighter.id == card.id);
                 if (canClick) {
@@ -97,6 +97,13 @@ class TableCenter {
                 }
             }
             this.discoverTilesStocks[territoryInfos.id] = new LineStock<DiscoverTile>(this.game.discoverTilesManager, document.getElementById(`territory-${territoryInfos.id}-discover-tiles`));
+
+            // TODO TEMP
+            this.fightersStocks[territoryInfos.id].addCards([
+                { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
+                { id: 1000 * territoryInfos.id + 2, type: 1, subType: 1, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
+                { id: 1000 * territoryInfos.id + 3, type: 1, subType: 2, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
+            ])
         });
     }
 

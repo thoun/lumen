@@ -61,7 +61,7 @@
             gap: 10px;
             z-index: 2;
 
-            & > div {
+            .card {
                 pointer-events: all;
             }
 
@@ -69,7 +69,6 @@
                 flex-direction: column;
             }
 
-            // TODO TEMP ?
             .territory-stock {
                 position: absolute;
                 left: 0;
@@ -101,8 +100,6 @@
                 box-shadow: 0 0 8px 8px red;
             }*/
 
-            // TODO TEMP
-
             canvas {
                 position: absolute;
                 left: 0;
@@ -123,6 +120,7 @@
 
             &.selectable {
                 animation: selectable-territory-animation 1s alternate infinite ease-in-out;
+                cursor: pointer;
             }
 
             &[data-id="11"] {
@@ -186,8 +184,8 @@
 
     #initiative-marker {
         background: url('img/initiative-marker.png');
-        width: 57px;
-        height: 60px;
+        width: 100px;
+        height: 100px;
     }
 
     #fighter-choice {

@@ -56,7 +56,7 @@ trait StateTrait {
         $this->refillReserve($playerId);
 
         $this->giveExtraTime($playerId);
-        $playerId = $this->activeNextPlayer();
+        $this->activeNextPlayer();
         
         $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
 
