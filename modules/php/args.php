@@ -316,6 +316,9 @@ trait ArgsTrait {
                             break;
                     }
                 }
+                if ($move != MOVE_PUSH) {
+                    $territoriesIds = array_values(array_filter($territoriesIds, fn($id) => $id !== 0));
+                }
                 break;
             case MOVE_FLY:
                 $battlefieldsIds = $this->getBattlefieldsIds($selectedFighter->locationArg);
@@ -328,7 +331,9 @@ trait ArgsTrait {
                 } // TODO check si on peut s'arrpeter sur le 2 depuis 1 3 6 ou si on doit d'arrêter avant. Et si on peut voler depuis le 2
                 foreach ($battlefieldsIds as $battlefieldId) {
                     foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
-                        $territoriesIds[] = $territory->id;
+                        if ($territory->id != $selectedFighter->locationArg) {
+                            $territoriesIds[] = $territory->id;
+                        }
                     }
                 }
                 break;

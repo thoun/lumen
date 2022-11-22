@@ -1459,7 +1459,7 @@ var TableCenter = /** @class */ (function () {
         });
     };
     TableCenter.prototype.setSelectableTerritories = function (territoriesIds) {
-        territoriesIds.forEach(function (territoryId) { return document.getElementById("territory-mask-".concat(territoryId)).classList.add('selectable'); });
+        territoriesIds.forEach(function (territoryId) { var _a; return (_a = document.getElementById(territoryId ? "territory-mask-".concat(territoryId) : 'river')) === null || _a === void 0 ? void 0 : _a.classList.add('selectable'); });
     };
     TableCenter.prototype.setMapSize = function (battlefields) {
         var maxRight = 0;
@@ -1869,6 +1869,7 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.onLeavingChooseTerritory = function () {
         document.querySelectorAll('.fighter.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
         document.querySelectorAll('.territory-mask.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
+        document.querySelectorAll('#river.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
     };
     Lumen.prototype.onLeavingChooseCellLink = function () {
         document.querySelectorAll('.link.selectable').forEach(function (elem) { return elem.remove(); });
@@ -2040,7 +2041,7 @@ var Lumen = /** @class */ (function () {
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place("<div id=\"first-player-token\" class=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
             }
-            _this.discoverTilesStocks[playerId] = new LineStock(_this.discoverTilesManager, document.getElementById("player-".concat(player.id, "-discover-tiles")));
+            _this.discoverTilesStocks[playerId] = new LineStock(_this.discoverTilesManager, document.getElementById("player-".concat(player.id, "-discover-tiles")), { wrap: 'nowrap' });
             _this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean((_a = player.discoverTiles[0]) === null || _a === void 0 ? void 0 : _a.type) });
             _this.objectiveTokensStocks[playerId] = new LineStock(_this.objectiveTokensManager, document.getElementById("player-".concat(player.id, "-objective-tokens")));
             _this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean((_b = player.objectiveTokens[0]) === null || _b === void 0 ? void 0 : _b.lumens) });

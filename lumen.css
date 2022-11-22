@@ -616,9 +616,13 @@ body > .card {
   left: 412px;
   width: 837px;
   height: 838px;
-  background: url("img/river.svg");
+  background-image: url("img/river.svg");
   background-size: contain;
   background-repeat: no-repeat;
+}
+#map #river.selectable {
+  animation: selectable-river-animation 1s alternate infinite ease-in-out;
+  cursor: pointer;
 }
 #map .battlefield, #map .battlefield-background {
   position: absolute;
@@ -825,6 +829,14 @@ body > .card {
   }
   100% {
     background: rgba(255, 255, 255, 0.7);
+  }
+}
+@keyframes selectable-river-animation {
+  0% {
+    filter: none;
+  }
+  100% {
+    filter: brightness(2);
   }
 }
 .player-board {

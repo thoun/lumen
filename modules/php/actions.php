@@ -458,6 +458,7 @@ trait ActionTrait {
                 $this->incGameStateValue(REMAINING_FIGHTERS_TO_PLACE, -1);
                 break;
             case MOVE_MOVE:
+                $originTerritoryId = $selectedFighter->locationArg;
                 $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
                 if ($redirectBrouillage) {
                     $nextState = 'chooseCellBrouillage';
@@ -465,7 +466,7 @@ trait ActionTrait {
 
                 $inc = -1;
 
-                if ($this->getScenarioId() == 3 && array_key_exists($selectedFighter->locationArg, $this->RIVER_CROSS_TERRITORIES) && in_array($territoryId, $this->RIVER_CROSS_TERRITORIES[$selectedFighter->locationArg])) {
+                if ($this->getScenarioId() == 3 && array_key_exists($originTerritoryId, $this->RIVER_CROSS_TERRITORIES) && in_array($territoryId, $this->RIVER_CROSS_TERRITORIES[$originTerritoryId])) {
                     $inc = -2;
                 }
                 // TODO handle mix with coup fourre

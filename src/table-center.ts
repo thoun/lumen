@@ -196,7 +196,9 @@ class TableCenter {
     }
     
     public setSelectableTerritories(territoriesIds: number[]) {
-        territoriesIds.forEach(territoryId => document.getElementById(`territory-mask-${territoryId}`).classList.add('selectable'));
+        territoriesIds.forEach(territoryId => 
+            document.getElementById(territoryId ? `territory-mask-${territoryId}` : 'river')?.classList.add('selectable')
+        );
     }
     
     private setMapSize(battlefields: BattlefieldPosition[]) {

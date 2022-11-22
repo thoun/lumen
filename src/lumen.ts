@@ -269,6 +269,7 @@ class Lumen implements LumenGame {
     private onLeavingChooseTerritory() {
         document.querySelectorAll('.fighter.selectable').forEach(elem => elem.classList.remove('selectable'));
         document.querySelectorAll('.territory-mask.selectable').forEach(elem => elem.classList.remove('selectable'));
+        document.querySelectorAll('#river.selectable').forEach(elem => elem.classList.remove('selectable'));
     }
 
     private onLeavingChooseCellLink() {
@@ -467,7 +468,7 @@ class Lumen implements LumenGame {
                 dojo.place(`<div id="first-player-token" class="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
             }
 
-            this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`));
+            this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`), { wrap: 'nowrap' });
             this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean(player.discoverTiles[0]?.type) });
             this.objectiveTokensStocks[playerId] = new LineStock<ObjectiveToken>(this.objectiveTokensManager, document.getElementById(`player-${player.id}-objective-tokens`));
             this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean(player.objectiveTokens[0]?.lumens) });
