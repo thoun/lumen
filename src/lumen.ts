@@ -487,7 +487,7 @@ class Lumen implements LumenGame {
             }
 
             this.bags[playerId] = new VoidStock<Card>(this.cardsManager, document.getElementById(`bag-${player.id}`));
-            this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`), { wrap: 'nowrap' });
+            this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`));
             this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean(player.discoverTiles[0]?.type) });
             this.objectiveTokensStocks[playerId] = new LineStock<ObjectiveToken>(this.objectiveTokensManager, document.getElementById(`player-${player.id}-objective-tokens`));
             this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean(player.objectiveTokens[0]?.lumens) });
@@ -1119,11 +1119,11 @@ class Lumen implements LumenGame {
                     args.discover_tile = `<div class="discover-tile" data-type="${args.discoverTile.type}" data-sub-type="${args.discoverTile.subType}"></div>`;
                 }
 
-                /*['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(field => {
+                ['cardinalDirection'].forEach(field => {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
                         args[field] = `<strong>${_(args[field])}</strong>`;
                     }
-                });*/
+                });
 
             }
         } catch (e) {

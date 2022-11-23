@@ -116,9 +116,7 @@ trait StateTrait {
                     case MISSION_COFFRE:
                         $discoverTokens = $this->getDiscoverTilesByLocation('player', $playerId, null, 1);
                         $count = count($discoverTokens);
-                        if ($count >= 2) {
-                            $this->takeMissionObjectiveToken($playerId, $count - 1, _('Coffre')); // TODO
-                        }
+                        $this->takeMissionObjectiveToken($playerId, $count - 1, _('Coffre')); // TODO
                         break;
                     case MISSION_WINTER:
                         $controlledWinterTerritories = 0;
@@ -129,23 +127,19 @@ trait StateTrait {
                                 }
                             }
                         }
-                        if ($controlledWinterTerritories >= 2) {
-                            $this->takeMissionObjectiveToken($playerId, $controlledWinterTerritories - 1, _('Hiver')); // TODO
-                        }
+                        $this->takeMissionObjectiveToken($playerId, $controlledWinterTerritories - 1, _('Hiver')); // TODO
                         break;
                     case MISSION_FRELUQUETS:
                         $tokensCount = 0;
                         foreach ($scenario->battlefieldsIds as $battlefieldId) {
                             foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
-                                $count = $this->getCardsByLocation('territory', $territory->id, $playerId, 1, 1);
+                                $count = count($this->getCardsByLocation('territory', $territory->id, $playerId, 1, 1));
                                 if ($count >= 2) {
                                     $tokensCount += $count - 1;
                                 }
                             }
                         }
-                        if ($tokensCount > 0) {
-                            $this->takeMissionObjectiveToken($playerId, $tokensCount, _('Freluquet')); // TODO
-                        }
+                        $this->takeMissionObjectiveToken($playerId, $tokensCount, _('Freluquet')); // TODO
                         break;
                 }
             }
@@ -184,7 +178,7 @@ trait StateTrait {
             case 2:
                 $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
                 $playersIds = $this->getPlayersIds();
-                $mostOrphans = null;
+                $leastOrphans = null;
                 $orphansByPlayer = [];
                 foreach ($playersIds as $playerId) {
                     $orphansByPlayer[$playerId] = 0;
@@ -199,17 +193,67 @@ trait StateTrait {
                     }
                 }
 
-                if ($orphansByPlayer[$playersIds[0]] > $orphansByPlayer[$playersIds[1]]) {
-                    $mostOrphans = $playersIds[0];
-                } else if ($orphansByPlayer[$playersIds[1]] > $orphansByPlayer[$playersIds[0]]) {
-                    $mostOrphans = $playersIds[1];
+                if ($orphansByPlayer[$playersIds[0]] < $orphansByPlayer[$playersIds[1]]) {
+                    $leastOrphans = $playersIds[0];
+                } else if ($orphansByPlayer[$playersIds[1]] < $orphansByPlayer[$playersIds[0]]) {
+                    $leastOrphans = $playersIds[1];
                 }
 
-                if ($mostOrphans !== null) {
-                    $this->takeScenarioObjectiveToken($mostOrphans, 'B');
+                if ($leastOrphans !== null) {
+                    $this->takeScenarioObjectiveToken($leastOrphans, 'B');
                     $this->setRealizedObjective('B');
                 }
 
+                break;
+            case 4:
+                $playersIds = $this->getPlayersIds();
+                foreach([[3, 4, 6], [2, 5], [1, 7]] as $islandIndex => $islandBattlefieldsIds) {
+                    $fightersByPlayer = [];
+                    foreach ($playersIds as $playerId) {
+                        $fightersByPlayer[$playerId] = 0;
+
+                        foreach ($islandBattlefieldsIds as $battlefieldId) {
+                            foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                                $fightersOnTerritory = $this->getCardsByLocation('territory', $territory->id, $playerId);
+                                $fightersByPlayer[$playerId] += count($fightersOnTerritory);
+                            }
+                        }
+                    }
+
+
+                    $mostFighters = null;
+                    $alone = false;
+                    if ($fightersByPlayer[$playersIds[0]] > $fightersByPlayer[$playersIds[1]]) {
+                        $mostFighters = $playersIds[0];
+                        $alone = $fightersByPlayer[$playersIds[1]] == 0;
+                    } else if ($fightersByPlayer[$playersIds[1]] > $fightersByPlayer[$playersIds[0]]) {
+                        $mostFighters = $playersIds[1];
+                        $alone = $fightersByPlayer[$playersIds[0]] == 0;
+                    }
+
+                    if ($mostFighters !== null) {
+                        //$this->takeScenarioObjectiveToken($mostFighters, 'A', $alone ? 2 : 1);
+                        $cardinalDirection = '';
+                        switch ($islandIndex) {
+                            case 0: $cardinalDirection = clienttranslate('west'); break;
+                            case 1: $cardinalDirection = clienttranslate('north'); break;
+                            case 2: $cardinalDirection = clienttranslate('south'); break;
+                        }
+
+                        $number = $alone ? 2 : 1;
+                        $this->takeObjectiveTokens(
+                            $playerId, 
+                            $number,
+                            clienttranslate('${player_name} gets ${number} objective token(s) for objective ${letter} on ${cardinalDirection} island'), 
+                            [
+                                'letter' => 'A',
+                                'number' => $number,
+                                'cardinalDirection' => $cardinalDirection,
+                                'i18n' => ['cardinalDirection'],
+                            ]
+                        );
+                    }
+                }
                 break;
             case 6:
                 $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
@@ -244,7 +288,7 @@ trait StateTrait {
 
             $points = 0;
             foreach ($objectiveTokens as $objectiveToken) {
-                $points += $objectiveToken->type;
+                $points += $objectiveToken->lumens;
             }
 
             $this->incPlayerScore($playerId, $points, clienttranslate('${player_name} gains ${vp} VP with objective tokens'), [
@@ -274,6 +318,6 @@ trait StateTrait {
 
         // TODO stats
 
-        $this->gamestate->nextState('endGame');
+        //$this->gamestate->nextState('endGame');
     }
 }

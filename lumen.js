@@ -2101,7 +2101,7 @@ var Lumen = /** @class */ (function () {
                 dojo.place("<div id=\"first-player-token\" class=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
             }
             _this.bags[playerId] = new VoidStock(_this.cardsManager, document.getElementById("bag-".concat(player.id)));
-            _this.discoverTilesStocks[playerId] = new LineStock(_this.discoverTilesManager, document.getElementById("player-".concat(player.id, "-discover-tiles")), { wrap: 'nowrap' });
+            _this.discoverTilesStocks[playerId] = new LineStock(_this.discoverTilesManager, document.getElementById("player-".concat(player.id, "-discover-tiles")));
             _this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean((_a = player.discoverTiles[0]) === null || _a === void 0 ? void 0 : _a.type) });
             _this.objectiveTokensStocks[playerId] = new LineStock(_this.objectiveTokensManager, document.getElementById("player-".concat(player.id, "-objective-tokens")));
             _this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean((_b = player.objectiveTokens[0]) === null || _b === void 0 ? void 0 : _b.lumens) });
@@ -2590,11 +2590,11 @@ var Lumen = /** @class */ (function () {
                 if (args.discover_tile == '' && args.discoverTile) {
                     args.discover_tile = "<div class=\"discover-tile\" data-type=\"".concat(args.discoverTile.type, "\" data-sub-type=\"").concat(args.discoverTile.subType, "\"></div>");
                 }
-                /*['discardNumber', 'roundPoints', 'cardsPoints', 'colorBonus', 'cardName', 'cardName1', 'cardName2', 'cardColor', 'cardColor1', 'cardColor2', 'points', 'result'].forEach(field => {
+                ['cardinalDirection'].forEach(function (field) {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
-                        args[field] = `<strong>${_(args[field])}</strong>`;
+                        args[field] = "<strong>".concat(_(args[field]), "</strong>");
                     }
-                });*/
+                });
             }
         }
         catch (e) {

@@ -11,11 +11,20 @@ trait DebugUtilTrait {
             return;
         } 
 
-        //$this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
+        $this->debugAddDiscoverTile(2343492, 4, 1);
+        $this->debugAddDiscoverTile(2343492, 5, 1);
+        $this->debugAddDiscoverTile(2343492, 3, 1);
+        $this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
         //$this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);
-        $this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
-        $this->debugAddNeutralFighter(2343492, 22, 'highCommand2343492', 2);
-        $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);
+        /*for ($i=0;$i<3;$i++) $this->debugAddPlayerFighter(2343492, 1, 'territory', 11);
+        for ($i=0;$i<2;$i++) $this->debugAddPlayerFighter(2343492, 1, 'territory', 15);*/
+        /*$this->debugAddNeutralFighter(2343492, 11, 'territory', 11);
+        $this->debugAddNeutralFighter(2343492, 13, 'territory', 11);
+        $this->debugAddNeutralFighter(2343492, 12, 'territory', 41);*/
+        $this->debugAddNeutralFighter(2343492, 31, 'highCommand2343492', 1);
+        $this->debugAddNeutralFighter(2343492, 32, 'highCommand2343492', 2);
+        $this->debugAddNeutralFighter(2343492, 33, 'highCommand2343492', 3);
+        $this->debugLastTurn();
     }
 
     public function debugAddPlayerFighter(int $playerId, int $subType, string $location, $locationArg = null, $played = false) {
@@ -49,6 +58,10 @@ trait DebugUtilTrait {
                 $this->debug("Discover tile $type $powerOrLumens not found");
             }
         }
+    }
+
+    public function debugLastTurn() {
+        $this->incStat(20, 'turnNumber');
     }
 
     public function debugReplacePlayersIds() {

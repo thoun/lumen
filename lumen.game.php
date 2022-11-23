@@ -142,7 +142,6 @@ class Lumen extends Table {
 
         // TODO TEMP
         $this->debugSetup();
-        // TODO test end game (missions, scenario objectives, general scoring, tiebreak)
 
         /************ End of the game initialization *****/
     }

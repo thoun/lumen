@@ -550,15 +550,25 @@ trait UtilTrait {
     }
 
     function takeMissionObjectiveToken(int $playerId, int $number, string $mission) {
-        $this->takeObjectiveTokens(
-            $playerId, 
-            $number,
-            clienttranslate('${player_name} get an objective token for mission ${mission}'), 
-            [
+        if ($number > 0) {
+            $this->takeObjectiveTokens(
+                $playerId, 
+                $number,
+                clienttranslate('${player_name} gets ${number} objective token(s) for mission ${mission}'), 
+                [
+                    'number' => $number,
+                    'mission' => $mission,
+                    'i18n' => ['mission'],
+                ]
+            );
+        } else {
+            self::notifyAllPlayers('log', clienttranslate('${player_name} doesn\'t score mission ${mission}'), [
+                'playerId' => $playerId,
+                'player_name' => $this->getPlayerName($playerId),
                 'mission' => $mission,
                 'i18n' => ['mission'],
-            ]
-        );
+            ]);
+        }
     }
 
     function applyMoveFighter(Card &$fighter, int $territoryId) { // return redirected for brouillage
