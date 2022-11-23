@@ -19,7 +19,7 @@ $gameinfos = [
 'designer' => 'Bruno Cathala, Corentin Lebrat',       
 
 // Game artist (or game artists, separated by commas)
-'artist' => 'TODO',         
+'artist' => 'Vincent Dutrait',         
 
 // Year of FIRST publication of this game. Can be negative.
 'year' => 2023,                 
@@ -91,13 +91,13 @@ $gameinfos = [
 'complexity' => 3,    
 
 // Luck of the game, from 0 (absolutely no luck in this game) to 5 (totally luck driven)
-'luck' => 3,    
+'luck' => 2,    
 
 // Strategy of the game, from 0 (no strategy can be setup) to 5 (totally based on strategy)
 'strategy' => 3,    
 
 // Diplomacy of the game, from 0 (no interaction in this game) to 5 (totally based on interaction and discussion between players)
-'diplomacy' => 3,    
+'diplomacy' => 4,    
 
 // Colors attributed to players
 'player_colors' => ["f28700", "1f3067"],
@@ -145,8 +145,7 @@ $gameinfos = [
 //  IMPORTANT: this list should be ORDERED, with the most important tag first.
 //  NOTE: tags are only read during the first deploy from the file gameinfos.inc.php; afterwards, BGA is responsible for setting tags for a game.
 
-'tags' => array( 2 ), // TODO
-
+'tags' => [3, 11, 30, 101, 105, 206, 208, 216, 219, 223],
 
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
 
