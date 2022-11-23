@@ -186,7 +186,8 @@ class Lumen extends Table {
 
         $result['scenario'] = $this->getScenarioId();
         $result['fightersOnTerritories'] = $this->getCardsByLocation('territory');
-        $result['discoverTilesOnTerritories'] = $this->getDiscoverTilesByLocation('territory');
+        $discoverTilesOnTerritories = $this->getDiscoverTilesByLocation('territory');
+        $result['discoverTilesOnTerritories'] = array_map(fn($tile) => $tile->visible ? $tile : DiscoverTile::onlyId($tile), $discoverTilesOnTerritories);
         $result['initiativeMarkerTerritory'] = intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY));
         $result['firstPlayer'] = intval($this->getGameStateValue(FIRST_PLAYER));
         $result['firstPlayerOperation'] = intval($this->getGameStateValue(FIRST_PLAYER_OPERATION));

@@ -411,19 +411,19 @@
   background-position-x: 37.5%;
 }
 .card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="1"] {
-  background-position-x: 50%;
-}
-.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="2"] {
   background-position-x: 62.5%;
 }
-.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="3"] {
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="2"] {
   background-position-x: 75%;
 }
-.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="4"] {
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="3"] {
   background-position-x: 87.5%;
 }
-.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="5"] {
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="4"] {
   background-position-x: 100%;
+}
+.card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="5"] {
+  background-position-x: 112.5%;
 }
 .card.discover-tile .card-sides .card-side.front > * {
   pointer-events: none;
