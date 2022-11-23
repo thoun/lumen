@@ -96,7 +96,7 @@ trait StateTrait {
                         'i18n' => ['season'],
                     ]);
                 } else {
-                    self::notifyAllPlayers('endUncontrolledTerritory', clienttranslate('Nobody controls the ${season} territory on battlefiled ${battlefieldId}'), [
+                    self::notifyAllPlayers('endControlTerritory', clienttranslate('Nobody controls the ${season} territory on battlefiled ${battlefieldId}'), [
                         'territoryId' => $territory->id,
                         'season' => $this->getSeasonName($territory->lumens),
                         'battlefieldId' => $battlefieldId,
@@ -116,7 +116,7 @@ trait StateTrait {
                     case MISSION_COFFRE:
                         $discoverTokens = $this->getDiscoverTilesByLocation('player', $playerId, null, 1);
                         $count = count($discoverTokens);
-                        $this->takeMissionObjectiveToken($playerId, $count - 1, _('Coffre')); // TODO
+                        $this->takeMissionObjectiveToken($playerId, $count - 1, $mission);
                         break;
                     case MISSION_WINTER:
                         $controlledWinterTerritories = 0;
@@ -127,7 +127,7 @@ trait StateTrait {
                                 }
                             }
                         }
-                        $this->takeMissionObjectiveToken($playerId, $controlledWinterTerritories - 1, _('Hiver')); // TODO
+                        $this->takeMissionObjectiveToken($playerId, $controlledWinterTerritories - 1, $mission); 
                         break;
                     case MISSION_FRELUQUETS:
                         $tokensCount = 0;
@@ -139,7 +139,7 @@ trait StateTrait {
                                 }
                             }
                         }
-                        $this->takeMissionObjectiveToken($playerId, $tokensCount, _('Freluquet')); // TODO
+                        $this->takeMissionObjectiveToken($playerId, $tokensCount, $mission);
                         break;
                 }
             }
@@ -318,6 +318,6 @@ trait StateTrait {
 
         // TODO stats
 
-        //$this->gamestate->nextState('endGame');
+        $this->gamestate->nextState('endGame');
     }
 }

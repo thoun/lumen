@@ -67,6 +67,12 @@
         }
     }
 
+    &.highlight {
+        .card-side {
+            animation: highlight-card-animation 1s alternate 2 ease-in-out;
+        }
+    }
+
     .player-token {
         position: absolute;
         right: 5px;
@@ -82,5 +88,14 @@
         &[data-color="1f3067"] {
           background-image: url('img/faction-token-night.png');
         }
+    }
+}
+
+@keyframes highlight-card-animation {
+    0% { 
+        box-shadow: 0 0 1px 1px red;
+    }
+    100% { 
+        box-shadow: 0 0 10px 10px red;
     }
 }

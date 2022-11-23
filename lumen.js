@@ -2421,7 +2421,8 @@ var Lumen = /** @class */ (function () {
             ['zone', 1],
             ['link', 1],
             ['newFirstPlayer', ANIMATION_MS],
-            ['takeObjectiveToken', ANIMATION_MS],
+            ['takeObjectiveTokens', ANIMATION_MS],
+            ['takeMissionObjectiveTokens', ANIMATION_MS * 2],
             ['moveFighter', ANIMATION_MS],
             ['refillReserve', ANIMATION_MS],
             ['moveDiscoverTileToPlayer', ANIMATION_MS],
@@ -2433,12 +2434,16 @@ var Lumen = /** @class */ (function () {
             ['setFightersUnactivated', ANIMATION_MS],
             ['exchangedFighters', ANIMATION_MS],
             ['score', 1],
+            ['endControlTerritory', ANIMATION_MS * 2],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
-        this.notifqueue.setIgnoreNotificationCheck('takeObjectiveToken', function (notif) {
+        this.notifqueue.setIgnoreNotificationCheck('takeObjectiveTokens', function (notif) {
+            return notif.args.playerId == _this.getPlayerId() && !notif.args.tokens[0].lumens;
+        });
+        this.notifqueue.setIgnoreNotificationCheck('takeMissionObjectiveTokens', function (notif) {
             return notif.args.playerId == _this.getPlayerId() && !notif.args.tokens[0].lumens;
         });
     };
@@ -2503,13 +2508,18 @@ var Lumen = /** @class */ (function () {
             });
         }
     };
-    Lumen.prototype.notif_takeObjectiveToken = function (notif) {
+    Lumen.prototype.notif_takeObjectiveTokens = function (notif) {
         var _a, _b;
         var playerId = notif.args.playerId;
         this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean((_a = notif.args.tokens[0]) === null || _a === void 0 ? void 0 : _a.lumens) });
         if (notif.args.letterId) {
             (_b = document.getElementById("objective-token-".concat(notif.args.letterId))) === null || _b === void 0 ? void 0 : _b.remove();
         }
+    };
+    Lumen.prototype.notif_takeMissionObjectiveTokens = function (notif) {
+        var _a;
+        (_a = this.cardsManager.getCardElement(notif.args.highlightCard)) === null || _a === void 0 ? void 0 : _a.classList.add('highlight');
+        this.notif_takeObjectiveTokens(notif);
     };
     Lumen.prototype.notif_moveFighter = function (notif) {
         this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId);
@@ -2572,6 +2582,14 @@ var Lumen = /** @class */ (function () {
         if (incScore != null && incScore !== undefined) {
             (this as any).displayScoring(`player-table-${playerId}-table-cards`, this.getPlayerColor(playerId), incScore, ANIMATION_MS * 3);
         }*/
+    };
+    Lumen.prototype.notif_endControlTerritory = function (notif) {
+        var _a;
+        (_a = document.getElementById("territory-mask-".concat(notif.args.territoryId))) === null || _a === void 0 ? void 0 : _a.classList.add('highlight');
+        if (notif.args.playerId) {
+            this.displayScoring("territory-".concat(notif.args.territoryId), this.getPlayerColor(notif.args.playerId), notif.args.incScore, ANIMATION_MS * 2);
+        }
+        this.notif_score(notif);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

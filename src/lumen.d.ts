@@ -178,11 +178,15 @@ interface NotifNewFirstPlayerArgs {
     playerId: number;
 }
 
-interface NotifTakeObjectiveTokenArgs {
+interface NotifTakeObjectiveTokensArgs {
     playerId: number;
     value: number;
     tokens: ObjectiveToken[];
     letterId?: string;
+}
+
+interface NotifTakeMissionObjectiveTokensArgs extends NotifTakeObjectiveTokensArgs {
+    highlightCard: Card;
 }
 
 interface NotifMoveFighterArgs {
@@ -225,4 +229,8 @@ interface NotifScoreArgs {
     playerId: number;
     newScore: number;
     incScore: number;
+}
+
+interface NotifEndControlTerritoryArgs extends NotifScoreArgs {
+    territoryId: number;
 }

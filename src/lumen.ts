@@ -919,7 +919,8 @@ class Lumen implements LumenGame {
             ['zone', 1],
             ['link', 1],
             ['newFirstPlayer', ANIMATION_MS],
-            ['takeObjectiveToken', ANIMATION_MS],
+            ['takeObjectiveTokens', ANIMATION_MS],
+            ['takeMissionObjectiveTokens', ANIMATION_MS * 2],
             ['moveFighter', ANIMATION_MS],
             ['refillReserve', ANIMATION_MS],
             ['moveDiscoverTileToPlayer', ANIMATION_MS],
@@ -931,6 +932,7 @@ class Lumen implements LumenGame {
             ['setFightersUnactivated', ANIMATION_MS],
             ['exchangedFighters', ANIMATION_MS],
             ['score', 1],
+            ['endControlTerritory', ANIMATION_MS * 2],
         ];
     
         notifs.forEach((notif) => {
@@ -938,7 +940,10 @@ class Lumen implements LumenGame {
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
         
-        (this as any).notifqueue.setIgnoreNotificationCheck('takeObjectiveToken', (notif: Notif<NotifTakeObjectiveTokenArgs>) => {
+        (this as any).notifqueue.setIgnoreNotificationCheck('takeObjectiveTokens', (notif: Notif<NotifTakeObjectiveTokensArgs>) => {
+            return notif.args.playerId == this.getPlayerId() && !notif.args.tokens[0].lumens;
+        });
+        (this as any).notifqueue.setIgnoreNotificationCheck('takeMissionObjectiveTokens', (notif: Notif<NotifTakeMissionObjectiveTokensArgs>) => {
             return notif.args.playerId == this.getPlayerId() && !notif.args.tokens[0].lumens;
         });
     }
@@ -1017,7 +1022,7 @@ class Lumen implements LumenGame {
         }
     } 
 
-    notif_takeObjectiveToken(notif: Notif<NotifTakeObjectiveTokenArgs>) {
+    notif_takeObjectiveTokens(notif: Notif<NotifTakeObjectiveTokensArgs>) {
         const playerId = notif.args.playerId;
 
         this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean(notif.args.tokens[0]?.lumens) });
@@ -1025,6 +1030,11 @@ class Lumen implements LumenGame {
         if (notif.args.letterId) {
             document.getElementById(`objective-token-${notif.args.letterId}`)?.remove();
         }
+    }
+
+    notif_takeMissionObjectiveTokens(notif: Notif<NotifTakeMissionObjectiveTokensArgs>) {
+        this.cardsManager.getCardElement(notif.args.highlightCard)?.classList.add('highlight');
+        this.notif_takeObjectiveTokens(notif);
     }
 
     notif_moveFighter(notif: Notif<NotifMoveFighterArgs>) {
@@ -1098,6 +1108,14 @@ class Lumen implements LumenGame {
         if (incScore != null && incScore !== undefined) {
             (this as any).displayScoring(`player-table-${playerId}-table-cards`, this.getPlayerColor(playerId), incScore, ANIMATION_MS * 3);
         }*/
+    }
+
+    notif_endControlTerritory(notif: Notif<NotifEndControlTerritoryArgs>) {
+        document.getElementById(`territory-mask-${notif.args.territoryId}`)?.classList.add('highlight');
+        if (notif.args.playerId) {
+            (this as any).displayScoring(`territory-${notif.args.territoryId}`, this.getPlayerColor(notif.args.playerId), notif.args.incScore, ANIMATION_MS * 2);
+        }
+        this.notif_score(notif);
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

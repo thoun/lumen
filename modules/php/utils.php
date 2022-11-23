@@ -85,7 +85,8 @@ trait UtilTrait {
     function incPlayerScore(int $playerId, int $amount, $message = '', $args = []) {
         $this->DbQuery("UPDATE player SET `player_score` = `player_score` + $amount WHERE player_id = $playerId");
             
-        $this->notifyAllPlayers('score', $message, [
+        $logType = array_key_exists('scoreType', $args) && in_array($args['scoreType'], ['endControlTerritory']) ? $args['scoreType'] : 'score';
+        $this->notifyAllPlayers($logType, $message, [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'newScore' => $this->getPlayerScore($playerId),
@@ -513,15 +514,17 @@ trait UtilTrait {
 
     function takeObjectiveTokens(int $playerId, int $number, string $message, $messageArgs = []) {
         $tokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->pickCardsForLocation($number, 'deck', 'player', $playerId));
+
+        $logType = array_key_exists('logType', $messageArgs) ? $messageArgs['logType'] : 'takeObjectiveTokens';
         
         $args = [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
         ] + $messageArgs;
-        self::notifyAllPlayers("takeObjectiveToken", $message, $args + [
+        self::notifyAllPlayers($logType, $message, $args + [
             'tokens' => ObjectiveToken::onlyIds($tokens),
         ]);
-        self::notifyPlayer($playerId, "takeObjectiveToken", $message, $args + [
+        self::notifyPlayer($playerId, $logType, $message, $args + [
             'tokens' => $tokens,
         ]);
     }
@@ -549,15 +552,24 @@ trait UtilTrait {
         );
     }
 
-    function takeMissionObjectiveToken(int $playerId, int $number, string $mission) {
+    function takeMissionObjectiveToken(int $playerId, int $number, Card $missionCard) {
+        $mission = '';
+        switch ($missionCard->power) {
+            case MISSION_COFFRE: $mission = clienttranslate('Coffre'); break; // TODO
+            case MISSION_WINTER: $mission = clienttranslate('Hiver'); break; // TODO
+            case MISSION_FRELUQUETS: $mission = clienttranslate('Freluquet'); break; // TODO
+        }
+
         if ($number > 0) {
             $this->takeObjectiveTokens(
                 $playerId, 
                 $number,
                 clienttranslate('${player_name} gets ${number} objective token(s) for mission ${mission}'), 
                 [
+                    'logType' => 'takeMissionObjectiveTokens',
                     'number' => $number,
                     'mission' => $mission,
+                    'highlightCard' => $missionCard,
                     'i18n' => ['mission'],
                 ]
             );
@@ -566,6 +578,7 @@ trait UtilTrait {
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'mission' => $mission,
+                'highlightCard' => $missionCard,
                 'i18n' => ['mission'],
             ]);
         }
