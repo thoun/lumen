@@ -531,12 +531,16 @@ class Lumen implements LumenGame {
             _('Nothing')}`;
         scenarioObjectives.innerHTML = `<ul>${this.scenario.objectives.map(description => 
             `<li>
-                <div class="objective-description-token token-with-letter">${description.letter}${description.number > 1 ? `<div class="number">x${description.number}</div>` : ``}</div>
-                <strong>${description.timing}</strong>
+                ${description.letters.map(letter => `<div class="objective-description-token token-with-letter">${letter}</div>`).join('')}
+                <strong>${description.timing ?? ''}</strong>
                 <strong>${description.type ?? ''}</strong>
                 ${description.text}
             </li>`
             ).join('')}</ul>`;
+        if (this.gamedatas.scenario == 4) {
+            scenarioObjectives.innerHTML = `<strong>${_('En fin de partie sur chaque île :')}</strong>` + scenarioObjectives.innerHTML;
+            document.querySelector('.objective-description-token.token-with-letter:not(:empty)').classList.add('plus-one');
+        }
 
         document.getElementById(`dice`).style.left = `${this.scenario.diceLeft}px`;
 

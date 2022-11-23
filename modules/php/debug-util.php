@@ -11,7 +11,7 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->debugAddDiscoverTile(2343492, 4, 1);
+        /*$this->debugAddDiscoverTile(2343492, 4, 1);
         $this->debugAddDiscoverTile(2343492, 5, 1);
         $this->debugAddDiscoverTile(2343492, 3, 1);
         $this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
@@ -23,7 +23,7 @@ trait DebugUtilTrait {
         $this->debugAddNeutralFighter(2343492, 12, 'territory', 41);
         $this->debugAddNeutralFighter(2343492, 31, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 32, 'highCommand2343492', 2);
-        $this->debugAddNeutralFighter(2343492, 33, 'highCommand2343492', 3);
+        $this->debugAddNeutralFighter(2343492, 33, 'highCommand2343492', 3);*/
         //$this->debugLastTurn();
     }
 

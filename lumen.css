@@ -1620,6 +1620,11 @@ html, .mode_3d #game_play_area_background {
   color: #fff100;
   text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black;
 }
+.token-with-letter.plus-one {
+  font-family: initial;
+  color: #ffffff;
+  font-size: 1.8rem;
+}
 
 #scenario-objectives .objective-description-token {
   position: relative;
@@ -1632,12 +1637,6 @@ html, .mode_3d #game_play_area_background {
   margin: 5px;
   margin-right: 10px;
 }
-#scenario-objectives .objective-description-token .number {
-  position: absolute;
-  right: 0;
-  bottom: -4px;
-  font-weight: bold;
-  font-size: 1rem;
-  color: #ec212a;
-  text-shadow: none;
+#scenario-objectives .objective-description-token:not(:first-child) {
+  margin-left: -20px;
 }

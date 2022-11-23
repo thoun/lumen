@@ -3,7 +3,7 @@ class ObjectiveTokenPosition {
 }
 
 class ObjectiveDescription {
-    public constructor(public letter: string, public timing: string, public type: string | null, public text: string, public number: number = 1) {}
+    public constructor(public letters: string[], public timing: string, public type: string | null, public text: string) {}
 }
 
 class ScenarioInfos {
@@ -201,31 +201,32 @@ class Scenario extends ScenarioInfos {
 
     switch (number) {
       case 1: return [
-        new ObjectiveDescription('A', DURING_GAME, null, _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
-        new ObjectiveDescription('B',  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
-        new ObjectiveDescription('C', END_GAME, null, _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
+        new ObjectiveDescription([''], DURING_GAME, null, _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
+        new ObjectiveDescription(['A', 'B'],  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+        new ObjectiveDescription([''], END_GAME, null, _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
       ]; // TODO
       case 2: return [
-        new ObjectiveDescription('A', DURING_GAME, null, _("Chaque joueur qui réussit à vider son sac gagne 2 jetons Objectifs.")),
-        new ObjectiveDescription('B',  END_GAME, null, _("Le joueur qui possède sur sa Fiche de Commandement le moins de cellules n’appartenant ni à une Zone ni à une Chaîne d’Ordres remporte un jeton Objectif. En cas d’égalité, personne ne reçoit de jeton Objectif.")),
+        new ObjectiveDescription(['', ''], DURING_GAME, null, _("Chaque joueur qui réussit à vider son sac gagne 2 jetons Objectifs.")),
+        new ObjectiveDescription([''],  END_GAME, null, _("Le joueur qui possède sur sa Fiche de Commandement le moins de cellules n’appartenant ni à une Zone ni à une Chaîne d’Ordres remporte un jeton Objectif. En cas d’égalité, personne ne reçoit de jeton Objectif.")),
       ]; // TODO
       case 3: return [
-        new ObjectiveDescription('A',  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
+        new ObjectiveDescription(['A', 'B'],  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
       ]; // TODO
       case 4: return [
-        new ObjectiveDescription('A',  END_GAME, _("Sur chaque île :"), _("une pierre pour celui qui a le plus grand nombre de combattants - Une pierre supplémentaire si un joueur est seul sur l’île !")),
+        new ObjectiveDescription([''],  null, null, _("Un jeton Objectif pour le joueur qui a le plus grand nombre de Combattants,")),
+        new ObjectiveDescription(['+1'],  null, null, _("Un jeton Objectif supplémentaire si le joueur est seul sur l’île !")),
       ]; // TODO
       case 5: return [
-        new ObjectiveDescription('A',  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
-        new ObjectiveDescription('B',  DURING_GAME, null, _("Un jeton Objectif pour le premier joueur à atteindre ce territoire hiver.")),
+        new ObjectiveDescription(['A', 'B'],  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+        new ObjectiveDescription(['C'],  DURING_GAME, null, _("Un jeton Objectif pour le premier joueur à atteindre ce territoire hiver.")),
       ]; // TODO
       case 6: return [
-        new ObjectiveDescription('A',  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
-        new ObjectiveDescription('B', END_GAME, null, _("2 jetons Objectifs pour le joueur qui a le plus de combattants dans les territoires de l’hiver.")),
+        new ObjectiveDescription(['A', 'B'],  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+        new ObjectiveDescription(['', ''], END_GAME, null, _("2 jetons Objectifs pour le joueur qui a le plus de combattants dans les territoires de l’hiver.")),
       ]; // TODO
       case 7: return [
-        new ObjectiveDescription('A',  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
-        new ObjectiveDescription('B', END_GAME, _("LA GRANDE TRAVERSÉE :"), _("3 jetons Objectifs pour le 1er joueur à atteindre le territoire de départ de son adversaire avec un de ses combattant.")),
+        new ObjectiveDescription(['A'],  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+        new ObjectiveDescription(['', '', ''], END_GAME, _("LA GRANDE TRAVERSÉE :"), _("3 jetons Objectifs pour le 1er joueur à atteindre le territoire de départ de son adversaire avec un de ses combattant.")),
       ]; // TODO
     }
   }
