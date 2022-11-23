@@ -586,6 +586,44 @@ var ManualPositionStock = /** @class */ (function (_super) {
     };
     return ManualPositionStock;
 }(CardStock));
+/**
+ * A stock to make cards disappear (to automatically remove discarded cards, or to represent a bag)
+ */
+var VoidStock = /** @class */ (function (_super) {
+    __extends(VoidStock, _super);
+    /**
+     * @param manager the card manager
+     * @param element the stock element (should be an empty HTML Element)
+     */
+    function VoidStock(manager, element) {
+        var _this = _super.call(this, manager, element) || this;
+        _this.manager = manager;
+        _this.element = element;
+        element.classList.add('void-stock');
+        return _this;
+    }
+    /**
+     * Add a card to the stock.
+     *
+     * @param card the card to add
+     * @param animation a `CardAnimation` object
+     * @param settings a `AddCardSettings` object
+     * @returns the promise when the animation is done (true if it was animated, false if it wasn't)
+     */
+    VoidStock.prototype.addCard = function (card, animation, settings) {
+        var _this = this;
+        var promise = _super.prototype.addCard.call(this, card, animation, settings);
+        // center the element
+        var cardElement = this.getCardElement(card);
+        cardElement.style.left = "".concat((this.element.clientWidth - cardElement.clientWidth) / 2, "px");
+        cardElement.style.top = "".concat((this.element.clientHeight - cardElement.clientHeight) / 2, "px");
+        return promise.then(function (result) {
+            _this.removeCard(card);
+            return result;
+        });
+    };
+    return VoidStock;
+}(CardStock));
 var CardManager = /** @class */ (function () {
     /**
      * @param game the BGA game class, usually it will be `this`
@@ -1661,6 +1699,7 @@ var Lumen = /** @class */ (function () {
         this.discoverTilesStocks = [];
         this.objectiveTokensStocks = [];
         this.chosenFighters = [];
+        this.bags = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -2061,6 +2100,7 @@ var Lumen = /** @class */ (function () {
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place("<div id=\"first-player-token\" class=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
             }
+            _this.bags[playerId] = new VoidStock(_this.cardsManager, document.getElementById("bag-".concat(player.id)));
             _this.discoverTilesStocks[playerId] = new LineStock(_this.discoverTilesManager, document.getElementById("player-".concat(player.id, "-discover-tiles")), { wrap: 'nowrap' });
             _this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean((_a = player.discoverTiles[0]) === null || _a === void 0 ? void 0 : _a.type) });
             _this.objectiveTokensStocks[playerId] = new LineStock(_this.objectiveTokensManager, document.getElementById("player-".concat(player.id, "-objective-tokens")));
@@ -2068,6 +2108,7 @@ var Lumen = /** @class */ (function () {
         });
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
         dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                <div id=\"bag-0\" class=\"bag\"></div>\n               \n            </div>\n        </div>", "player_boards", 'first');
+        this.bags[0] = new VoidStock(this.cardsManager, document.getElementById("bag-0"));
     };
     Lumen.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
@@ -2499,15 +2540,7 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.notif_putBackInBag = function (notif) {
         var _this = this;
         notif.args.fighters.forEach(function (card) {
-            var element = _this.cardsManager.getCardElement(card);
-            var stock = _this.cardsManager.getCardStock(card);
-            var fromElement = element.parentElement;
-            var bag = document.getElementById("bag-".concat(card.type == 1 ? card.playerId : 0));
-            bag.appendChild(element);
-            stockSlideAnimation({
-                element: element,
-                fromElement: fromElement
-            }).then(function () { return stock.removeCard(card); });
+            return _this.bags[card.type == 1 ? card.playerId : 0].addCard(card);
         });
     };
     Lumen.prototype.setFightersSide = function (fighters, side) {

@@ -26,6 +26,7 @@ class Lumen implements LumenGame {
     private discoverTilesStocks: LineStock<DiscoverTile>[] = [];
     private objectiveTokensStocks: LineStock<ObjectiveToken>[] = [];
     private chosenFighters: number[] = [];
+    private bags: VoidStock<Card>[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -485,6 +486,7 @@ class Lumen implements LumenGame {
                 dojo.place(`<div id="first-player-token" class="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
             }
 
+            this.bags[playerId] = new VoidStock<Card>(this.cardsManager, document.getElementById(`bag-${player.id}`));
             this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`), { wrap: 'nowrap' });
             this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean(player.discoverTiles[0]?.type) });
             this.objectiveTokensStocks[playerId] = new LineStock<ObjectiveToken>(this.objectiveTokensManager, document.getElementById(`player-${player.id}-objective-tokens`));
@@ -501,6 +503,7 @@ class Lumen implements LumenGame {
                
             </div>
         </div>`, `player_boards`, 'first');
+        this.bags[0] = new VoidStock<Card>(this.cardsManager, document.getElementById(`bag-0`));
     }
 
     private createPlayerTables(gamedatas: LumenGamedatas) {
@@ -1058,17 +1061,9 @@ class Lumen implements LumenGame {
     }
 
     notif_putBackInBag(notif: Notif<NotifPutBackInBagArgs>) {
-        notif.args.fighters.forEach(card => {
-            const element = this.cardsManager.getCardElement(card);
-            const stock = this.cardsManager.getCardStock(card);
-            const fromElement = element.parentElement;
-            const bag = document.getElementById(`bag-${card.type == 1 ? card.playerId : 0}`);
-            bag.appendChild(element);
-            stockSlideAnimation({
-                element,
-                fromElement
-            }).then(() => stock.removeCard(card));
-        });
+        notif.args.fighters.forEach(card => 
+            this.bags[card.type == 1 ? card.playerId : 0].addCard(card)
+        );
     }
     
     private setFightersSide(fighters: Card[], side: string) {
