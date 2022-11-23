@@ -407,7 +407,7 @@ trait UtilTrait {
 
     function getLinks(int $playerId) {
         $dbLinks = $this->getCollectionFromDb("SELECT * FROM `link` WHERE player_id = $playerId ORDER BY `index1`, `index2`");
-        return array_map(fn($dbLink) => new Link(intval($dbLink['index1']), intval($dbLink['index2'])), $dbLinks);
+        return array_values(array_map(fn($dbLink) => new Link(intval($dbLink['index1']), intval($dbLink['index2'])), $dbLinks));
     }
 
     function refreshZones(int $playerId, int $circleId) {
@@ -529,14 +529,14 @@ trait UtilTrait {
         ]);
     }
 
-    function takeScenarioObjectiveToken(int $playerId, string $letter, $number = 1) {
+    function takeScenarioObjectiveToken(int $playerId, /*string | null*/ $letter = null, $number = 1) {
         $this->takeObjectiveTokens(
             $playerId, 
             $number,
-            clienttranslate('${player_name} get an objective token for objective ${letter}'), 
+            $letter != null ? clienttranslate('${player_name} get an objective token for objective ${letter}') : clienttranslate('${player_name} get an objective token for a completed objective'), 
             [
                 'letterId' => $letter,
-                'letter' => substr($letter, 0, 1),
+                'letter' => $letter,
             ]
         );
     }
@@ -626,18 +626,18 @@ trait UtilTrait {
         $scenarioId = $this->getScenarioId();
         switch ($scenarioId) {
             case 5:
-                if (!$this->isRealizedObjective('B') && $territoryId == 61) {
-                    $this->takeScenarioObjectiveToken($fighter->playerId, 'B');
-                    $this->setRealizedObjective('B');
+                if (!$this->isRealizedObjective('C') && $territoryId == 61) {
+                    $this->takeScenarioObjectiveToken($fighter->playerId, 'C');
+                    $this->setRealizedObjective('C');
                 }
                 break;
             case 7: 
-                if (!$this->isRealizedObjective('B') && in_array($territoryId, [65, 75])) {
+                if (!$this->isRealizedObjective('2') && in_array($territoryId, [65, 75])) {
                     $players = $this->loadPlayersBasicInfos();
                     $playerNo = intval($this->array_find($players, fn($player) => intval($player['player_id']) == $fighter->playerId)['player_no']);
                     if (($playerNo == 1 && $territoryId == 75) || ($playerNo == 2 && $territoryId == 65)) {
-                        $this->takeScenarioObjectiveToken($fighter->playerId, 'B', 3);
-                        $this->setRealizedObjective('B');
+                        $this->takeScenarioObjectiveToken($fighter->playerId, null, 3);
+                        $this->setRealizedObjective('2');
                     }
                 }
                 break;
@@ -893,9 +893,9 @@ trait UtilTrait {
     }
 
     function checkEmptyBag(int $playerId) {
-        if ($this->getScenarioId() == 2 && intval($this->cards->countCardInLocation('bag'.$playerId)) == 0 && !$this->isRealizedObjective('A', $playerId)) {
-            $this->takeScenarioObjectiveToken($playerId, 'A', 2);
-            $this->setRealizedObjective('A', $playerId);
+        if ($this->getScenarioId() == 2 && intval($this->cards->countCardInLocation('bag'.$playerId)) == 0 && !$this->isRealizedObjective('1', $playerId)) {
+            $this->takeScenarioObjectiveToken($playerId, null, 2);
+            $this->setRealizedObjective('1', $playerId);
         }
     }
 

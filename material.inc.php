@@ -69,8 +69,6 @@ $this->DISCOVER_TILES = [
   new DiscoverTileType(2, 2, POWER_COUP_FOURRE),
 ];
 
-// obj : 7x3, 7x4, 7x5
-
 $this->BATTLEFIELDS = [
   1 => new Battlefield(1, [
     new Territory(11, 1),
@@ -152,10 +150,10 @@ $this->SCENARIOS = [
       1 => [3],
     ],
   ], 
-  11,  // TODO change
+  61,
   [
-    'B1' => [71, 73, 75],
-    'B2' => [61, 65],
+    'A' => [71, 73, 75],
+    'B' => [61, 65],
   ]),
   
   2 => new Scenario([
@@ -181,7 +179,7 @@ $this->SCENARIOS = [
       1 => [3],
     ],
   ], 
-  11,  // TODO change
+  61,
   []),
   
   3 => new Scenario([
@@ -209,10 +207,10 @@ $this->SCENARIOS = [
       2 => [6],
     ],
   ], 
-  11,  // TODO change
+  27,
   [
-    'A1' => [71, 73, 75],
-    'A2' => [45, 61, 65],
+    'A' => [71, 73, 75],
+    'B' => [45, 61, 65],
   ]),
   
   4 => new Scenario([
@@ -233,7 +231,7 @@ $this->SCENARIOS = [
       2 => [1],
     ],
   ], 
-  11,  // TODO change
+  33,
   []),
   
   5 => new Scenario([
@@ -256,10 +254,10 @@ $this->SCENARIOS = [
       2 => [3],
     ],
   ], 
-  11,  // TODO change
+  41,
   [
-    'A1' => [11, 51],
-    'A2' => [45, 75],
+    'A' => [11, 51],
+    'B' => [45, 75],
   ]),
   
   6 => new Scenario([
@@ -286,10 +284,10 @@ $this->SCENARIOS = [
       2 => [3],
     ],
   ], 
-  11,  // TODO change
+  73,
   [
-    'A1' => [11, 51],
-    'A2' => [61, 71],
+    'A' => [61, 71],
+    'B' => [11, 51],
   ]),
   
   7 => new Scenario([
@@ -309,7 +307,7 @@ $this->SCENARIOS = [
       2 => [4, 5],
     ],
   ], 
-  11,  // TODO change
+  31,
   [
     'A' => [53, 54],
   ]),

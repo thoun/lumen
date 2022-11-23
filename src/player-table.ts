@@ -76,7 +76,7 @@ class PlayerTable {
             }
         });
 
-        player.links.forEach(link => this.setLink(Number(link.index1), Number(link.index2)));
+        player.links.forEach(link => this.setLink(link.index1, link.index2));
 
         this.reserve = new SlotStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-reserve`), {
             slotsIds: [1, 2, 3],

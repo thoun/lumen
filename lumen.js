@@ -1033,28 +1033,28 @@ var Scenario = /** @class */ (function (_super) {
         switch (number) {
             case 1:
                 return [
-                    new ObjectiveTokenPosition('B1', 286, 772),
-                    new ObjectiveTokenPosition('B2', 1570, 1205),
+                    new ObjectiveTokenPosition('A', 286, 772),
+                    new ObjectiveTokenPosition('B', 1570, 1205),
                 ];
             case 2:
                 return [];
             case 3:
                 return [
-                    new ObjectiveTokenPosition('A1', 746, 530),
-                    new ObjectiveTokenPosition('A2', 1042, 782),
+                    new ObjectiveTokenPosition('A', 746, 530),
+                    new ObjectiveTokenPosition('B', 1042, 782),
                 ];
             case 4:
                 return [];
             case 5:
                 return [
-                    new ObjectiveTokenPosition('A1', 273, 1088),
-                    new ObjectiveTokenPosition('A2', 920, 780),
-                    new ObjectiveTokenPosition('B', 890, 24),
+                    new ObjectiveTokenPosition('A', 273, 1088),
+                    new ObjectiveTokenPosition('B', 920, 780),
+                    new ObjectiveTokenPosition('C', 890, 24),
                 ];
             case 6:
                 return [
-                    new ObjectiveTokenPosition('A1', 654, 988),
-                    new ObjectiveTokenPosition('A2', 824, 418),
+                    new ObjectiveTokenPosition('A', 824, 418),
+                    new ObjectiveTokenPosition('B', 654, 988),
                 ];
             case 7:
                 return [
@@ -1127,7 +1127,7 @@ var Scenario = /** @class */ (function (_super) {
             ]; // TODO
             case 2: return [
                 new ObjectiveDescription('A', DURING_GAME, null, _("Chaque joueur qui réussit à vider son sac gagne 2 jetons Objectifs.")),
-                new ObjectiveDescription('B', END_GAME, null, _("Le joueur qui a le moins d’orphelins gagne 1 jeton Objectif.")),
+                new ObjectiveDescription('B', END_GAME, null, _("Le joueur qui possède sur sa Fiche de Commandement le moins de cellules n’appartenant ni à une Zone ni à une Chaîne d’Ordres remporte un jeton Objectif. En cas d’égalité, personne ne reçoit de jeton Objectif.")),
             ]; // TODO
             case 3: return [
                 new ObjectiveDescription('A', DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement."), 2),
@@ -1567,7 +1567,7 @@ var PlayerTable = /** @class */ (function () {
                 div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
             }
         });
-        player.links.forEach(function (link) { return _this.setLink(Number(link.index1), Number(link.index2)); });
+        player.links.forEach(function (link) { return _this.setLink(link.index1, link.index2); });
         this.reserve = new SlotStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-reserve")), {
             slotsIds: [1, 2, 3],
             mapCardToSlot: function (card) { return card.locationArg; }

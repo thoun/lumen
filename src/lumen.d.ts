@@ -34,8 +34,8 @@ interface Circle {
 }
 
 interface Link {
-    index1: string;
-    index2: string;
+    index1: number;
+    index2: number;
 }
 
 interface LumenPlayer extends Player {

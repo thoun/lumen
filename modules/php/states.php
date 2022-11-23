@@ -166,30 +166,28 @@ trait StateTrait {
         }
     }
 
-    function scoreScenarioEndgameObjectives(int $scenarioId, Scenario $scenario) {
+    function scoreScenarioEndgameObjectives(int $scenarioId) {
         switch ($scenarioId) {
             case 1:
                 $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
                 if ($initiativeMarkerControlledPlayer !== null) {
-                    $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer, 'C');
-                    $this->setRealizedObjective('C');
+                    $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer);
                 }
                 break;
             case 2:
-                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
                 $playersIds = $this->getPlayersIds();
                 $leastOrphans = null;
                 $orphansByPlayer = [];
                 foreach ($playersIds as $playerId) {
                     $orphansByPlayer[$playerId] = 0;
 
-                    foreach ($scenario->battlefieldsIds as $battlefieldId) {
-                        foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
-                            $fightersOnTerritory = $this->getCardsByLocation('territory', $territory->id, $playerId);
-                            if (count($fightersOnTerritory) === 1) {
-                                $orphansByPlayer[$playerId]++;
-                            }
-                        }
+                    $circles = $this->getCircles($playerId);
+                    $links = $this->getLinks($playerId);
+
+                    foreach ($circles as $circle) {
+                        if ($circle->value !== null && $circle->value !== -1 && !$this->array_some($links, fn($link) => $link->index1 == $circle->circleId || $link->index2 == $circle->circleId)) {
+                            $orphansByPlayer[$playerId]++;
+                        }   
                     }
                 }
 
@@ -200,8 +198,7 @@ trait StateTrait {
                 }
 
                 if ($leastOrphans !== null) {
-                    $this->takeScenarioObjectiveToken($leastOrphans, 'B');
-                    $this->setRealizedObjective('B');
+                    $this->takeScenarioObjectiveToken($leastOrphans);
                 }
 
                 break;
@@ -272,8 +269,7 @@ trait StateTrait {
                 }
 
                 if ($monstWinterFighters !== null) {
-                    $this->takeScenarioObjectiveToken($monstWinterFighters, 'B');
-                    $this->setRealizedObjective('B');
+                    $this->takeScenarioObjectiveToken($monstWinterFighters);
                 }
 
                 break;
@@ -307,7 +303,7 @@ trait StateTrait {
         $this->scoreMissions($playersIds, $scenario);
         $this->scoreTerritoryControl($scenario);
         $this->scoreDiscoverTiles($playersIds);
-        $this->scoreScenarioEndgameObjectives($scenarioId, $scenario);
+        $this->scoreScenarioEndgameObjectives($scenarioId);
         $this->scoreObjectiveTokens($playersIds);
 
         // update player_score_aux

@@ -141,7 +141,8 @@ class Lumen extends Table {
         $this->activeNextPlayer();
 
         // TODO TEMP
-        $this->debugSetup();
+        $this->debugSetup(); 
+        // TODO make selection play first / order after or the other way
 
         /************ End of the game initialization *****/
     }
@@ -175,7 +176,7 @@ class Lumen extends Table {
             $operations = $this->getCollectionFromDb("SELECT `operation`, `nb` FROM `operation` WHERE player_id = $playerId ORDER BY `operation`");
             $player['operations'] = array_map(fn($operation) => intval($operation['nb']), $operations);
             $player['circles'] = $this->getCircles($playerId);
-            $player['links'] = array_values($this->getCollectionFromDb("SELECT * FROM `link` WHERE player_id = $playerId"));
+            $player['links'] = $this->getLinks($playerId);
 
             $discoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
             $player['discoverTiles'] = $playerId == $currentPlayerId ? $discoverTiles : DiscoverTile::onlyIds($discoverTiles);
@@ -212,102 +213,6 @@ class Lumen extends Table {
         return intval($this->getStat('turnNumber')) * 100 / 17;
     }
 
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Utility functions
-////////////    
-
-    /*
-        In this space, you can put any utility methods useful for your game logic
-    */
-
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Player actions
-//////////// 
-
-    /*
-        Each time a player is doing some game action, one of the methods below is called.
-        (note: each method below must match an input method in lumen.action.php)
-    */
-
-    /*
-    
-    Example:
-
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
-        
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
-    }
-    
-    */
-
-    
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state arguments
-////////////
-
-    /*
-        Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
-        These methods function is to return some additional information that is specific to the current
-        game state.
-    */
-
-    /*
-    
-    Example for game state "MyGameState":
-    
-    function argMyGameState()
-    {
-        // Get some values from the current game situation in database...
-    
-        // return values:
-        return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
-        );
-    }    
-    */
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state actions
-////////////
-
-    /*
-        Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
-        The action method of state X is called everytime the current game state is set to X.
-    */
-    
-    /*
-    
-    Example for game state "MyGameState":
-
-    function stMyGameState()
-    {
-        // Do some stuff ...
-        
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }    
-    */
-
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie
 ////////////
@@ -325,14 +230,13 @@ class Lumen extends Table {
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn( $state, $active_player )
-    {
+    function zombieTurn($state, $active_player) {
     	$statename = $state['name'];
     	
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
                 default:
-                    $this->gamestate->nextState( "zombiePass" );
+                    $this->gamestate->nextState("zombiePass");
                 	break;
             }
 
@@ -341,12 +245,12 @@ class Lumen extends Table {
 
         if ($state['type'] === "multipleactiveplayer") {
             // Make sure player is in a non blocking status for role turn
-            $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
+            $this->gamestate->setPlayerNonMultiactive($active_player, '');
             
             return;
         }
 
-        throw new feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new feException("Zombie mode not supported at this game state: ".$statename);
     }
     
 ///////////////////////////////////////////////////////////////////////////////////:
@@ -364,8 +268,7 @@ class Lumen extends Table {
     
     */
     
-    function upgradeTableDb( $from_version )
-    {
+    function upgradeTableDb($from_version) {
         // $from_version is the current version of this game database, in numerical form.
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345

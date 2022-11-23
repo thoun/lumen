@@ -247,9 +247,9 @@ trait ActionTrait {
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_PLAY);
 
-        if ($this->getScenarioId() == 1 && $fighter->type == 10 && !$this->isRealizedObjective('A')) {
-            $this->takeScenarioObjectiveToken($playerId, 'A');
-            $this->setRealizedObjective('A');
+        if ($this->getScenarioId() == 1 && $fighter->type == 10 && !$this->isRealizedObjective('1')) {
+            $this->takeScenarioObjectiveToken($playerId, '1');
+            $this->setRealizedObjective('1');
         }
 
         $this->gamestate->nextState('chooseTerritory');
