@@ -1687,9 +1687,7 @@ var PlayerTable = /** @class */ (function () {
 }());
 var ANIMATION_MS = 500;
 var ACTION_TIMER_DURATION = 5;
-var ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1];
-var ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0];
-var LOCAL_STORAGE_ZOOM_KEY = 'Lumen-zoom';
+var LOCAL_STORAGE_DISPLAY_KEY = 'Lumen-display';
 var Lumen = /** @class */ (function () {
     function Lumen() {
         this.zoom = 1;
@@ -1699,10 +1697,11 @@ var Lumen = /** @class */ (function () {
         this.objectiveTokensStocks = [];
         this.chosenFighters = [];
         this.bags = [];
+        this.display = 'fit-map-to-screen';
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
-        var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
-        if (zoomStr) {
-            this.zoom = Number(zoomStr);
+        var displayStr = localStorage.getItem(LOCAL_STORAGE_DISPLAY_KEY);
+        if (displayStr && ['scroll', 'fit-map-to-screen', 'fit-map-and-board-to-screen'].includes(displayStr)) {
+            this.display = displayStr;
         }
     }
     /*
@@ -1739,14 +1738,23 @@ var Lumen = /** @class */ (function () {
         this.setupNotifications();
         this.setupPreferences();
         this.addHelp();
-        document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
-        document.getElementById('zoom-in').addEventListener('click', function () { return _this.zoomIn(); });
-        if (this.zoom !== 1) {
-            this.setZoom(this.zoom);
-        }
+        var btnMapScroll = document.getElementById('display-map-scroll');
+        var btnFitMap = document.getElementById('display-fit-map');
+        var btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
+        btnMapScroll.innerHTML = _('Scroll in map');
+        btnFitMap.innerHTML = _('Fit map to screen');
+        btnFitMapAndBoard.innerHTML = _('Fit map and board to screen');
+        btnMapScroll.addEventListener('click', function () { return _this.setMapScroll(); });
+        btnFitMap.addEventListener('click', function () { return _this.setFitMap(); });
+        btnFitMapAndBoard.addEventListener('click', function () { return _this.setFitMapAndBoard(); });
+        ['left', 'right', 'top', 'bottom'].forEach(function (direction) { return document.getElementById("scroll-".concat(direction)).addEventListener('click', function () { return _this.scroll(direction); }); });
+        document.getElementById('map-frame').addEventListener('scroll', function () { return _this.onMapFrameScroll(); });
         this.onScreenWidthChange = function () {
-            _this.updateTableHeight();
+            _this.updateDisplay();
         };
+        setTimeout(function () { return _this.updateDisplay(); }, 500);
+        setTimeout(function () { return _this.updateDisplay(); }, 1000);
+        setTimeout(function () { return _this.updateDisplay(); }, 2000);
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -2010,40 +2018,74 @@ var Lumen = /** @class */ (function () {
         var _this = this;
         return this.playersTables.find(function (playerTable) { return playerTable.playerId === _this.getPlayerId(); });
     };
-    Lumen.prototype.setZoom = function (zoom) {
-        if (zoom === void 0) { zoom = 1; }
-        this.zoom = zoom;
-        localStorage.setItem(LOCAL_STORAGE_ZOOM_KEY, '' + this.zoom);
-        var newIndex = ZOOM_LEVELS.indexOf(this.zoom);
-        dojo.toggleClass('zoom-in', 'disabled', newIndex === ZOOM_LEVELS.length - 1);
-        dojo.toggleClass('zoom-out', 'disabled', newIndex === 0);
-        var div = document.getElementById('full-table');
-        if (zoom === 1) {
-            div.style.transform = '';
-            div.style.margin = '';
+    Lumen.prototype.setFitMap = function () {
+        this.display = 'fit-map-to-screen';
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.updateDisplay();
+    };
+    Lumen.prototype.setFitMapAndBoard = function () {
+        this.display = 'fit-map-and-board-to-screen';
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.updateDisplay();
+    };
+    Lumen.prototype.setMapScroll = function () {
+        this.display = 'scroll';
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.updateDisplay();
+    };
+    Lumen.prototype.updateDisplay = function () {
+        //document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`;
+        var map = document.getElementById('map');
+        var mapFrame = document.getElementById('map-frame');
+        var scroll = this.display === 'scroll';
+        var playAreaViewportHeight = window.innerHeight - (mapFrame.getBoundingClientRect().top - document.body.getBoundingClientRect().top);
+        mapFrame.style.maxHeight = "".concat(playAreaViewportHeight, "px");
+        document.getElementById('scroll-buttons').dataset.scroll = scroll.toString();
+        if (scroll) {
+            map.style.transform = "";
+            map.style.maxHeight = "";
+            mapFrame.style.height = "";
+            this.onMapFrameScroll();
         }
         else {
-            div.style.transform = "scale(".concat(zoom, ")");
-            div.style.marginRight = "".concat(ZOOM_LEVELS_MARGIN[newIndex], "%");
+            var mapWidth = Number(map.style.width.match(/\d+/)[0]);
+            var mapHeight = Number(map.style.height.match(/\d+/)[0]);
+            var xScale = mapFrame.clientWidth / mapWidth;
+            var yScale = Number(mapFrame.style.maxHeight.match(/\d+/)[0]) / mapHeight;
+            var scale = Math.min(xScale, yScale);
+            map.style.transform = "scale(".concat(scale, ")");
+            map.style.maxHeight = "".concat(Math.min(playAreaViewportHeight, mapHeight * scale), "px");
+            mapFrame.style.height = "".concat(Math.min(playAreaViewportHeight, mapHeight * scale), "px");
         }
-        this.updateTableHeight();
     };
-    Lumen.prototype.zoomIn = function () {
-        if (this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]) {
-            return;
+    Lumen.prototype.scroll = function (direction) {
+        var scrollBy = 200;
+        var mapFrame = document.getElementById('map-frame');
+        var options = {
+            behavior: 'smooth',
+        };
+        switch (direction) {
+            case 'left':
+                options.left = -scrollBy;
+                break;
+            case 'right':
+                options.left = scrollBy;
+                break;
+            case 'top':
+                options.top = -scrollBy;
+                break;
+            case 'bottom':
+                options.top = scrollBy;
+                break;
         }
-        var newIndex = ZOOM_LEVELS.indexOf(this.zoom) + 1;
-        this.setZoom(ZOOM_LEVELS[newIndex]);
+        mapFrame.scrollBy(options);
     };
-    Lumen.prototype.zoomOut = function () {
-        if (this.zoom === ZOOM_LEVELS[0]) {
-            return;
-        }
-        var newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
-        this.setZoom(ZOOM_LEVELS[newIndex]);
-    };
-    Lumen.prototype.updateTableHeight = function () {
-        setTimeout(function () { return document.getElementById('zoom-wrapper').style.height = "".concat(document.getElementById('full-table').getBoundingClientRect().height, "px"); }, 600);
+    Lumen.prototype.onMapFrameScroll = function () {
+        var mapFrame = document.getElementById('map-frame');
+        document.getElementById("scroll-left").style.visibility = mapFrame.scrollLeft <= 0 ? 'hidden' : 'visible';
+        document.getElementById("scroll-right").style.visibility = mapFrame.scrollLeft + mapFrame.clientWidth >= mapFrame.scrollWidth ? 'hidden' : 'visible';
+        document.getElementById("scroll-top").style.visibility = mapFrame.scrollTop <= 0 ? 'hidden' : 'visible';
+        document.getElementById("scroll-bottom").style.visibility = mapFrame.scrollTop + mapFrame.clientHeight >= mapFrame.scrollHeight ? 'hidden' : 'visible';
     };
     Lumen.prototype.setupPreferences = function () {
         var _this = this;

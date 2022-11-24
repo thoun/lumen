@@ -1444,33 +1444,71 @@ html, .mode_3d #game_play_area_background {
 #zoom-wrapper {
   position: relative;
 }
-#zoom-wrapper #zoom-controls {
+#zoom-wrapper #map-controls {
   position: absolute;
   top: 0;
   right: 0;
+  display: flex;
+  gap: 10px;
 }
-#zoom-wrapper #zoom-controls button {
-  width: 40px;
-  height: 40px;
-  background: url("img/zoom.svg");
-  background-size: auto 220%;
-}
-#zoom-wrapper #zoom-controls button:not(.disabled) {
-  cursor: pointer;
-}
-#zoom-wrapper #zoom-controls button.disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-#zoom-wrapper #zoom-controls #zoom-in {
-  background-position: 6% 94%;
-}
-#zoom-wrapper #zoom-controls #zoom-out {
-  background-position: 82% 94%;
+#zoom-wrapper #map-controls button {
+  width: auto;
+  margin: 0;
 }
 #zoom-wrapper #full-table {
   position: relative;
   transform-origin: left top;
+}
+#zoom-wrapper #full-table #scroll-buttons {
+  position: relative;
+}
+#zoom-wrapper #full-table #scroll-buttons[data-scroll=true] button.scroll {
+  display: inline-block;
+}
+#zoom-wrapper #full-table #scroll-buttons button.scroll {
+  display: none;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  z-index: 120;
+  transform-origin: center center;
+  background-color: white;
+  background-image: url("img/right-arrow.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 60%;
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.5333333333);
+  cursor: pointer;
+}
+#zoom-wrapper #full-table #scroll-buttons button.scroll.left {
+  left: 5px;
+  top: calc(50% - 20px);
+  transform: rotate(180deg);
+}
+#zoom-wrapper #full-table #scroll-buttons button.scroll.right {
+  right: 5px;
+  top: calc(50% - 20px);
+}
+#zoom-wrapper #full-table #scroll-buttons button.scroll.top {
+  top: 5px;
+  left: calc(50% - 20px);
+  transform: rotate(-90deg);
+}
+#zoom-wrapper #full-table #scroll-buttons button.scroll.bottom {
+  bottom: 5px;
+  left: calc(50% - 20px);
+  transform: rotate(90deg);
+}
+#zoom-wrapper #full-table #map-frame {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  max-width: 100%;
+}
+#zoom-wrapper #full-table #map {
+  transform-origin: top center;
 }
 #zoom-wrapper #full-table #tables {
   display: flex;

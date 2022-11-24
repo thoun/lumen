@@ -5,12 +5,12 @@ declare const dojo: Dojo;
 declare const _;
 declare const g_gamethemeurl;
 
+type LumenDisplay = 'scroll' | 'fit-map-to-screen' | 'fit-map-and-board-to-screen';
+
 const ANIMATION_MS = 500;
 const ACTION_TIMER_DURATION = 5;
 
-const ZOOM_LEVELS = [0.5, 0.625, 0.75, 0.875, 1];
-const ZOOM_LEVELS_MARGIN = [-100, -60, -33, -14, 0];
-const LOCAL_STORAGE_ZOOM_KEY = 'Lumen-zoom';
+const LOCAL_STORAGE_DISPLAY_KEY = 'Lumen-display';
 
 class Lumen implements LumenGame {
     public zoom: number = 1;
@@ -27,13 +27,14 @@ class Lumen implements LumenGame {
     private objectiveTokensStocks: LineStock<ObjectiveToken>[] = [];
     private chosenFighters: number[] = [];
     private bags: VoidStock<Card>[] = [];
+    private display: LumenDisplay = 'fit-map-to-screen';
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
     constructor() {
-        const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
-        if (zoomStr) {
-            this.zoom = Number(zoomStr);
+        const displayStr = localStorage.getItem(LOCAL_STORAGE_DISPLAY_KEY);
+        if (displayStr && ['scroll', 'fit-map-to-screen', 'fit-map-and-board-to-screen'].includes(displayStr)) {
+            this.display = displayStr as LumenDisplay;
         }
     }
     
@@ -77,15 +78,24 @@ class Lumen implements LumenGame {
         this.setupPreferences();
         this.addHelp();
 
-        document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
-        document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
-        if (this.zoom !== 1) {
-            this.setZoom(this.zoom);
-        }
+        const btnMapScroll = document.getElementById('display-map-scroll');
+        const btnFitMap = document.getElementById('display-fit-map');
+        const btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
+        btnMapScroll.innerHTML = _('Scroll in map');
+        btnFitMap.innerHTML = _('Fit map to screen');
+        btnFitMapAndBoard.innerHTML = _('Fit map and board to screen');
+        btnMapScroll.addEventListener('click', () => this.setMapScroll());
+        btnFitMap.addEventListener('click', () => this.setFitMap());
+        btnFitMapAndBoard.addEventListener('click', () => this.setFitMapAndBoard());
+        ['left', 'right', 'top', 'bottom'].forEach(direction => document.getElementById(`scroll-${direction}`).addEventListener('click', () => this.scroll(direction as any)));
+        document.getElementById('map-frame').addEventListener('scroll', () => this.onMapFrameScroll());
 
         (this as any).onScreenWidthChange = () => {
-            this.updateTableHeight();
+            this.updateDisplay();
         };
+        setTimeout(() => this.updateDisplay(), 500);
+        setTimeout(() => this.updateDisplay(), 1000);
+        setTimeout(() => this.updateDisplay(), 2000);
 
         log( "Ending game setup" );
     }
@@ -379,43 +389,75 @@ class Lumen implements LumenGame {
         return this.playersTables.find(playerTable => playerTable.playerId === this.getPlayerId());
     }
 
-    private setZoom(zoom: number = 1) {
-        this.zoom = zoom;
-        localStorage.setItem(LOCAL_STORAGE_ZOOM_KEY, ''+this.zoom);
-        const newIndex = ZOOM_LEVELS.indexOf(this.zoom);
-        dojo.toggleClass('zoom-in', 'disabled', newIndex === ZOOM_LEVELS.length - 1);
-        dojo.toggleClass('zoom-out', 'disabled', newIndex === 0);
+    private setFitMap() {
+        this.display = 'fit-map-to-screen';
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);        
+        this.updateDisplay();
+    }
 
-        const div = document.getElementById('full-table');
-        if (zoom === 1) {
-            div.style.transform = '';
-            div.style.margin = '';
+    private setFitMapAndBoard() {
+        this.display = 'fit-map-and-board-to-screen';
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);        
+        this.updateDisplay();
+    }
+
+    private setMapScroll() {
+        this.display = 'scroll';
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);        
+        this.updateDisplay();
+    }
+
+    public updateDisplay() {
+        //document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`;
+        
+        const map = document.getElementById('map');
+        const mapFrame = document.getElementById('map-frame');
+        const scroll = this.display === 'scroll';
+       
+        const playAreaViewportHeight = window.innerHeight - (mapFrame.getBoundingClientRect().top - document.body.getBoundingClientRect().top);
+        mapFrame.style.maxHeight = `${playAreaViewportHeight}px`;
+        document.getElementById('scroll-buttons').dataset.scroll = scroll.toString();
+        if (scroll) {
+            map.style.transform = ``;
+            map.style.maxHeight = ``;
+            mapFrame.style.height = ``;
+            this.onMapFrameScroll();
         } else {
-            div.style.transform = `scale(${zoom})`;
-            div.style.marginRight = `${ZOOM_LEVELS_MARGIN[newIndex]}%`;
-        }
+            const mapWidth = Number(map.style.width.match(/\d+/)[0]);
+            const mapHeight = Number(map.style.height.match(/\d+/)[0]);
 
-        this.updateTableHeight();
+            const xScale = mapFrame.clientWidth / mapWidth;
+            const yScale = Number(mapFrame.style.maxHeight.match(/\d+/)[0]) / mapHeight;
+            const scale = Math.min(xScale, yScale);
+
+            map.style.transform = `scale(${scale})`;
+            map.style.maxHeight = `${Math.min(playAreaViewportHeight, mapHeight * scale)}px`;
+            mapFrame.style.height = `${Math.min(playAreaViewportHeight, mapHeight * scale)}px`;
+        }
+        
     }
 
-    public zoomIn() {
-        if (this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]) {
-            return;
+    private scroll(direction: 'left' | 'right' | 'top' | 'bottom') {
+        const scrollBy = 200;
+        const mapFrame = document.getElementById('map-frame');
+        const options: ScrollToOptions = {
+            behavior: 'smooth',
+        };
+        switch(direction) {
+            case 'left': options.left = -scrollBy; break;
+            case 'right': options.left = scrollBy; break;
+            case 'top': options.top = -scrollBy; break;
+            case 'bottom': options.top = scrollBy; break;
         }
-        const newIndex = ZOOM_LEVELS.indexOf(this.zoom) + 1;
-        this.setZoom(ZOOM_LEVELS[newIndex]);
+        mapFrame.scrollBy(options);
     }
 
-    public zoomOut() {
-        if (this.zoom === ZOOM_LEVELS[0]) {
-            return;
-        }
-        const newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
-        this.setZoom(ZOOM_LEVELS[newIndex]);
-    }
-
-    public updateTableHeight() {
-        setTimeout(() => document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`, 600);
+    private onMapFrameScroll() {
+        const mapFrame = document.getElementById('map-frame');
+        document.getElementById(`scroll-left`).style.visibility = mapFrame.scrollLeft <= 0 ? 'hidden' : 'visible';
+        document.getElementById(`scroll-right`).style.visibility = mapFrame.scrollLeft + mapFrame.clientWidth >= mapFrame.scrollWidth ? 'hidden' : 'visible';
+        document.getElementById(`scroll-top`).style.visibility = mapFrame.scrollTop <= 0 ? 'hidden' : 'visible';
+        document.getElementById(`scroll-bottom`).style.visibility = mapFrame.scrollTop + mapFrame.clientHeight >= mapFrame.scrollHeight ? 'hidden' : 'visible';
     }
 
     private setupPreferences() {
