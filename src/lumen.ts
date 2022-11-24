@@ -28,7 +28,7 @@ class Lumen implements LumenGame {
     private chosenFighters: number[] = [];
     private bags: VoidStock<Card>[] = [];
     private bagCounters: Counter[] = [];
-    private display: LumenDisplay = 'fit-map-to-screen';
+    private display: LumenDisplay = 'fit-map-and-board-to-screen';
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -414,12 +414,18 @@ class Lumen implements LumenGame {
         
         const map = document.getElementById('map');
         const mapFrame = document.getElementById('map-frame');
+        const fullTable = document.getElementById('full-table');
         const scroll = this.display === 'scroll';
        
         const playAreaViewportHeight = window.innerHeight - (mapFrame.getBoundingClientRect().top - document.body.getBoundingClientRect().top);
         mapFrame.style.maxHeight = `${playAreaViewportHeight}px`;
         document.getElementById('scroll-buttons').dataset.scroll = scroll.toString();
+        fullTable.style.margin = '';
+        fullTable.style.height = '';
+        let zoom = 1;
+
         if (scroll) {
+            fullTable.style.transform = '';
             map.style.transform = ``;
             map.style.maxHeight = ``;
             mapFrame.style.height = ``;
@@ -430,13 +436,25 @@ class Lumen implements LumenGame {
 
             const xScale = mapFrame.clientWidth / mapWidth;
             const yScale = Number(mapFrame.style.maxHeight.match(/\d+/)[0]) / mapHeight;
-            const scale = Math.min(xScale, yScale);
+            const scale = Math.min(1, Math.min(xScale, yScale));
 
+            const newMapHeight = Math.min(playAreaViewportHeight, mapHeight * scale);
             map.style.transform = `scale(${scale})`;
-            map.style.maxHeight = `${Math.min(playAreaViewportHeight, mapHeight * scale)}px`;
-            mapFrame.style.height = `${Math.min(playAreaViewportHeight, mapHeight * scale)}px`;
+            map.style.maxHeight = `${newMapHeight}px`;
+            mapFrame.style.height = `${newMapHeight}px`;
+
+            if (this.display === 'fit-map-and-board-to-screen') {
+                zoom = Math.min(1, playAreaViewportHeight / (newMapHeight + 20 + document.getElementsByClassName('player-table')[0].clientHeight));
+            }
         }
         
+        if (zoom === 1) {
+            fullTable.style.transform = '';
+        } else {
+            fullTable.style.transform = `scale(${zoom})`;
+            fullTable.style.marginRight = `${-(fullTable.clientWidth / zoom - fullTable.clientWidth)}px`;
+        }
+        fullTable.style.height = `${fullTable.getBoundingClientRect().height}px`;
     }
 
     private scroll(direction: 'left' | 'right' | 'top' | 'bottom') {
@@ -1052,7 +1070,8 @@ class Lumen implements LumenGame {
     } 
 
     notif_addHighCommandCard(notif: Notif<NotifAddHighCommandCardArgs>) {
-        this.getPlayerTable(notif.args.playerId).addHighCommandCard(notif.args.card);
+        this.getPlayerTable(notif.args.playerId).addHighCommandCard(notif.args.card);      
+        this.bagCounters[0].incValue(-1);
     }
 
     notif_zone(notif: Notif<NotifZoneArgs>) {
@@ -1096,7 +1115,10 @@ class Lumen implements LumenGame {
     }
 
     notif_refillReserve(notif: Notif<NotifRefillReserveArgs>) {
-        this.getPlayerTable(notif.args.playerId).refillReserve(notif.args.fighter, notif.args.slot);
+        const card = notif.args.fighter;
+        const playerId = notif.args.playerId;
+        this.getPlayerTable(playerId).refillReserve(card, notif.args.slot);        
+        this.bagCounters[playerId].incValue(-1);
     }
 
     notif_moveDiscoverTileToPlayer(notif: Notif<NotifMoveDiscoverTileToPlayerArgs>) {
@@ -1125,9 +1147,10 @@ class Lumen implements LumenGame {
     }
 
     notif_putBackInBag(notif: Notif<NotifPutBackInBagArgs>) {
-        notif.args.fighters.forEach(card => 
-            this.bags[card.type == 1 ? card.playerId : 0].addCard(card)
-        );
+        notif.args.fighters.forEach(card => {
+            this.bags[card.type == 1 ? card.playerId : 0].addCard(card);
+            this.bagCounters[card.type == 1 ? card.playerId : 0].incValue(1);
+        });
     }
     
     private setFightersSide(fighters: Card[], side: string) {

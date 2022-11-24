@@ -1103,10 +1103,15 @@ body > .card {
   font-family: "Messy";
   font-size: 48px;
   color: #3d3d3d;
+  background-size: contain;
+  background-position: center center;
 }
 .player-table .circles .circle.ghost {
   opacity: 0.2;
   cursor: pointer;
+}
+.player-table .circles .circle[data-jamming=true] {
+  background-image: url("img/jamming.png");
 }
 .player-table .circles .circle[data-zone="0"] {
   background-color: rgba(128, 255, 128, 0.4);

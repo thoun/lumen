@@ -1202,7 +1202,7 @@ var DiscoverTileStock = /** @class */ (function (_super) {
 }(CardStock));
 var TerritoryStock = /** @class */ (function (_super) {
     __extends(TerritoryStock, _super);
-    function TerritoryStock(manager, element, curve, rotation, discoverTileStockId) {
+    function TerritoryStock(manager, element, curve, rotation, territoryId) {
         var _this = _super.call(this, manager, element, function () { return _this.manualPosition(); }) || this;
         _this.manager = manager;
         _this.element = element;
@@ -1218,15 +1218,15 @@ var TerritoryStock = /** @class */ (function (_super) {
         }
         _this.curve = _this.curve.map(function (point) { return [point[0] * element.clientWidth / 12, point[1] * element.clientHeight / 12]; });
         _this.discoverTileStockDiv = document.createElement('div');
-        _this.discoverTileStockDiv.id = discoverTileStockId;
+        _this.discoverTileStockDiv.id = "territory-".concat(territoryId, "-discover-tiles");
         _this.discoverTileStockDiv.classList.add('discover-tile-stock');
         element.appendChild(_this.discoverTileStockDiv);
         _this.discoverTileStock = new DiscoverTileStock(_this.manager.game.discoverTilesManager, _this.discoverTileStockDiv, function () { return _this.manualPosition(); });
         for (var i = 1; i < _this.curve.length; i++) {
             _this.pathLength += _this.getPathLength(_this.curve[i - 1], _this.curve[i]);
         }
-        _this.debugShowCurveCanvas();
         return _this;
+        // this.debugShowCurveCanvas();
     }
     TerritoryStock.prototype.addInitiativeMarker = function () {
         this.initiativeMarker = true;
@@ -1403,7 +1403,7 @@ var TableCenter = /** @class */ (function () {
             territoryMask.classList.add('territory-mask');
             battlefield.prepend(territoryMask);
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
-            _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.curve, rotation, "territory-".concat(territoryInfos.id, "-discover-tiles"));
+            _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.curve, rotation, territoryInfos.id);
             _this.territoriesStocks[territoryInfos.id].onCardClick = function (card) {
                 var selectableCards = _this.game.getChooseFighterSelectableCards();
                 var canClick = selectableCards === null || selectableCards === void 0 ? void 0 : selectableCards.some(function (fighter) { return fighter.id == card.id; });
@@ -1561,7 +1561,11 @@ var PlayerTable = /** @class */ (function () {
             div.id = "player-table-".concat(_this.playerId, "-circle").concat(circle.circleId);
             div.dataset.circle = "".concat(circle.circleId);
             div.classList.add('circle');
-            div.innerHTML = "".concat(circle.value ? (circle.value === -1 ? 'X' /* TODO Brouillage*/ : circle.value) : '');
+            div.dataset.zone = '' + circle.zone;
+            div.innerHTML = "".concat(circle.value !== null && circle.value !== -1 ? circle.value : '');
+            if (circle.value === -1) {
+                div.dataset.jamming = 'true';
+            }
             document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
             if (_this.currentPlayer) {
                 div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
@@ -1629,7 +1633,10 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.setCircleValue = function (circleId, value) {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-circle").concat(circleId));
         circleDiv.classList.remove('ghost');
-        circleDiv.innerHTML = value === -1 ? 'X' /* TODO Brouillage*/ : '' + value;
+        circleDiv.innerHTML = value === -1 ? '' : '' + value;
+        if (value === -1) {
+            circleDiv.dataset.jamming = 'true';
+        }
     };
     PlayerTable.prototype.setPossibleCellLinks = function (possibleLinkCirclesIds, cellId) {
         var _this = this;
@@ -1699,7 +1706,7 @@ var Lumen = /** @class */ (function () {
         this.chosenFighters = [];
         this.bags = [];
         this.bagCounters = [];
-        this.display = 'fit-map-to-screen';
+        this.display = 'fit-map-and-board-to-screen';
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var displayStr = localStorage.getItem(LOCAL_STORAGE_DISPLAY_KEY);
         if (displayStr && ['scroll', 'fit-map-to-screen', 'fit-map-and-board-to-screen'].includes(displayStr)) {
@@ -2040,11 +2047,16 @@ var Lumen = /** @class */ (function () {
         //document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`;
         var map = document.getElementById('map');
         var mapFrame = document.getElementById('map-frame');
+        var fullTable = document.getElementById('full-table');
         var scroll = this.display === 'scroll';
         var playAreaViewportHeight = window.innerHeight - (mapFrame.getBoundingClientRect().top - document.body.getBoundingClientRect().top);
         mapFrame.style.maxHeight = "".concat(playAreaViewportHeight, "px");
         document.getElementById('scroll-buttons').dataset.scroll = scroll.toString();
+        fullTable.style.margin = '';
+        fullTable.style.height = '';
+        var zoom = 1;
         if (scroll) {
+            fullTable.style.transform = '';
             map.style.transform = "";
             map.style.maxHeight = "";
             mapFrame.style.height = "";
@@ -2055,11 +2067,23 @@ var Lumen = /** @class */ (function () {
             var mapHeight = Number(map.style.height.match(/\d+/)[0]);
             var xScale = mapFrame.clientWidth / mapWidth;
             var yScale = Number(mapFrame.style.maxHeight.match(/\d+/)[0]) / mapHeight;
-            var scale = Math.min(xScale, yScale);
+            var scale = Math.min(1, Math.min(xScale, yScale));
+            var newMapHeight = Math.min(playAreaViewportHeight, mapHeight * scale);
             map.style.transform = "scale(".concat(scale, ")");
-            map.style.maxHeight = "".concat(Math.min(playAreaViewportHeight, mapHeight * scale), "px");
-            mapFrame.style.height = "".concat(Math.min(playAreaViewportHeight, mapHeight * scale), "px");
+            map.style.maxHeight = "".concat(newMapHeight, "px");
+            mapFrame.style.height = "".concat(newMapHeight, "px");
+            if (this.display === 'fit-map-and-board-to-screen') {
+                zoom = Math.min(1, playAreaViewportHeight / (newMapHeight + 20 + document.getElementsByClassName('player-table')[0].clientHeight));
+            }
         }
+        if (zoom === 1) {
+            fullTable.style.transform = '';
+        }
+        else {
+            fullTable.style.transform = "scale(".concat(zoom, ")");
+            fullTable.style.marginRight = "".concat(-(fullTable.clientWidth / zoom - fullTable.clientWidth), "px");
+        }
+        fullTable.style.height = "".concat(fullTable.getBoundingClientRect().height, "px");
     };
     Lumen.prototype.scroll = function (direction) {
         var scrollBy = 200;
@@ -2543,6 +2567,7 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_addHighCommandCard = function (notif) {
         this.getPlayerTable(notif.args.playerId).addHighCommandCard(notif.args.card);
+        this.bagCounters[0].incValue(-1);
     };
     Lumen.prototype.notif_zone = function (notif) {
         this.getPlayerTable(notif.args.playerId).setZone(notif.args.circlesIds, notif.args.zoneId);
@@ -2579,7 +2604,10 @@ var Lumen = /** @class */ (function () {
         this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId);
     };
     Lumen.prototype.notif_refillReserve = function (notif) {
-        this.getPlayerTable(notif.args.playerId).refillReserve(notif.args.fighter, notif.args.slot);
+        var card = notif.args.fighter;
+        var playerId = notif.args.playerId;
+        this.getPlayerTable(playerId).refillReserve(card, notif.args.slot);
+        this.bagCounters[playerId].incValue(-1);
     };
     Lumen.prototype.notif_moveDiscoverTileToPlayer = function (notif) {
         var playerId = notif.args.playerId;
@@ -2604,7 +2632,8 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.notif_putBackInBag = function (notif) {
         var _this = this;
         notif.args.fighters.forEach(function (card) {
-            return _this.bags[card.type == 1 ? card.playerId : 0].addCard(card);
+            _this.bags[card.type == 1 ? card.playerId : 0].addCard(card);
+            _this.bagCounters[card.type == 1 ? card.playerId : 0].incValue(1);
         });
     };
     Lumen.prototype.setFightersSide = function (fighters, side) {

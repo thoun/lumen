@@ -69,7 +69,11 @@ class PlayerTable {
             div.id = `player-table-${this.playerId}-circle${circle.circleId}`;
             div.dataset.circle = `${circle.circleId}`;
             div.classList.add('circle');
-            div.innerHTML = `${circle.value ? (circle.value === -1 ? 'X' /* TODO Brouillage*/ : circle.value) : ''}`;
+            div.dataset.zone = ''+circle.zone;
+            div.innerHTML = `${circle.value !== null && circle.value !== -1 ? circle.value : ''}`;
+            if (circle.value === -1) {
+                div.dataset.jamming = 'true';
+            }
             document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
             if (this.currentPlayer) {
                 div.addEventListener('click', () => this.game.cellClick(circle.circleId));
@@ -146,7 +150,10 @@ class PlayerTable {
     public setCircleValue(circleId: number, value: number) {
         const circleDiv = document.getElementById(`player-table-${this.playerId}-circle${circleId}`);
         circleDiv.classList.remove('ghost');
-        circleDiv.innerHTML = value === -1 ? 'X' /* TODO Brouillage*/ : ''+value;
+        circleDiv.innerHTML = value === -1 ? '' : ''+value;
+        if (value === -1) {
+            circleDiv.dataset.jamming = 'true';
+        }
     }
 
     public setPossibleCellLinks(possibleLinkCirclesIds: number[], cellId: number) {

@@ -177,10 +177,16 @@ $circleWidth: 49.7px;
       font-family: "Messy";
       font-size: 48px;
       color: #3d3d3d;
+      background-size: contain;
+      background-position: center center;  
 
       &.ghost {
         opacity: 0.2;
         cursor: pointer;
+      }
+
+      &[data-jamming="true"] {
+        background-image: url('img/jamming.png');
       }
 
       &[data-zone="0"] { background-color: rgba(128, 255, 128, .4); }

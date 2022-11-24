@@ -50,7 +50,7 @@
     <div id="map-controls">
         <button class="bgabutton bgabutton_gray" id="display-map-scroll"></button>
         <button class="bgabutton bgabutton_gray" id="display-fit-map"></button>
-        <button class="bgabutton bgabutton_gray" id="display-fit-map-and-board" style="display: none"></button>
+        <button class="bgabutton bgabutton_gray" id="display-fit-map-and-board"></button>
     </div>
 </div>
 

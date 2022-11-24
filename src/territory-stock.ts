@@ -31,7 +31,7 @@ class TerritoryStock extends ManualPositionStock<Card> {
         protected element: HTMLElement, 
         protected curve: number[][], 
         protected rotation: 0 | 90 | 180 | 270,
-        discoverTileStockId: string) {
+        territoryId: number) {
         super(manager, element, () => this.manualPosition());
         element.classList.add('territory-stock');
 
@@ -46,7 +46,7 @@ class TerritoryStock extends ManualPositionStock<Card> {
         this.curve = this.curve.map(point => [point[0] * element.clientWidth / 12, point[1] * element.clientHeight / 12]);
 
         this.discoverTileStockDiv = document.createElement('div');
-        this.discoverTileStockDiv.id = discoverTileStockId;
+        this.discoverTileStockDiv.id = `territory-${territoryId}-discover-tiles`;
         this.discoverTileStockDiv.classList.add('discover-tile-stock');
         element.appendChild(this.discoverTileStockDiv);
         this.discoverTileStock = new DiscoverTileStock((this.manager.game as LumenGame).discoverTilesManager, this.discoverTileStockDiv, () => this.manualPosition());
@@ -55,7 +55,7 @@ class TerritoryStock extends ManualPositionStock<Card> {
             this.pathLength += this.getPathLength(this.curve[i-1], this.curve[i]);
         }
 
-        this.debugShowCurveCanvas();
+        // this.debugShowCurveCanvas();
     }
 
     public addInitiativeMarker() {
