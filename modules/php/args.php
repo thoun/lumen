@@ -170,6 +170,10 @@ trait ArgsTrait {
                         $canActivate = false;
                     }
                     break;
+                case 7:
+                    if ($fighter->power === POWER_EMPLUME && $fighter->locationArg % 10 == 7) {
+                        $canActivate = false;
+                    }
             }
         }
         return $canActivate;
@@ -345,6 +349,8 @@ trait ArgsTrait {
                         $battlefieldsIds = [6, 1, 3];
                     } else if (in_array($currentBattlefield, [5, 4, 7])) {
                         $battlefieldsIds = [5, 4, 7];
+                    } else {
+                        $battlefieldsIds = [2];
                     }
                 } // TODO check si on peut s'arrpeter sur le 2 depuis 1 3 6 ou si on doit d'arrêter avant. Et si on peut voler depuis le 2
                 foreach ($battlefieldsIds as $battlefieldId) {

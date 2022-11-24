@@ -861,13 +861,12 @@ var ObjectiveTokensManager = /** @class */ (function (_super) {
     return ObjectiveTokensManager;
 }(CardManager));
 var Territory = /** @class */ (function () {
-    function Territory(id, x, y, width, height, direction, curve) {
+    function Territory(id, x, y, width, height, curve) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.direction = direction;
         this.curve = curve;
     }
     return Territory;
@@ -891,34 +890,34 @@ var BattlefieldPosition = /** @class */ (function () {
 var BATTLEFIELDS = [
     null,
     new Battlefield(1, [
-        new Territory(11, 24, 0, 303, 291, 'horizontal', [[0, 0], [2, 1], [5, 9], [12, 8]]),
-        new Territory(15, 0, 150, 408, 537, 'vertical', [[0, 0], [3, 3], [8, 7], [5, 9], [4, 12]]),
+        new Territory(11, 24, 0, 303, 291, [[1, 1], [3, 2], [5, 9], [12, 8]]),
+        new Territory(15, 0, 150, 408, 537, [[1, 1], [3, 3], [9, 5], [10, 6], [7, 9], [6, 12]]),
     ]),
     new Battlefield(2, [
-        new Territory(27, 0, 0, 423, 708, 'vertical', [[2, 0], [4, 4], [9, 5], [9, 8], [5, 10], [6, 12]]),
+        new Territory(27, 0, 0, 423, 708, [[2, 1], [4, 4], [9, 5], [9, 8], [5, 10]]),
     ]),
     new Battlefield(3, [
-        new Territory(31, 82, 330, 337, 378, 'vertical', [[9, 0], [8, 4], [1, 12]]),
-        new Territory(33, 0, 0, 417, 382, 'horizontal', [[0, 0], [4, 8], [12, 8]]),
+        new Territory(31, 82, 330, 337, 378, [[9, 0], [8, 4], [3, 10]]),
+        new Territory(33, 0, 0, 417, 382, [[2, 1], [4, 8], [11, 8]]),
     ]),
     new Battlefield(4, [
-        new Territory(41, 226, 129, 198, 384, 'vertical', [[4, 0], [8, 6], [9, 12]]),
-        new Territory(45, 0, 0, 333, 708, 'vertical', [[3, 0], [9, 6], [8, 12]]),
+        new Territory(41, 226, 129, 198, 384, [[4, 1], [8, 6], [9, 12]]),
+        new Territory(45, 0, 0, 333, 708, [[3, 1], [4, 4], [9, 6], [9, 9], [8, 11]]),
     ]),
     new Battlefield(5, [
-        new Territory(51, 0, 0, 264, 378, 'vertical', [[2, 0], [8, 6], [6, 12]]),
-        new Territory(53, 222, 127, 195, 277, 'vertical', [[6, 0], [5, 6], [8, 12]]),
-        new Territory(54, 82, 378, 339, 330, 'vertical', [[8, 0], [7, 6], [3, 12]]),
+        new Territory(51, 0, 0, 264, 378, [[3, 1], [6, 6], [8, 11]]),
+        new Territory(53, 222, 127, 195, 277, [[6, 1], [6, 6], [7, 11]]),
+        new Territory(54, 82, 378, 339, 330, [[11, 1], [5, 6], [4, 9]]),
     ]),
     new Battlefield(6, [
-        new Territory(61, 82, 423, 219, 285, 'vertical', [[10, 0], [5, 6], [10, 12]]),
-        new Territory(63, 0, 0, 225, 267, 'vertical', [[5, 0], [6, 6], [5, 12]]),
-        new Territory(65, 66, 129, 355, 442, 'vertical', [[7, 0], [7, 6], [10, 12]]),
+        new Territory(61, 82, 423, 219, 285, [[10, 0], [5, 6], [10, 12]]),
+        new Territory(63, 0, 0, 225, 267, [[3, 1], [6, 6], [8, 11]]),
+        new Territory(65, 66, 129, 355, 442, [[1, 4], [3, 5], [7, 3], [9, 4], [8, 6], [10, 11]]),
     ]),
     new Battlefield(7, [
-        new Territory(71, 79, 339, 258, 309, 'vertical', [[10, 0], [8, 4], [0, 12]]),
-        new Territory(73, 0, 0, 316, 394, 'vertical', [[2, 0], [3, 6], [5, 9], [12, 12]]),
-        new Territory(75, 120, 12, 303, 696, 'vertical', [[1, 0], [2, 4], [10, 5], [10, 8], [5, 10], [4, 12]]),
+        new Territory(71, 79, 339, 258, 309, [[11, 1], [8, 4], [2, 10]]),
+        new Territory(73, 0, 0, 316, 394, [[2, 1], [3, 2], [3, 6], [5, 9], [11, 10]]),
+        new Territory(75, 120, 12, 303, 696, [[1, 1], [2, 3], [3, 4], [8, 3], [9, 5], [10, 8], [6, 9], [5, 10], [4, 11]]),
     ]),
 ];
 var ObjectiveTokenPosition = /** @class */ (function () {
@@ -957,6 +956,16 @@ var Scenario = /** @class */ (function (_super) {
     }
     Scenario.getBattlefields = function (number) {
         switch (number) {
+            case 0:
+                return [
+                    new BattlefieldPosition(1, 0, 0, 0),
+                    new BattlefieldPosition(2, 423 * 1, 0, 0),
+                    new BattlefieldPosition(3, 423 * 2, 0, 0),
+                    new BattlefieldPosition(4, 423 * 3, 0, 0),
+                    new BattlefieldPosition(5, 423 * 4, 0, 0),
+                    new BattlefieldPosition(6, 423 * 5, 0, 0),
+                    new BattlefieldPosition(7, 423 * 6, 0, 0),
+                ];
             case 1:
                 return [
                     new BattlefieldPosition(1, 452, 1, 180),
@@ -1029,6 +1038,8 @@ var Scenario = /** @class */ (function (_super) {
     };
     Scenario.getObjectiveTokens = function (number) {
         switch (number) {
+            case 0:
+                return [];
             case 1:
                 return [
                     new ObjectiveTokenPosition('A', 286, 772),
@@ -1062,6 +1073,7 @@ var Scenario = /** @class */ (function (_super) {
     };
     Scenario.getTitle = function (number) {
         switch (number) {
+            case 0: return '';
             case 1: return _("A : First Contact"); // TODO
             case 2: return _("B : La grosse cavalerie"); // TODO
             case 3: return _("C - UN TERRITOIRE TROP LOIN"); // TODO
@@ -1073,6 +1085,7 @@ var Scenario = /** @class */ (function (_super) {
     };
     Scenario.getSynopsis = function (number) {
         switch (number) {
+            case 0: return '';
             case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
             case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
             case 3: return _("Quand une zone s’apauvrie en Lumens il est necéssaire de s’aventurer dans des zones souvent inaccessibles."); // TODO
@@ -1084,6 +1097,7 @@ var Scenario = /** @class */ (function (_super) {
     };
     Scenario.getSpecialRules = function (number) {
         switch (number) {
+            case 0:
             case 1:
             case 2:
                 return [];
@@ -1118,6 +1132,7 @@ var Scenario = /** @class */ (function (_super) {
         var DURING_GAME = _('En cours de partie :');
         var END_GAME = _('En fin de partie :');
         switch (number) {
+            case 0: [];
             case 1: return [
                 new ObjectiveDescription([''], DURING_GAME, null, _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
                 new ObjectiveDescription(['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
@@ -1150,6 +1165,7 @@ var Scenario = /** @class */ (function (_super) {
     };
     Scenario.getDiceLeft = function (number) {
         switch (number) {
+            case 0:
             case 1: return 1050;
             case 2: return 450;
             case 3: return 1050;
@@ -1161,8 +1177,9 @@ var Scenario = /** @class */ (function (_super) {
     };
     return Scenario;
 }(ScenarioInfos));
-var cardWidth = 100;
-var cardHeight = 100;
+var CARD_WIDTH = 100;
+var CARD_HEIGHT = 100;
+var CARD_DISTANCE = 125;
 var DiscoverTileStock = /** @class */ (function (_super) {
     __extends(DiscoverTileStock, _super);
     function DiscoverTileStock(manager, element, updateDisplay) {
@@ -1185,54 +1202,41 @@ var DiscoverTileStock = /** @class */ (function (_super) {
 }(CardStock));
 var TerritoryStock = /** @class */ (function (_super) {
     __extends(TerritoryStock, _super);
-    function TerritoryStock(manager, element, direction, curve, rotation, discoverTileStockId) {
-        var _this = _super.call(this, manager, element, function (_, cards) { return _this.manualPosition(); }) || this;
+    function TerritoryStock(manager, element, curve, rotation, discoverTileStockId) {
+        var _this = _super.call(this, manager, element, function () { return _this.manualPosition(); }) || this;
         _this.manager = manager;
         _this.element = element;
-        _this.direction = direction;
         _this.curve = curve;
         _this.rotation = rotation;
+        _this.pathLength = 0;
         element.classList.add('territory-stock');
-        _this.tempOriginalCurve = curve.slice();
         if ([90, 270].includes(rotation)) {
             _this.rotateCoordinates();
         }
         if (rotation >= 180) {
             _this.flipCoordinates();
         }
-        //const points = this.curve;
-        _this.canvasWidth = element.clientWidth;
-        _this.canvasHeight = element.clientHeight;
-        _this.curveXScale = _this.canvasWidth / 12;
-        _this.curveYScale = _this.canvasHeight / 12;
-        /*if (this.canvasWidth == 708) {
-            //var cv = document.getElementById("curveCanvas") as HTMLCanvasElement;
-            const cv = document.createElement('canvas');
-            element.prepend(cv);
-            cv.style.width = `${element.clientWidth}px`;
-            cv.style.height = `${element.clientHeight}px`;
-            const points = this.curve;
-            var ctx = cv.getContext("2d");
-            ctx.moveTo(points[0][0] / 300 * 12 , points[0][1] / 150 * 12);
-            
-            for (var i = 1; i < points.length; i ++) {
-                //var x_mid = (points[i][0] + points[i+1][0]) / 2 * this.curveXScale;
-                //var y_mid = (points[i][1] + points[i+1][1]) / 2 * this.curveYScale;
-                //var cp_x1 = (x_mid + points[i][0] * this.curveXScale) / 2;
-                //var cp_x2 = (x_mid + points[i+1][0] * this.curveXScale) / 2;
-                //ctx.quadraticCurveTo(cp_x1,points[i][1] * this.curveYScale ,x_mid, y_mid);
-                //ctx.quadraticCurveTo(cp_x2,points[i+1][1] * this.curveYScale,points[i+1][0] * this.curveXScale, points[i+1][1] * this.curveYScale);
-                ctx.lineTo(points[i][0] * 300 / 12, points[i][1] * 150 / 12);
-            }
-            ctx.stroke();
-        }*/
+        _this.curve = _this.curve.map(function (point) { return [point[0] * element.clientWidth / 12, point[1] * element.clientHeight / 12]; });
         _this.discoverTileStockDiv = document.createElement('div');
         _this.discoverTileStockDiv.id = discoverTileStockId;
         _this.discoverTileStockDiv.classList.add('discover-tile-stock');
         element.appendChild(_this.discoverTileStockDiv);
         _this.discoverTileStock = new DiscoverTileStock(_this.manager.game.discoverTilesManager, _this.discoverTileStockDiv, function () { return _this.manualPosition(); });
+        for (var i = 1; i < _this.curve.length; i++) {
+            _this.pathLength += _this.getPathLength(_this.curve[i - 1], _this.curve[i]);
+        }
+        _this.debugShowCurveCanvas();
         return _this;
     }
+    TerritoryStock.prototype.addInitiativeMarker = function () {
+        this.initiativeMarker = true;
+        this.element.appendChild(document.getElementById("initiative-marker"));
+        this.manualPosition();
+    };
+    TerritoryStock.prototype.initiativeMarkerRemoved = function () {
+        this.initiativeMarker = false;
+        this.manualPosition();
+    };
     TerritoryStock.prototype.rotateCoordinates = function () {
         this.curve = this.curve.slice();
         for (var i = 0; i < this.curve.length; i++) {
@@ -1240,17 +1244,19 @@ var TerritoryStock = /** @class */ (function (_super) {
         }
     };
     TerritoryStock.prototype.flipCoordinates = function () {
-        this.curve = this.curve.slice();
+        this.curve = this.curve.slice().reverse();
         for (var i = 0; i < this.curve.length; i++) {
             this.curve[i] = [12 - this.curve[i][0], 12 - this.curve[i][1]];
         }
     };
     TerritoryStock.prototype.manualPosition = function () {
-        var vertical = this.direction !== 'horizontal';
-        if ([90, 270].includes(this.rotation)) {
-            vertical = !vertical;
-        }
-        return vertical ? this.manualPositionVertical() : this.manualPositionHorizontal();
+        var _this = this;
+        var elements = this.getElements();
+        elements.forEach(function (cardDiv, index) {
+            var _a = _this.getCoordinates(index, elements.length), x = _a.x, y = _a.y;
+            cardDiv.style.left = "".concat(x - CARD_WIDTH / 2, "px");
+            cardDiv.style.top = "".concat(y - CARD_HEIGHT / 2, "px");
+        });
     };
     TerritoryStock.prototype.getElements = function () {
         var _this = this;
@@ -1263,62 +1269,58 @@ var TerritoryStock = /** @class */ (function (_super) {
         }
         return elements;
     };
-    TerritoryStock.prototype.manualPositionHorizontal = function () {
-        var _this = this;
-        var elements = this.getElements();
-        elements.forEach(function (cardDiv, index) {
-            var left = _this.canvasWidth / 2 + ((cardWidth + 10) * (index - elements.length / 2));
-            var x = (left + cardWidth / 2) / _this.curveXScale;
-            var y = _this.getYFromX(Math.max(0, Math.min(x, 12)));
-            cardDiv.style.left = "".concat(left, "px");
-            cardDiv.style.top = "".concat(y * _this.curveYScale - cardHeight / 2, "px");
-        });
-    };
-    TerritoryStock.prototype.manualPositionVertical = function () {
-        var _this = this;
-        var elements = this.getElements();
-        elements.forEach(function (cardDiv, index) {
-            var top = _this.canvasHeight / 2 + ((cardHeight + 10) * (index - elements.length / 2));
-            var y = (top + cardHeight / 2) / _this.curveYScale;
-            var x = _this.getXFromY(Math.max(0, Math.min(y, 12)));
-            cardDiv.style.top = "".concat(top, "px");
-            cardDiv.style.left = "".concat(x * _this.curveXScale - cardWidth / 2, "px");
-        });
-    };
-    TerritoryStock.prototype.getYFromX = function (x) {
-        if (this.curve[0][0] > this.curve[1][0]) {
-            this.curve = this.curve.slice().reverse();
-        }
-        var curvePoints = this.curve;
-        for (var i = 0; i < curvePoints.length - 1; i++) {
-            if (x >= curvePoints[i][0] && x <= curvePoints[i + 1][0]) {
-                var relativeDistance = (x - curvePoints[i][0]) / (curvePoints[i + 1][0] - curvePoints[i][0]);
-                return curvePoints[i][1] + (curvePoints[i + 1][1] - curvePoints[i][1]) * relativeDistance;
+    TerritoryStock.prototype.getPathCoordinates = function (cardPathLength) {
+        var currentDistance = 0;
+        for (var i = 1; i < this.curve.length; i++) {
+            var segmentLength = this.getPathLength(this.curve[i - 1], this.curve[i]);
+            var newDistance = currentDistance + segmentLength;
+            if (cardPathLength >= currentDistance && cardPathLength <= newDistance || i === this.curve.length - 1) {
+                var relativeDistance = (cardPathLength - currentDistance) / segmentLength;
+                var x = this.curve[i - 1][0] + (this.curve[i][0] - this.curve[i - 1][0]) * relativeDistance;
+                var y = this.curve[i - 1][1] + (this.curve[i][1] - this.curve[i - 1][1]) * relativeDistance;
+                return { x: x, y: y };
+            }
+            else {
+                currentDistance = newDistance;
             }
         }
-        throw new Error("invalid x (".concat(x, "), curve : ").concat(JSON.stringify(curvePoints), ", originalCurve : ").concat(JSON.stringify(this.tempOriginalCurve), ", rotation : ").concat(this.rotation));
     };
-    TerritoryStock.prototype.getXFromY = function (y) {
-        if (this.curve[0][1] > this.curve[1][1]) {
-            this.curve = this.curve.slice().reverse();
+    TerritoryStock.prototype.getCoordinates = function (index, elementLength) {
+        var halfPathLength = this.pathLength / 2;
+        var cardDistance = CARD_DISTANCE;
+        var maxDistance = this.pathLength - CARD_DISTANCE;
+        if ((elementLength - 1) * cardDistance > maxDistance) {
+            cardDistance = Math.floor(maxDistance / (elementLength - 1));
         }
-        var curvePoints = this.curve;
-        for (var i = 0; i < curvePoints.length - 1; i++) {
-            if (y >= curvePoints[i][1] && y <= curvePoints[i + 1][1]) {
-                var relativeDistance = (y - curvePoints[i][1]) / (curvePoints[i + 1][1] - curvePoints[i][1]);
-                return curvePoints[i][0] + (curvePoints[i + 1][0] - curvePoints[i][0]) * relativeDistance;
-            }
+        var cardPathLength = halfPathLength + cardDistance * (index - elementLength / 2) + CARD_DISTANCE / 4;
+        return this.getPathCoordinates(cardPathLength);
+    };
+    TerritoryStock.prototype.getPathLength = function (point1, point2) {
+        var x = point1[0] - point2[0];
+        var y = point1[1] - point2[1];
+        return Math.hypot(x, y);
+    };
+    TerritoryStock.prototype.debugShowCurveCanvas = function () {
+        ///*if (this.canvasWidth == 708) {
+        //var cv = document.getElementById("curveCanvas") as HTMLCanvasElement;
+        var cv = document.createElement('canvas');
+        this.element.prepend(cv);
+        cv.setAttribute('width', "".concat(this.element.clientWidth));
+        cv.setAttribute('height', "".concat(this.element.clientHeight));
+        var points = this.curve;
+        var ctx = cv.getContext("2d");
+        ctx.lineWidth = 3;
+        for (var i = 0; i < points.length; i++) {
+            //var x_mid = (points[i][0] + points[i+1][0]) / 2 * this.curveXScale;
+            //var y_mid = (points[i][1] + points[i+1][1]) / 2 * this.curveYScale;
+            //var cp_x1 = (x_mid + points[i][0] * this.curveXScale) / 2;
+            //var cp_x2 = (x_mid + points[i+1][0] * this.curveXScale) / 2;
+            //ctx.quadraticCurveTo(cp_x1,points[i][1] * this.curveYScale ,x_mid, y_mid);
+            //ctx.quadraticCurveTo(cp_x2,points[i+1][1] * this.curveYScale,points[i+1][0] * this.curveXScale, points[i+1][1] * this.curveYScale);
+            ctx[i == 0 ? 'moveTo' : 'lineTo'](points[i][0], points[i][1]);
         }
-        throw new Error("invalid y (".concat(y, "), curve : ").concat(JSON.stringify(curvePoints), ", originalCurve : ").concat(JSON.stringify(this.tempOriginalCurve), ", rotation : ").concat(this.rotation));
-    };
-    TerritoryStock.prototype.addInitiativeMarker = function () {
-        this.initiativeMarker = true;
-        this.element.appendChild(document.getElementById("initiative-marker"));
-        this.manualPosition();
-    };
-    TerritoryStock.prototype.initiativeMarkerRemoved = function () {
-        this.initiativeMarker = false;
-        this.manualPosition();
+        ctx.stroke();
+        //}*/
     };
     return TerritoryStock;
 }(ManualPositionStock));
@@ -1401,7 +1403,7 @@ var TableCenter = /** @class */ (function () {
             territoryMask.classList.add('territory-mask');
             battlefield.prepend(territoryMask);
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
-            _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.direction, territoryInfos.curve, rotation, "territory-".concat(territoryInfos.id, "-discover-tiles"));
+            _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.curve, rotation, "territory-".concat(territoryInfos.id, "-discover-tiles"));
             _this.territoriesStocks[territoryInfos.id].onCardClick = function (card) {
                 var selectableCards = _this.game.getChooseFighterSelectableCards();
                 var canClick = selectableCards === null || selectableCards === void 0 ? void 0 : selectableCards.some(function (fighter) { return fighter.id == card.id; });
@@ -1447,7 +1449,6 @@ var TableCenter = /** @class */ (function () {
             element: this.initiativeMarker,
             fromElement: previousTerritory,
         });
-        console.log(previousTerritory, previousTerritory.dataset);
         this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
         this.territoriesStocks[territoryId].addInitiativeMarker();
     };
@@ -1697,6 +1698,7 @@ var Lumen = /** @class */ (function () {
         this.objectiveTokensStocks = [];
         this.chosenFighters = [];
         this.bags = [];
+        this.bagCounters = [];
         this.display = 'fit-map-to-screen';
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var displayStr = localStorage.getItem(LOCAL_STORAGE_DISPLAY_KEY);
@@ -1724,6 +1726,7 @@ var Lumen = /** @class */ (function () {
         this.cardsManager = new CardsManager(this);
         this.discoverTilesManager = new DiscoverTilesManager(this);
         this.objectiveTokensManager = new ObjectiveTokensManager(this);
+        //this.scenario = new Scenario(0);
         this.scenario = new Scenario(gamedatas.scenario);
         this.tableCenter = new TableCenter(this, this.gamedatas);
         this.setScenarioInformations();
@@ -2137,19 +2140,25 @@ var Lumen = /** @class */ (function () {
             handCounter.create(`playerhand-counter-${playerId}`);
             //handCounter.setValue(player.handCards.length);
             this.handCounters[playerId] = handCounter;*/
-            dojo.place("\n            <div id=\"bag-".concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"></div>\n            <div id=\"player-").concat(player.id, "-discover-tiles\"></div>\n            <div id=\"player-").concat(player.id, "-objective-tokens\"></div>\n            \n            <div id=\"first-player-token-wrapper-").concat(player.id, "\" class=\"first-player-token-wrapper\"></div>"), "player_board_".concat(player.id));
+            dojo.place("\n            <div id=\"bag-".concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"><span id=\"bag-").concat(player.id, "-counter\"></span></div>\n            <div id=\"player-").concat(player.id, "-discover-tiles\"></div>\n            <div id=\"player-").concat(player.id, "-objective-tokens\"></div>\n            \n            <div id=\"first-player-token-wrapper-").concat(player.id, "\" class=\"first-player-token-wrapper\"></div>"), "player_board_".concat(player.id));
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place("<div id=\"first-player-token\" class=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
             }
             _this.bags[playerId] = new VoidStock(_this.cardsManager, document.getElementById("bag-".concat(player.id)));
+            _this.bagCounters[playerId] = new ebg.counter();
+            _this.bagCounters[playerId].create("bag-".concat(player.id, "-counter"));
+            _this.bagCounters[playerId].setValue(gamedatas.remainingCardsInBag[playerId]);
             _this.discoverTilesStocks[playerId] = new LineStock(_this.discoverTilesManager, document.getElementById("player-".concat(player.id, "-discover-tiles")));
             _this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean((_a = player.discoverTiles[0]) === null || _a === void 0 ? void 0 : _a.type) });
             _this.objectiveTokensStocks[playerId] = new LineStock(_this.objectiveTokensManager, document.getElementById("player-".concat(player.id, "-objective-tokens")));
             _this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean((_b = player.objectiveTokens[0]) === null || _b === void 0 ? void 0 : _b.lumens) });
         });
         //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
-        dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                <div id=\"bag-0\" class=\"bag\"></div>\n               \n            </div>\n        </div>", "player_boards", 'first');
+        dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                <div id=\"bag-0\" class=\"bag\"><span id=\"bag-0-counter\"></span></div>\n               \n            </div>\n        </div>", "player_boards", 'first');
         this.bags[0] = new VoidStock(this.cardsManager, document.getElementById("bag-0"));
+        this.bagCounters[0] = new ebg.counter();
+        this.bagCounters[0].create("bag-".concat(0, "-counter"));
+        this.bagCounters[0].setValue(gamedatas.remainingCardsInBag[0]);
     };
     Lumen.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;

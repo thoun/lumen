@@ -22,7 +22,7 @@
                 }
                 @for $index from 1 through 5 {
                     &[data-type="2"][data-sub-type="#{$index}"] {
-                        background-position-x: #{($index + 4) * 12.5%};
+                        background-position-x: #{($index + 3) * 12.5%};
                     }
                 }
 

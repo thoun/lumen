@@ -165,6 +165,7 @@ class Lumen extends Table {
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score, player_no playerNo, checks FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
+        $result['remainingCardsInBag'] = [0 => count($this->getCardsByLocation('bag0'))];
   
         // Gather all information about current game situation (visible by player $current_player_id).
         foreach($result['players'] as $playerId => &$player) {
@@ -182,6 +183,8 @@ class Lumen extends Table {
             $player['discoverTiles'] = $playerId == $currentPlayerId ? $discoverTiles : DiscoverTile::onlyIds($discoverTiles);
             $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
             $player['objectiveTokens'] = $playerId == $currentPlayerId ? $objectiveTokens : ObjectiveToken::onlyIds($objectiveTokens);
+
+            $result['remainingCardsInBag'][$playerId] = count($this->getCardsByLocation('bag'.$playerId));
         }
 
         $result['scenario'] = $this->getScenarioId();

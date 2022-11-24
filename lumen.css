@@ -411,19 +411,19 @@
   background-position-x: 37.5%;
 }
 .card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="1"] {
-  background-position-x: 62.5%;
+  background-position-x: 50%;
 }
 .card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="2"] {
-  background-position-x: 75%;
+  background-position-x: 62.5%;
 }
 .card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="3"] {
-  background-position-x: 87.5%;
+  background-position-x: 75%;
 }
 .card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="4"] {
-  background-position-x: 100%;
+  background-position-x: 87.5%;
 }
 .card.discover-tile .card-sides .card-side.front[data-type="2"][data-sub-type="5"] {
-  background-position-x: 112.5%;
+  background-position-x: 100%;
 }
 .card.discover-tile .card-sides .card-side.front > * {
   pointer-events: none;
@@ -903,6 +903,10 @@ body > .card {
   background-position: center;
   background-repeat: no-repeat;
   background: url("img/bag-neutral.png");
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0 0 1px black, 0 0 2px black;
 }
 .bag[data-color=f28700] {
   background-image: url("img/bag-day.png");

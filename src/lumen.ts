@@ -27,6 +27,7 @@ class Lumen implements LumenGame {
     private objectiveTokensStocks: LineStock<ObjectiveToken>[] = [];
     private chosenFighters: number[] = [];
     private bags: VoidStock<Card>[] = [];
+    private bagCounters: Counter[] = [];
     private display: LumenDisplay = 'fit-map-to-screen';
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
@@ -61,6 +62,7 @@ class Lumen implements LumenGame {
         this.cardsManager = new CardsManager(this);
         this.discoverTilesManager = new DiscoverTilesManager(this);
         this.objectiveTokensManager = new ObjectiveTokensManager(this);
+        //this.scenario = new Scenario(0);
         this.scenario = new Scenario(gamedatas.scenario);
         this.tableCenter = new TableCenter(this, this.gamedatas);
         this.setScenarioInformations();
@@ -519,7 +521,7 @@ class Lumen implements LumenGame {
             this.handCounters[playerId] = handCounter;*/
 
             dojo.place(`
-            <div id="bag-${player.id}" class="bag" data-color="${player.color}"></div>
+            <div id="bag-${player.id}" class="bag" data-color="${player.color}"><span id="bag-${player.id}-counter"></span></div>
             <div id="player-${player.id}-discover-tiles"></div>
             <div id="player-${player.id}-objective-tokens"></div>
             
@@ -529,6 +531,9 @@ class Lumen implements LumenGame {
             }
 
             this.bags[playerId] = new VoidStock<Card>(this.cardsManager, document.getElementById(`bag-${player.id}`));
+            this.bagCounters[playerId] = new ebg.counter();
+            this.bagCounters[playerId].create(`bag-${player.id}-counter`);
+            this.bagCounters[playerId].setValue(gamedatas.remainingCardsInBag[playerId]);
             this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`));
             this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean(player.discoverTiles[0]?.type) });
             this.objectiveTokensStocks[playerId] = new LineStock<ObjectiveToken>(this.objectiveTokensManager, document.getElementById(`player-${player.id}-objective-tokens`));
@@ -541,11 +546,14 @@ class Lumen implements LumenGame {
         <div id="overall_player_board_0" class="player-board current-player-board">					
             <div class="player_board_inner" id="player_board_inner_982fff">
 
-                <div id="bag-0" class="bag"></div>
+                <div id="bag-0" class="bag"><span id="bag-0-counter"></span></div>
                
             </div>
         </div>`, `player_boards`, 'first');
         this.bags[0] = new VoidStock<Card>(this.cardsManager, document.getElementById(`bag-0`));
+        this.bagCounters[0] = new ebg.counter();
+        this.bagCounters[0].create(`bag-${0}-counter`);
+        this.bagCounters[0].setValue(gamedatas.remainingCardsInBag[0]);
     }
 
     private createPlayerTables(gamedatas: LumenGamedatas) {

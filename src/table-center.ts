@@ -85,7 +85,7 @@ class TableCenter {
             battlefield.prepend(territoryMask);
             territoryMask.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
-            this.territoriesStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.direction, territoryInfos.curve, rotation, `territory-${territoryInfos.id}-discover-tiles`);
+            this.territoriesStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.curve, rotation, `territory-${territoryInfos.id}-discover-tiles`);
             this.territoriesStocks[territoryInfos.id].onCardClick = card => {
                 const selectableCards = this.game.getChooseFighterSelectableCards();
                 const canClick = selectableCards?.some(fighter => fighter.id == card.id);
@@ -134,7 +134,6 @@ class TableCenter {
             element: this.initiativeMarker,
             fromElement: previousTerritory,
         });
-        console.log(previousTerritory, previousTerritory.dataset);
         this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
         this.territoriesStocks[territoryId].addInitiativeMarker();
     }

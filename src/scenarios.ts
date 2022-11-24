@@ -33,6 +33,16 @@ class Scenario extends ScenarioInfos {
 
   private static getBattlefields(number: number): BattlefieldPosition[] {
     switch (number) {
+      case 0:
+        return [
+          new BattlefieldPosition(1, 0, 0, 0),
+          new BattlefieldPosition(2, 423*1, 0, 0),
+          new BattlefieldPosition(3, 423*2, 0, 0),
+          new BattlefieldPosition(4, 423*3, 0, 0),
+          new BattlefieldPosition(5, 423*4, 0, 0),
+          new BattlefieldPosition(6, 423*5, 0, 0),
+          new BattlefieldPosition(7, 423*6, 0, 0),
+        ];
       case 1:
         return [
           new BattlefieldPosition(1, 452, 1, 180),
@@ -106,6 +116,8 @@ class Scenario extends ScenarioInfos {
 
   private static getObjectiveTokens(number: number): ObjectiveTokenPosition[] {
     switch (number) {
+      case 0: 
+      return [];
       case 1:
         return [
           new ObjectiveTokenPosition('A', 286, 772),
@@ -140,6 +152,7 @@ class Scenario extends ScenarioInfos {
 
   private static getTitle(number: number): string {
     switch (number) {
+      case 0: return '';
       case 1: return _("A : First Contact"); // TODO
       case 2: return _("B : La grosse cavalerie"); // TODO
       case 3: return _("C - UN TERRITOIRE TROP LOIN"); // TODO
@@ -152,6 +165,7 @@ class Scenario extends ScenarioInfos {
 
   private static getSynopsis(number: number): string {
     switch (number) {
+      case 0: return '';
       case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
       case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
       case 3: return _("Quand une zone s’apauvrie en Lumens il est necéssaire de s’aventurer dans des zones souvent inaccessibles."); // TODO
@@ -164,6 +178,7 @@ class Scenario extends ScenarioInfos {
 
   private static getSpecialRules(number: number): string[] {
     switch (number) {
+      case 0:
       case 1: 
       case 2:
         return [];
@@ -200,6 +215,7 @@ class Scenario extends ScenarioInfos {
     const END_GAME = _('En fin de partie :');
 
     switch (number) {
+      case 0: [];
       case 1: return [
         new ObjectiveDescription([''], DURING_GAME, null, _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
         new ObjectiveDescription(['A', 'B'],  DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
@@ -233,6 +249,7 @@ class Scenario extends ScenarioInfos {
 
   private static getDiceLeft(number: number): number {
     switch (number) {
+      case 0:
       case 1: return 1050;
       case 2: return 450;
       case 3: return 1050;

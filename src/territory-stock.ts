@@ -1,5 +1,6 @@
-const cardWidth = 100;
-const cardHeight = 100;
+const CARD_WIDTH = 100;
+const CARD_HEIGHT = 100;
+const CARD_DISTANCE = 125;
 
 class DiscoverTileStock extends CardStock<DiscoverTile> {
     constructor(protected manager: CardManager<DiscoverTile>, protected element: HTMLElement, protected updateDisplay: () => void) {
@@ -19,27 +20,20 @@ class DiscoverTileStock extends CardStock<DiscoverTile> {
 }
 
 class TerritoryStock extends ManualPositionStock<Card> {
-    tempOriginalCurve: number[][];
+    public discoverTileStock: DiscoverTileStock;
 
-    private curveXScale: number;
-    private curveYScale: number;
-    private canvasWidth: number;
-    private canvasHeight: number;
     private initiativeMarker: boolean;
     private discoverTileStockDiv: HTMLDivElement;
-    public discoverTileStock: DiscoverTileStock;
+    private pathLength: number = 0;
 
     constructor(
         protected manager: CardManager<Card>, 
         protected element: HTMLElement, 
-        protected direction: 'horizontal' | 'vertical', 
         protected curve: number[][], 
         protected rotation: 0 | 90 | 180 | 270,
         discoverTileStockId: string) {
-        super(manager, element, (_, cards) => this.manualPosition());
+        super(manager, element, () => this.manualPosition());
         element.classList.add('territory-stock');
-
-        this.tempOriginalCurve = curve.slice();
 
         
         if ([90, 270].includes(rotation)) {
@@ -49,38 +43,30 @@ class TerritoryStock extends ManualPositionStock<Card> {
             this.flipCoordinates();
         }
 
-        //const points = this.curve;
-        this.canvasWidth = element.clientWidth;
-        this.canvasHeight = element.clientHeight;
-        this.curveXScale = this.canvasWidth / 12;
-        this.curveYScale = this.canvasHeight / 12;
-        /*if (this.canvasWidth == 708) {
-            //var cv = document.getElementById("curveCanvas") as HTMLCanvasElement;
-            const cv = document.createElement('canvas');
-            element.prepend(cv);
-            cv.style.width = `${element.clientWidth}px`;
-            cv.style.height = `${element.clientHeight}px`;
-            const points = this.curve;
-            var ctx = cv.getContext("2d");
-            ctx.moveTo(points[0][0] / 300 * 12 , points[0][1] / 150 * 12);
-            
-            for (var i = 1; i < points.length; i ++) {
-                //var x_mid = (points[i][0] + points[i+1][0]) / 2 * this.curveXScale;
-                //var y_mid = (points[i][1] + points[i+1][1]) / 2 * this.curveYScale;
-                //var cp_x1 = (x_mid + points[i][0] * this.curveXScale) / 2;
-                //var cp_x2 = (x_mid + points[i+1][0] * this.curveXScale) / 2;
-                //ctx.quadraticCurveTo(cp_x1,points[i][1] * this.curveYScale ,x_mid, y_mid);
-                //ctx.quadraticCurveTo(cp_x2,points[i+1][1] * this.curveYScale,points[i+1][0] * this.curveXScale, points[i+1][1] * this.curveYScale);
-                ctx.lineTo(points[i][0] * 300 / 12, points[i][1] * 150 / 12);
-            }
-            ctx.stroke();
-        }*/
+        this.curve = this.curve.map(point => [point[0] * element.clientWidth / 12, point[1] * element.clientHeight / 12]);
 
         this.discoverTileStockDiv = document.createElement('div');
         this.discoverTileStockDiv.id = discoverTileStockId;
         this.discoverTileStockDiv.classList.add('discover-tile-stock');
         element.appendChild(this.discoverTileStockDiv);
         this.discoverTileStock = new DiscoverTileStock((this.manager.game as LumenGame).discoverTilesManager, this.discoverTileStockDiv, () => this.manualPosition());
+
+        for (var i = 1; i < this.curve.length; i ++) {
+            this.pathLength += this.getPathLength(this.curve[i-1], this.curve[i]);
+        }
+
+        this.debugShowCurveCanvas();
+    }
+
+    public addInitiativeMarker() {
+        this.initiativeMarker = true;
+        this.element.appendChild(document.getElementById(`initiative-marker`));
+        this.manualPosition();
+    }
+
+    public initiativeMarkerRemoved() {
+        this.initiativeMarker = false;
+        this.manualPosition();
     }
 
     private rotateCoordinates() {
@@ -91,18 +77,19 @@ class TerritoryStock extends ManualPositionStock<Card> {
     }
 
     private flipCoordinates() {
-        this.curve = this.curve.slice();
+        this.curve = this.curve.slice().reverse();
         for (let i = 0; i < this.curve.length; i ++) {
             this.curve[i] = [12 - this.curve[i][0], 12 - this.curve[i][1]];
         }
     }
 
     private manualPosition() {
-        let vertical = this.direction !== 'horizontal';
-        if ([90, 270].includes(this.rotation)) {
-            vertical = !vertical;
-        }
-        return vertical ? this.manualPositionVertical() : this.manualPositionHorizontal();
+        const elements = this.getElements();
+        elements.forEach((cardDiv, index) => {
+            const {x, y} = this.getCoordinates(index, elements.length);
+            cardDiv.style.left = `${x - CARD_WIDTH / 2}px`;
+            cardDiv.style.top = `${y - CARD_HEIGHT / 2}px`;
+        });
     }
 
     private getElements(): HTMLElement[] {
@@ -118,72 +105,60 @@ class TerritoryStock extends ManualPositionStock<Card> {
         return elements;
     }
 
-    private manualPositionHorizontal() {
-        const elements = this.getElements();
-        elements.forEach((cardDiv, index) => {
-            const left = this.canvasWidth / 2 + ((cardWidth + 10) * (index - elements.length / 2));
-            const x = (left + cardWidth / 2) / this.curveXScale;
-    
-            const y = this.getYFromX(Math.max(0, Math.min(x, 12)));
-    
-            cardDiv.style.left = `${left}px`;
-            cardDiv.style.top = `${y * this.curveYScale - cardHeight / 2}px`;
-        });
-    }
+    private getPathCoordinates(cardPathLength: number) {
+        let currentDistance = 0;
 
-    private manualPositionVertical() {
-        const elements = this.getElements();
-        elements.forEach((cardDiv, index) => {
-            const top = this.canvasHeight / 2 + ((cardHeight + 10) * (index - elements.length / 2));
-            const y = (top + cardHeight / 2) / this.curveYScale;
-    
-            const x = this.getXFromY(Math.max(0, Math.min(y, 12)));
-    
-            cardDiv.style.top = `${top}px`;
-            cardDiv.style.left = `${x * this.curveXScale - cardWidth / 2}px`;
-        });
-    }
-
-    private getYFromX(x: number) {
-        if (this.curve[0][0] > this.curve[1][0]) {
-            this.curve = this.curve.slice().reverse();
-        }
-        const curvePoints = this.curve;
-
-        for (let i=0; i<curvePoints.length - 1; i++) {
-            if (x >= curvePoints[i][0] && x <= curvePoints[i+1][0]) {
-                const relativeDistance = (x - curvePoints[i][0]) / (curvePoints[i+1][0] - curvePoints[i][0]);
-                return curvePoints[i][1] + (curvePoints[i+1][1] - curvePoints[i][1]) * relativeDistance;
+        for (let i=1; i<this.curve.length; i++) {
+            const segmentLength = this.getPathLength(this.curve[i-1], this.curve[i]);
+            const newDistance = currentDistance + segmentLength;
+            if (cardPathLength >= currentDistance && cardPathLength <= newDistance || i === this.curve.length-1) {
+                const relativeDistance = (cardPathLength - currentDistance) / segmentLength;
+                const x = this.curve[i-1][0] + (this.curve[i][0] - this.curve[i-1][0]) * relativeDistance;
+                const y = this.curve[i-1][1] + (this.curve[i][1] - this.curve[i-1][1]) * relativeDistance;
+                return {x, y};
+            } else {
+                currentDistance = newDistance;
             }
         }
-    
-        throw new Error(`invalid x (${x}), curve : ${JSON.stringify(curvePoints)}, originalCurve : ${JSON.stringify(this.tempOriginalCurve)}, rotation : ${this.rotation}`);
+    }
+
+    private getCoordinates(index: number, elementLength: number) {
+        const halfPathLength = this.pathLength / 2;
+        let cardDistance = CARD_DISTANCE;
+        const maxDistance = this.pathLength - CARD_DISTANCE;
+        if ((elementLength - 1) * cardDistance > maxDistance) {
+            cardDistance = Math.floor(maxDistance / (elementLength - 1));
+        }
+        const cardPathLength = halfPathLength + cardDistance * (index - elementLength / 2) + CARD_DISTANCE / 4;
+        return this.getPathCoordinates(cardPathLength);
+    }
+
+    private getPathLength(point1: number[], point2: number[]) {
+        const x = point1[0]-point2[0];
+        const y = point1[1]-point2[1];
+        return Math.hypot(x, y);
     }
     
-    private getXFromY(y: number) {
-        if (this.curve[0][1] > this.curve[1][1]) {
-            this.curve = this.curve.slice().reverse();
-        }
-        const curvePoints = this.curve;
-
-        for (let i=0; i<curvePoints.length - 1; i++) {
-            if (y >= curvePoints[i][1] && y <= curvePoints[i+1][1]) {
-                const relativeDistance = (y - curvePoints[i][1]) / (curvePoints[i+1][1] - curvePoints[i][1]);
-                return curvePoints[i][0] + (curvePoints[i+1][0] - curvePoints[i][0]) * relativeDistance;
+    private debugShowCurveCanvas() {
+        ///*if (this.canvasWidth == 708) {
+            //var cv = document.getElementById("curveCanvas") as HTMLCanvasElement;
+            const cv = document.createElement('canvas');
+            this.element.prepend(cv);
+            cv.setAttribute('width', `${this.element.clientWidth}`);
+            cv.setAttribute('height', `${this.element.clientHeight}`);
+            const points = this.curve;
+            var ctx = cv.getContext("2d");  
+            ctx.lineWidth = 3;          
+            for (var i = 0; i < points.length; i ++) {
+                //var x_mid = (points[i][0] + points[i+1][0]) / 2 * this.curveXScale;
+                //var y_mid = (points[i][1] + points[i+1][1]) / 2 * this.curveYScale;
+                //var cp_x1 = (x_mid + points[i][0] * this.curveXScale) / 2;
+                //var cp_x2 = (x_mid + points[i+1][0] * this.curveXScale) / 2;
+                //ctx.quadraticCurveTo(cp_x1,points[i][1] * this.curveYScale ,x_mid, y_mid);
+                //ctx.quadraticCurveTo(cp_x2,points[i+1][1] * this.curveYScale,points[i+1][0] * this.curveXScale, points[i+1][1] * this.curveYScale);
+                ctx[i == 0 ? 'moveTo' :'lineTo'](points[i][0], points[i][1]);
             }
-        }
-    
-        throw new Error(`invalid y (${y}), curve : ${JSON.stringify(curvePoints)}, originalCurve : ${JSON.stringify(this.tempOriginalCurve)}, rotation : ${this.rotation}`);
-    }
-
-    public addInitiativeMarker() {
-        this.initiativeMarker = true;
-        this.element.appendChild(document.getElementById(`initiative-marker`));
-        this.manualPosition();
-    }
-
-    public initiativeMarkerRemoved() {
-        this.initiativeMarker = false;
-        this.manualPosition();
+            ctx.stroke();
+        //}*/
     }
 }

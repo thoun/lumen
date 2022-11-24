@@ -72,6 +72,7 @@ interface LumenGamedatas {
     die1: number;
     die2: number;
     realizedObjectives: string[];
+    remainingCardsInBag: { [playerId: number]: number };
 }
 
 interface LumenGame extends Game {
