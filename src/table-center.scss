@@ -89,26 +89,7 @@
             .discover-tile-stock {
                 position: absolute;
             }
-
-            // TODO TEMP
-            /*&[data-lumens="1"] {
-                background: #FFFFFF88;
-            }
-            &[data-lumens="3"], &[data-lumens="4"] {
-                background: #FF000088;
-            }
-            &[data-lumens="5"] {
-                background: #00FF0088;
-            }
-
-            &.selectable {
-                box-shadow: 0 0 5px 3px white;
-            }
-        
-            &.selected {
-                box-shadow: 0 0 8px 8px red;
-            }*/
-
+            
             canvas {
                 position: absolute;
                 left: 0;

@@ -355,7 +355,7 @@
   background-position-x: 100%;
 }
 .card.fighter.selectable .card-side {
-  box-shadow: 0 0 5px 3px white;
+  animation: selectable-card-animation 1.5s alternate infinite ease-in-out;
 }
 .card.fighter.selected .card-side {
   box-shadow: 0 0 8px 8px red;
@@ -379,6 +379,14 @@
   background-image: url("img/faction-token-night.png");
 }
 
+@keyframes selectable-card-animation {
+  0% {
+    box-shadow: 0 0 4px 2px red;
+  }
+  100% {
+    box-shadow: 0 0 8px 6px red;
+  }
+}
 @keyframes highlight-card-animation {
   0% {
     box-shadow: 0 0 1px 1px red;
@@ -692,23 +700,6 @@ body > .card {
   align-items: center;
   gap: 10px;*/
   z-index: 2;
-  /*&[data-lumens="1"] {
-      background: #FFFFFF88;
-  }
-  &[data-lumens="3"], &[data-lumens="4"] {
-      background: #FF000088;
-  }
-  &[data-lumens="5"] {
-      background: #00FF0088;
-  }
-
-  &.selectable {
-      box-shadow: 0 0 5px 3px white;
-  }
-
-  &.selected {
-      box-shadow: 0 0 8px 8px red;
-  }*/
 }
 #map .battlefield .territory .card, #map .battlefield .territory #initiative-marker {
   pointer-events: all;

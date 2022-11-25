@@ -57,7 +57,7 @@
 
     &.selectable {
         .card-side {
-            box-shadow: 0 0 5px 3px white;
+            animation: selectable-card-animation 1.5s alternate infinite ease-in-out;
         }
     }
 
@@ -88,6 +88,15 @@
         &[data-color="1f3067"] {
           background-image: url('img/faction-token-night.png');
         }
+    }
+}
+
+@keyframes selectable-card-animation {
+    0% { 
+        box-shadow: 0 0 4px 2px red;
+    }
+    100% { 
+        box-shadow: 0 0 8px 6px red;
     }
 }
 
