@@ -192,6 +192,14 @@
       self::ajaxResponse();
     }
 
+    public function useCoupFourre() {
+      self::setAjaxMode();
+
+      $this->game->useCoupFourre();
+
+      self::ajaxResponse();
+    }
+
   }
   
 

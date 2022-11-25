@@ -1764,9 +1764,7 @@ var Lumen = /** @class */ (function () {
         this.onScreenWidthChange = function () {
             _this.updateDisplay();
         };
-        setTimeout(function () { return _this.updateDisplay(); }, 500);
-        setTimeout(function () { return _this.updateDisplay(); }, 1000);
-        setTimeout(function () { return _this.updateDisplay(); }, 2000);
+        [500, 1000, 2000].forEach(function (timer) { return setTimeout(function () { return _this.updateDisplay(); }, timer); });
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -1851,27 +1849,30 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.onEnteringChooseFighter = function (args) {
         if (!args.move) {
-            if (!args.remainingMoves) {
+            var onlyCoupFourre = args.remainingPlays + args.remainingMoves == 0;
+            if (onlyCoupFourre) {
+                this.setGamestateDescription('OnlyCoupFourre');
+            }
+            else if (!args.remainingMoves) {
                 this.setGamestateDescription('OnlyPlay');
             }
             else if (!args.remainingPlays) {
                 this.setGamestateDescription('OnlyMoveActivate');
             }
-            var subTitle = document.createElement('span');
-            var texts = [];
-            if (args.remainingPlays) {
-                texts.push(_('${remainingPlays} fighters to add').replace('${remainingPlays}', args.remainingPlays));
+            if (!onlyCoupFourre) {
+                var subTitle = document.createElement('span');
+                var texts = [];
+                if (args.remainingPlays) {
+                    texts.push(_('${remainingPlays} fighters to add').replace('${remainingPlays}', args.remainingPlays));
+                }
+                if (args.remainingMoves) {
+                    texts.push(_('${remainingMoves} moves/activations').replace('${remainingMoves}', args.remainingMoves));
+                }
+                subTitle.classList.add('subtitle');
+                subTitle.innerHTML = '(' + texts.join(', ') + ')';
+                document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
+                document.getElementById("pagemaintitletext").appendChild(subTitle);
             }
-            if (args.remainingMoves) {
-                texts.push(_('${remainingMoves} moves/activations').replace('${remainingMoves}', args.remainingMoves));
-            }
-            if (args.remainingBonusMoves) {
-                texts.push(_('${remainingBonusMoves} moves/activations with Coup fourré').replace('${remainingBonusMoves}', args.remainingBonusMoves)); // TODO translate
-            }
-            subTitle.classList.add('subtitle');
-            subTitle.innerHTML = '(' + texts.join(', ') + ')';
-            document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
-            document.getElementById("pagemaintitletext").appendChild(subTitle);
         }
         else {
             this.setGamestateDescription('' + args.move);
@@ -1967,6 +1968,9 @@ var Lumen = /** @class */ (function () {
                 case 'chooseFighter':
                     var chooseFighterArgs = args;
                     if (!chooseFighterArgs.move) {
+                        if (chooseFighterArgs.canUseCoupFourre) {
+                            this.addActionButton("useCoupFourre_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useCoupFourre(); });
+                        }
                         var shouldntPass_1 = chooseFighterArgs.remainingPlays > 0 || chooseFighterArgs.remainingMoves > 0;
                         this.addActionButton("cancelOperation_button", _('Pass'), function () { return _this.pass(shouldntPass_1); }, null, null, shouldntPass_1 ? 'gray' : undefined);
                     }
@@ -2151,21 +2155,9 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
-            var _a, _b;
+            var _a;
             var playerId = Number(player.id);
             document.getElementById("overall_player_board_".concat(playerId)).style.background = "#".concat(player.color);
-            /*// hand cards counter
-            dojo.place(`<div class="counters">
-                <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
-                    <div class="player-hand-card"></div>
-                    <span id="playerhand-counter-${player.id}"></span>
-                </div>
-            </div>`, `player_board_${player.id}`);
-
-            const handCounter = new ebg.counter();
-            handCounter.create(`playerhand-counter-${playerId}`);
-            //handCounter.setValue(player.handCards.length);
-            this.handCounters[playerId] = handCounter;*/
             dojo.place("\n            <div id=\"bag-".concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"><span id=\"bag-").concat(player.id, "-counter\"></span></div>\n            <div id=\"player-").concat(player.id, "-discover-tiles\"></div>\n            <div id=\"player-").concat(player.id, "-objective-tokens\"></div>\n            \n            <div id=\"first-player-token-wrapper-").concat(player.id, "\" class=\"first-player-token-wrapper\"></div>"), "player_board_".concat(player.id));
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place("<div id=\"first-player-token\" class=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
@@ -2175,11 +2167,11 @@ var Lumen = /** @class */ (function () {
             _this.bagCounters[playerId].create("bag-".concat(player.id, "-counter"));
             _this.bagCounters[playerId].setValue(gamedatas.remainingCardsInBag[playerId]);
             _this.discoverTilesStocks[playerId] = new LineStock(_this.discoverTilesManager, document.getElementById("player-".concat(player.id, "-discover-tiles")));
-            _this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean((_a = player.discoverTiles[0]) === null || _a === void 0 ? void 0 : _a.type) });
+            player.discoverTiles.forEach(function (discoverTile) { return _this.discoverTilesStocks[playerId].addCard(discoverTile, undefined, { visible: Boolean(discoverTile === null || discoverTile === void 0 ? void 0 : discoverTile.type) }); });
             _this.objectiveTokensStocks[playerId] = new LineStock(_this.objectiveTokensManager, document.getElementById("player-".concat(player.id, "-objective-tokens")));
-            _this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean((_b = player.objectiveTokens[0]) === null || _b === void 0 ? void 0 : _b.lumens) });
+            _this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean((_a = player.objectiveTokens[0]) === null || _a === void 0 ? void 0 : _a.lumens) });
         });
-        //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+        this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
         dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                <div id=\"bag-0\" class=\"bag\"><span id=\"bag-0-counter\"></span></div>\n               \n            </div>\n        </div>", "player_boards", 'first');
         this.bags[0] = new VoidStock(this.cardsManager, document.getElementById("bag-0"));
         this.bagCounters[0] = new ebg.counter();
@@ -2448,6 +2440,12 @@ var Lumen = /** @class */ (function () {
             return;
         }
         this.takeAction('passChooseFighters');
+    };
+    Lumen.prototype.useCoupFourre = function () {
+        if (!this.checkAction('useCoupFourre')) {
+            return;
+        }
+        this.takeAction('useCoupFourre');
     };
     Lumen.prototype.takeAction = function (action, data) {
         data = data || {};

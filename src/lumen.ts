@@ -95,9 +95,8 @@ class Lumen implements LumenGame {
         (this as any).onScreenWidthChange = () => {
             this.updateDisplay();
         };
-        setTimeout(() => this.updateDisplay(), 500);
-        setTimeout(() => this.updateDisplay(), 1000);
-        setTimeout(() => this.updateDisplay(), 2000);
+
+        [500, 1000, 2000].forEach(timer => setTimeout(() => this.updateDisplay(), timer));
 
         log( "Ending game setup" );
     }
@@ -197,27 +196,29 @@ class Lumen implements LumenGame {
     
     private onEnteringChooseFighter(args: EnteringChooseFighterArgs) {
         if (!args.move) {
-            if (!args.remainingMoves) {
+            const onlyCoupFourre = args.remainingPlays + args.remainingMoves == 0;
+            if (onlyCoupFourre) {
+                this.setGamestateDescription('OnlyCoupFourre');
+            } else if (!args.remainingMoves) {
                 this.setGamestateDescription('OnlyPlay');
             } else if (!args.remainingPlays) {
                 this.setGamestateDescription('OnlyMoveActivate');
-            }
+            } 
 
-            const subTitle = document.createElement('span');
-            let texts = [];
-            if (args.remainingPlays) {
-                texts.push(_('${remainingPlays} fighters to add').replace('${remainingPlays}', args.remainingPlays));
+            if (!onlyCoupFourre) {
+                const subTitle = document.createElement('span');
+                let texts = [];
+                if (args.remainingPlays) {
+                    texts.push(_('${remainingPlays} fighters to add').replace('${remainingPlays}', args.remainingPlays));
+                }
+                if (args.remainingMoves) {
+                    texts.push(_('${remainingMoves} moves/activations').replace('${remainingMoves}', args.remainingMoves));
+                }
+                subTitle.classList.add('subtitle');
+                subTitle.innerHTML = '(' + texts.join(', ') + ')';
+                document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
+                document.getElementById(`pagemaintitletext`).appendChild(subTitle);
             }
-            if (args.remainingMoves) {
-                texts.push(_('${remainingMoves} moves/activations').replace('${remainingMoves}', args.remainingMoves));
-            }
-            if (args.remainingBonusMoves) {
-                texts.push(_('${remainingBonusMoves} moves/activations with Coup fourré').replace('${remainingBonusMoves}', args.remainingBonusMoves)); // TODO translate
-            }
-            subTitle.classList.add('subtitle');
-            subTitle.innerHTML = '(' + texts.join(', ') + ')';
-            document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
-            document.getElementById(`pagemaintitletext`).appendChild(subTitle);
         } else {
             this.setGamestateDescription(''+args.move);
         }
@@ -320,6 +321,9 @@ class Lumen implements LumenGame {
                 case 'chooseFighter':
                     const chooseFighterArgs = args as EnteringChooseFighterArgs;
                     if (!chooseFighterArgs.move) {
+                        if (chooseFighterArgs.canUseCoupFourre) {
+                            (this as any).addActionButton(`useCoupFourre_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useCoupFourre());
+                        }
                         const shouldntPass = chooseFighterArgs.remainingPlays > 0 || chooseFighterArgs.remainingMoves > 0;
                         (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
                     } else {
@@ -525,19 +529,6 @@ class Lumen implements LumenGame {
 
             document.getElementById(`overall_player_board_${playerId}`).style.background = `#${player.color}`;
 
-            /*// hand cards counter
-            dojo.place(`<div class="counters">
-                <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
-                    <div class="player-hand-card"></div> 
-                    <span id="playerhand-counter-${player.id}"></span>
-                </div>
-            </div>`, `player_board_${player.id}`);
-
-            const handCounter = new ebg.counter();
-            handCounter.create(`playerhand-counter-${playerId}`);
-            //handCounter.setValue(player.handCards.length);
-            this.handCounters[playerId] = handCounter;*/
-
             dojo.place(`
             <div id="bag-${player.id}" class="bag" data-color="${player.color}"><span id="bag-${player.id}-counter"></span></div>
             <div id="player-${player.id}-discover-tiles"></div>
@@ -553,12 +544,12 @@ class Lumen implements LumenGame {
             this.bagCounters[playerId].create(`bag-${player.id}-counter`);
             this.bagCounters[playerId].setValue(gamedatas.remainingCardsInBag[playerId]);
             this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`));
-            this.discoverTilesStocks[playerId].addCards(player.discoverTiles, undefined, { visible: Boolean(player.discoverTiles[0]?.type) });
+            player.discoverTiles.forEach(discoverTile => this.discoverTilesStocks[playerId].addCard(discoverTile, undefined, { visible: Boolean(discoverTile?.type) }));
             this.objectiveTokensStocks[playerId] = new LineStock<ObjectiveToken>(this.objectiveTokensManager, document.getElementById(`player-${player.id}-objective-tokens`));
             this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean(player.objectiveTokens[0]?.lumens) });
         });
 
-        //this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+        this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
 
         dojo.place(`
         <div id="overall_player_board_0" class="player-board current-player-board">					
@@ -956,6 +947,14 @@ class Lumen implements LumenGame {
         }
 
         this.takeAction('passChooseFighters');
+    }
+
+    public useCoupFourre() {
+        if(!(this as any).checkAction('useCoupFourre')) {
+            return;
+        }
+
+        this.takeAction('useCoupFourre');
     }
 
     public takeAction(action: string, data?: any) {

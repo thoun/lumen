@@ -188,16 +188,15 @@ trait ArgsTrait {
         ];
 
         $canCancel = $move > 0;
+        $canUseCoupFourre = $move == 0 && count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
 
         $possibleTerritoryFighters = [];
         $selectionSize = 1;
-        $optionalDetail = '';
 
         switch ($move) {
             case 0:
                 $remainingPlays = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
                 $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
-                $remainingBonusMoves = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
 
                 $highCommand = $this->getCardsByLocation('highCommand'.$playerId);
                 $territoryFighters = $this->getCardsByLocation('territory', null, $playerId);
@@ -206,14 +205,10 @@ trait ArgsTrait {
                 $scenarioId = $this->getScenarioId();
                 $possibleFightersToMove = array_values(array_filter($territoryFighters, fn($fighter) => $this->canMoveFighter($playerId, $fighter, $scenarioId)));
                 $possibleFightersToActivate = array_values(array_filter(array_merge($territoryFighters, $highCommand), fn($fighter) => $this->canActivateFighter($playerId, $fighter, $scenarioId)));
-                
-                $optionalDetail = $remainingPlays == 0 && $remainingMoves == 0 && $remainingBonusMoves > 0 ?
-                    clienttranslate('(with Coup fourré)') : ''; // TODO check translation
 
                 $args = $args + [
                     'remainingPlays' => $remainingPlays,
                     'remainingMoves' => $remainingMoves,
-                    'remainingBonusMoves' => $remainingBonusMoves,
                     'possibleFightersToPlace' => array_merge(
                         $this->getCardsByLocation('reserve'.$playerId),
                         array_values(array_filter($highCommand, fn($fighter) => in_array($fighter->type, [1, 10])))
@@ -271,10 +266,9 @@ trait ArgsTrait {
 
         return $args + [
            'canCancel' => $canCancel,
+           'canUseCoupFourre' => $canUseCoupFourre,
            'possibleTerritoryFighters' => $possibleTerritoryFighters,
            'selectionSize' => $selectionSize,
-           'optionalDetail' => $optionalDetail,
-           'i18n' => ['optionalDetail'],
         ];
     }
 
@@ -318,8 +312,7 @@ trait ArgsTrait {
                     switch ($scenarioId) {
                         case 3:
                             $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
-                            $remainingBonusMoves = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
-                            if ($remainingMoves + $remainingBonusMoves >= 2) {
+                            if ($remainingMoves >= 2) {
                                 $territoriesIds = array_merge($territoriesIds, $this->RIVER_CROSS_TERRITORIES[$selectedFighter->locationArg]);
                             }
                             break;

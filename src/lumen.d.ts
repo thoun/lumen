@@ -116,10 +116,10 @@ interface EnteringChooseCellLinkArgs {
 
 interface EnteringChooseFighterArgs {
     canCancel: boolean;
+    canUseCoupFourre: boolean;
     move: number;
     remainingPlays?: number;
     remainingMoves?: number;
-    remainingBonusMoves?: number;
     possibleTerritoryFighters: Card[];
     possibleFightersToPlace?: Card[];
     possibleActions?: Card[];

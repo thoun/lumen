@@ -313,17 +313,9 @@ trait ActionTrait {
 
     public function activateFighter(int $id) {
         $this->checkAction('activateFighter'); 
-        
-        $playerId = intval($this->getActivePlayerId());
-        $usedTile = null;
 
         if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
-            $tiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE);
-            if (count($tiles) > 0) {
-                $usedTile = $tiles[0];
-            } else {
-                throw new BgaUserException("No remaining action");
-            }
+            throw new BgaUserException("No remaining action");
         }
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
             throw new BgaUserException("Impossible to activate a fighter now");
@@ -359,10 +351,6 @@ trait ActionTrait {
             $this->applyAction($fighter);
         } else {
             $this->applyActivateFighter($fighter);
-        }
-
-        if ($usedTile !== null) {
-            $this->discardDiscoverTile($usedTile);
         }
     }
 
@@ -439,6 +427,22 @@ trait ActionTrait {
         $this->checkAction('passChooseFighters');
 
         $this->gamestate->nextState('nextMove');
+    }
+
+    public function useCoupFourre() {        
+        $this->checkAction('useCoupFourre');
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        $tiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE);
+        if (count($tiles) < 1) {
+            throw new BgaUserException("No POWER_COUP_FOURRE tile");
+        }
+        $this->discardDiscoverTile($tiles[0]);
+
+        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+
+        $this->gamestate->nextState('useCoupFourre');
     }
 
     public function chooseTerritory(int $territoryId) {

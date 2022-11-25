@@ -681,7 +681,7 @@ trait UtilTrait {
     }
 
     function discardDiscoverTile(DiscoverTile &$discoverTile) {
-        $this->cards->moveCard($discoverTile->id, 'discard');
+        $this->discoverTiles->moveCard($discoverTile->id, 'discard');
 
         self::notifyAllPlayers("discardDiscoverTile", '', [
             'discoverTile' => $discoverTile,
@@ -694,12 +694,13 @@ trait UtilTrait {
             self::notifyAllPlayers("log", clienttranslate('The bag is empty, impossible to apply Parachutage'), []); // TODO check log
             return;
         }
+
+        $this->discardDiscoverTile($discoverTile);
+
         $fighter = $this->getCardById(intval($cardDb['id']));
         $this->applyMoveFighter($fighter, $territoryId);
 
         $this->checkEmptyBag($playerId);
-
-        $this->discardDiscoverTile($discoverTile);
     }
 
     function revealDiscoverTile(DiscoverTile &$discoverTile, int $playerId, int $territoryId) { // return redirected for brouillage

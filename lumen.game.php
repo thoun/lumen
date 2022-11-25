@@ -180,7 +180,7 @@ class Lumen extends Table {
             $player['links'] = $this->getLinks($playerId);
 
             $discoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
-            $player['discoverTiles'] = $playerId == $currentPlayerId ? $discoverTiles : DiscoverTile::onlyIds($discoverTiles);
+            $player['discoverTiles'] = array_map(fn($tile) => $playerId == $currentPlayerId || $tile->type != 1 ? $tile : DiscoverTile::onlyId($tile), $discoverTiles);
             $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
             $player['objectiveTokens'] = $playerId == $currentPlayerId ? $objectiveTokens : ObjectiveToken::onlyIds($objectiveTokens);
 

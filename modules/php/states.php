@@ -41,6 +41,8 @@ trait StateTrait {
     } 
 
     function stNextMove() {
+        $playerId = intval($this->getActivePlayerId());
+        
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
         $this->setGameStateValue(PLAYER_SELECTED_TARGET, 0);
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
@@ -48,7 +50,7 @@ trait StateTrait {
         $canDoAction =  (
             intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) + 
             intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE))
-        ) > 0;
+        ) > 0 || count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;;
         $this->gamestate->nextState($canDoAction ? 'chooseFighter' : 'nextPlayer');
     }
 
