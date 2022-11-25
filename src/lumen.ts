@@ -80,6 +80,7 @@ class Lumen implements LumenGame {
         this.setupPreferences();
         this.addHelp();
 
+        this.setActiveDisplayButton();
         const btnMapScroll = document.getElementById('display-map-scroll');
         const btnFitMap = document.getElementById('display-fit-map');
         const btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
@@ -397,20 +398,27 @@ class Lumen implements LumenGame {
 
     private setFitMap() {
         this.display = 'fit-map-to-screen';
-        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);        
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.setActiveDisplayButton();
         this.updateDisplay();
     }
 
     private setFitMapAndBoard() {
         this.display = 'fit-map-and-board-to-screen';
-        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);        
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.setActiveDisplayButton();
         this.updateDisplay();
     }
 
     private setMapScroll() {
         this.display = 'scroll';
-        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);        
+        localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.setActiveDisplayButton();  
         this.updateDisplay();
+    }
+
+    private setActiveDisplayButton() {
+        document.querySelectorAll('#map-controls button').forEach((elem: HTMLButtonElement) => elem.classList.toggle('active', elem.dataset.display == this.display));
     }
 
     public updateDisplay() {

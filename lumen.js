@@ -1755,6 +1755,7 @@ var Lumen = /** @class */ (function () {
         this.setupNotifications();
         this.setupPreferences();
         this.addHelp();
+        this.setActiveDisplayButton();
         var btnMapScroll = document.getElementById('display-map-scroll');
         var btnFitMap = document.getElementById('display-fit-map');
         var btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
@@ -2042,17 +2043,24 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.setFitMap = function () {
         this.display = 'fit-map-to-screen';
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.setActiveDisplayButton();
         this.updateDisplay();
     };
     Lumen.prototype.setFitMapAndBoard = function () {
         this.display = 'fit-map-and-board-to-screen';
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.setActiveDisplayButton();
         this.updateDisplay();
     };
     Lumen.prototype.setMapScroll = function () {
         this.display = 'scroll';
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
+        this.setActiveDisplayButton();
         this.updateDisplay();
+    };
+    Lumen.prototype.setActiveDisplayButton = function () {
+        var _this = this;
+        document.querySelectorAll('#map-controls button').forEach(function (elem) { return elem.classList.toggle('active', elem.dataset.display == _this.display); });
     };
     Lumen.prototype.updateDisplay = function () {
         //document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`;

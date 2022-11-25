@@ -85,14 +85,17 @@ html, .mode_3d #game_play_area_background {
     button {
       width: auto;
       margin: 0;
+      border: 2px solid lightgray;
+
+      &.active {
+        border-color: #4871b6;
+      }
     }
   }
 
   #full-table {
     position: relative;
     transform-origin: left top;
-
-    
 
     #scroll-buttons {
       position: relative;

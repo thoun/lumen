@@ -48,9 +48,9 @@
         </div>
     </div>
     <div id="map-controls">
-        <button class="bgabutton bgabutton_gray" id="display-map-scroll"></button>
-        <button class="bgabutton bgabutton_gray" id="display-fit-map"></button>
-        <button class="bgabutton bgabutton_gray" id="display-fit-map-and-board"></button>
+        <button class="bgabutton bgabutton_gray" id="display-map-scroll" data-display="scroll"></button>
+        <button class="bgabutton bgabutton_gray" id="display-fit-map" data-display="fit-map-to-screen"></button>
+        <button class="bgabutton bgabutton_gray" id="display-fit-map-and-board" data-display="fit-map-and-board-to-screen"></button>
     </div>
 </div>
 

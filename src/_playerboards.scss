@@ -20,6 +20,12 @@
     background-size: cover;
     background-position: center center;
   }
+
+  .card-stock {
+    .discover-tile:not(:first-child) {
+        margin-left: -52px;
+    }
+  }
 }
 
 .first-player-token-wrapper {

@@ -877,6 +877,9 @@ body > .card {
   background-size: cover;
   background-position: center center;
 }
+.player-board .card-stock .discover-tile:not(:first-child) {
+  margin-left: -52px;
+}
 
 .first-player-token-wrapper {
   position: relative;
@@ -1468,6 +1471,10 @@ html, .mode_3d #game_play_area_background {
 #zoom-wrapper #map-controls button {
   width: auto;
   margin: 0;
+  border: 2px solid lightgray;
+}
+#zoom-wrapper #map-controls button.active {
+  border-color: #4871b6;
 }
 #zoom-wrapper #full-table {
   position: relative;
