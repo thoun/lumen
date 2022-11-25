@@ -614,54 +614,6 @@ class Lumen implements LumenGame {
 
         this.setTooltip(scenarioName.id, scenarioSynopsis.outerHTML + scenarioSpecialRules.outerHTML +  scenarioObjectives.outerHTML);
     }
-    
-    public onCardClick(card: Card): void {
-        const cardDiv = document.getElementById(`card-${card.id}`);
-        const parentDiv = cardDiv.parentElement;
-
-        if (cardDiv.classList.contains('disabled')) {
-            return;
-        }
-
-        switch (this.gamedatas.gamestate.name) {
-            /*case 'takeCards':
-                if (parentDiv.dataset.discard) {
-                    this.takeCardFromDiscard(Number(parentDiv.dataset.discard));
-                }
-                break;
-            case 'chooseCard':
-                if (parentDiv.id == 'pick') {
-                    this.chooseCard(card.id);
-                }
-                break;
-            case 'playCards':
-                if (parentDiv.dataset.myHand == `true`) {
-                    if (this.selectedCards.includes(card.id)) {
-                        this.selectedCards.splice(this.selectedCards.indexOf(card.id), 1);
-                        cardDiv.classList.remove('selected');
-                    } else {
-                        this.selectedCards.push(card.id);
-                        cardDiv.classList.add('selected');
-                    }
-                    this.updateDisabledPlayCards();
-                }
-                break;
-            case 'chooseDiscardCard':
-                if (parentDiv.id == 'discard-pick') {
-                    this.chooseDiscardCard(card.id);
-                }
-                break;
-            case 'chooseOpponent':
-                const chooseOpponentArgs = this.gamedatas.gamestate.args as EnteringChooseOpponentArgs;
-                if (parentDiv.dataset.currentPlayer == 'false') {
-                    const stealPlayerId = Number(parentDiv.dataset.playerId);
-                    if (chooseOpponentArgs.playersIds.includes(stealPlayerId)) {
-                        this.chooseOpponent(stealPlayerId);
-                    }
-                }
-                break;*/
-        }
-    }
 
     private addHelp() {
         dojo.place(`
@@ -702,6 +654,18 @@ class Lumen implements LumenGame {
             <div>${this.cardsManager.getTooltip(subType)}</div>
         </div>
         `).join('');
+
+        const discoverTiles = `
+        <div class="help-section">
+            <div id="help-discover-tiles-1-1"></div>
+            <div>${this.discoverTilesManager.getTooltip(1, 1)}</div>
+        </div>
+        ` + [1, 2, 3, 4, 5].map(subType => `
+        <div class="help-section">
+            <div id="help-discover-tiles-2-${subType}"></div>
+            <div>${this.discoverTilesManager.getTooltip(2, subType)}</div>
+        </div>
+        `).join('');
         
         // TODO
         let html = `
@@ -717,6 +681,9 @@ class Lumen implements LumenGame {
             <h1>${_("LES MISSIONS PERSONNELLES")}</h1>
             <div>${_('TODO')}</div>
             ${missions}
+            <h1>${_("LES TUILES DECOUVERTES")}</h1>
+            <div>${_('TODO')}</div>
+            ${discoverTiles}
         </div>
         `;
         
@@ -725,14 +692,46 @@ class Lumen implements LumenGame {
 
         helpDialog.show();
 
-        /*// pair
-        [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]].forEach(([family, color]) => this.cards.createMoveOrUpdateCard({id: 1020 + family, category: 2, family, color, index: 0 } as any, `help-pair-${family}`));
-        // mermaid
-        this.cards.createMoveOrUpdateCard({id: 1010, category: 1 } as any, `help-mermaid`);
-        // collector
-        [[1, 1], [2, 2], [3, 6], [4, 9]].forEach(([family, color]) => this.cards.createMoveOrUpdateCard({id: 1030 + family, category: 3, family, color, index: 0 } as any, `help-collector-${family}`));
-        // multiplier
-        [1, 2, 3, 4].forEach(family => this.cards.createMoveOrUpdateCard({id: 1040 + family, category: 4, family } as any, `help-multiplier-${family}`));*/
+        const player1id = Number(Object.values(this.gamedatas.players).find(player => player.playerNo == 1).id);
+        const player2id = Number(Object.values(this.gamedatas.players).find(player => player.playerNo == 2).id);
+
+        // base
+        [1, 2, 3, 4, 5, 6].forEach(subType => 
+            new LineStock<Card>(this.cardsManager, document.getElementById(`help-base-${subType}`)).addCards([
+                {id: 1000 + subType, type: 1, subType, playerId: player1id } as Card,
+                {id: 2000 + subType, type: 1, subType, playerId: player2id } as Card,
+            ])
+        );
+        // bonus
+        [11, 12, 13, 14, 15, 16, 17, 18].forEach(subType => 
+            new LineStock<Card>(this.cardsManager, document.getElementById(`help-bonus-${subType}`)).addCard(
+                {id: 1000 + subType, type: 1, subType } as Card,
+            )
+        );
+        // actions
+        [21, 22, 23].forEach(subType => 
+            new LineStock<Card>(this.cardsManager, document.getElementById(`help-actions-${subType}`)).addCard(
+                {id: 1000 + subType, type: 1, subType } as Card,
+            )
+        );
+        // missions
+        [31, 32, 33].forEach(subType => 
+            new LineStock<Card>(this.cardsManager, document.getElementById(`help-missions-${subType}`)).addCard(
+                {id: 1000 + subType, type: 1, subType } as Card,
+            )
+        );
+        // discover tiles
+        new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`help-discover-tiles-1-1`)).addCards([
+            {id: 1003, type: 1, subType: 3 } as DiscoverTile,
+            {id: 1004, type: 1, subType: 4 } as DiscoverTile,
+            {id: 1005, type: 1, subType: 5 } as DiscoverTile,
+        ]);
+        
+        [1, 2, 3, 4, 5].forEach(subType => 
+            new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`help-discover-tiles-2-${subType}`)).addCard(
+                {id: 2000 + subType, type: 2, subType } as DiscoverTile,
+            )
+        );
     }
 
     private onPlanificationDiceSelection(color: string, value: number) {

@@ -698,9 +698,11 @@ var CardsManager = /** @class */ (function (_super) {
                 div.classList.add('fighter');
                 div.dataset.type = '' + card.type;
                 div.dataset.subType = '' + card.subType;
-                div.dataset.color = game.getPlayerColor(card.playerId);
+                if (card.playerId) {
+                    div.dataset.color = game.getPlayerColor(card.playerId);
+                }
                 game.setTooltip(div.id, _this.getTooltip(card.subType));
-                if (card.type == 10) {
+                if (card.type == 10 && card.playerId) {
                     var playerToken = document.createElement('div');
                     playerToken.classList.add('player-token');
                     playerToken.dataset.color = game.getPlayerColor(card.playerId);
@@ -2216,51 +2218,6 @@ var Lumen = /** @class */ (function () {
         document.getElementById("dice").style.left = "".concat(this.scenario.diceLeft, "px");
         this.setTooltip(scenarioName.id, scenarioSynopsis.outerHTML + scenarioSpecialRules.outerHTML + scenarioObjectives.outerHTML);
     };
-    Lumen.prototype.onCardClick = function (card) {
-        var cardDiv = document.getElementById("card-".concat(card.id));
-        var parentDiv = cardDiv.parentElement;
-        if (cardDiv.classList.contains('disabled')) {
-            return;
-        }
-        switch (this.gamedatas.gamestate.name) {
-            /*case 'takeCards':
-                if (parentDiv.dataset.discard) {
-                    this.takeCardFromDiscard(Number(parentDiv.dataset.discard));
-                }
-                break;
-            case 'chooseCard':
-                if (parentDiv.id == 'pick') {
-                    this.chooseCard(card.id);
-                }
-                break;
-            case 'playCards':
-                if (parentDiv.dataset.myHand == `true`) {
-                    if (this.selectedCards.includes(card.id)) {
-                        this.selectedCards.splice(this.selectedCards.indexOf(card.id), 1);
-                        cardDiv.classList.remove('selected');
-                    } else {
-                        this.selectedCards.push(card.id);
-                        cardDiv.classList.add('selected');
-                    }
-                    this.updateDisabledPlayCards();
-                }
-                break;
-            case 'chooseDiscardCard':
-                if (parentDiv.id == 'discard-pick') {
-                    this.chooseDiscardCard(card.id);
-                }
-                break;
-            case 'chooseOpponent':
-                const chooseOpponentArgs = this.gamedatas.gamestate.args as EnteringChooseOpponentArgs;
-                if (parentDiv.dataset.currentPlayer == 'false') {
-                    const stealPlayerId = Number(parentDiv.dataset.playerId);
-                    if (chooseOpponentArgs.playersIds.includes(stealPlayerId)) {
-                        this.chooseOpponent(stealPlayerId);
-                    }
-                }
-                break;*/
-        }
-    };
     Lumen.prototype.addHelp = function () {
         var _this = this;
         dojo.place("\n            <button id=\"lumen-help-button\">?</button>\n        ", 'left-side');
@@ -2275,19 +2232,42 @@ var Lumen = /** @class */ (function () {
         var bonusCards = [11, 12, 13, 14, 15, 16, 17, 18].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-bonus-".concat(subType, "\"></div>\n            <div>").concat(_this.cardsManager.getTooltip(subType), "</div>\n        </div>\n        "); }).join('');
         var actions = [21, 22, 23].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-actions-".concat(subType, "\"></div>\n            <div>").concat(_this.cardsManager.getTooltip(subType), "</div>\n        </div>\n        "); }).join('');
         var missions = [31, 32, 33].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-missions-".concat(subType, "\"></div>\n            <div>").concat(_this.cardsManager.getTooltip(subType), "</div>\n        </div>\n        "); }).join('');
+        var discoverTiles = "\n        <div class=\"help-section\">\n            <div id=\"help-discover-tiles-1-1\"></div>\n            <div>".concat(this.discoverTilesManager.getTooltip(1, 1), "</div>\n        </div>\n        ") + [1, 2, 3, 4, 5].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-discover-tiles-2-".concat(subType, "\"></div>\n            <div>").concat(_this.discoverTilesManager.getTooltip(2, subType), "</div>\n        </div>\n        "); }).join('');
         // TODO
-        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("LES COMBATANTS DE BASE"), "</h1>\n            ").concat(baseFighters, "\n            <h1>").concat(_("LES JETONS BONUS"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(bonusCards, "\n            <h1>").concat(_("LES ACTIONS D’ÉCLAT"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(actions, "\n            <h1>").concat(_("LES MISSIONS PERSONNELLES"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(missions, "\n        </div>\n        ");
+        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("LES COMBATANTS DE BASE"), "</h1>\n            ").concat(baseFighters, "\n            <h1>").concat(_("LES JETONS BONUS"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(bonusCards, "\n            <h1>").concat(_("LES ACTIONS D’ÉCLAT"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(actions, "\n            <h1>").concat(_("LES MISSIONS PERSONNELLES"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(missions, "\n            <h1>").concat(_("LES TUILES DECOUVERTES"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(discoverTiles, "\n        </div>\n        ");
         // Show the dialog
         helpDialog.setContent(html);
         helpDialog.show();
-        /*// pair
-        [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]].forEach(([family, color]) => this.cards.createMoveOrUpdateCard({id: 1020 + family, category: 2, family, color, index: 0 } as any, `help-pair-${family}`));
-        // mermaid
-        this.cards.createMoveOrUpdateCard({id: 1010, category: 1 } as any, `help-mermaid`);
-        // collector
-        [[1, 1], [2, 2], [3, 6], [4, 9]].forEach(([family, color]) => this.cards.createMoveOrUpdateCard({id: 1030 + family, category: 3, family, color, index: 0 } as any, `help-collector-${family}`));
-        // multiplier
-        [1, 2, 3, 4].forEach(family => this.cards.createMoveOrUpdateCard({id: 1040 + family, category: 4, family } as any, `help-multiplier-${family}`));*/
+        var player1id = Number(Object.values(this.gamedatas.players).find(function (player) { return player.playerNo == 1; }).id);
+        var player2id = Number(Object.values(this.gamedatas.players).find(function (player) { return player.playerNo == 2; }).id);
+        // base
+        [1, 2, 3, 4, 5, 6].forEach(function (subType) {
+            return new LineStock(_this.cardsManager, document.getElementById("help-base-".concat(subType))).addCards([
+                { id: 1000 + subType, type: 1, subType: subType, playerId: player1id },
+                { id: 2000 + subType, type: 1, subType: subType, playerId: player2id },
+            ]);
+        });
+        // bonus
+        [11, 12, 13, 14, 15, 16, 17, 18].forEach(function (subType) {
+            return new LineStock(_this.cardsManager, document.getElementById("help-bonus-".concat(subType))).addCard({ id: 1000 + subType, type: 1, subType: subType });
+        });
+        // actions
+        [21, 22, 23].forEach(function (subType) {
+            return new LineStock(_this.cardsManager, document.getElementById("help-actions-".concat(subType))).addCard({ id: 1000 + subType, type: 1, subType: subType });
+        });
+        // missions
+        [31, 32, 33].forEach(function (subType) {
+            return new LineStock(_this.cardsManager, document.getElementById("help-missions-".concat(subType))).addCard({ id: 1000 + subType, type: 1, subType: subType });
+        });
+        // discover tiles
+        new LineStock(this.discoverTilesManager, document.getElementById("help-discover-tiles-1-1")).addCards([
+            { id: 1003, type: 1, subType: 3 },
+            { id: 1004, type: 1, subType: 4 },
+            { id: 1005, type: 1, subType: 5 },
+        ]);
+        [1, 2, 3, 4, 5].forEach(function (subType) {
+            return new LineStock(_this.discoverTilesManager, document.getElementById("help-discover-tiles-2-".concat(subType))).addCard({ id: 2000 + subType, type: 2, subType: subType });
+        });
     };
     Lumen.prototype.onPlanificationDiceSelection = function (color, value) {
         var oldSelectedButton = document.getElementById("select-".concat(color, "-die-").concat(this.selectedPlanificationDice[color], "-button"));

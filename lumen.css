@@ -1356,24 +1356,27 @@ html[data-filling-pattern=true] .circle[data-zone="19"] {
   overflow: auto;
 }
 #help-popin h1 {
-  color: #63c5cf;
+  color: #3d3d3d;
   font-size: 18px;
   margin: 8px 0;
 }
 #help-popin .help-section {
-  color: white;
-  background-color: #63c5cf;
+  color: black;
+  background: url(img/description-background.jpg);
+  background-size: cover;
+  background-position: center center;
   border-radius: 8px;
   padding: 5px;
   margin: 3px 0;
   display: flex;
+  gap: 10px;
 }
-#help-popin .help-section > div:not(:first-child) {
-  margin-left: 5px;
-}
-#help-popin .help-section > div:not(:first-child):not([id]) {
+#help-popin .help-section > div:not([id]) {
   flex: 1;
   margin-left: 5px;
+}
+#help-popin #help-discover-tiles-1-1 .discover-tile:not(:first-child) {
+  margin-left: -50px;
 }
 
 /* make space between buttons on touch devices */

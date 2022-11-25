@@ -7,10 +7,12 @@ class CardsManager extends CardManager<Card> {
                 div.classList.add('fighter');
                 div.dataset.type = ''+card.type;
                 div.dataset.subType = ''+card.subType;
-                div.dataset.color = game.getPlayerColor(card.playerId);
+                if (card.playerId) {
+                    div.dataset.color = game.getPlayerColor(card.playerId);
+                }
                 game.setTooltip(div.id, this.getTooltip(card.subType));
 
-                if (card.type == 10) {
+                if (card.type == 10 && card.playerId) {
                     const playerToken = document.createElement('div');
                     playerToken.classList.add('player-token');
                     playerToken.dataset.color = game.getPlayerColor(card.playerId);

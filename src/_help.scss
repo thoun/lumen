@@ -42,27 +42,32 @@
     overflow: auto;
 
     h1 {
-        color: #63c5cf;
+        color: #3d3d3d;
         font-size: 18px;
         margin: 8px 0;
     }
 
     .help-section {    
-        color: white;
-        background-color: #63c5cf;
+        color: black;
+        background: url(img/description-background.jpg);
+        background-size: cover;
+        background-position: center center;
         border-radius: 8px;
         padding: 5px;
         margin: 3px 0;
 
         display: flex;
+        gap: 10px;
 
-        &>div:not(:first-child) {
+        &>div:not([id]) {
+            flex: 1;
             margin-left: 5px;
-
-            &:not([id]) {
-                flex: 1;
-                margin-left: 5px;
-            } 
         } 
+    }
+
+    #help-discover-tiles-1-1 {
+        .discover-tile:not(:first-child) {
+            margin-left: -50px;
+        }
     }
 }
