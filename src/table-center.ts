@@ -46,6 +46,11 @@ class TableCenter {
             map.appendChild(background);
             map.appendChild(battlefield);
             this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield, battlefieldInfos.rotation);
+
+            if ([90, 270].includes(battlefieldInfos.rotation)) {
+                battlefield.style.marginBottom = `-143px`;
+                background.style.marginBottom = `-143px`;
+            }
         });
     }
     
@@ -214,8 +219,9 @@ class TableCenter {
         let maxRight = 0;
         let maxBottom = 0;
         battlefields.forEach(battlefield => {
-            const right = battlefield.x + 708;
-            const bottom = battlefield.y + 708;
+            const horizontal = [90, 270].includes(battlefield.rotation);
+            const right = battlefield.x + (horizontal ? 708 : 566);
+            const bottom = battlefield.y + (horizontal ? 566 : 708);
             if (right > maxRight) {
                 maxRight = right;
             }
@@ -226,6 +232,6 @@ class TableCenter {
 
         const map = document.getElementById('map');
         map.style.width = `${maxRight}px`;
-        map.style.height = `${maxBottom}px`;
+        map.style.height = `${maxBottom + 10}px`;
     }
 }

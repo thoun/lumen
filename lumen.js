@@ -1370,6 +1370,10 @@ var TableCenter = /** @class */ (function () {
             map.appendChild(background);
             map.appendChild(battlefield);
             _this.addTerritories(BATTLEFIELDS[battlefieldInfos.battlefieldId].territories, battlefield, battlefieldInfos.rotation);
+            if ([90, 270].includes(battlefieldInfos.rotation)) {
+                battlefield.style.marginBottom = "-143px";
+                background.style.marginBottom = "-143px";
+            }
         });
     };
     TableCenter.prototype.addTerritories = function (territories, battlefield, rotation) {
@@ -1512,8 +1516,9 @@ var TableCenter = /** @class */ (function () {
         var maxRight = 0;
         var maxBottom = 0;
         battlefields.forEach(function (battlefield) {
-            var right = battlefield.x + 708;
-            var bottom = battlefield.y + 708;
+            var horizontal = [90, 270].includes(battlefield.rotation);
+            var right = battlefield.x + (horizontal ? 708 : 566);
+            var bottom = battlefield.y + (horizontal ? 566 : 708);
             if (right > maxRight) {
                 maxRight = right;
             }
@@ -1523,7 +1528,7 @@ var TableCenter = /** @class */ (function () {
         });
         var map = document.getElementById('map');
         map.style.width = "".concat(maxRight, "px");
-        map.style.height = "".concat(maxBottom, "px");
+        map.style.height = "".concat(maxBottom + 10, "px");
     };
     return TableCenter;
 }());
