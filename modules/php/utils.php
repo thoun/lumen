@@ -203,7 +203,7 @@ trait UtilTrait {
         }
         $sql .= " ORDER BY `card_location_arg`";
         $dbResults = $this->getCollectionFromDb($sql);
-        return array_map(fn($dbCard) => new DiscoverTile($dbCard, $this->DISCOVER_TILES), array_values($dbResults));
+        return array_map(fn($dbCard) => new DiscoverTile($dbCard), array_values($dbResults));
     }
 
     function setupDiscoverTiles() {
@@ -584,7 +584,7 @@ trait UtilTrait {
         }
     }
 
-    function applyMoveFighter(Card &$fighter, int $territoryId) { // return redirected for brouillage
+    function applyMoveFighter(Card &$fighter, int $territoryId, bool $fromBag = false) { // return redirected for brouillage
         if ($territoryId == 0) {
             // pushed to the river
             $this->putBackInBag([$fighter]);
@@ -598,6 +598,7 @@ trait UtilTrait {
         self::notifyAllPlayers("moveFighter", '', [
             'fighter' => $fighter,
             'territoryId' => $territoryId,
+            'fromBag' => $fromBag,
         ]);
 
         return $this->fighterMoved($fighter, $territoryId);
@@ -689,6 +690,7 @@ trait UtilTrait {
     }
 
     function applyParachutage(DiscoverTile &$discoverTile, int $playerId, int $territoryId) {
+        $this->highlightDiscoverTile($discoverTile);
         $cardDb = $this->cards->pickCardForLocation('bag'.$playerId, 'territory', $territoryId);
         if ($cardDb == null) {
             self::notifyAllPlayers("log", clienttranslate('The bag is empty, impossible to apply Parachutage'), []); // TODO check log
@@ -698,9 +700,15 @@ trait UtilTrait {
         $this->discardDiscoverTile($discoverTile);
 
         $fighter = $this->getCardById(intval($cardDb['id']));
-        $this->applyMoveFighter($fighter, $territoryId);
+        $this->applyMoveFighter($fighter, $territoryId, true);
 
         $this->checkEmptyBag($playerId);
+    }
+
+    function highlightDiscoverTile(DiscoverTile &$discoverTile) {
+        self::notifyAllPlayers("highlightDiscoverTile", '', [
+            'discoverTile' => $discoverTile,
+        ]);
     }
 
     function revealDiscoverTile(DiscoverTile &$discoverTile, int $playerId, int $territoryId) { // return redirected for brouillage
@@ -730,6 +738,7 @@ trait UtilTrait {
                         $this->applyParachutage($discoverTile, $playerId, $territoryId);
                         break;
                     case POWER_MESSAGE_PRIORITAIRE:
+                        $this->highlightDiscoverTile($discoverTile);
                         $this->addCheck($playerId);
                         $this->discardDiscoverTile($discoverTile);
                         break;

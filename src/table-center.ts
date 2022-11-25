@@ -138,13 +138,21 @@ class TableCenter {
         this.territoriesStocks[territoryId].addInitiativeMarker();
     }
     
-    public moveFighter(fighter: Card, territoryId: number) {
-        this.territoriesStocks[territoryId].addCard(fighter, undefined, {visible: !fighter.played});
+    public moveFighter(fighter: Card, territoryId: number, fromBag: boolean = false) {
+        this.territoriesStocks[territoryId].addCard(
+            fighter, 
+            fromBag ? { fromElement: document.getElementById(`bag-${fighter.playerId}`) } : undefined, 
+            {visible: !fighter.played}
+        );
     }
     
     public revealDiscoverTile(discoverTile: DiscoverTile) {
         this.game.discoverTilesManager.setupFrontDiv(discoverTile);
         this.game.discoverTilesManager.getCardElement(discoverTile).dataset.side = 'front';
+    }
+    
+    public highlightDiscoverTile(discoverTile: DiscoverTile) {
+        this.game.discoverTilesManager.getCardElement(discoverTile)?.classList.add('highlight');
     }
 
     private cancelFighterChoice() {

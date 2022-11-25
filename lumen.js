@@ -1454,12 +1454,17 @@ var TableCenter = /** @class */ (function () {
         this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
         this.territoriesStocks[territoryId].addInitiativeMarker();
     };
-    TableCenter.prototype.moveFighter = function (fighter, territoryId) {
-        this.territoriesStocks[territoryId].addCard(fighter, undefined, { visible: !fighter.played });
+    TableCenter.prototype.moveFighter = function (fighter, territoryId, fromBag) {
+        if (fromBag === void 0) { fromBag = false; }
+        this.territoriesStocks[territoryId].addCard(fighter, fromBag ? { fromElement: document.getElementById("bag-".concat(fighter.playerId)) } : undefined, { visible: !fighter.played });
     };
     TableCenter.prototype.revealDiscoverTile = function (discoverTile) {
         this.game.discoverTilesManager.setupFrontDiv(discoverTile);
         this.game.discoverTilesManager.getCardElement(discoverTile).dataset.side = 'front';
+    };
+    TableCenter.prototype.highlightDiscoverTile = function (discoverTile) {
+        var _a;
+        (_a = this.game.discoverTilesManager.getCardElement(discoverTile)) === null || _a === void 0 ? void 0 : _a.classList.add('highlight');
     };
     TableCenter.prototype.cancelFighterChoice = function () {
         var oldChoice = document.getElementById("fighter-choice");
@@ -2484,6 +2489,7 @@ var Lumen = /** @class */ (function () {
             ['moveDiscoverTileToPlayer', ANIMATION_MS],
             ['discardDiscoverTile', ANIMATION_MS],
             ['revealDiscoverTile', ANIMATION_MS],
+            ['highlightDiscoverTile', ANIMATION_MS * 4],
             ['moveInitiativeMarker', ANIMATION_MS],
             ['putBackInBag', ANIMATION_MS],
             ['setFightersActivated', ANIMATION_MS],
@@ -2579,7 +2585,7 @@ var Lumen = /** @class */ (function () {
         this.notif_takeObjectiveTokens(notif);
     };
     Lumen.prototype.notif_moveFighter = function (notif) {
-        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId);
+        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId, notif.args.fromBag);
     };
     Lumen.prototype.notif_refillReserve = function (notif) {
         var card = notif.args.fighter;
@@ -2603,6 +2609,9 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_revealDiscoverTile = function (notif) {
         this.tableCenter.revealDiscoverTile(notif.args.discoverTile);
+    };
+    Lumen.prototype.notif_highlightDiscoverTile = function (notif) {
+        this.tableCenter.highlightDiscoverTile(notif.args.discoverTile);
     };
     Lumen.prototype.notif_moveInitiativeMarker = function (notif) {
         this.tableCenter.moveInitiativeMarker(notif.args.territoryId);

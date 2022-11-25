@@ -37,4 +37,17 @@
             }
         }
     } 
+
+    &.highlight {
+        animation: highlight-discover-tile-animation 1s alternate 2 ease-in-out;
+    }
+}
+
+@keyframes highlight-discover-tile-animation {
+    0% { 
+        transform: scale(1);
+    }
+    100% { 
+        transform: scale(2);
+    }
 }

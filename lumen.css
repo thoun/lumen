@@ -440,7 +440,18 @@
 .card.discover-tile .card-sides .card-side.back {
   background-position-x: 0;
 }
+.card.discover-tile.highlight {
+  animation: highlight-discover-tile-animation 1s alternate 2 ease-in-out;
+}
 
+@keyframes highlight-discover-tile-animation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(2);
+  }
+}
 body > .card {
   position: absolute;
   left: -9999px;

@@ -996,6 +996,7 @@ class Lumen implements LumenGame {
             ['moveDiscoverTileToPlayer', ANIMATION_MS],
             ['discardDiscoverTile', ANIMATION_MS],
             ['revealDiscoverTile', ANIMATION_MS],
+            ['highlightDiscoverTile', ANIMATION_MS * 4],
             ['moveInitiativeMarker', ANIMATION_MS],
             ['putBackInBag', ANIMATION_MS],
             ['setFightersActivated', ANIMATION_MS],
@@ -1109,7 +1110,7 @@ class Lumen implements LumenGame {
     }
 
     notif_moveFighter(notif: Notif<NotifMoveFighterArgs>) {
-        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId);
+        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId, notif.args.fromBag);
     }
 
     notif_refillReserve(notif: Notif<NotifRefillReserveArgs>) {
@@ -1138,6 +1139,10 @@ class Lumen implements LumenGame {
 
     notif_revealDiscoverTile(notif: Notif<NotifRevealDiscoverTileArgs>) {
         this.tableCenter.revealDiscoverTile(notif.args.discoverTile);
+    }
+
+    notif_highlightDiscoverTile(notif: Notif<NotifRevealDiscoverTileArgs>) {
+        this.tableCenter.highlightDiscoverTile(notif.args.discoverTile);
     }
 
     notif_moveInitiativeMarker(notif: Notif<NotifMoveInitiativeMarkerArgs>) {
