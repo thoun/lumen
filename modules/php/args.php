@@ -372,17 +372,16 @@ trait ArgsTrait {
         $opponentId = $this->getOpponentId($playerId);
 
         $circles = $this->getCircles($opponentId);
-        $emptyCircles = array_values(array_filter($circles, fn($circle) => $circle->value === null || $circle->value === -1));
+        $emptyCircles = array_values(array_filter($circles, fn($circle) => $circle->value === null));
 
         $possibleCircles = array_map(fn($circle) => $circle->circleId, $emptyCircles);
-        /* TODO Restriction : vous ne pouvez
-        pas éliminer une cellule qui
-        empêcherait votre adversaire
-        d’accéder à une partie des cellules
-        de sa fiche de commandement.*/
+        $jammedCircle = $this->array_find($circles, fn($circle) => $circle->value === -1);
+        if ($jammedCircle !== null && array_key_exists($jammedCircle->id, $this->FORBIDDEN_JAMMING_PAIRS)) {
+            $emptyCircles = array_values(array_filter($emptyCircles, fn($circle) => !in_array($circle->id, $this->FORBIDDEN_JAMMING_PAIRS[$jammedCircle->id])));
+        }
 
         return [
-            'possibleCircles' => $possibleCircles,
+            'possibleCircles' => $possibleCircles, // TODO show selectable circles
         ];
     }
 } 
