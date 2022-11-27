@@ -729,6 +729,8 @@ trait UtilTrait {
             case 2: // power
                 switch ($discoverTile->power) {
                     case POWER_BROUILLAGE:
+                        $this->highlightDiscoverTile($discoverTile);
+                        $this->discardDiscoverTile($discoverTile);
                         return true;
                     case POWER_PLANIFICATION:
                     case POWER_COUP_FOURRE:

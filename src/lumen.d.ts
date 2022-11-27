@@ -114,6 +114,11 @@ interface EnteringChooseCellLinkArgs {
     possibleLinkCirclesIds: number[];
 }
 
+interface EnteringChooseCellJammingArgs {
+    possibleCircles: number[];
+    opponentId: number;
+}
+
 interface EnteringChooseFighterArgs {
     canCancel: boolean;
     canUseCoupFourre: boolean;

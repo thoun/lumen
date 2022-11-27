@@ -376,12 +376,13 @@ trait ArgsTrait {
 
         $possibleCircles = array_map(fn($circle) => $circle->circleId, $emptyCircles);
         $jammedCircle = $this->array_find($circles, fn($circle) => $circle->value === -1);
-        if ($jammedCircle !== null && array_key_exists($jammedCircle->id, $this->FORBIDDEN_JAMMING_PAIRS)) {
-            $emptyCircles = array_values(array_filter($emptyCircles, fn($circle) => !in_array($circle->id, $this->FORBIDDEN_JAMMING_PAIRS[$jammedCircle->id])));
+        if ($jammedCircle !== null && array_key_exists($jammedCircle->circleId, $this->FORBIDDEN_JAMMING_PAIRS)) {
+            $possibleCircles = array_values(array_filter($possibleCircles, fn($circle) => !in_array($circle, $this->FORBIDDEN_JAMMING_PAIRS[$jammedCircle->circleId])));
         }
 
         return [
-            'possibleCircles' => $possibleCircles, // TODO show selectable circles
+            'opponentId' => $opponentId,
+            'possibleCircles' => $possibleCircles,
         ];
     }
 } 

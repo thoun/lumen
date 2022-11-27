@@ -1579,9 +1579,11 @@ var PlayerTable = /** @class */ (function () {
                 div.dataset.jamming = 'true';
             }
             document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
-            if (_this.currentPlayer) {
-                div.addEventListener('click', function () { return _this.game.cellClick(circle.circleId); });
-            }
+            div.addEventListener('click', function () {
+                if (div.classList.contains('ghost')) {
+                    _this.game.cellClick(circle.circleId);
+                }
+            });
         });
         player.links.forEach(function (link) { return _this.setLink(link.index1, link.index2); });
         this.reserve = new SlotStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-reserve")), {
@@ -1639,7 +1641,12 @@ var PlayerTable = /** @class */ (function () {
         possibleCircles.forEach(function (circleId) {
             var circleDiv = document.getElementById("player-table-".concat(_this.playerId, "-circle").concat(circleId));
             circleDiv.classList.add('ghost');
-            circleDiv.innerHTML = '' + value;
+            if (value === -1) {
+                circleDiv.dataset.jamming = 'true';
+            }
+            else {
+                circleDiv.innerHTML = '' + value;
+            }
         });
     };
     PlayerTable.prototype.setCircleValue = function (circleId, value) {
@@ -1805,6 +1812,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseCellLink':
                 this.onEnteringChooseCellLink(args.args);
                 break;
+            case 'chooseCellBrouillage':
+                this.onEnteringChooseCellBrouillage(args.args);
+                break;
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
                 break;
@@ -1848,6 +1858,12 @@ var Lumen = /** @class */ (function () {
         var _a;
         if (this.isCurrentPlayerActive()) {
             (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setPossibleCellLinks(args.possibleLinkCirclesIds, args.cellId);
+        }
+    };
+    Lumen.prototype.onEnteringChooseCellBrouillage = function (args) {
+        var _a;
+        if (this.isCurrentPlayerActive()) {
+            (_a = this.getPlayerTable(args.opponentId)) === null || _a === void 0 ? void 0 : _a.setPossibleCells(args.possibleCircles, -1);
         }
     };
     Lumen.prototype.getChooseFighterSelectableCards = function (args) {
@@ -1920,6 +1936,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseCellLink':
                 this.onLeavingChooseCellLink();
                 break;
+            case 'chooseCellBrouillage':
+                this.onLeavingChooseCellBrouillage();
+                break;
             case 'chooseFighter':
                 this.onLeavingChooseFighter();
                 break;
@@ -1948,6 +1967,12 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.onLeavingChooseCellLink = function () {
         document.querySelectorAll('.link.selectable').forEach(function (elem) { return elem.remove(); });
+    };
+    Lumen.prototype.onLeavingChooseCellBrouillage = function () {
+        document.querySelectorAll('[data-jamming="true"].ghost').forEach(function (elem) {
+            elem.classList.remove('selectable');
+            elem.dataset.jamming = 'false';
+        });
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).

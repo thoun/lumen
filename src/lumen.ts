@@ -131,6 +131,9 @@ class Lumen implements LumenGame {
             case 'chooseCellLink':
                 this.onEnteringChooseCellLink(args.args);
                 break;
+            case 'chooseCellBrouillage':
+                this.onEnteringChooseCellBrouillage(args.args);
+                break;
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
                 break;   
@@ -181,6 +184,12 @@ class Lumen implements LumenGame {
     private onEnteringChooseCellLink(args: EnteringChooseCellLinkArgs) {
         if ((this as any).isCurrentPlayerActive()) {
             this.getCurrentPlayerTable()?.setPossibleCellLinks(args.possibleLinkCirclesIds, args.cellId);
+        }
+    }
+    
+    private onEnteringChooseCellBrouillage(args: EnteringChooseCellJammingArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.getPlayerTable(args.opponentId)?.setPossibleCells(args.possibleCircles, -1);
         }
     }
 
@@ -258,6 +267,9 @@ class Lumen implements LumenGame {
             case 'chooseCellLink':
                 this.onLeavingChooseCellLink();
                 break;
+            case 'chooseCellBrouillage':
+                this.onLeavingChooseCellBrouillage();
+                break;
             case 'chooseFighter':
                 this.onLeavingChooseFighter();
                 break;
@@ -291,6 +303,13 @@ class Lumen implements LumenGame {
 
     private onLeavingChooseCellLink() {
         document.querySelectorAll('.link.selectable').forEach(elem => elem.remove());
+    }
+
+    private onLeavingChooseCellBrouillage() {
+        document.querySelectorAll('[data-jamming="true"].ghost').forEach((elem: HTMLElement) => {
+            elem.classList.remove('selectable');
+            elem.dataset.jamming = 'false';
+        });
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the

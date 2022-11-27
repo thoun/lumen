@@ -75,9 +75,11 @@ class PlayerTable {
                 div.dataset.jamming = 'true';
             }
             document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
-            if (this.currentPlayer) {
-                div.addEventListener('click', () => this.game.cellClick(circle.circleId));
-            }
+            div.addEventListener('click', () => {
+                if (div.classList.contains('ghost')) {
+                    this.game.cellClick(circle.circleId);
+                }
+            });
         });
 
         player.links.forEach(link => this.setLink(link.index1, link.index2));
@@ -143,7 +145,11 @@ class PlayerTable {
         possibleCircles.forEach(circleId => {
             const circleDiv = document.getElementById(`player-table-${this.playerId}-circle${circleId}`);
             circleDiv.classList.add('ghost');
-            circleDiv.innerHTML = ''+value;
+            if (value === -1) {
+                circleDiv.dataset.jamming = 'true';
+            } else {
+                circleDiv.innerHTML = ''+value;
+            }
         });
     }
     
