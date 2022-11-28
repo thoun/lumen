@@ -1411,7 +1411,7 @@ var TableCenter = /** @class */ (function () {
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.curve, rotation, territoryInfos.id);
             _this.territoriesStocks[territoryInfos.id].onCardClick = function (card) {
-                var selectableCards = _this.game.getChooseFighterSelectableCards();
+                var selectableCards = _this.game.getChooseFighterSelectableMoveActivateCards();
                 var canClick = selectableCards === null || selectableCards === void 0 ? void 0 : selectableCards.some(function (fighter) { return fighter.id == card.id; });
                 if (canClick) {
                     _this.territoryFighterClick(card);
@@ -1600,11 +1600,16 @@ var PlayerTable = /** @class */ (function () {
         this.highCommand.addCards(player.highCommand);
     }
     PlayerTable.prototype.cardClick = function (card) {
-        if (card.type < 20) {
-            this.game.playFighter(card.id);
+        if (this.game.cardsManager.getCardElement(card).classList.contains('selectable')) {
+            if (card.type < 20) {
+                this.game.playFighter(card.id);
+            }
+            else if (card.type < 30) {
+                this.game.activateFighter(card.id);
+            }
         }
-        else if (card.type < 30) {
-            this.game.activateFighter(card.id);
+        else {
+            this.game.cardsManager.getCardStock(card).unselectCard(card);
         }
     };
     PlayerTable.prototype.setPossibleOperations = function (operations) {
@@ -1704,7 +1709,13 @@ var PlayerTable = /** @class */ (function () {
             link.addEventListener('click', function () { return _this.game.cellClick(index2); });
         }
     };
-    PlayerTable.prototype.setSelectableCards = function (selectableCards) {
+    PlayerTable.prototype.setSelectableMoveActivateCards = function (selectableCards) {
+        [this.reserve, this.highCommand].forEach(function (stock) {
+            stock.setSelectionMode(selectableCards.length ? 'single' : 'none');
+            stock.getCards().forEach(function (card) { return stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(function (c) { return c.id == card.id; })); });
+        });
+    };
+    PlayerTable.prototype.setSelectablePlayCards = function (selectableCards) {
         [this.reserve, this.highCommand].forEach(function (stock) {
             stock.setSelectionMode(selectableCards.length ? 'single' : 'none');
             stock.getCards().forEach(function (card) { return stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(function (c) { return c.id == card.id; })); });
@@ -1866,7 +1877,7 @@ var Lumen = /** @class */ (function () {
             (_a = this.getPlayerTable(args.opponentId)) === null || _a === void 0 ? void 0 : _a.setPossibleCells(args.possibleCircles, -1);
         }
     };
-    Lumen.prototype.getChooseFighterSelectableCards = function (args) {
+    Lumen.prototype.getChooseFighterSelectableMoveActivateCards = function (args) {
         if (this.gamedatas.gamestate.name !== 'chooseFighter') {
             return [];
         }
@@ -1875,28 +1886,22 @@ var Lumen = /** @class */ (function () {
             args.possibleTerritoryFighters : __spreadArray(__spreadArray([], args.possibleFightersToMove, true), args.possibleFightersToActivate, true);
     };
     Lumen.prototype.onEnteringChooseFighter = function (args) {
+        var _a;
         if (!args.move) {
-            var onlyCoupFourre = args.remainingPlays + args.remainingMoves == 0;
+            var onlyCoupFourre = args.remainingActions.actions.map(function (action) { return action.remaining; }).reduce(function (a, b) { return a + b; }, 0) == 0;
             if (onlyCoupFourre) {
                 this.setGamestateDescription('OnlyCoupFourre');
             }
-            else if (!args.remainingMoves) {
-                this.setGamestateDescription('OnlyPlay');
-            }
-            else if (!args.remainingPlays) {
-                this.setGamestateDescription('OnlyMoveActivate');
+            else {
+                this.setGamestateDescription(args.currentAction.type);
             }
             if (!onlyCoupFourre) {
                 var subTitle = document.createElement('span');
-                var texts = [];
-                if (args.remainingPlays) {
-                    texts.push(_('${remainingPlays} fighters to add').replace('${remainingPlays}', args.remainingPlays));
-                }
-                if (args.remainingMoves) {
-                    texts.push(_('${remainingMoves} moves/activations').replace('${remainingMoves}', args.remainingMoves));
-                }
+                var texts = args.remainingActions.actions.filter(function (action) { return action.initial > 0; }).map(function (action) {
+                    return "".concat(action.initial - action.remaining, "/").concat(action.initial, " <div class=\"action ").concat(action.type.toLowerCase(), "\"></div>");
+                });
                 subTitle.classList.add('subtitle');
-                subTitle.innerHTML = '(' + texts.join(', ') + ')';
+                subTitle.innerHTML = '(' + (texts.length > 1 ? _('${action1} then ${action2}').replace('${action1}', texts[0]).replace('${action2}', texts[1]) : texts.join('')) + ')'; // TODO
                 document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
                 document.getElementById("pagemaintitletext").appendChild(subTitle);
             }
@@ -1906,9 +1911,14 @@ var Lumen = /** @class */ (function () {
         }
         if (this.isCurrentPlayerActive()) {
             this.chosenFighters = [];
-            var selectableCards = this.getChooseFighterSelectableCards(args);
-            this.getCurrentPlayerTable().setSelectableCards(selectableCards);
-            this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+            if (((_a = args.currentAction) === null || _a === void 0 ? void 0 : _a.type) == 'PLACE') {
+                this.getCurrentPlayerTable().setSelectablePlayCards(args.possibleFightersToPlace);
+            }
+            else {
+                var selectableCards = this.getChooseFighterSelectableMoveActivateCards(args);
+                this.getCurrentPlayerTable().setSelectableMoveActivateCards(selectableCards);
+                this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+            }
         }
     };
     Lumen.prototype.onEnteringChooseTerritory = function (args) {
@@ -1957,7 +1967,7 @@ var Lumen = /** @class */ (function () {
         });
     };
     Lumen.prototype.onLeavingChooseFighter = function () {
-        this.getCurrentPlayerTable().setSelectableCards([]);
+        this.getCurrentPlayerTable().setSelectableMoveActivateCards([]);
         this.tableCenter.setSelectableCards([]);
     };
     Lumen.prototype.onLeavingChooseTerritory = function () {
@@ -2001,13 +2011,33 @@ var Lumen = /** @class */ (function () {
                 case 'chooseCell':
                     this.addActionButton("cancelOperation_button", _('Cancel'), function () { return _this.cancelOperation(); }, null, null, 'gray');
                     break;
+                case 'chooseAction':
+                    var chooseActionArgs = args;
+                    var replacePlaceAndMove = function (text) { return text.replace('${place}', "<div class=\"action place\"></div>").replace('${move}', "<div class=\"action move\"></div>"); };
+                    this.addActionButton("startWithActionPlay_button", replacePlaceAndMove(_('Start with ${place} then ${move}')), function () { return _this.startWithAction(1); });
+                    var remainingPlays = chooseActionArgs.remainingPlays;
+                    var remainingMoves = chooseActionArgs.remainingMoves;
+                    if (remainingPlays == 0) {
+                        document.getElementById("startWithActionPlay_button").classList.add('disabled');
+                    }
+                    this.addActionButton("startWithActionMove_button", replacePlaceAndMove(_('Start with ${move} then ${place}')), function () { return _this.startWithAction(2); });
+                    if (remainingMoves == 0) {
+                        document.getElementById("startWithActionMove_button").classList.add('disabled');
+                    }
+                    if (chooseActionArgs.canUseCoupFourre) {
+                        this.addActionButton("useCoupFourre_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useCoupFourre(); });
+                    }
+                    break;
                 case 'chooseFighter':
                     var chooseFighterArgs = args;
                     if (!chooseFighterArgs.move) {
-                        if (chooseFighterArgs.canUseCoupFourre) {
+                        if (chooseFighterArgs.couldUseCoupFourre) {
                             this.addActionButton("useCoupFourre_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useCoupFourre(); });
+                            if (!chooseFighterArgs.canUseCoupFourre) {
+                                document.getElementById("useCoupFourre_button").classList.add('disabled');
+                            }
                         }
-                        var shouldntPass_1 = chooseFighterArgs.remainingPlays > 0 || chooseFighterArgs.remainingMoves > 0;
+                        var shouldntPass_1 = remainingPlays > 0 || remainingMoves > 0;
                         this.addActionButton("cancelOperation_button", _('Pass'), function () { return _this.pass(shouldntPass_1); }, null, null, shouldntPass_1 ? 'gray' : undefined);
                     }
                     else {
@@ -2413,6 +2443,14 @@ var Lumen = /** @class */ (function () {
         }
         this.takeAction('chooseCellBrouillage', {
             cell: cell
+        });
+    };
+    Lumen.prototype.startWithAction = function (id) {
+        if (!this.checkAction('startWithAction')) {
+            return;
+        }
+        this.takeAction('startWithAction', {
+            id: id
         });
     };
     Lumen.prototype.playFighter = function (id) {

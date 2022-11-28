@@ -161,7 +161,7 @@ trait ActionTrait {
         /*$this->incStat(1, 'takeFromDiscard');
         $this->incStat(1, 'takeFromDiscard', $playerId);
         $this->updateCardsPoints($playerId);*/
-        $this->gamestate->nextState('nextMove');
+        $this->gamestate->nextState('chooseAction');
     }
 
     public function chooseCellBrouillage(int $cellId) {
@@ -216,10 +216,18 @@ trait ActionTrait {
         $fromCell = $args['cellId'];
         $this->addLink($playerId, $fromCell, $cellId);
         $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+        
+        $this->gamestate->nextState('nextMove');
+    }
 
-        /*$this->incStat(1, 'takeFromDiscard');
-        $this->incStat(1, 'takeFromDiscard', $playerId);
-        $this->updateCardsPoints($playerId);*/
+    public function startWithAction(int $id) {
+        $this->checkAction('startWithAction'); 
+        if (!in_array($id, [1, 2])) {
+            throw new BgaUserException("Invalid choice");
+        }
+
+        $this->setActionOrder($id);
+
         $this->gamestate->nextState('nextMove');
     }
 
@@ -228,7 +236,8 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
 
-        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) <= 0) {
+        $currentAction = $this->getCurrentAction();
+        if ($currentAction->type != 'PLACE' || $currentAction->remaining == 0) {
             throw new BgaUserException("No remaining action");
         }
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
@@ -260,7 +269,8 @@ trait ActionTrait {
         
         //$playerId = intval($this->getActivePlayerId());
 
-        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
+        $currentAction = $this->getCurrentAction();
+        if ($currentAction->type != 'MOVE' || $currentAction->remaining == 0) {
             throw new BgaUserException("No remaining action");
         }
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
@@ -314,7 +324,8 @@ trait ActionTrait {
     public function activateFighter(int $id) {
         $this->checkAction('activateFighter'); 
 
-        if (intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) <= 0) {
+        $currentAction = $this->getCurrentAction();
+        if ($currentAction->type != 'MOVE' || $currentAction->remaining == 0) {
             throw new BgaUserException("No remaining action");
         }
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
@@ -440,7 +451,7 @@ trait ActionTrait {
         }
         $this->discardDiscoverTile($tiles[0]);
 
-        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+        $this->incMoveCount(1);
 
         $this->gamestate->nextState('useCoupFourre');
     }
@@ -470,7 +481,7 @@ trait ActionTrait {
         switch ($move) {
             case MOVE_PLAY:
                 $this->applyMoveFighter($selectedFighter, $territoryId);
-                $this->incGameStateValue(REMAINING_FIGHTERS_TO_PLACE, -1);
+                $this->incPlaceCount(-1);
                 break;
             case MOVE_MOVE:
                 $originTerritoryId = $selectedFighter->locationArg;
@@ -484,8 +495,7 @@ trait ActionTrait {
                 if ($this->getScenarioId() == 3 && array_key_exists($originTerritoryId, $this->RIVER_CROSS_TERRITORIES) && in_array($territoryId, $this->RIVER_CROSS_TERRITORIES[$originTerritoryId])) {
                     $inc = -2;
                 }
-                // TODO handle mix with coup fourre
-                $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, $inc);
+                $this->incMoveCount($inc);
                 break;
             case MOVE_SUPER:
                 $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);

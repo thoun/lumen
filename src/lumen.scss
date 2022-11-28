@@ -67,6 +67,27 @@ html, .mode_3d #game_play_area_background {
     .subtitle {
       color: gray;
       font-size: 80%;
+
+      .action {
+        width: 69px;
+        height: 45px;
+      }
+    }
+  }
+
+  .action {
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100px;
+    height: 65px;
+    vertical-align: middle;
+
+    &.place {
+      background-image: url('img/action-place.png');
+    }
+    &.move {
+      background-image: url('img/action-move.png');
     }
   }
 }

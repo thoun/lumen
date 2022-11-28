@@ -40,16 +40,32 @@ trait StateTrait {
         $this->gamestate->nextState('chooseOperation');
     } 
 
+    function stChooseAction() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $place = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
+        $move = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+        $this->setActionsCount($place, $move);
+
+        $potentialMove = $move + count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
+
+        if ($place == 0 || $potentialMove == 0) {
+            $this->setActionOrder(1);
+            $this->gamestate->nextState('nextMove');
+        }
+    }
+
     function stNextMove() {
         $playerId = intval($this->getActivePlayerId());
-        
+
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
         $this->setGameStateValue(PLAYER_SELECTED_TARGET, 0);
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
         
-        $canDoAction =  (
-            intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE)) + 
-            intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE))
+        $remainingActions = $this->getRemainingActions();
+        $canDoAction = (
+            $remainingActions->actions[0]->remaining + 
+            $remainingActions->actions[1]->remaining
         ) > 0 || count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;;
         $this->gamestate->nextState($canDoAction ? 'chooseFighter' : 'nextPlayer');
     }

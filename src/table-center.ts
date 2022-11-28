@@ -92,7 +92,7 @@ class TableCenter {
 
             this.territoriesStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.curve, rotation, territoryInfos.id);
             this.territoriesStocks[territoryInfos.id].onCardClick = card => {
-                const selectableCards = this.game.getChooseFighterSelectableCards();
+                const selectableCards = this.game.getChooseFighterSelectableMoveActivateCards();
                 const canClick = selectableCards?.some(fighter => fighter.id == card.id);
                 if (canClick) {
                     this.territoryFighterClick(card);

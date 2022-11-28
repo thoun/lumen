@@ -1,5 +1,6 @@
 <?php
 
+require_once(__DIR__.'/objects/actions.php');
 require_once(__DIR__.'/objects/circle.php');
 require_once(__DIR__.'/objects/discover-tile.php');
 require_once(__DIR__.'/objects/objective-token.php');
@@ -56,6 +57,28 @@ trait UtilTrait {
             }
         }
         return true;
+    }
+
+    function setGlobalVariable(string $name, /*object|array*/ $obj) {
+        /*if ($obj == null) {
+            throw new \Error('Global Variable null');
+        }*/
+        $jsonObj = json_encode($obj);
+        $this->DbQuery("INSERT INTO `global_variables`(`name`, `value`)  VALUES ('$name', '$jsonObj') ON DUPLICATE KEY UPDATE `value` = '$jsonObj'");
+    }
+
+    function getGlobalVariable(string $name, $asArray = null) {
+        $json_obj = $this->getUniqueValueFromDB("SELECT `value` FROM `global_variables` where `name` = '$name'");
+        if ($json_obj) {
+            $object = json_decode($json_obj, $asArray);
+            return $object;
+        } else {
+            return null;
+        }
+    }
+
+    function deleteGlobalVariable(string $name) {
+        $this->DbQuery("DELETE FROM `global_variables` where `name` = '$name'");
     }
 
     function getPlayersIds() {
@@ -846,7 +869,7 @@ trait UtilTrait {
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_ACTIVATE);
 
         $this->setFightersActivated([$fighter]);
-        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, -1);
+        $this->incMoveCount(-1);
         if ($fighter->power === POWER_METAMORPH) {
             // every time a metamorph is flipped, we check if it makes a control to a visible Discover tile
             $this->checkTerritoriesDiscoverTileControl();
@@ -919,5 +942,49 @@ trait UtilTrait {
 
         $scenario = $this->getScenario();
         return $scenario->battlefieldsIds;
+    }
+
+    function setActionsCount(int $place, int $move) {
+        $this->setGlobalVariable('REMAINING_ACTIONS', new Actions([
+            new Action('PLACE', $place),
+            new Action('MOVE', $move),
+        ]));
+    }
+
+    function getRemainingActions() {
+        return $this->getGlobalVariable('REMAINING_ACTIONS');
+    }
+
+    function getCurrentAction($remainingActions = null) {
+        if ($remainingActions == null) {
+            $remainingActions = $this->getRemainingActions();
+        }
+        return $remainingActions->actions[$remainingActions->actions[0]->remaining > 0 ? 0 : 1];
+    }
+
+    function setActionOrder(int $startWithAction) {
+        $remainingActions = $this->getRemainingActions();
+        $remainingActions->startWith == 2 ? 'MOVE' : 'PLACE';
+        if ($startWithAction == 2) {
+            $remainingActions->actions = [
+                $remainingActions->actions[1],
+                $remainingActions->actions[0],
+            ];
+        }
+        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+    }
+
+    function incPlaceCount(int $inc) {
+        $remainingActions = $this->getRemainingActions();
+        $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'PLACE');
+        $remainingActions->actions[$index]->remaining += $inc;
+        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+    }
+
+    function incMoveCount(int $inc) {
+        $remainingActions = $this->getRemainingActions();
+        $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'MOVE');
+        $remainingActions->actions[$index]->remaining += $inc;
+        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
     }
 }

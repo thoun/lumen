@@ -179,6 +179,19 @@ trait ArgsTrait {
         return $canActivate;
     }
 
+    function argChooseAction() {
+        $playerId = intval($this->getActivePlayerId());
+        $place = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
+        $move = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+        $canUseCoupFourre = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
+
+        return[
+            'canUseCoupFourre' => $canUseCoupFourre,
+            'remainingPlays' => $place,
+            'remainingMoves' => $move,
+        ];
+    }
+
     function argChooseFighter() {
         $playerId = intval($this->getActivePlayerId());
 
@@ -187,32 +200,42 @@ trait ArgsTrait {
             'move' => $move,
         ];
 
+        $remainingActions = $this->getRemainingActions();
+        $currentAction = $this->getCurrentAction($remainingActions);
+
         $canCancel = $move > 0;
-        $canUseCoupFourre = $move == 0 && count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
+        $couldUseCoupFourre = $move == 0 && count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
+        $canUseCoupFourre = $couldUseCoupFourre;
+        if ($currentAction->type == 'MOVE' && $remainingActions->actions[1]->type == 'MOVE') {
+            $canUseCoupFourre = false;
+        }
 
         $possibleTerritoryFighters = [];
         $selectionSize = 1;
 
         switch ($move) {
             case 0:
-                $remainingPlays = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
-                $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+                $remainingPlays = $this->array_find($remainingActions->actions, fn($action) => $action->type == 'PLACE')->remaining;
+                $remainingMoves = $this->array_find($remainingActions->actions, fn($action) => $action->type == 'MOVE')->remaining;
 
                 $highCommand = $this->getCardsByLocation('highCommand'.$playerId);
                 $territoryFighters = $this->getCardsByLocation('territory', null, $playerId);
                 $possibleTerritoryFighters = $territoryFighters;
 
                 $scenarioId = $this->getScenarioId();
-                $possibleFightersToMove = array_values(array_filter($territoryFighters, fn($fighter) => $this->canMoveFighter($playerId, $fighter, $scenarioId)));
-                $possibleFightersToActivate = array_values(array_filter(array_merge($territoryFighters, $highCommand), fn($fighter) => $this->canActivateFighter($playerId, $fighter, $scenarioId)));
+                $onlyPlace = $remainingPlays > 0 && $currentAction->type == 'PLACE';
+                $onlyMove = $remainingMoves > 0 && $currentAction->type == 'MOVE';
+                $possibleFightersToPlace = $onlyMove ? [] : array_merge(
+                    $this->getCardsByLocation('reserve'.$playerId),
+                    array_values(array_filter($highCommand, fn($fighter) => in_array($fighter->type, [1, 10])))
+                );
+                $possibleFightersToMove = $onlyPlace ? [] : array_values(array_filter($territoryFighters, fn($fighter) => $this->canMoveFighter($playerId, $fighter, $scenarioId)));
+                $possibleFightersToActivate = $onlyPlace ? [] : array_values(array_filter(array_merge($territoryFighters, $highCommand), fn($fighter) => $this->canActivateFighter($playerId, $fighter, $scenarioId)));
 
                 $args = $args + [
-                    'remainingPlays' => $remainingPlays,
-                    'remainingMoves' => $remainingMoves,
-                    'possibleFightersToPlace' => array_merge(
-                        $this->getCardsByLocation('reserve'.$playerId),
-                        array_values(array_filter($highCommand, fn($fighter) => in_array($fighter->type, [1, 10])))
-                    ),
+                    'remainingActions' => $remainingActions,
+                    'currentAction' => $currentAction,
+                    'possibleFightersToPlace' => $possibleFightersToPlace,
                     'possibleActions' => array_values(array_filter($highCommand, fn($fighter) => $fighter->type === 20)),
                     'possibleFightersToMove' => $possibleFightersToMove,
                     'possibleFightersToActivate' => $possibleFightersToActivate,
@@ -266,6 +289,7 @@ trait ArgsTrait {
 
         return $args + [
            'canCancel' => $canCancel,
+           'couldUseCoupFourre' => $couldUseCoupFourre,
            'canUseCoupFourre' => $canUseCoupFourre,
            'possibleTerritoryFighters' => $possibleTerritoryFighters,
            'selectionSize' => $selectionSize,
@@ -311,7 +335,8 @@ trait ArgsTrait {
                     $scenarioId = $this->getScenarioId();
                     switch ($scenarioId) {
                         case 3:
-                            $remainingMoves = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+                            $currentAction = $this->getCurrentAction();
+                            $remainingMoves = $currentAction->remaining;
                             if ($remainingMoves >= 2) {
                                 $territoriesIds = array_merge($territoriesIds, $this->RIVER_CROSS_TERRITORIES[$selectedFighter->locationArg]);
                             }

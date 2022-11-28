@@ -109,6 +109,16 @@
       self::ajaxResponse();
     }
 
+    public function startWithAction() {
+      self::setAjaxMode();
+
+      $id = self::getArg("id", AT_posint, true);
+
+      $this->game->startWithAction($id);
+
+      self::ajaxResponse();
+    }
+
     public function playFighter() {
       self::setAjaxMode();
 

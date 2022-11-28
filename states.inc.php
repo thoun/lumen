@@ -75,7 +75,7 @@ $basicGameStates = [
 
 
 $chooseCellTransitions = [
-    "nextMove" => ST_NEXT_MOVE,
+    "chooseAction" => ST_PLAYER_CHOOSE_ACTION,
     "cancel" => ST_PLAYER_CHOOSE_OPERATION,
     "nextPlayer" => ST_NEXT_PLAYER,
 ];
@@ -152,16 +152,33 @@ $playerActionsGameStates = [
         "transitions" => $chooseCellTransitions,
     ],
 
+    ST_PLAYER_CHOOSE_ACTION => [
+        "name" => "chooseAction",
+        "description" => clienttranslate('${actplayer} must choose the order of actions'),
+        "descriptionmyturn" => clienttranslate('${you} must choose the order of actions'),
+        "type" => "activeplayer", 
+        "action" => "stChooseAction",
+        "args" => "argChooseAction", 
+        "possibleactions" => [ 
+            "startWithAction",
+            "useCoupFourre",
+        ],
+        "transitions" => [
+            "useCoupFourre" => ST_PLAYER_CHOOSE_ACTION,
+            "nextMove" => ST_NEXT_MOVE,
+        ]
+    ],
+
     ST_PLAYER_CHOOSE_FIGHTER => [
         "name" => "chooseFighter",
         "description" => clienttranslate('${actplayer} must choose a fighter to play, move or activate'),
         "descriptionmyturn" => clienttranslate('${you} must choose a fighter to play, move or activate'),
         "descriptionOnlyCoupFourre" => clienttranslate('${actplayer} can use Coup Fourre'),
         "descriptionmyturnOnlyCoupFourre" => clienttranslate('${you} can use Coup Fourre'),
-        "descriptionOnlyPlay" => clienttranslate('${actplayer} must choose a fighter to play'),
-        "descriptionmyturnOnlyPlay" => clienttranslate('${you} must choose a fighter to play'),
-        "descriptionOnlyMoveActivate" => clienttranslate('${actplayer} must choose a fighter to move or activate'),
-        "descriptionmyturnOnlyMoveActivate" => clienttranslate('${you} must choose a fighter to move or activate'),
+        "descriptionPLACE" => clienttranslate('${actplayer} must choose a fighter to play'),
+        "descriptionmyturnPLACE" => clienttranslate('${you} must choose a fighter to play'),
+        "descriptionMOVE" => clienttranslate('${actplayer} must choose a fighter to move or activate'),
+        "descriptionmyturnMOVE" => clienttranslate('${you} must choose a fighter to move or activate'),
         "description4" => clienttranslate('${actplayer} must choose a fighter to push'),
         "descriptionmyturn4" => clienttranslate('${you} must choose a fighter to push'),
         "description5" => clienttranslate('${actplayer} must choose a fighter to assassinate'),
@@ -271,6 +288,7 @@ $gameGameStates = [
         "type" => "game",
         "action" => "stNextMove",
         "transitions" => [
+            "chooseAction" => ST_PLAYER_CHOOSE_ACTION,
             "chooseFighter" => ST_PLAYER_CHOOSE_FIGHTER,
             "nextPlayer" => ST_NEXT_PLAYER,
         ],

@@ -379,6 +379,10 @@
   background-image: url("img/faction-token-night.png");
 }
 
+.card-stock.selectable .card:not(.disabled):not(.selectable) {
+  cursor: default;
+}
+
 @keyframes selectable-card-animation {
   0% {
     box-shadow: 0 0 4px 2px red;
@@ -1456,6 +1460,24 @@ html, .mode_3d #game_play_area_background {
 #page-title #pagemaintitletext .subtitle {
   color: gray;
   font-size: 80%;
+}
+#page-title #pagemaintitletext .subtitle .action {
+  width: 69px;
+  height: 45px;
+}
+#page-title .action {
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100px;
+  height: 65px;
+  vertical-align: middle;
+}
+#page-title .action.place {
+  background-image: url("img/action-place.png");
+}
+#page-title .action.move {
+  background-image: url("img/action-move.png");
 }
 
 #zoom-wrapper {

@@ -193,7 +193,7 @@ class Lumen implements LumenGame {
         }
     }
 
-    public getChooseFighterSelectableCards(args?: EnteringChooseFighterArgs): Card[] {
+    public getChooseFighterSelectableMoveActivateCards(args?: EnteringChooseFighterArgs): Card[] {
         if (this.gamedatas.gamestate.name !== 'chooseFighter') {
             return [];
         }
@@ -206,26 +206,20 @@ class Lumen implements LumenGame {
     
     private onEnteringChooseFighter(args: EnteringChooseFighterArgs) {
         if (!args.move) {
-            const onlyCoupFourre = args.remainingPlays + args.remainingMoves == 0;
+            const onlyCoupFourre = args.remainingActions.actions.map(action => action.remaining).reduce((a, b) => a + b, 0) == 0;
             if (onlyCoupFourre) {
                 this.setGamestateDescription('OnlyCoupFourre');
-            } else if (!args.remainingMoves) {
-                this.setGamestateDescription('OnlyPlay');
-            } else if (!args.remainingPlays) {
-                this.setGamestateDescription('OnlyMoveActivate');
-            } 
+            } else {
+                this.setGamestateDescription(args.currentAction.type);
+            }
 
             if (!onlyCoupFourre) {
                 const subTitle = document.createElement('span');
-                let texts = [];
-                if (args.remainingPlays) {
-                    texts.push(_('${remainingPlays} fighters to add').replace('${remainingPlays}', args.remainingPlays));
-                }
-                if (args.remainingMoves) {
-                    texts.push(_('${remainingMoves} moves/activations').replace('${remainingMoves}', args.remainingMoves));
-                }
+                let texts = args.remainingActions.actions.filter(action => action.initial > 0).map(action => 
+                    `${action.initial - action.remaining}/${action.initial} <div class="action ${action.type.toLowerCase()}"></div>`
+                );
                 subTitle.classList.add('subtitle');
-                subTitle.innerHTML = '(' + texts.join(', ') + ')';
+                subTitle.innerHTML = '(' + (texts.length > 1 ? _('${action1} then ${action2}').replace('${action1}', texts[0]).replace('${action2}', texts[1]) : texts.join('')) + ')'; // TODO
                 document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
                 document.getElementById(`pagemaintitletext`).appendChild(subTitle);
             }
@@ -235,9 +229,13 @@ class Lumen implements LumenGame {
 
         if ((this as any).isCurrentPlayerActive()) {
             this.chosenFighters = [];
-            const selectableCards = this.getChooseFighterSelectableCards(args);
-            this.getCurrentPlayerTable().setSelectableCards(selectableCards);
-            this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+            if (args.currentAction?.type == 'PLACE') {
+                this.getCurrentPlayerTable().setSelectablePlayCards(args.possibleFightersToPlace);
+            } else {
+                const selectableCards = this.getChooseFighterSelectableMoveActivateCards(args);
+                this.getCurrentPlayerTable().setSelectableMoveActivateCards(selectableCards);
+                this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+            }
         }
     }
 
@@ -291,7 +289,7 @@ class Lumen implements LumenGame {
     }
     
     private onLeavingChooseFighter() {
-        this.getCurrentPlayerTable().setSelectableCards([]);
+        this.getCurrentPlayerTable().setSelectableMoveActivateCards([]);
         this.tableCenter.setSelectableCards([]);
     }
 
@@ -338,13 +336,33 @@ class Lumen implements LumenGame {
                 case 'chooseCell':
                     (this as any).addActionButton(`cancelOperation_button`, _('Cancel'), () => this.cancelOperation(), null, null, 'gray');
                     break;
+                case 'chooseAction':
+                    const chooseActionArgs = args as EnteringChooseActionArgs;
+                    const replacePlaceAndMove = (text) => text.replace('${place}', `<div class="action place"></div>`).replace('${move}', `<div class="action move"></div>`);
+                    (this as any).addActionButton(`startWithActionPlay_button`, replacePlaceAndMove(_('Start with ${place} then ${move}')), () => this.startWithAction(1));
+                    const remainingPlays = chooseActionArgs.remainingPlays;
+                    const remainingMoves = chooseActionArgs.remainingMoves;
+                    if (remainingPlays == 0) {
+                        document.getElementById(`startWithActionPlay_button`).classList.add('disabled');
+                    }
+                    (this as any).addActionButton(`startWithActionMove_button`, replacePlaceAndMove(_('Start with ${move} then ${place}')), () => this.startWithAction(2));
+                    if (remainingMoves == 0) {
+                        document.getElementById(`startWithActionMove_button`).classList.add('disabled');
+                    }
+                    if (chooseActionArgs.canUseCoupFourre) {
+                        (this as any).addActionButton(`useCoupFourre_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useCoupFourre());
+                    }
+                    break;
                 case 'chooseFighter':
                     const chooseFighterArgs = args as EnteringChooseFighterArgs;
                     if (!chooseFighterArgs.move) {
-                        if (chooseFighterArgs.canUseCoupFourre) {
+                        if (chooseFighterArgs.couldUseCoupFourre) {
                             (this as any).addActionButton(`useCoupFourre_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useCoupFourre());
+                            if (!chooseFighterArgs.canUseCoupFourre) {
+                                document.getElementById(`useCoupFourre_button`).classList.add('disabled');
+                            }
                         }
-                        const shouldntPass = chooseFighterArgs.remainingPlays > 0 || chooseFighterArgs.remainingMoves > 0;
+                        const shouldntPass = remainingPlays > 0 || remainingMoves > 0;
                         (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
                     } else {
                         switch (chooseFighterArgs.move) {
@@ -883,6 +901,16 @@ class Lumen implements LumenGame {
 
         this.takeAction('chooseCellBrouillage', {
             cell
+        });
+    }
+
+    public startWithAction(id: number) {
+        if(!(this as any).checkAction('startWithAction')) {
+            return;
+        }
+
+        this.takeAction('startWithAction', {
+            id
         });
     }
 

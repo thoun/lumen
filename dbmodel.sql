@@ -81,6 +81,12 @@ CREATE TABLE IF NOT EXISTS `realized_objective` (
   PRIMARY KEY (`realized_objective_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+CREATE TABLE IF NOT EXISTS `global_variables` (
+  `name` varchar(50) NOT NULL,
+  `value` json,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Example 2: add a custom field to the standard "player" table
 ALTER TABLE `player` ADD `checks` INT UNSIGNED NOT NULL DEFAULT '0';
 

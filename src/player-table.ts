@@ -101,10 +101,14 @@ class PlayerTable {
     }
 
     private cardClick(card: Card) {
-        if (card.type < 20) {
-            this.game.playFighter(card.id);
-        } else if (card.type < 30) {
-            this.game.activateFighter(card.id);
+        if (this.game.cardsManager.getCardElement(card).classList.contains('selectable')) {
+            if (card.type < 20) {
+                    this.game.playFighter(card.id);
+            } else if (card.type < 30) {
+                this.game.activateFighter(card.id);
+            }
+        } else {
+            this.game.cardsManager.getCardStock(card).unselectCard(card);
         }
     }
 
@@ -213,7 +217,14 @@ class PlayerTable {
         }
     }
     
-    public setSelectableCards(selectableCards: Card[]) {
+    public setSelectableMoveActivateCards(selectableCards: Card[]) {
+        [this.reserve, this.highCommand].forEach(stock => {
+            stock.setSelectionMode(selectableCards.length ? 'single' : 'none');
+            stock.getCards().forEach(card => stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(c => c.id == card.id)));
+        });
+    }
+
+    public setSelectablePlayCards(selectableCards: Card[]) {
         [this.reserve, this.highCommand].forEach(stock => {
             stock.setSelectionMode(selectableCards.length ? 'single' : 'none');
             stock.getCards().forEach(card => stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(c => c.id == card.id)));

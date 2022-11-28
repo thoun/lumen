@@ -84,7 +84,7 @@ interface LumenGame extends Game {
     getPlayerColor(playerId: number): string;
 
     setTooltip(id: string, html: string): void;   
-    getChooseFighterSelectableCards(): Card[];
+    getChooseFighterSelectableMoveActivateCards(): Card[];
 
     operationClick(operation: number): void;
     cellClick(cell: number): void; 
@@ -119,12 +119,32 @@ interface EnteringChooseCellJammingArgs {
     opponentId: number;
 }
 
+type TypeAction = 'MOVE' | 'PLACE';
+
+interface Action {
+    type: TypeAction;
+    initial: number;
+    remaining: number;
+}
+
+interface Actions {
+    actions: Action[];
+    startWith: TypeAction;
+}
+
+interface EnteringChooseActionArgs {
+    canUseCoupFourre: boolean;
+    remainingPlays: number;
+    remainingMoves: number;
+}
+
 interface EnteringChooseFighterArgs {
     canCancel: boolean;
+    couldUseCoupFourre: boolean;
     canUseCoupFourre: boolean;
-    move: number;
-    remainingPlays?: number;
-    remainingMoves?: number;
+    move: number;    
+    remainingActions?: Actions,
+    currentAction?: Action,
     possibleTerritoryFighters: Card[];
     possibleFightersToPlace?: Card[];
     possibleActions?: Card[];
