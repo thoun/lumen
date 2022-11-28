@@ -126,7 +126,7 @@ trait UtilTrait {
     }
     
     function getOpMax(int $type) {
-        return $type > 2 ? 4 : 3;
+        return $type > 3 ? 4 : 3;
     }
     
     function getValue(int $val1, int $val2, int $type) {        
@@ -781,13 +781,13 @@ trait UtilTrait {
                 $this->cards->pickCardForLocation('bag'.$playerId, 'reserve'.$playerId, $i);
 
                 $fighters = $this->getCardsByLocation('reserve'.$playerId, $i);
-                $fighter = count($fighters) > 0 ? $fighters[0] : null;
-
-                self::notifyAllPlayers("refillReserve", '', [
-                    'playerId' => $playerId,
-                    'fighter' => $fighter,
-                    'slot' => $i,
-                ]);
+                if (count($fighters) > 0) {
+                    self::notifyAllPlayers("refillReserve", '', [
+                        'playerId' => $playerId,
+                        'fighter' => $fighters[0],
+                        'slot' => $i,
+                    ]);
+                }
             }
         }
 

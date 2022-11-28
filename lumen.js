@@ -2043,7 +2043,7 @@ var Lumen = /** @class */ (function () {
                                 document.getElementById("useCoupFourre_button").classList.add('disabled');
                             }
                         }
-                        var shouldntPass_1 = remainingPlays > 0 || remainingMoves > 0;
+                        var shouldntPass_1 = chooseFighterArgs.remainingActions.actions.map(function (action) { return action.remaining; }).reduce(function (a, b) { return a + b; }, 0) > 0;
                         this.addActionButton("cancelOperation_button", _('Pass'), function () { return _this.pass(shouldntPass_1); }, null, null, shouldntPass_1 ? 'gray' : undefined);
                     }
                     else {

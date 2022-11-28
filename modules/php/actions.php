@@ -217,7 +217,7 @@ trait ActionTrait {
         $this->addLink($playerId, $fromCell, $cellId);
         $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
         
-        $this->gamestate->nextState('nextMove');
+        $this->gamestate->nextState('chooseAction');
     }
 
     public function startWithAction(int $id) {

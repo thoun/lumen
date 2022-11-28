@@ -364,7 +364,7 @@ class Lumen implements LumenGame {
                                 document.getElementById(`useCoupFourre_button`).classList.add('disabled');
                             }
                         }
-                        const shouldntPass = remainingPlays > 0 || remainingMoves > 0;
+                        const shouldntPass = chooseFighterArgs.remainingActions.actions.map(action => action.remaining).reduce((a, b) => a + b, 0) > 0;
                         (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
                     } else {
                         switch (chooseFighterArgs.move) {

@@ -206,7 +206,8 @@ trait ArgsTrait {
         $canCancel = $move > 0;
         $couldUseCoupFourre = $move == 0 && count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
         $canUseCoupFourre = $couldUseCoupFourre;
-        if ($currentAction->type == 'MOVE' && $remainingActions->actions[1]->type == 'MOVE') {
+        
+        if ($currentAction->type == 'PLACE' && $remainingActions->actions[1]->type == 'PLACE') {
             $canUseCoupFourre = false;
         }
 
