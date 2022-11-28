@@ -451,7 +451,7 @@ trait ActionTrait {
         }
         $this->discardDiscoverTile($tiles[0]);
 
-        $this->incMoveCount(1);
+        $this->incMoveCount(1, true);
 
         $this->gamestate->nextState('useCoupFourre');
     }

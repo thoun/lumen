@@ -702,6 +702,9 @@ body > .card {
 #map .battlefield {
   z-index: 2;
 }
+#map .battlefield.temp-z-index {
+  z-index: 3;
+}
 #map .battlefield .territory {
   position: absolute;
   transform-origin: center center;
@@ -841,11 +844,13 @@ body > .card {
   border-radius: 10px;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.4);
   z-index: 20;
+  transform: scale(calc(1 / var(--cumulative-scale)));
 }
 #map #fighter-choice button {
   background: white;
   height: 30px;
   cursor: pointer;
+  font-size: 120%;
 }
 #map #fighter-choice button[disabled] {
   cursor: not-allowed;
@@ -1461,16 +1466,12 @@ html, .mode_3d #game_play_area_background {
   color: gray;
   font-size: 80%;
 }
-#page-title #pagemaintitletext .subtitle .action {
-  width: 69px;
-  height: 45px;
-}
 #page-title .action {
   display: inline-block;
   background-size: contain;
   background-repeat: no-repeat;
-  width: 100px;
-  height: 65px;
+  width: 69px;
+  height: 45px;
   vertical-align: middle;
 }
 #page-title .action.place {

@@ -1472,11 +1472,15 @@ var TableCenter = /** @class */ (function () {
     };
     TableCenter.prototype.cancelFighterChoice = function () {
         var oldChoice = document.getElementById("fighter-choice");
-        oldChoice === null || oldChoice === void 0 ? void 0 : oldChoice.parentElement.removeChild(oldChoice);
+        if (oldChoice) {
+            oldChoice.closest('.battlefield').classList.remove('temp-z-index');
+            oldChoice.parentElement.removeChild(oldChoice);
+        }
     };
     TableCenter.prototype.createFighterChoice = function (card) {
         var _this = this;
         var element = this.game.cardsManager.getCardElement(card);
+        element.closest('.battlefield').classList.add('temp-z-index');
         var canMove = this.game.gamedatas.gamestate.args.possibleFightersToMove.some(function (moveFighter) { return moveFighter.id == card.id; });
         var canActivate = this.game.gamedatas.gamestate.args.possibleFightersToActivate.some(function (activateFighter) { return activateFighter.id == card.id; });
         dojo.place("<div id=\"fighter-choice\">\n            <button id=\"fighter-choice-move\" ".concat(canMove ? '' : ' disabled="disabled"', ">").concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\" ").concat(canActivate ? '' : ' disabled="disabled"', ">").concat(_('Activate'), "</button>\n        </div>"), element);
@@ -1728,6 +1732,7 @@ var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_DISPLAY_KEY = 'Lumen-display';
 var Lumen = /** @class */ (function () {
     function Lumen() {
+        this.mapZoom = 1;
         this.zoom = 1;
         this.playersTables = [];
         this.selectedPlanificationDice = {};
@@ -1875,6 +1880,7 @@ var Lumen = /** @class */ (function () {
         var _a;
         if (this.isCurrentPlayerActive()) {
             (_a = this.getPlayerTable(args.opponentId)) === null || _a === void 0 ? void 0 : _a.setPossibleCells(args.possibleCircles, -1);
+            document.getElementById("player-table-".concat(args.opponentId)).scrollIntoView({ behavior: 'smooth' });
         }
     };
     Lumen.prototype.getChooseFighterSelectableMoveActivateCards = function (args) {
@@ -2135,6 +2141,7 @@ var Lumen = /** @class */ (function () {
         fullTable.style.height = '';
         var zoom = 1;
         if (scroll) {
+            this.mapZoom = 1;
             fullTable.style.transform = '';
             map.style.transform = "";
             map.style.maxHeight = "";
@@ -2146,9 +2153,9 @@ var Lumen = /** @class */ (function () {
             var mapHeight = Number(map.style.height.match(/\d+/)[0]);
             var xScale = mapFrame.clientWidth / mapWidth;
             var yScale = Number(mapFrame.style.maxHeight.match(/\d+/)[0]) / mapHeight;
-            var scale = Math.min(1, Math.min(xScale, yScale));
-            var newMapHeight = Math.min(playAreaViewportHeight, mapHeight * scale);
-            map.style.transform = "scale(".concat(scale, ")");
+            this.mapZoom = Math.min(1, Math.min(xScale, yScale));
+            var newMapHeight = Math.min(playAreaViewportHeight, mapHeight * this.mapZoom);
+            map.style.transform = "scale(".concat(this.mapZoom, ")");
             map.style.maxHeight = "".concat(newMapHeight, "px");
             mapFrame.style.height = "".concat(newMapHeight, "px");
             if (this.display === 'fit-map-and-board-to-screen') {
@@ -2163,6 +2170,7 @@ var Lumen = /** @class */ (function () {
             fullTable.style.marginRight = "".concat(-(fullTable.clientWidth / zoom - fullTable.clientWidth), "px");
         }
         fullTable.style.height = "".concat(fullTable.getBoundingClientRect().height, "px");
+        document.documentElement.style.setProperty('--cumulative-scale', '' + this.mapZoom * this.zoom);
     };
     Lumen.prototype.scroll = function (direction) {
         var scrollBy = 200;

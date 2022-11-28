@@ -162,11 +162,15 @@ class TableCenter {
 
     private cancelFighterChoice() {
         const oldChoice = document.getElementById(`fighter-choice`);
-        oldChoice?.parentElement.removeChild(oldChoice);
+        if (oldChoice) {
+            oldChoice.closest('.battlefield').classList.remove('temp-z-index');
+            oldChoice.parentElement.removeChild(oldChoice);
+        }
     }
 
     private createFighterChoice(card: Card) {
         const element = this.game.cardsManager.getCardElement(card);
+        element.closest('.battlefield').classList.add('temp-z-index');
 
         const canMove = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleFightersToMove.some(moveFighter => moveFighter.id == card.id);
         const canActivate = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleFightersToActivate.some(activateFighter => activateFighter.id == card.id);

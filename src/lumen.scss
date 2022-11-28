@@ -67,11 +67,6 @@ html, .mode_3d #game_play_area_background {
     .subtitle {
       color: gray;
       font-size: 80%;
-
-      .action {
-        width: 69px;
-        height: 45px;
-      }
     }
   }
 
@@ -79,8 +74,8 @@ html, .mode_3d #game_play_area_background {
     display: inline-block;
     background-size: contain;
     background-repeat: no-repeat;
-    width: 100px;
-    height: 65px;
+    width: 69px;
+    height: 45px;
     vertical-align: middle;
 
     &.place {

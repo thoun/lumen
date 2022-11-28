@@ -13,6 +13,7 @@ const ACTION_TIMER_DURATION = 5;
 const LOCAL_STORAGE_DISPLAY_KEY = 'Lumen-display';
 
 class Lumen implements LumenGame {
+    public mapZoom: number = 1;
     public zoom: number = 1;
     public cardsManager: CardsManager;
     public discoverTilesManager: DiscoverTilesManager;
@@ -190,6 +191,7 @@ class Lumen implements LumenGame {
     private onEnteringChooseCellBrouillage(args: EnteringChooseCellJammingArgs) {
         if ((this as any).isCurrentPlayerActive()) {
             this.getPlayerTable(args.opponentId)?.setPossibleCells(args.possibleCircles, -1);
+            document.getElementById(`player-table-${args.opponentId}`).scrollIntoView({ behavior: 'smooth' });
         }
     }
 
@@ -474,6 +476,7 @@ class Lumen implements LumenGame {
         let zoom = 1;
 
         if (scroll) {
+            this.mapZoom = 1;
             fullTable.style.transform = '';
             map.style.transform = ``;
             map.style.maxHeight = ``;
@@ -485,10 +488,10 @@ class Lumen implements LumenGame {
 
             const xScale = mapFrame.clientWidth / mapWidth;
             const yScale = Number(mapFrame.style.maxHeight.match(/\d+/)[0]) / mapHeight;
-            const scale = Math.min(1, Math.min(xScale, yScale));
+            this.mapZoom = Math.min(1, Math.min(xScale, yScale));
 
-            const newMapHeight = Math.min(playAreaViewportHeight, mapHeight * scale);
-            map.style.transform = `scale(${scale})`;
+            const newMapHeight = Math.min(playAreaViewportHeight, mapHeight * this.mapZoom);
+            map.style.transform = `scale(${this.mapZoom})`;
             map.style.maxHeight = `${newMapHeight}px`;
             mapFrame.style.height = `${newMapHeight}px`;
 
@@ -504,6 +507,8 @@ class Lumen implements LumenGame {
             fullTable.style.marginRight = `${-(fullTable.clientWidth / zoom - fullTable.clientWidth)}px`;
         }
         fullTable.style.height = `${fullTable.getBoundingClientRect().height}px`;
+
+        document.documentElement.style.setProperty('--cumulative-scale', '' + this.mapZoom * this.zoom);
     }
 
     private scroll(direction: 'left' | 'right' | 'top' | 'bottom') {

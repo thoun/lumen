@@ -981,10 +981,13 @@ trait UtilTrait {
         $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
     }
 
-    function incMoveCount(int $inc) {
+    function incMoveCount(int $inc, bool $incInitial = false) {
         $remainingActions = $this->getRemainingActions();
         $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'MOVE');
         $remainingActions->actions[$index]->remaining += $inc;
+        if ($incInitial) {
+            $remainingActions->actions[$index]->initial += $inc;
+        }
         $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
     }
 }
