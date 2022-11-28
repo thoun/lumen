@@ -1492,12 +1492,24 @@ html, .mode_3d #game_play_area_background {
   gap: 10px;
 }
 #zoom-wrapper #map-controls button {
-  width: auto;
+  width: 48px;
+  height: 48px;
   margin: 0;
   border: 2px solid lightgray;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 #zoom-wrapper #map-controls button.active {
   border-color: #4871b6;
+}
+#zoom-wrapper #map-controls button[data-display=scroll] {
+  background-image: url("img/display-scroll.png");
+}
+#zoom-wrapper #map-controls button[data-display=fit-map-to-screen] {
+  background-image: url("img/display-fit-map.png");
+}
+#zoom-wrapper #map-controls button[data-display=fit-map-and-board-to-screen] {
+  background-image: url("img/display-fit-map-and-board.png");
 }
 #zoom-wrapper #full-table {
   position: relative;

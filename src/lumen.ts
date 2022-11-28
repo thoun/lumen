@@ -85,9 +85,9 @@ class Lumen implements LumenGame {
         const btnMapScroll = document.getElementById('display-map-scroll');
         const btnFitMap = document.getElementById('display-fit-map');
         const btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
-        btnMapScroll.innerHTML = _('Scroll in map');
-        btnFitMap.innerHTML = _('Fit map to screen');
-        btnFitMapAndBoard.innerHTML = _('Fit map and board to screen');
+        this.setTooltip(btnMapScroll.id, _('Scroll in map'));
+        this.setTooltip(btnFitMap.id, _('Fit map to screen'));
+        this.setTooltip(btnFitMapAndBoard.id, _('Fit map and board to screen'));
         btnMapScroll.addEventListener('click', () => this.setMapScroll());
         btnFitMap.addEventListener('click', () => this.setFitMap());
         btnFitMapAndBoard.addEventListener('click', () => this.setFitMapAndBoard());

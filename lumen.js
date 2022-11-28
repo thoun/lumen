@@ -1787,9 +1787,9 @@ var Lumen = /** @class */ (function () {
         var btnMapScroll = document.getElementById('display-map-scroll');
         var btnFitMap = document.getElementById('display-fit-map');
         var btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
-        btnMapScroll.innerHTML = _('Scroll in map');
-        btnFitMap.innerHTML = _('Fit map to screen');
-        btnFitMapAndBoard.innerHTML = _('Fit map and board to screen');
+        this.setTooltip(btnMapScroll.id, _('Scroll in map'));
+        this.setTooltip(btnFitMap.id, _('Fit map to screen'));
+        this.setTooltip(btnFitMapAndBoard.id, _('Fit map and board to screen'));
         btnMapScroll.addEventListener('click', function () { return _this.setMapScroll(); });
         btnFitMap.addEventListener('click', function () { return _this.setFitMap(); });
         btnFitMapAndBoard.addEventListener('click', function () { return _this.setFitMapAndBoard(); });
