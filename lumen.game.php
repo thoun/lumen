@@ -240,7 +240,7 @@ class Lumen extends Table {
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
                 default:
-                    $this->gamestate->nextState("zombiePass");
+                $this->gamestate->jumpToState(ST_NEXT_PLAYER);
                 	break;
             }
 
