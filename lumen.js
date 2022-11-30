@@ -2622,10 +2622,10 @@ var Lumen = /** @class */ (function () {
         });
     };
     Lumen.prototype.notif_setPlayedOperation = function (notif) {
-        this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.number, notif.args.firstPlayer);
+        this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.operationsNumber, notif.args.firstPlayer);
     };
     Lumen.prototype.notif_setCancelledOperation = function (notif) {
-        this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.number);
+        this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.operationsNumber);
     };
     Lumen.prototype.notif_setCircleValue = function (notif) {
         this.getPlayerTable(notif.args.playerId).setCircleValue(notif.args.circleId, notif.args.value);

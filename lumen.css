@@ -1115,7 +1115,8 @@ body > .card {
   justify-content: center;
   align-items: center;
   font-family: "Messy";
-  font-size: 48px;
+  font-size: 40px;
+  letter-spacing: -2px;
   color: #3d3d3d;
   background-size: contain;
   background-position: center center;

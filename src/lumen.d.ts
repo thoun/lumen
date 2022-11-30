@@ -168,7 +168,7 @@ interface NotifDiceRollArgs {
 interface NotifSetPlayedOperationArgs {
     playerId: number;
     type: number;
-    number: number;
+    operationsNumber: number;
     firstPlayer: boolean;
 }
 

@@ -78,10 +78,10 @@ trait ActionTrait {
         self::notifyAllPlayers('setPlayedOperation', clienttranslate('${player_name} chooses value ${number} (operation ${operation})'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
-            'number' => $operation['value'],
+            'number' => $operation['value'], // for log
             'operation' => $type, // for log
             'type' => $type,
-            'number' => intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type")),
+            'operationsNumber' => intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type")),
             'firstPlayer' => $isFirstPlayer,
         ]);
 
@@ -104,7 +104,7 @@ trait ActionTrait {
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'type' => $type,
-            'number' => intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type")),
+            'operationsNumber' => intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type")),
         ]);
 
         $this->gamestate->nextState('cancel');
