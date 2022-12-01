@@ -886,7 +886,7 @@ body > .card {
   background-size: cover;
   background-position: center center;
 }
-.player-board .card-stock .discover-tile:not(:first-child) {
+.player-board .card-stock .objective-token:not(:first-child), .player-board .card-stock .discover-tile:not(:first-child) {
   margin-left: -52px;
 }
 

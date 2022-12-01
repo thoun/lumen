@@ -487,8 +487,8 @@ class Lumen implements LumenGame {
             const mapHeight = Number(map.style.height.match(/\d+/)[0]);
 
             const xScale = mapFrame.clientWidth / mapWidth;
-            const yScale = Number(mapFrame.style.maxHeight.match(/\d+/)[0]) / mapHeight;
-            this.mapZoom = Math.min(1, Math.min(xScale, yScale));
+            const yScale = playAreaViewportHeight / mapHeight;
+            this.mapZoom = /*Math.max(0.1, */Math.min(1, Math.min(xScale, yScale))/*)*/;
 
             const newMapHeight = Math.min(playAreaViewportHeight, mapHeight * this.mapZoom);
             map.style.transform = `scale(${this.mapZoom})`;

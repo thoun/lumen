@@ -11,7 +11,8 @@ trait DebugUtilTrait {
             return;
         } 
 
-        /*$this->debugAddDiscoverTile(2343492, 4, 1);
+        /*$this->debugAddObjectiveToken(2343492, 3);
+        $this->debugAddDiscoverTile(2343492, 4, 1);
         $this->debugAddDiscoverTile(2343492, 5, 1);
         $this->debugAddDiscoverTile(2343492, 3, 1);
         $this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
@@ -44,6 +45,10 @@ trait DebugUtilTrait {
         }
         self::DbQuery("update card set player_id = $playerId where card_id = $card->id");
         $this->cards->moveCard($card->id, $location, $locationArg);
+    }
+
+    public function debugAddObjectiveToken(int $playerId, int $number = 1) {
+        $this->objectiveTokens->pickCardsForLocation($number, 'deck', 'player', $playerId);
     }
 
     public function debugAddDiscoverTile(int $playerId, int $powerOrLumens, int $type = 2) {
