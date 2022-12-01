@@ -382,9 +382,10 @@ trait UtilTrait {
 
     function setFirstPlayer(int $playerId, bool $withInitiativeMarker) {
         $this->setGameStateValue(FIRST_PLAYER, $playerId);
+        $this->gamestate->changeActivePlayer($playerId);
 
         $message = $withInitiativeMarker ?
-            clienttranslate('${player_name} is the new first player because he controls initiative marker') :
+            clienttranslate('${player_name} is the first player for this round because he controls initiative marker') :
             clienttranslate('${player_name} is the new first player because no-one controls initiative marker so first player changes');
         self::notifyAllPlayers('newFirstPlayer', $message, [
             'playerId' => $playerId,

@@ -88,12 +88,12 @@ trait StateTrait {
         $lastRound = intval($this->getStat('turnNumber')) >= 17;
 
         if (!$lastRound) {
-            $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+            $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY)));
             $firstPlayerId = $this->getFirstPlayerId();
-            if ($initiativeMarkerControlledPlayer === null) {
+            if ($initiativeMarkerControlledPlayer == null) {
                 $newFirstPlayerId = $this->getOpponentId($firstPlayerId);
                 $this->setFirstPlayer($newFirstPlayerId, false);
-            } else if ($initiativeMarkerControlledPlayer != $firstPlayerId) {
+            } else {
                 $this->setFirstPlayer($initiativeMarkerControlledPlayer, true);
             }
         }
@@ -187,7 +187,7 @@ trait StateTrait {
     function scoreScenarioEndgameObjectives(int $scenarioId) {
         switch ($scenarioId) {
             case 1:
-                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY)));
                 if ($initiativeMarkerControlledPlayer !== null) {
                     $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer);
                 }
@@ -271,7 +271,7 @@ trait StateTrait {
                 }
                 break;
             case 6:
-                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+                $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY)));
                 $playersIds = $this->getPlayersIds();
                 $monstWinterFighters = null;
                 $winterFightersCountByPlayer = [];
@@ -325,7 +325,7 @@ trait StateTrait {
         $this->scoreObjectiveTokens($playersIds);
 
         // update player_score_aux
-        $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(INITIATIVE_MARKER_TERRITORY);
+        $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY)));
         if ($initiativeMarkerControlledPlayer !== null) {
             $this->DbQuery("UPDATE `player` SET `player_score_aux` = 1 WHERE `player_id` = $initiativeMarkerControlledPlayer"); 
         }
