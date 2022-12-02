@@ -18,6 +18,8 @@ trait StateTrait {
         $planificationTiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_PLANIFICATION);
         $canActivatePlanification = count($planificationTiles) > 0;
 
+        $this->incStat(1, 'roundsAsFirstPlayer', $playerId);        
+
         $this->gamestate->nextState($canActivatePlanification ? 'askActivatePlanification' : 'rollDice');
     }    
 
@@ -101,11 +103,17 @@ trait StateTrait {
         $this->gamestate->nextState($lastRound ? 'endScore' : 'newRound');
     }
 
-    function scoreTerritoryControl(Scenario $scenario) {
+    function scoreTerritoryControl(array $playersIds, Scenario $scenario) {
         foreach ($scenario->battlefieldsIds as $battlefieldId) {
             foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
                 $controlPlayer = $this->getTerritoryControlledPlayer($territory->id);
+
                 if ($controlPlayer !== null) {
+                    $this->incStat(1, 'controlledTerritories');   
+                    $this->incStat(1, 'controlledTerritories', $controlPlayer);   
+                    $this->incStat(1, 'controlledTerritories'.$territory->lumens);   
+                    $this->incStat(1, 'controlledTerritories'.$territory->lumens, $controlPlayer);  
+
                     $this->incPlayerScore($controlPlayer, $territory->lumens, clienttranslate('${player_name} controls the ${season} territory on battlefield ${battlefieldId}'), [
                         'scoreType' => 'endControlTerritory',
                         'territoryId' => $territory->id,
@@ -114,7 +122,13 @@ trait StateTrait {
                         'i18n' => ['season'],
                     ]);
                 } else {
-                    self::notifyAllPlayers('endControlTerritory', clienttranslate('Nobody controls the ${season} territory on battlefiled ${battlefieldId}'), [
+                    if (count($this->getCardsByLocation('territory', $territory->id)) > 0) {
+                        $this->incStat(1, 'tieControlTerritories'); 
+                        foreach($playersIds as $playerId) {  
+                            $this->incStat(1, 'tieControlTerritories', $playerId);   
+                        }
+                    }
+                    self::notifyAllPlayers('endControlTerritory', clienttranslate('Nobody controls the ${season} territory on battlefield ${battlefieldId}'), [
                         'territoryId' => $territory->id,
                         'season' => $this->getSeasonName($territory->lumens),
                         'battlefieldId' => $battlefieldId,
@@ -319,7 +333,7 @@ trait StateTrait {
         $scenario = $this->getScenario();
 
         $this->scoreMissions($playersIds, $scenario);
-        $this->scoreTerritoryControl($scenario);
+        $this->scoreTerritoryControl($playersIds, $scenario);
         $this->scoreDiscoverTiles($playersIds);
         $this->scoreScenarioEndgameObjectives($scenarioId);
         $this->scoreObjectiveTokens($playersIds);

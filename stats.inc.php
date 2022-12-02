@@ -47,49 +47,64 @@
     
 */
 
-$stats_type = array(
+
+
+$commonStats = [
+    // 10+ : rounds/turns
+    // 20+ : territories 
+    "controlledTerritories" => [
+        "id" => 20,
+        "name" => totranslate("Number of controlled territories"),
+        "type" => "int" 
+    ],
+    "tieControlTerritories" => [
+        "id" => 21,
+        "name" => totranslate("Number of territories with a tie"),
+        "type" => "int"
+    ],
+    "controlledTerritories1" => [
+        "id" => 22,
+        "name" => totranslate("Number of winter controlled territories"),
+        "type" => "int"
+    ],
+    "controlledTerritories3" => [
+        "id" => 23,
+        "name" => totranslate("Number of autumn controlled territories"),
+        "type" => "int"
+    ],
+    "controlledTerritories5" => [
+        "id" => 24,
+        "name" => totranslate("Number of summer controlled territories"),
+        "type" => "int"
+    ],
+    "controlledTerritories7" => [
+        "id" => 25,
+        "name" => totranslate("Number of spring controlled territories"),
+        "type" => "int"
+    ],
+];
+
+$stats_type = [
 
     // Statistics global to table
-    "table" => array(
-
-        "roundNumber" => array("id"=> 10,
-                    "name" => totranslate("Number of rounds"),
-                    "type" => "int" ),
-
-/*
-        Examples:
-
-
-        "table_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("table test stat 1"), 
-                                "type" => "int" ),
-                                
-        "table_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("table test stat 2"), 
-                                "type" => "float" )
-*/  
-    ),
+    "table" => $commonStats + [
+        // 10+ : rounds/turns
+        "roundNumber" => [
+            "id" => 10,
+            "name" => totranslate("Number of rounds"),
+            "type" => "int"
+        ], 
+        // 20+ : territories 
+    ],
     
     // Statistics existing for each player
-    "player" => array(
-
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
-    
-/*
-        Examples:    
-        
-        
-        "player_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("player test stat 1"), 
-                                "type" => "int" ),
-                                
-        "player_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("player test stat 2"), 
-                                "type" => "float" )
-
-*/    
-    )
-
-);
+    "player" => $commonStats + [
+        // 10+ : rounds/turns
+        "roundsAsFirstPlayer" => [
+            "id" => 11,
+            "name" => totranslate("Rounds as first player"),
+            "type" => "int"
+        ],
+        // 20+ : territories 
+    ]
+];
