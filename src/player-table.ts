@@ -62,6 +62,15 @@ class PlayerTable {
                 }
                 document.getElementById(`player-table-${this.playerId}-operations`).appendChild(div);
             });
+
+            const bubble = document.createElement('div');
+            bubble.id = `player-table-${this.playerId}-operation${operation}-bubble`;
+            bubble.classList.add('operation-bubble');
+            bubble.dataset.operation = ''+operation;
+            if (this.currentPlayer) {
+                bubble.addEventListener('click', () => this.game.operationClick(operation));
+            }
+            document.getElementById(`player-table-${this.playerId}-operations`).appendChild(bubble);
         })
 
         player.circles.forEach(circle => {
@@ -120,7 +129,15 @@ class PlayerTable {
                 operationNumberDiv.classList.add('ghost');
                 operationNumberDiv.innerHTML = `<img src="${g_gamethemeurl}img/mul.gif"/>`;
             }
-        })
+
+            const bubble = document.getElementById(`player-table-${this.playerId}-operation${key}-bubble`);
+            bubble.innerHTML = operation.possible ? `<span>${operation.value}</span>` : `<img src="${g_gamethemeurl}img/mul.gif"/>`;
+            bubble.dataset.visible = 'true';
+        });
+    }
+
+    public clearPossibleOperations() {
+        (Array.from(document.querySelectorAll(`.operation-bubble`)) as HTMLElement[]).forEach(elem => elem.dataset.visible = 'false');
     }
     
     public setPlayedOperation(type: number, number: number, firstPlayer: boolean) {

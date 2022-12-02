@@ -1031,6 +1031,54 @@ body > .card {
   left: 855px;
   top: 177px;
 }
+.player-table .operations .operation-bubble {
+  cursor: pointer;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  border-radius: 10px;
+  left: -45px;
+  display: none;
+}
+.player-table .operations .operation-bubble[data-operation="1"] {
+  top: 0px;
+}
+.player-table .operations .operation-bubble[data-operation="2"] {
+  top: 20px;
+}
+.player-table .operations .operation-bubble[data-operation="3"] {
+  top: 40px;
+}
+.player-table .operations .operation-bubble[data-operation="4"] {
+  top: 60px;
+}
+.player-table .operations .operation-bubble[data-operation="5"] {
+  top: 80px;
+}
+.player-table .operations .operation-bubble span {
+  font-family: "Messy";
+}
+.player-table .operations .operation-bubble img {
+  transform: scale(0.2);
+}
+.player-table .operations .operation-bubble[data-visible=true] {
+  display: flex;
+}
+.player-table .operations .operation-bubble::before {
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 8px solid white;
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 4px;
+}
 .player-table .operations .operation-number {
   position: absolute;
   width: 20px;

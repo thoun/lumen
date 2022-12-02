@@ -262,6 +262,7 @@ class Lumen implements LumenGame {
                 break;
             case 'chooseOperation':
                 this.onLeavingGhostMark('operation-number');
+                this.getCurrentPlayerTable()?.clearPossibleOperations();
                 break;
             case 'chooseCell':
                 this.onLeavingGhostMark('circle');

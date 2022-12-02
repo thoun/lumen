@@ -350,7 +350,7 @@ trait StateTrait {
 
             $territoryFightersCount = count($playerFighters);
             $this->setStat($territoryFightersCount, 'territoryFighters', $playerId);
-            $territoryFightersCumulatedStrength = array_reduce(array_map(fn($fighter) => $fighter->strength, $playerFighters), fn($a, $b) => $a + $b, 0);
+            $territoryFightersCumulatedStrength = array_reduce(array_map(fn($fighter) => $fighter->getStrength(), $playerFighters), fn($a, $b) => $a + $b, 0);
             $this->setStat($territoryFightersCumulatedStrength, 'territoryFightersCumulatedStrength', $playerId);
             $this->setStat($territoryFightersCumulatedStrength / $territoryFightersCount, 'territoryFightersAverageStrength', $playerId);
         }

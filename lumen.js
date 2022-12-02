@@ -1573,6 +1573,14 @@ var PlayerTable = /** @class */ (function () {
                 }
                 document.getElementById("player-table-".concat(_this.playerId, "-operations")).appendChild(div);
             });
+            var bubble = document.createElement('div');
+            bubble.id = "player-table-".concat(_this.playerId, "-operation").concat(operation, "-bubble");
+            bubble.classList.add('operation-bubble');
+            bubble.dataset.operation = '' + operation;
+            if (_this.currentPlayer) {
+                bubble.addEventListener('click', function () { return _this.game.operationClick(operation); });
+            }
+            document.getElementById("player-table-".concat(_this.playerId, "-operations")).appendChild(bubble);
         });
         player.circles.forEach(function (circle) {
             var div = document.createElement('div');
@@ -1627,7 +1635,13 @@ var PlayerTable = /** @class */ (function () {
                 operationNumberDiv.classList.add('ghost');
                 operationNumberDiv.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
             }
+            var bubble = document.getElementById("player-table-".concat(_this.playerId, "-operation").concat(key, "-bubble"));
+            bubble.innerHTML = operation.possible ? "<span>".concat(operation.value, "</span>") : "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
+            bubble.dataset.visible = 'true';
         });
+    };
+    PlayerTable.prototype.clearPossibleOperations = function () {
+        Array.from(document.querySelectorAll(".operation-bubble")).forEach(function (elem) { return elem.dataset.visible = 'false'; });
     };
     PlayerTable.prototype.setPlayedOperation = function (type, number, firstPlayer) {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-operation").concat(type, "-number").concat(number));
@@ -1941,6 +1955,7 @@ var Lumen = /** @class */ (function () {
         }
     };
     Lumen.prototype.onLeavingState = function (stateName) {
+        var _a;
         log('Leaving state: ' + stateName);
         switch (stateName) {
             case 'planificationChooseFaces':
@@ -1948,6 +1963,7 @@ var Lumen = /** @class */ (function () {
                 break;
             case 'chooseOperation':
                 this.onLeavingGhostMark('operation-number');
+                (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.clearPossibleOperations();
                 break;
             case 'chooseCell':
                 this.onLeavingGhostMark('circle');
