@@ -482,20 +482,24 @@ class Lumen implements LumenGame {
             fullTable.style.transform = '';
             map.style.transform = ``;
             map.style.maxHeight = ``;
+            map.style.width = `${map.dataset.width}px`;
+            map.style.height = `${map.dataset.height}px`;
             mapFrame.style.height = ``;
             this.onMapFrameScroll();
         } else {
-            const mapWidth = Number(map.style.width.match(/\d+/)[0]);
-            const mapHeight = Number(map.style.height.match(/\d+/)[0]);
+            const mapWidth = Number(map.dataset.width);
+            const mapHeight = Number(map.dataset.height);
 
             const xScale = mapFrame.clientWidth / mapWidth;
             const yScale = playAreaViewportHeight / mapHeight;
             this.mapZoom = /*Math.max(0.1, */Math.min(1, Math.min(xScale, yScale))/*)*/;
 
+            const newMapWidth = mapWidth * this.mapZoom;
             const newMapHeight = Math.min(playAreaViewportHeight, mapHeight * this.mapZoom);
             map.style.transform = `scale(${this.mapZoom})`;
             map.style.maxHeight = `${newMapHeight}px`;
-            mapFrame.style.height = `${newMapHeight}px`;
+            map.style.width = `${newMapWidth}px`;
+            map.style.height = `${newMapHeight}px`;
 
             if (this.display === 'fit-map-and-board-to-screen') {
                 zoom = Math.min(1, playAreaViewportHeight / (newMapHeight + 20 + document.getElementsByClassName('player-table')[0].clientHeight));

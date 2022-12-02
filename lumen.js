@@ -1531,8 +1531,10 @@ var TableCenter = /** @class */ (function () {
             }
         });
         var map = document.getElementById('map');
-        map.style.width = "".concat(maxRight, "px");
-        map.style.height = "".concat(maxBottom + 10, "px");
+        //map.style.width = `${maxRight}px`;
+        //map.style.height = `${maxBottom + 10}px`;
+        map.dataset.width = "".concat(maxRight);
+        map.dataset.height = "".concat(maxBottom + 10);
     };
     return TableCenter;
 }());
@@ -2146,19 +2148,23 @@ var Lumen = /** @class */ (function () {
             fullTable.style.transform = '';
             map.style.transform = "";
             map.style.maxHeight = "";
+            map.style.width = "".concat(map.dataset.width, "px");
+            map.style.height = "".concat(map.dataset.height, "px");
             mapFrame.style.height = "";
             this.onMapFrameScroll();
         }
         else {
-            var mapWidth = Number(map.style.width.match(/\d+/)[0]);
-            var mapHeight = Number(map.style.height.match(/\d+/)[0]);
+            var mapWidth = Number(map.dataset.width);
+            var mapHeight = Number(map.dataset.height);
             var xScale = mapFrame.clientWidth / mapWidth;
             var yScale = playAreaViewportHeight / mapHeight;
             this.mapZoom = /*Math.max(0.1, */ Math.min(1, Math.min(xScale, yScale)) /*)*/;
+            var newMapWidth = mapWidth * this.mapZoom;
             var newMapHeight = Math.min(playAreaViewportHeight, mapHeight * this.mapZoom);
             map.style.transform = "scale(".concat(this.mapZoom, ")");
             map.style.maxHeight = "".concat(newMapHeight, "px");
-            mapFrame.style.height = "".concat(newMapHeight, "px");
+            map.style.width = "".concat(newMapWidth, "px");
+            map.style.height = "".concat(newMapHeight, "px");
             if (this.display === 'fit-map-and-board-to-screen') {
                 zoom = Math.min(1, playAreaViewportHeight / (newMapHeight + 20 + document.getElementsByClassName('player-table')[0].clientHeight));
             }

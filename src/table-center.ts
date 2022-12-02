@@ -235,7 +235,9 @@ class TableCenter {
         });
 
         const map = document.getElementById('map');
-        map.style.width = `${maxRight}px`;
-        map.style.height = `${maxBottom + 10}px`;
+        //map.style.width = `${maxRight}px`;
+        //map.style.height = `${maxBottom + 10}px`;
+        map.dataset.width = `${maxRight}`;
+        map.dataset.height = `${maxBottom + 10}`;
     }
 }
