@@ -11,11 +11,43 @@ CIRCLES[15] = [111, 0];
 [16, 17, 18].forEach(index => CIRCLES[index] = [136, 45 + CIRCLE_WIDTH * (index - 16)]);
 [19, 20].forEach(index => CIRCLES[index] = [180, 70 + CIRCLE_WIDTH * (index - 19)]);
 
+class CompressedLineStock<T> extends ManualPositionStock<T> {
+
+    constructor(
+        protected manager: CardManager<T>, 
+        protected element: HTMLElement, 
+        protected cardWidth: number
+    ) {
+        super(manager, element, (element: HTMLElement, cards: T[]) => this.manualPosition(element, cards));
+    }
+
+    private manualPosition(element: HTMLElement, cards: T[]) {
+        const halfClientWidth = element.clientWidth / 2;
+        const MARGIN = 8;
+        const CARD_WIDTH = 100;
+        let cardDistance = CARD_WIDTH + MARGIN;
+        const containerWidth = element.clientWidth;
+        const uncompressedWidth = (cards.length * CARD_WIDTH) + ((cards.length - 1) * MARGIN);
+        if (uncompressedWidth > containerWidth) {
+            cardDistance = Math.floor(CARD_WIDTH * containerWidth / ((cards.length + 2) * CARD_WIDTH));
+        }
+
+        cards.forEach((card, index) => {
+            const cardDiv = this.getCardElement(card);
+            const cardLeft = halfClientWidth + cardDistance * (index - (cards.length - 1) / 2);
+
+            cardDiv.style.left = `${ cardLeft - CARD_WIDTH / 2 }px`;
+        });
+    }
+}
+
 class PlayerTable {
     public playerId: number;
 
     private reserve: SlotStock<Card>;
     private highCommand: SlotStock<Card>;
+    private objectiveTokens: CompressedLineStock<ObjectiveToken>;
+    private discoverTiles: CompressedLineStock<DiscoverTile>;
 
     private currentPlayer: boolean;
 
@@ -27,9 +59,6 @@ class PlayerTable {
         <div id="player-table-${this.playerId}" class="player-table">
             <div class="background" data-color="${player.color}"></div>
             <div id="player-table-${this.playerId}-hand-cards" class="hand cards" data-player-id="${this.playerId}" data-current-player="${this.currentPlayer.toString()}" data-my-hand="${this.currentPlayer.toString()}"></div>
-            <div class="name-wrapper">
-                <span class="name" style="color: #${player.color};">${player.name}</span>
-            </div>
             <div id="player-table-${this.playerId}-checks" class="checks">`;
         for (let i=1; i<=7; i++) {
             html += `<div id="player-table-${this.playerId}-check${i}" class="check" data-number="${i}">${player.checks >= i ? `<img src="${g_gamethemeurl}img/mul.gif"/>` : ''}</div>`;
@@ -44,6 +73,13 @@ class PlayerTable {
             <div id="player-table-${this.playerId}-reserve" class="reserve">
             </div>
             <div id="player-table-${this.playerId}-highCommand" class="highCommand">
+            </div>
+            <div class="name-and-tiles">
+                <div class="name-wrapper">
+                    <span class="name" style="color: #${player.color};">${player.name}</span>
+                </div>
+                <div id="player-table-${this.playerId}-objective-tokens" class="objective-tokens"></div>
+                <div id="player-table-${this.playerId}-discover-tiles" class="discover-tiles"></div>
             </div>
         </div>
         `;
@@ -107,6 +143,11 @@ class PlayerTable {
         this.highCommand.onCardClick = card => this.cardClick(card);
         this.highCommand.addCards(player.highCommand);
 
+        this.objectiveTokens = new CompressedLineStock<ObjectiveToken>(this.game.objectiveTokensManager, document.getElementById(`player-table-${this.playerId}-objective-tokens`), 100);
+        this.objectiveTokens.addCards(player.objectiveTokens, undefined, { visible: Boolean(player.objectiveTokens[0]?.lumens) });
+
+        this.discoverTiles = new CompressedLineStock<DiscoverTile>(this.game.discoverTilesManager, document.getElementById(`player-table-${this.playerId}-discover-tiles`), 100);
+        player.discoverTiles.forEach(discoverTile => this.discoverTiles.addCard(discoverTile, undefined, { visible: Boolean(discoverTile?.type) }));
     }
 
     private cardClick(card: Card) {
@@ -245,6 +286,23 @@ class PlayerTable {
         [this.reserve, this.highCommand].forEach(stock => {
             stock.setSelectionMode(selectableCards.length ? 'single' : 'none');
             stock.getCards().forEach(card => stock.getCardElement(card).classList.toggle('selectable', selectableCards.some(c => c.id == card.id)));
+        });
+    }
+    
+    public addObjectiveTokens(tokens: ObjectiveToken[]) {        
+        this.objectiveTokens.addCards(tokens, undefined, { visible: Boolean(tokens[0]?.lumens) });
+    }
+    
+    public addDiscoverTile(discoverTile: DiscoverTile) {        
+        this.discoverTiles.addCard(discoverTile);
+    }
+    
+    public revealObjectiveTokens(tokens: ObjectiveToken[]) {
+        this.objectiveTokens.addCards(tokens);
+        tokens.forEach(card => {
+            const elem = this.objectiveTokens.getCardElement(card);
+            this.game.objectiveTokensManager.setupFrontDiv(card);
+            elem.dataset.side = 'front';
         });
     }
 }

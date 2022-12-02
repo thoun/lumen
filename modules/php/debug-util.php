@@ -11,12 +11,14 @@ trait DebugUtilTrait {
             return;
         } 
 
-        /*$this->debugAddObjectiveToken(2343492, 3);
+        $this->debugAddObjectiveToken(2343492, 1);
         $this->debugAddDiscoverTile(2343492, 4, 1);
         $this->debugAddDiscoverTile(2343492, 5, 1);
         $this->debugAddDiscoverTile(2343492, 3, 1);
         $this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
-        $this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);*/
+        $this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);
+        
+        $this->debugAddObjectiveToken(2343493, 6);
         /*for ($i=0;$i<3;$i++) $this->debugAddPlayerFighter(2343492, 1, 'territory', 11);
         //for ($i=0;$i<2;$i++) $this->debugAddPlayerFighter(2343492, 1, 'territory', 15);
         $this->debugAddNeutralFighter(2343492, 11, 'territory', 11);

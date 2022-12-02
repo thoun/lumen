@@ -895,9 +895,6 @@ body > .card {
   background-size: cover;
   background-position: center center;
 }
-.player-board .card-stock .objective-token:not(:first-child), .player-board .card-stock .discover-tile:not(:first-child) {
-  margin-left: -52px;
-}
 .player-board .grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -954,19 +951,36 @@ body > .card {
 .player-table .background[data-color="1f3067"] {
   background-image: url("img/playerboard-night.png");
 }
-.player-table .name-wrapper {
-  border-radius: 10px;
+.player-table .name-and-tiles {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 400px;
   display: flex;
+  flex-direction: column-reverse;
+  gap: 5px;
+}
+.player-table .name-and-tiles > div {
+  background: rgba(255, 255, 255, 0.5019607843);
+  border-radius: 10px;
+}
+.player-table .name-and-tiles > div.objective-tokens {
+  height: 113px;
+}
+.player-table .name-and-tiles > div.discover-tiles {
+  height: 100px;
+}
+.player-table .name-and-tiles > div:empty {
+  display: none;
+}
+.player-table .name-and-tiles .name-wrapper {
   background: rgba(255, 255, 255, 0.8);
+  display: flex;
   padding: 5px;
   justify-content: center;
   align-items: center;
 }
-.player-table .name-wrapper .name {
+.player-table .name-and-tiles .name-wrapper .name {
   font-size: 16pt;
   font-weight: bold;
 }

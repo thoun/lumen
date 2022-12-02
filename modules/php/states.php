@@ -183,8 +183,6 @@ trait StateTrait {
         foreach ($playersIds as $playerId) {
             $playerDiscoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
 
-            // TODO reveal discoverTiles
-
             $points = 0;
             foreach ($playerDiscoverTiles as $discoverTile) {
                 if ($discoverTile->type === 1) {
@@ -322,13 +320,16 @@ trait StateTrait {
     function scoreObjectiveTokens(array $playersIds) {
         foreach ($playersIds as $playerId) {
             $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
-            
-            // TODO reveal objectiveTokens
 
             $points = 0;
             foreach ($objectiveTokens as $objectiveToken) {
                 $points += $objectiveToken->lumens;
             }
+
+            $this->notifyAllPlayers('revealObjectiveTokens', '', [
+                'playerId' => $playerId,
+                'tokens' => $objectiveTokens
+            ]);
 
             $this->incPlayerScore($playerId, $points, clienttranslate('${player_name} gains ${vp} VP with objective tokens'), [
                 'scoreType' => 'objectiveTokens',
@@ -344,7 +345,7 @@ trait StateTrait {
             $circles = $this->getCircles($playerId);
             $circles = array_filter($circles, fn($circle) => $circle->value !== null && $circle->value !== -1);
             $totalValues = array_reduce(array_map(fn($circle) => $circle->value, $circles), fn($a, $b) => $a + $b, 0);
-            $this->setStat($totalValues / count($circles), 'averageFigure', $playerId);
+            $this->setStat(count($circles) > 0 ? ($totalValues / count($circles)) : 0, 'averageFigure', $playerId);
 
             $playerFighters = $this->getCardsByLocation('territory', null, $playerId);
 
@@ -352,7 +353,7 @@ trait StateTrait {
             $this->setStat($territoryFightersCount, 'territoryFighters', $playerId);
             $territoryFightersCumulatedStrength = array_reduce(array_map(fn($fighter) => $fighter->getStrength(), $playerFighters), fn($a, $b) => $a + $b, 0);
             $this->setStat($territoryFightersCumulatedStrength, 'territoryFightersCumulatedStrength', $playerId);
-            $this->setStat($territoryFightersCumulatedStrength / $territoryFightersCount, 'territoryFightersAverageStrength', $playerId);
+            $this->setStat($territoryFightersCount > 0 ? ($territoryFightersCumulatedStrength / $territoryFightersCount) : 0, 'territoryFightersAverageStrength', $playerId);
         }
     }
 
@@ -376,6 +377,6 @@ trait StateTrait {
 
         $this->endStats($playersIds);
 
-        $this->gamestate->nextState('endGame');
+        //$this->gamestate->nextState('endGame');
     }
 }

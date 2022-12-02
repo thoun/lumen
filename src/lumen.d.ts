@@ -78,6 +78,7 @@ interface LumenGamedatas {
 
 interface LumenGame extends Game {
     cardsManager: CardsManager;
+    objectiveTokensManager: ObjectiveTokensManager;
     discoverTilesManager: DiscoverTilesManager;
     scenario: Scenario;
 
@@ -205,14 +206,14 @@ interface NotifNewFirstPlayerArgs {
     playerId: number;
 }
 
-interface NotifTakeObjectiveTokensArgs {
+interface NotifObjectiveTokensArgs {
     playerId: number;
     value: number;
     tokens: ObjectiveToken[];
     letterId?: string;
 }
 
-interface NotifTakeMissionObjectiveTokensArgs extends NotifTakeObjectiveTokensArgs {
+interface NotifTakeMissionObjectiveTokensArgs extends NotifObjectiveTokensArgs {
     highlightCard: Card;
 }
 

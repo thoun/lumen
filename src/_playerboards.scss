@@ -21,12 +21,6 @@
     background-position: center center;
   }
 
-  .card-stock {
-    .objective-token:not(:first-child), .discover-tile:not(:first-child) {
-        margin-left: -52px;
-    }
-  }
-
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

@@ -24,8 +24,6 @@ class Lumen implements LumenGame {
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     private selectedPlanificationDice: { [color: string]: number } = {};
-    private discoverTilesStocks: LineStock<DiscoverTile>[] = [];
-    private objectiveTokensStocks: LineStock<ObjectiveToken>[] = [];
     private chosenFighters: number[] = [];
     private bags: VoidStock<Card>[] = [];
     private bagCounters: Counter[] = [];
@@ -474,7 +472,7 @@ class Lumen implements LumenGame {
        
         let spaceBeforeMap = mapFrameBR.top - document.body.getBoundingClientRect().top;
         let bgaZoom = 1;
-        const bgaZoomStr = document.getElementById('page-content').style.zoom;
+        const bgaZoomStr = (document.getElementById('page-content').style as any).zoom;
         if (bgaZoomStr && bgaZoomStr !== '' && bgaZoomStr !== '1') {
             bgaZoom = Number(bgaZoomStr);
             spaceBeforeMap = document.getElementById('page-content').getBoundingClientRect().top * bgaZoom - document.body.getBoundingClientRect().top;
@@ -599,8 +597,6 @@ class Lumen implements LumenGame {
                 <div id="first-player-token-wrapper-${player.id}" class="first-player-token-wrapper"></div>
                 <div id="bag-${player.id}" class="bag" data-color="${player.color}"><span id="bag-${player.id}-counter"></span></div>
             </div>
-            <div id="player-${player.id}-discover-tiles"></div>
-            <div id="player-${player.id}-objective-tokens"></div>
             `, `player_board_${player.id}`);
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place(`<div id="first-player-token" class="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
@@ -610,10 +606,6 @@ class Lumen implements LumenGame {
             this.bagCounters[playerId] = new ebg.counter();
             this.bagCounters[playerId].create(`bag-${player.id}-counter`);
             this.bagCounters[playerId].setValue(gamedatas.remainingCardsInBag[playerId]);
-            this.discoverTilesStocks[playerId] = new LineStock<DiscoverTile>(this.discoverTilesManager, document.getElementById(`player-${player.id}-discover-tiles`));
-            player.discoverTiles.forEach(discoverTile => this.discoverTilesStocks[playerId].addCard(discoverTile, undefined, { visible: Boolean(discoverTile?.type) }));
-            this.objectiveTokensStocks[playerId] = new LineStock<ObjectiveToken>(this.objectiveTokensManager, document.getElementById(`player-${player.id}-objective-tokens`));
-            this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean(player.objectiveTokens[0]?.lumens) });
         });
 
         this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
@@ -1092,6 +1084,7 @@ class Lumen implements LumenGame {
             ['setFightersUnactivated', ANIMATION_MS],
             ['exchangedFighters', ANIMATION_MS],
             ['score', 1],
+            ['revealObjectiveTokens', ANIMATION_MS],
             ['endControlTerritory', ANIMATION_MS * 2],
         ];
     
@@ -1100,7 +1093,7 @@ class Lumen implements LumenGame {
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
         
-        (this as any).notifqueue.setIgnoreNotificationCheck('takeObjectiveTokens', (notif: Notif<NotifTakeObjectiveTokensArgs>) => {
+        (this as any).notifqueue.setIgnoreNotificationCheck('takeObjectiveTokens', (notif: Notif<NotifObjectiveTokensArgs>) => {
             return notif.args.playerId == this.getPlayerId() && !notif.args.tokens[0].lumens;
         });
         (this as any).notifqueue.setIgnoreNotificationCheck('takeMissionObjectiveTokens', (notif: Notif<NotifTakeMissionObjectiveTokensArgs>) => {
@@ -1183,10 +1176,11 @@ class Lumen implements LumenGame {
         }
     } 
 
-    notif_takeObjectiveTokens(notif: Notif<NotifTakeObjectiveTokensArgs>) {
+    notif_takeObjectiveTokens(notif: Notif<NotifObjectiveTokensArgs>) {
+
         const playerId = notif.args.playerId;
 
-        this.objectiveTokensStocks[playerId].addCards(notif.args.tokens, undefined, { visible: Boolean(notif.args.tokens[0]?.lumens) });
+        this.getPlayerTable(playerId).addObjectiveTokens(notif.args.tokens);
 
         if (notif.args.letterId) {
             document.getElementById(`objective-token-${notif.args.letterId}`)?.remove();
@@ -1210,9 +1204,7 @@ class Lumen implements LumenGame {
     }
 
     notif_moveDiscoverTileToPlayer(notif: Notif<NotifMoveDiscoverTileToPlayerArgs>) {
-        const playerId = notif.args.playerId;
-
-        this.discoverTilesStocks[playerId].addCard(notif.args.discoverTile, undefined, { visible: Boolean(notif.args.discoverTile.type) });
+        this.getPlayerTable(notif.args.playerId).addDiscoverTile(notif.args.discoverTile);
     }
 
     notif_discardDiscoverTile(notif: Notif<NotifDiscardDiscoverTileArgs>) {
@@ -1285,6 +1277,10 @@ class Lumen implements LumenGame {
             (this as any).displayScoring(`territory-${notif.args.territoryId}`, this.getPlayerColor(notif.args.playerId), notif.args.incScore, ANIMATION_MS * 2);
         }
         this.notif_score(notif);
+    }
+
+    notif_revealObjectiveTokens(notif: Notif<NotifObjectiveTokensArgs>) {
+        this.getPlayerTable(notif.args.playerId).revealObjectiveTokens(notif.args.tokens);
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

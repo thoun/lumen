@@ -187,6 +187,8 @@ class Lumen extends Table {
         $sql = "SELECT player_id id, player_score score, player_no playerNo, checks FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
         $result['remainingCardsInBag'] = [0 => count($this->getCardsByLocation('bag0'))];
+
+        $isEnd = intval($this->gamestate->state_id()) >= ST_END_SCORE;
   
         // Gather all information about current game situation (visible by player $current_player_id).
         foreach($result['players'] as $playerId => &$player) {
@@ -201,9 +203,9 @@ class Lumen extends Table {
             $player['links'] = $this->getLinks($playerId);
 
             $discoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
-            $player['discoverTiles'] = array_map(fn($tile) => $playerId == $currentPlayerId || $tile->type != 1 ? $tile : DiscoverTile::onlyId($tile), $discoverTiles);
+            $player['discoverTiles'] = $discoverTiles;
             $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
-            $player['objectiveTokens'] = $playerId == $currentPlayerId ? $objectiveTokens : ObjectiveToken::onlyIds($objectiveTokens);
+            $player['objectiveTokens'] = $playerId == $currentPlayerId || $isEnd ? $objectiveTokens : ObjectiveToken::onlyIds($objectiveTokens);
 
             $result['remainingCardsInBag'][$playerId] = count($this->getCardsByLocation('bag'.$playerId));
         }

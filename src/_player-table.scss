@@ -24,21 +24,43 @@ $circleWidth: 49.7px;
     }
   }
 
-  .name-wrapper {
-    border-radius: 10px;
+  .name-and-tiles {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 400px;
     display: flex;
-    background: #FFFFFFCC;
-    padding: 5px;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column-reverse;
+    gap: 5px;
 
-    .name {
-      font-size: 16pt;
-      font-weight: bold;
+    &>div {
+      background: #FFFFFF80;
+      border-radius: 10px;
+
+      &.objective-tokens {
+        height: 113px;
+      }
+
+      &.discover-tiles {
+        height: 100px;
+      }
+
+      &:empty {
+        display: none;
+      }
+    }
+
+    .name-wrapper {
+      background: #FFFFFFCC;
+      display: flex;
+      padding: 5px;
+      justify-content: center;
+      align-items: center;
+  
+      .name {
+        font-size: 16pt;
+        font-weight: bold;
+      }
     }
   }
 
