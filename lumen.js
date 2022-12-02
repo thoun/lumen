@@ -1227,6 +1227,7 @@ var TerritoryStock = /** @class */ (function (_super) {
         for (var i = 1; i < _this.curve.length; i++) {
             _this.pathLength += _this.getPathLength(_this.curve[i - 1], _this.curve[i]);
         }
+        _this.element.addEventListener('click', function () { var _a; return (_a = _this.onAnyClick) === null || _a === void 0 ? void 0 : _a.call(_this); });
         return _this;
         // this.debugShowCurveCanvas();
     }
@@ -1411,6 +1412,7 @@ var TableCenter = /** @class */ (function () {
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.curve, rotation, territoryInfos.id);
             _this.territoriesStocks[territoryInfos.id].onCardClick = function (card) {
+                console.log(card);
                 var selectableCards = _this.game.getChooseFighterSelectableMoveActivateCards();
                 var canClick = selectableCards === null || selectableCards === void 0 ? void 0 : selectableCards.some(function (fighter) { return fighter.id == card.id; });
                 if (canClick) {
@@ -1418,6 +1420,11 @@ var TableCenter = /** @class */ (function () {
                 }
                 else {
                     _this.territoriesStocks[territoryInfos.id].unselectCard(card);
+                }
+            };
+            _this.territoriesStocks[territoryInfos.id].onAnyClick = function () {
+                if (_this.game.gamedatas.gamestate.name == 'chooseTerritory') {
+                    _this.game.territoryClick(territoryInfos.id);
                 }
             };
             /*// TODO TEMP

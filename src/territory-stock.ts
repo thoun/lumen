@@ -26,6 +26,8 @@ class TerritoryStock extends ManualPositionStock<Card> {
     private discoverTileStockDiv: HTMLDivElement;
     private pathLength: number = 0;
 
+    public onAnyClick?: () => void;
+
     constructor(
         protected manager: CardManager<Card>, 
         protected element: HTMLElement, 
@@ -54,6 +56,8 @@ class TerritoryStock extends ManualPositionStock<Card> {
         for (var i = 1; i < this.curve.length; i ++) {
             this.pathLength += this.getPathLength(this.curve[i-1], this.curve[i]);
         }
+
+        this.element.addEventListener('click', () => this.onAnyClick?.());
 
         // this.debugShowCurveCanvas();
     }

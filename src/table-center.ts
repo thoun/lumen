@@ -92,6 +92,8 @@ class TableCenter {
 
             this.territoriesStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.curve, rotation, territoryInfos.id);
             this.territoriesStocks[territoryInfos.id].onCardClick = card => {
+                console.log(card);
+
                 const selectableCards = this.game.getChooseFighterSelectableMoveActivateCards();
                 const canClick = selectableCards?.some(fighter => fighter.id == card.id);
                 if (canClick) {
@@ -99,7 +101,13 @@ class TableCenter {
                 } else {
                     this.territoriesStocks[territoryInfos.id].unselectCard(card);
                 }
-            }            
+            }     
+            
+            this.territoriesStocks[territoryInfos.id].onAnyClick = () => {
+                if ((this.game as any).gamedatas.gamestate.name == 'chooseTerritory') {
+                    this.game.territoryClick(territoryInfos.id);
+                }
+            };
 
             /*// TODO TEMP
             this.territoriesStocks[territoryInfos.id].addCards([
