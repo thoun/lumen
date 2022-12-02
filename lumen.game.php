@@ -197,6 +197,7 @@ class Lumen extends Table {
         $result['die1'] = intval($this->getGameStateValue(DIE1));
         $result['die2'] = intval($this->getGameStateValue(DIE2));
         $result['realizedObjectives'] = $this->getRealizedObjectives();
+        $result['roundNumber'] = intval($this->getStat('roundNumber')) + 1;
         
   
         return $result;
@@ -214,7 +215,7 @@ class Lumen extends Table {
     */
     function getGameProgression() {
         // compute and return the game progression
-        return intval($this->getStat('turnNumber')) * 100 / 17;
+        return intval($this->getStat('roundNumber')) * 100 / 17;
     }
 
 //////////////////////////////////////////////////////////////////////////////

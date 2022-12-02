@@ -30,6 +30,7 @@ class Lumen implements LumenGame {
     private bags: VoidStock<Card>[] = [];
     private bagCounters: Counter[] = [];
     private display: LumenDisplay = 'fit-map-and-board-to-screen';
+    private roundNumberCounter: Counter;
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -146,6 +147,7 @@ class Lumen implements LumenGame {
 
     private onEnteringNewRound() {
         this.playersTables.forEach(playerTable => playerTable.removeFirstPlayerToken());
+        this.roundNumberCounter.incValue(1);
     }
 
     private onEnteringPlanificationChooseFaces() {
@@ -633,11 +635,20 @@ class Lumen implements LumenGame {
         const scenarioSynopsis = document.getElementById(`scenario-synopsis`);
         const scenarioSpecialRules = document.getElementById(`scenario-special-rules`);
         const scenarioObjectives = document.getElementById(`scenario-objectives`);
-        scenarioName.innerHTML = this.scenario.title;
+        scenarioName.innerHTML = `
+            <div class="title">${this.scenario.title}</div>
+            <div class="round">${_('Round:')} <span id="round-number-counter"></span>/17</div>
+        `;
+        this.roundNumberCounter = new ebg.counter();
+        this.roundNumberCounter.create(`round-number-counter`);
+        this.roundNumberCounter.setValue(this.gamedatas.roundNumber);
+
         scenarioSynopsis.innerHTML = this.scenario.synopsis;
+
         scenarioSpecialRules.innerHTML = `<div class="title">${_('Special rules')}</div>${this.scenario.specialRules.length ? 
             `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`).join('')}</ul>` : 
             _('Nothing')}`;
+
         scenarioObjectives.innerHTML = `<ul>${this.scenario.objectives.map(description => 
             `<li>
                 ${description.letters.map(letter => `<div class="objective-description-token token-with-letter">${letter}</div>`).join('')}

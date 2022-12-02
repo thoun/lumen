@@ -66,7 +66,7 @@ trait DebugUtilTrait {
     }
 
     public function debugLastTurn() {
-        $this->incStat(20, 'turnNumber');
+        $this->incStat(20, 'roundNumber');
     }
 
     public function debugReplacePlayersIds() {

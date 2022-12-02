@@ -1841,6 +1841,7 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.onEnteringNewRound = function () {
         this.playersTables.forEach(function (playerTable) { return playerTable.removeFirstPlayerToken(); });
+        this.roundNumberCounter.incValue(1);
     };
     Lumen.prototype.onEnteringPlanificationChooseFaces = function () {
         var _this = this;
@@ -2275,7 +2276,10 @@ var Lumen = /** @class */ (function () {
         var scenarioSynopsis = document.getElementById("scenario-synopsis");
         var scenarioSpecialRules = document.getElementById("scenario-special-rules");
         var scenarioObjectives = document.getElementById("scenario-objectives");
-        scenarioName.innerHTML = this.scenario.title;
+        scenarioName.innerHTML = "\n            <div class=\"title\">".concat(this.scenario.title, "</div>\n            <div class=\"round\">").concat(_('Round:'), " <span id=\"round-number-counter\"></span>/17</div>\n        ");
+        this.roundNumberCounter = new ebg.counter();
+        this.roundNumberCounter.create("round-number-counter");
+        this.roundNumberCounter.setValue(this.gamedatas.roundNumber);
         scenarioSynopsis.innerHTML = this.scenario.synopsis;
         scenarioSpecialRules.innerHTML = "<div class=\"title\">".concat(_('Special rules'), "</div>").concat(this.scenario.specialRules.length ?
             "<ul>".concat(this.scenario.specialRules.map(function (text) { return "<li>".concat(text, "</li>"); }).join(''), "</ul>") :

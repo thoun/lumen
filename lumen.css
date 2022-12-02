@@ -1676,10 +1676,16 @@ html, .mode_3d #game_play_area_background {
 #scenario-name {
   font-family: "URW Bernhard Gothic W01 Ultra", sans-serif;
   text-align: center;
+  padding: 10px;
+}
+#scenario-name .title {
   text-transform: uppercase;
   font-weight: bold;
   font-size: 1.8rem;
-  padding: 10px;
+}
+#scenario-name .round {
+  font-size: 1.25rem;
+  color: gray;
 }
 
 #scenario-synopsis {

@@ -83,9 +83,9 @@ trait StateTrait {
     }
 
     function stEndRound() {
-        $this->incStat(1, 'turnNumber');
+        $this->incStat(1, 'roundNumber');
 
-        $lastRound = intval($this->getStat('turnNumber')) >= 17;
+        $lastRound = intval($this->getStat('roundNumber')) >= 17;
 
         if (!$lastRound) {
             $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY)));
