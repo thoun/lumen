@@ -2240,7 +2240,7 @@ var Lumen = /** @class */ (function () {
             var _a;
             var playerId = Number(player.id);
             document.getElementById("overall_player_board_".concat(playerId)).style.background = "#".concat(player.color);
-            dojo.place("\n            <div id=\"bag-".concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"><span id=\"bag-").concat(player.id, "-counter\"></span></div>\n            <div id=\"player-").concat(player.id, "-discover-tiles\"></div>\n            <div id=\"player-").concat(player.id, "-objective-tokens\"></div>\n            \n            <div id=\"first-player-token-wrapper-").concat(player.id, "\" class=\"first-player-token-wrapper\"></div>"), "player_board_".concat(player.id));
+            dojo.place("\n            <div class=\"grid\">\n                <div id=\"first-player-token-wrapper-".concat(player.id, "\" class=\"first-player-token-wrapper\"></div>\n                <div id=\"bag-").concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"><span id=\"bag-").concat(player.id, "-counter\"></span></div>\n            </div>\n            <div id=\"player-").concat(player.id, "-discover-tiles\"></div>\n            <div id=\"player-").concat(player.id, "-objective-tokens\"></div>\n            "), "player_board_".concat(player.id));
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place("<div id=\"first-player-token\" class=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
             }
@@ -2254,7 +2254,7 @@ var Lumen = /** @class */ (function () {
             _this.objectiveTokensStocks[playerId].addCards(player.objectiveTokens, undefined, { visible: Boolean((_a = player.objectiveTokens[0]) === null || _a === void 0 ? void 0 : _a.lumens) });
         });
         this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
-        dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n                <div id=\"bag-0\" class=\"bag\"><span id=\"bag-0-counter\"></span></div>\n               \n            </div>\n        </div>", "player_boards", 'first');
+        dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n            <div class=\"grid\">\n                <div></div>\n                <div id=\"bag-0\" class=\"bag\"><span id=\"bag-0-counter\"></span></div>\n            </div>\n               \n            </div>\n        </div>", "player_boards", 'first');
         this.bags[0] = new VoidStock(this.cardsManager, document.getElementById("bag-0"));
         this.bagCounters[0] = new ebg.counter();
         this.bagCounters[0].create("bag-".concat(0, "-counter"));

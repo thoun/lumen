@@ -582,11 +582,13 @@ class Lumen implements LumenGame {
             document.getElementById(`overall_player_board_${playerId}`).style.background = `#${player.color}`;
 
             dojo.place(`
-            <div id="bag-${player.id}" class="bag" data-color="${player.color}"><span id="bag-${player.id}-counter"></span></div>
+            <div class="grid">
+                <div id="first-player-token-wrapper-${player.id}" class="first-player-token-wrapper"></div>
+                <div id="bag-${player.id}" class="bag" data-color="${player.color}"><span id="bag-${player.id}-counter"></span></div>
+            </div>
             <div id="player-${player.id}-discover-tiles"></div>
             <div id="player-${player.id}-objective-tokens"></div>
-            
-            <div id="first-player-token-wrapper-${player.id}" class="first-player-token-wrapper"></div>`, `player_board_${player.id}`);
+            `, `player_board_${player.id}`);
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place(`<div id="first-player-token" class="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
             }
@@ -607,7 +609,10 @@ class Lumen implements LumenGame {
         <div id="overall_player_board_0" class="player-board current-player-board">					
             <div class="player_board_inner" id="player_board_inner_982fff">
 
+            <div class="grid">
+                <div></div>
                 <div id="bag-0" class="bag"><span id="bag-0-counter"></span></div>
+            </div>
                
             </div>
         </div>`, `player_boards`, 'first');
