@@ -1569,7 +1569,7 @@ html, .mode_3d #game_play_area_background {
   max-width: 100%;
 }
 #zoom-wrapper #full-table #map {
-  transform-origin: top center;
+  transform-origin: top left;
 }
 #zoom-wrapper #full-table #tables {
   display: flex;

@@ -2135,9 +2135,17 @@ var Lumen = /** @class */ (function () {
         //document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`;
         var map = document.getElementById('map');
         var mapFrame = document.getElementById('map-frame');
+        var mapFrameBR = mapFrame.getBoundingClientRect();
         var fullTable = document.getElementById('full-table');
         var scroll = this.display === 'scroll';
-        var playAreaViewportHeight = window.innerHeight - (mapFrame.getBoundingClientRect().top - document.body.getBoundingClientRect().top);
+        var spaceBeforeMap = mapFrameBR.top - document.body.getBoundingClientRect().top;
+        var bgaZoom = 1;
+        var bgaZoomStr = document.getElementById('page-content').style.zoom;
+        if (bgaZoomStr && bgaZoomStr !== '' && bgaZoomStr !== '1') {
+            bgaZoom = Number(bgaZoomStr);
+            spaceBeforeMap = document.getElementById('page-content').getBoundingClientRect().top * bgaZoom - document.body.getBoundingClientRect().top;
+        }
+        var playAreaViewportHeight = (window.innerHeight - spaceBeforeMap) / bgaZoom;
         mapFrame.style.maxHeight = "".concat(playAreaViewportHeight, "px");
         document.getElementById('scroll-buttons').dataset.scroll = scroll.toString();
         fullTable.style.margin = '';

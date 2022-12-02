@@ -467,10 +467,18 @@ class Lumen implements LumenGame {
         
         const map = document.getElementById('map');
         const mapFrame = document.getElementById('map-frame');
+        const mapFrameBR = mapFrame.getBoundingClientRect();
         const fullTable = document.getElementById('full-table');
         const scroll = this.display === 'scroll';
        
-        const playAreaViewportHeight = window.innerHeight - (mapFrame.getBoundingClientRect().top - document.body.getBoundingClientRect().top);
+        let spaceBeforeMap = mapFrameBR.top - document.body.getBoundingClientRect().top;
+        let bgaZoom = 1;
+        const bgaZoomStr = document.getElementById('page-content').style.zoom;
+        if (bgaZoomStr && bgaZoomStr !== '' && bgaZoomStr !== '1') {
+            bgaZoom = Number(bgaZoomStr);
+            spaceBeforeMap = document.getElementById('page-content').getBoundingClientRect().top * bgaZoom - document.body.getBoundingClientRect().top;
+        }
+        const playAreaViewportHeight = (window.innerHeight - spaceBeforeMap) / bgaZoom;
         mapFrame.style.maxHeight = `${playAreaViewportHeight}px`;
         document.getElementById('scroll-buttons').dataset.scroll = scroll.toString();
         fullTable.style.margin = '';
