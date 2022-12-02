@@ -354,7 +354,7 @@
   background-image: url("img/cards-neutral-special.png");
   background-position-x: 100%;
 }
-.card.fighter.selectable .card-side {
+.card.fighter.selectable:not(.selected) .card-side {
   animation: selectable-card-animation 1.5s alternate infinite ease-in-out;
 }
 .card.fighter.selected .card-side {

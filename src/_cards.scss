@@ -55,7 +55,7 @@
         }
     }
 
-    &.selectable {
+    &.selectable:not(.selected) {
         .card-side {
             animation: selectable-card-animation 1.5s alternate infinite ease-in-out;
         }
