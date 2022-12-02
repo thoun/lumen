@@ -247,6 +247,7 @@ trait ArgsTrait {
                 $selectedFighter = $this->getCardById($selectedFighterId);
                 $possibleTerritoryFighters = $this->getCardsByLocation('territory', $selectedFighter->locationArg);
                 $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->id  != $selectedFighter->id));
+                $this->incStat(1, 'activatedFighters', $playerId);
                 break;
             case MOVE_KILL:
                 $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
@@ -260,6 +261,7 @@ trait ArgsTrait {
                 }
 
                 $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->power != POWER_BAVEUX));
+                $this->incStat(1, 'activatedFighters', $playerId);
                 break;
             case MOVE_UNACTIVATE:
                 $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
@@ -272,6 +274,7 @@ trait ArgsTrait {
                     $possibleTerritoryFighters = array_merge($possibleTerritoryFighters, $opponentFighters);
                 }
                 $selectionSize = -1;
+                $this->incStat(1, 'activatedFighters', $playerId);
                 break;
             case ACTION_FURY:
                 $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $this->getOpponentId($playerId));
@@ -379,6 +382,7 @@ trait ArgsTrait {
                         }
                     }
                 }
+                $this->incStat(1, 'activatedFighters', $playerId);
                 break;
             case MOVE_IMPATIENT:
                 $territoriesIds = [$selectedFighter->locationArg, ...$this->getTerritoryNeighboursIds($selectedFighter->locationArg)];

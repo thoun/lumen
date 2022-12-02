@@ -375,6 +375,8 @@ trait UtilTrait {
             ]);
         }
 
+        $this->incStat(1, 'checkedMercenaries', $playerId);        
+
         if ($checks >= 6) {
             $this->takeCheckObjectiveToken($playerId, $checks);
         }
@@ -526,6 +528,7 @@ trait UtilTrait {
     function addLink(int $playerId, int $circleId, int $toCircleId) {
         $index1 = min($circleId, $toCircleId);
         $index2 = max($circleId, $toCircleId);
+        $links = $this->getLinks($playerId);
 
         self::DbQuery("INSERT INTO link (player_id, index1, index2) VALUES ($playerId, $index1, $index2)");
         
@@ -534,6 +537,11 @@ trait UtilTrait {
             'index1' => $index1,
             'index2' => $index2,
         ]);
+
+        $isConnectedToAnotherLink = $this->array_some($links, fn($link) => $link->index1 == $index1 || $link->index2 == $index1 || $link->index1 == $index2 || $link->index2 == $index2);
+        if (!$isConnectedToAnotherLink) {
+            $this->incStat(1, 'numberOfLines', $playerId);
+        }
     }
 
     function takeObjectiveTokens(int $playerId, int $number, string $message, $messageArgs = []) {
@@ -597,6 +605,9 @@ trait UtilTrait {
                     'i18n' => ['mission'],
                 ]
             );
+            
+            $this->incStat($number, 'tokensFromMissions');
+            $this->incStat($number, 'tokensFromMissions', $playerId);
         } else {
             self::notifyAllPlayers('log', clienttranslate('${player_name} doesn\'t score mission ${mission}'), [
                 'playerId' => $playerId,
@@ -654,6 +665,8 @@ trait UtilTrait {
                 if (!$this->isRealizedObjective('C') && $territoryId == 61) {
                     $this->takeScenarioObjectiveToken($fighter->playerId, 'C');
                     $this->setRealizedObjective('C');
+                    $this->incStat(1, 'completedObjectives');
+                    $this->incStat(1, 'completedObjectives', $fighter->playerId);
                 }
                 break;
             case 7: 
@@ -663,6 +676,8 @@ trait UtilTrait {
                     if (($playerNo == 1 && $territoryId == 75) || ($playerNo == 2 && $territoryId == 65)) {
                         $this->takeScenarioObjectiveToken($fighter->playerId, null, 3);
                         $this->setRealizedObjective('2');
+                        $this->incStat(1, 'completedObjectives');
+                        $this->incStat(1, 'completedObjectives', $fighter->playerId);
                     }
                 }
                 break;
@@ -691,6 +706,8 @@ trait UtilTrait {
                 if (count(array_unique($controlledBy, SORT_REGULAR)) === 1 && $controlledBy[0] !== null) {
                     $this->takeScenarioObjectiveToken($controlledBy[0], $letter);
                     $this->setRealizedObjective($letter);
+                    $this->incStat(1, 'completedObjectives');
+                    $this->incStat(1, 'completedObjectives', $controlledBy[0]);
                 }
             }
         }
@@ -860,21 +877,17 @@ trait UtilTrait {
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_TELEPORT);
                 break;
         }
-        // TODO action
         $this->gamestate->nextState($nextState);
-        //$this->putBackInBag($action, 0);
     }
 
     function applyActivateFighter(Card &$fighter) {
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $fighter->id);
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_ACTIVATE);
 
+        $playerId = intval($this->getActivePlayerId());
+
         $this->setFightersActivated([$fighter]);
         $this->incMoveCount(-1);
-        if ($fighter->power === POWER_METAMORPH) {
-            // every time a metamorph is flipped, we check if it makes a control to a visible Discover tile
-            $this->checkTerritoriesDiscoverTileControl();
-        }
 
         $nextState = 'nextMove';
         switch ($fighter->power) {
@@ -883,10 +896,11 @@ trait UtilTrait {
                 $playerFighters = $this->getCardsByLocation('territory', null, $fighter->playerId);
                 $unactivatedFighters = array_values(array_filter($playerFighters, fn($playerFighter) => $playerFighter->played && $playerFighter->id != $fighter->id && in_array($playerFighter->locationArg, $territories)));
                 $this->setFightersUnactivated($unactivatedFighters);
-                if ($this->array_some($unactivatedFighters, fn($unactivatedFighter) => $unactivatedFighter->power === POWER_METAMORPH)) {
-                    // every time a metamorph is flipped, we check if it makes a control to a visible Discover tile
+                if ($this->array_some($unactivatedFighters, fn($unactivatedFighter) => in_array($unactivatedFighter->power, [POWER_TISSEUSE, POWER_ROOTED, POWER_METAMORPH]))) {
+                    // every time a fighter with changing strength with is flipped, we check if it makes a control to a visible Discover tile
                     $this->checkTerritoriesDiscoverTileControl();
                 }
+                $this->incStat(1, 'activatedFighters', $playerId);
                 break;
             case POWER_PUSHER:
                 if ($fighter->type === 10) { // super pusher                    
@@ -922,7 +936,13 @@ trait UtilTrait {
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_UNACTIVATE);
                 $nextState = 'chooseFighter';
                 break;
-            // POWER_TISSEUSE, POWER_ROOTED, POWER_METAMORPH: passive powers
+            case POWER_TISSEUSE:
+            case POWER_ROOTED:
+            case POWER_METAMORPH:
+                // every time a fighter with changing strength is flipped, we check if it makes a control to a visible Discover tile
+                $this->checkTerritoriesDiscoverTileControl();
+                $this->incStat(1, 'activatedFighters', $playerId);
+                break;
         }
 
         $this->gamestate->nextState($nextState);
@@ -932,6 +952,8 @@ trait UtilTrait {
         if ($this->getScenarioId() == 2 && intval($this->cards->countCardInLocation('bag'.$playerId)) == 0 && !$this->isRealizedObjective('1', $playerId)) {
             $this->takeScenarioObjectiveToken($playerId, null, 2);
             $this->setRealizedObjective('1', $playerId);
+            $this->incStat(1, 'completedObjectives');
+            $this->incStat(1, 'completedObjectives', $playerId);
         }
     }
 

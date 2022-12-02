@@ -113,6 +113,7 @@ trait StateTrait {
                     $this->incStat(1, 'controlledTerritories', $controlPlayer);   
                     $this->incStat(1, 'controlledTerritories'.$territory->lumens);   
                     $this->incStat(1, 'controlledTerritories'.$territory->lumens, $controlPlayer);  
+                    $this->incStat($territory->lumens, 'scoreTerritoryControl', $controlPlayer);
 
                     $this->incPlayerScore($controlPlayer, $territory->lumens, clienttranslate('${player_name} controls the ${season} territory on battlefield ${battlefieldId}'), [
                         'scoreType' => 'endControlTerritory',
@@ -195,6 +196,8 @@ trait StateTrait {
                 'scoreType' => 'discoverTiles',
                 'vp' => $points,
             ]);
+
+            $this->setStat($points, 'scoreDiscoverTiles', $playerId);
         }
     }
 
@@ -204,6 +207,8 @@ trait StateTrait {
                 $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY)));
                 if ($initiativeMarkerControlledPlayer !== null) {
                     $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer);
+                    $this->incStat(1, 'completedObjectives');
+                    $this->incStat(1, 'completedObjectives', $initiativeMarkerControlledPlayer);
                 }
                 break;
             case 2:
@@ -231,6 +236,8 @@ trait StateTrait {
 
                 if ($leastOrphans !== null) {
                     $this->takeScenarioObjectiveToken($leastOrphans);
+                    $this->incStat(1, 'completedObjectives');
+                    $this->incStat(1, 'completedObjectives', $leastOrphans);
                 }
 
                 break;
@@ -281,6 +288,8 @@ trait StateTrait {
                                 'i18n' => ['cardinalDirection'],
                             ]
                         );
+                        $this->incStat(1, 'completedObjectives');
+                        $this->incStat(1, 'completedObjectives', $playerId);
                     }
                 }
                 break;
@@ -302,6 +311,8 @@ trait StateTrait {
 
                 if ($monstWinterFighters !== null) {
                     $this->takeScenarioObjectiveToken($monstWinterFighters);
+                    $this->incStat(1, 'completedObjectives');
+                    $this->incStat(1, 'completedObjectives', $monstWinterFighters);
                 }
 
                 break;
@@ -323,6 +334,25 @@ trait StateTrait {
                 'scoreType' => 'objectiveTokens',
                 'vp' => $points,
             ]);
+
+            $this->setStat($points, 'scoreObjectiveTokens', $playerId);
+        }
+    }
+
+    function endStats(array $playersIds) {
+        foreach ($playersIds as $playerId) {
+            $circles = $this->getCircles($playerId);
+            $circles = array_filter($circles, fn($circle) => $circle->value !== null && $circle->value !== -1);
+            $totalValues = array_reduce(array_map(fn($circle) => $circle->value, $circles), fn($a, $b) => $a + $b, 0);
+            $this->setStat($totalValues / count($circles), 'averageFigure', $playerId);
+
+            $playerFighters = $this->getCardsByLocation('territory', null, $playerId);
+
+            $territoryFightersCount = count($playerFighters);
+            $this->setStat($territoryFightersCount, 'territoryFighters', $playerId);
+            $territoryFightersCumulatedStrength = array_reduce(array_map(fn($fighter) => $fighter->strength, $playerFighters), fn($a, $b) => $a + $b, 0);
+            $this->setStat($territoryFightersCumulatedStrength, 'territoryFightersCumulatedStrength', $playerId);
+            $this->setStat($territoryFightersCumulatedStrength / $territoryFightersCount, 'territoryFightersAverageStrength', $playerId);
         }
     }
 
@@ -344,7 +374,7 @@ trait StateTrait {
             $this->DbQuery("UPDATE `player` SET `player_score_aux` = 1 WHERE `player_id` = $initiativeMarkerControlledPlayer"); 
         }
 
-        // TODO stats
+        $this->endStats($playersIds);
 
         $this->gamestate->nextState('endGame');
     }

@@ -128,13 +128,26 @@ class Lumen extends Table {
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        // 10+ : rounds/turns
-        
+        // 10+ : rounds/turns        
         $this->initStat('table', 'roundNumber', 0);
-        $this->initStat('player', 'roundsAsFirstPlayer', 0);
-        // 20+ : territories 
+        foreach([
+            // 10+ : rounds/turns        
+            'roundsAsFirstPlayer', 'checkedMercenaries', 'numberOfZones', 'numberOfLines', 'figuresOver6',
+            // 50+ : scoring
+            'scoreTerritoryControl', 'scoreDiscoverTiles', 'scoreObjectiveTokens',
+        ] as $name) {
+            $this->initStat('player', $name, 0);
+        }
+
         foreach(['table', 'player'] as $type) {
-            foreach(['controlledTerritories', 'tieControlTerritories', 'controlledTerritories1', 'controlledTerritories3', 'controlledTerritories5', 'controlledTerritories7'] as $name) {
+            foreach([
+                // 10+ : rounds/turns
+                'completedObjectives', 'tokensFromMissions',
+                // 20+ : territories 
+                'controlledTerritories', 'tieControlTerritories', 'controlledTerritories1', 'controlledTerritories3', 'controlledTerritories5', 'controlledTerritories7',
+                // 30+ : fighters
+                'placedFighters', 'movedFighters', 'activatedFighters', 'placedMercenaries', 'playedActions',
+            ] as $name) {
                 $this->initStat($type, $name, 0);
             }
         }

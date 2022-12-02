@@ -53,8 +53,12 @@ class Card extends CardType {
     }
 
     public function getStrength() {
-        if ($this->power === POWER_METAMORPH && $this->played) {
-            return 3;
+        if ($this->played) {
+            if ($this->power === POWER_TISSEUSE || $this->power === POWER_ROOTED) {
+                return 1;
+            } else if ($this->power === POWER_METAMORPH) {
+                return 3;
+            }
         } else {
             return $this->strength;
         }

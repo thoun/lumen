@@ -127,6 +127,7 @@ trait ActionTrait {
         self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($playerId, $cellId, $value)");
 
         if ($value >= 7) {
+            $this->incStat(1, 'figuresOver6', $playerId);
             $this->addCheck($playerId);
         }
 
@@ -139,18 +140,31 @@ trait ActionTrait {
 
         $newZoneCellCount = $this->refreshZones($playerId, $cellId);
         $this->setGameStateValue(REMAINING_FIGHTERS_TO_PLACE, $newZoneCellCount);
+        if ($newZoneCellCount == 2) {
+            $this->incStat(1, 'numberOfZones', $playerId);
+        }
 
         $links = $this->getLinks($playerId);
         $possibleUpperLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, 1);
         $possibleLowerLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, -1);
 
+        if (count($possibleUpperLinkCirclesIds) > 0 || count($possibleLowerLinkCirclesIds) > 0) {
+            $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+        }
+
         if (count($possibleUpperLinkCirclesIds) === 1) {
             $this->addLink($playerId, $cellId, $possibleUpperLinkCirclesIds[0]);
-            $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+            $isOtherCellInALink = $this->array_some($links, fn($link) => $link->index1 == $possibleUpperLinkCirclesIds[0] || $link->index2 == $possibleUpperLinkCirclesIds[0]);
+            if (!$isOtherCellInALink) {
+                $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+            }
         }
         if (count($possibleLowerLinkCirclesIds) === 1) {
             $this->addLink($playerId, $cellId, $possibleLowerLinkCirclesIds[0]);
-            $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+            $isOtherCellInALink = $this->array_some($links, fn($link) => $link->index1 == $possibleLowerLinkCirclesIds[0] || $link->index2 == $possibleLowerLinkCirclesIds[0]);
+            if (!$isOtherCellInALink) {
+                $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+            }
         }
 
         if (count($possibleUpperLinkCirclesIds) > 1 || count($possibleLowerLinkCirclesIds) > 1) {
@@ -158,9 +172,6 @@ trait ActionTrait {
             return;
         }
 
-        /*$this->incStat(1, 'takeFromDiscard');
-        $this->incStat(1, 'takeFromDiscard', $playerId);
-        $this->updateCardsPoints($playerId);*/
         $this->gamestate->nextState('chooseAction');
     }
 
@@ -215,7 +226,14 @@ trait ActionTrait {
 
         $fromCell = $args['cellId'];
         $this->addLink($playerId, $fromCell, $cellId);
-        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+
+        $links = $this->getLinks($playerId);
+        $isOtherCellInALink = $this->array_some($links, fn($link) => $link->index1 == $cellId || $link->index2 == $cellId);
+        if (!$isOtherCellInALink) {
+            $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+        }
+        
+        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1 + ($isOtherCellInALink ? 0 : 1));
         
         $this->gamestate->nextState('chooseAction');
     }
@@ -259,6 +277,8 @@ trait ActionTrait {
         if ($this->getScenarioId() == 1 && $fighter->type == 10 && !$this->isRealizedObjective('1')) {
             $this->takeScenarioObjectiveToken($playerId, '1');
             $this->setRealizedObjective('1');
+            $this->incStat(1, 'completedObjectives');
+            $this->incStat(1, 'completedObjectives', $playerId);
         }
 
         $this->gamestate->nextState('chooseTerritory');
@@ -367,6 +387,8 @@ trait ActionTrait {
 
     public function chooseFighters(array $ids) {        
         $this->checkAction('chooseFighters'); 
+        
+        $playerId = intval($this->getActivePlayerId());
 
         $args = $this->argChooseFighter();
         if (!in_array($args['selectionSize'], [-1, count($ids)])) {
@@ -404,16 +426,19 @@ trait ActionTrait {
                     throw new BgaUserException("You must select fighters of different territories");
                 }
                 $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
+                $this->incStat(1, 'playedActions', $playerId);
                 $this->checkTerritoriesDiscoverTileControl();
                 break;
             case ACTION_RESET:
                 $fighters = $this->getCardsByLocation($fighter->location, $fighter->locationArg); // TODO check if it battlefield or territory
                 $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
+                $this->incStat(1, 'playedActions', $playerId);
                 break;
             case ACTION_TELEPORT:
                 $this->cards->moveCard($fighters[0]->id, 'territory', $fighters[1]->locationArg);
                 $this->cards->moveCard($fighters[1]->id, 'territory', $fighters[0]->locationArg);
                 $this->putBackInBag([$selectedFighter]);
+                $this->incStat(1, 'playedActions', $playerId);
                 $this->checkTerritoriesDiscoverTileControl();
         
                 self::notifyAllPlayers("exchangedFighters", '', [
@@ -482,6 +507,11 @@ trait ActionTrait {
             case MOVE_PLAY:
                 $this->applyMoveFighter($selectedFighter, $territoryId);
                 $this->incPlaceCount(-1);
+                $this->incStat(1, 'placedFighters', $playerId);
+                if ($selectedFighter->type == 10) {                    
+                    $this->incStat(1, 'placedMercenaries', $playerId);
+                }
+                $this->checkTerritoriesDiscoverTileControl();
                 break;
             case MOVE_MOVE:
                 $originTerritoryId = $selectedFighter->locationArg;
@@ -496,6 +526,7 @@ trait ActionTrait {
                     $inc = -2;
                 }
                 $this->incMoveCount($inc);
+                $this->incStat(1, 'movedFighters', $playerId);
                 break;
             case MOVE_SUPER:
                 $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
@@ -532,6 +563,7 @@ trait ActionTrait {
                     'player_name' => $this->getPlayerName($playerId),
                     'territoryId' => $territoryId,
                 ]);
+                $this->incStat(1, 'activatedFighters', $playerId);
                 break;
         }
 

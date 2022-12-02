@@ -50,7 +50,17 @@
 
 
 $commonStats = [
-    // 10+ : rounds/turns
+    // 10+ : rounds/turns/other
+    "completedObjectives" => [
+        "id" => 17,
+        "name" => totranslate("Completed objectives"),
+        "type" => "int"
+    ],
+    "tokensFromMissions" => [
+        "id" => 18,
+        "name" => totranslate("Objective tokens from missions"),
+        "type" => "int"
+    ],
     // 20+ : territories 
     "controlledTerritories" => [
         "id" => 20,
@@ -82,29 +92,115 @@ $commonStats = [
         "name" => totranslate("Number of spring controlled territories"),
         "type" => "int"
     ],
+    // 30+ : fighters
+    "placedFighters" => [
+        "id" => 30,
+        "name" => totranslate("Played fighters"),
+        "type" => "int"
+    ],
+    "movedFighters" => [
+        "id" => 31,
+        "name" => totranslate("Moved fighters"),
+        "type" => "int"
+    ],
+    "activatedFighters" => [
+        "id" => 32,
+        "name" => totranslate("Activated fighters"),
+        "type" => "int"
+    ],
+    "territoryFighters" => [
+        "id" => 33,
+        "name" => totranslate("Fighters in territories at the end"),
+        "type" => "int"
+    ],
+    "territoryFightersCumulatedStrength" => [
+        "id" => 34,
+        "name" => totranslate("Fighters in territories cumulated strength"),
+        "type" => "int"
+    ],
+    "territoryFightersAverageStrength" => [
+        "id" => 35,
+        "name" => totranslate("Fighters in territories average strength"),
+        "type" => "float"
+    ],
+    "placedMercenaries" => [
+        "id" => 36,
+        "name" => totranslate("Played mercenaries"),
+        "type" => "int"
+    ],
+    "playedActions" => [
+        "id" => 37,
+        "name" => totranslate("Played actions"),
+        "type" => "int"
+    ],
+    // 50+ : scoring
 ];
 
 $stats_type = [
 
     // Statistics global to table
     "table" => $commonStats + [
-        // 10+ : rounds/turns
+        // 10+ : rounds/turns/other
         "roundNumber" => [
             "id" => 10,
             "name" => totranslate("Number of rounds"),
             "type" => "int"
         ], 
         // 20+ : territories 
+        // 30+ : fighters
+        // 50+ : scoring
     ],
     
     // Statistics existing for each player
     "player" => $commonStats + [
-        // 10+ : rounds/turns
+        // 10+ : rounds/turns/other
         "roundsAsFirstPlayer" => [
             "id" => 11,
             "name" => totranslate("Rounds as first player"),
             "type" => "int"
         ],
+        "checkedMercenaries" => [
+            "id" => 12,
+            "name" => totranslate("Checked on mercenary track"),
+            "type" => "int"
+        ],
+        "numberOfZones" => [
+            "id" => 13,
+            "name" => totranslate("Number of zones"),
+            "type" => "int" 
+        ],
+        "numberOfLines" => [
+            "id" => 14,
+            "name" => totranslate("Number of lines"),
+            "type" => "int" 
+        ],
+        "figuresOver6" => [
+            "id" => 15,
+            "name" => totranslate("Figures over 6"),
+            "type" => "int" 
+        ],
+        "averageFigure" => [
+            "id" => 16,
+            "name" => totranslate("Average figure"),
+            "type" => "int" 
+        ],
         // 20+ : territories 
+        // 30+ : fighters
+        // 50+ : scoring
+        "scoreTerritoryControl" => [
+            "id" => 50,
+            "name" => totranslate("Points with territory control"),
+            "type" => "int"
+        ],
+        "scoreDiscoverTiles" => [
+            "id" => 51,
+            "name" => totranslate("Points with discover tiles"),
+            "type" => "int"
+        ],
+        "scoreObjectiveTokens" => [
+            "id" => 52,
+            "name" => totranslate("Points with objective tokens"),
+            "type" => "int"
+        ],
     ]
 ];
