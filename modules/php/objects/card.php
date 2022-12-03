@@ -58,6 +58,8 @@ class Card extends CardType {
                 return 1;
             } else if ($this->power === POWER_METAMORPH) {
                 return 3;
+            } else {
+                return $this->strength;
             }
         } else {
             return $this->strength;
