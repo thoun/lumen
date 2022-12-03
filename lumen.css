@@ -905,13 +905,13 @@ body > .card {
   position: relative;
 }
 .player-board .grid .bag {
-  width: 74px;
-  height: 80px;
+  width: 46px;
+  height: 50px;
   margin: 5px;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  background: url("img/bag-neutral.png");
+  background-image: url("img/bag-neutral.png");
   display: flex;
   justify-content: center;
   align-items: center;
