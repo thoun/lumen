@@ -189,6 +189,8 @@ class Lumen extends Table {
         $result['remainingCardsInBag'] = [0 => count($this->getCardsByLocation('bag0'))];
 
         $isEnd = intval($this->gamestate->state_id()) >= ST_END_SCORE;
+
+        $counters = $this->updateControlCounters($this->getScenario(), array_keys($result['players']));
   
         // Gather all information about current game situation (visible by player $current_player_id).
         foreach($result['players'] as $playerId => &$player) {
@@ -206,6 +208,8 @@ class Lumen extends Table {
             $player['discoverTiles'] = $discoverTiles;
             $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
             $player['objectiveTokens'] = $playerId == $currentPlayerId || $isEnd ? $objectiveTokens : ObjectiveToken::onlyIds($objectiveTokens);
+            
+            $player['controlCounters'] = $counters[$playerId];
 
             $result['remainingCardsInBag'][$playerId] = count($this->getCardsByLocation('bag'.$playerId));
         }

@@ -501,7 +501,7 @@ trait UtilTrait {
 
         foreach ($circle->neighbours as $neighbourId) {
             $neighbour = $this->array_find($circles, fn($c) => $c->circleId == $neighbourId);
-            if ($neighbour->value === $value - $direction) {
+            if ($neighbour->value >= 0 && $neighbour->value === $value - $direction) {
                 $linkedCirclesIds = [];
                 foreach ($links as $link) {
                     if ($neighbour->circleId == $link->index1) {
@@ -694,7 +694,8 @@ trait UtilTrait {
             }
         }
         
-        $frontierObjectives = $this->getScenario()->frontierObjectives;
+        $scenario = $this->getScenario();
+        $frontierObjectives = $scenario->frontierObjectives;
 
         foreach ($frontierObjectives as $letter => $territoriesIds) {
             if (!$this->isRealizedObjective($letter)) {
@@ -711,6 +712,30 @@ trait UtilTrait {
                 }
             }
         }
+
+        $playersIds = $this->getPlayersIds();
+        $this->updateControlCounters($scenario, $playersIds);
+    }
+
+    function updateControlCounters(Scenario $scenario, array $playersIds) {
+        $counters = [];
+        foreach ($playersIds as $playerId) {
+            $counters[$playerId] = [1 => 0, 3 => 0, 5 => 0, 7 => 0];
+            foreach ($scenario->battlefieldsIds as $battlefieldId) {
+                foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                    $controlledBy = $this->getTerritoryControlledPlayer($territory->id);
+                    if ($controlledBy === $playerId) {
+                        $counters[$playerId][$territory->lumens]++;
+                    }
+                }
+            }
+        }
+
+        self::notifyAllPlayers("updateControlCounters", '', [
+            'counters' => $counters,
+        ]);
+
+        return $counters;
     }
 
     function moveDiscoverTileToPlayer(DiscoverTile &$discoverTile, int $playerId) {

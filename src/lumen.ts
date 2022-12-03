@@ -29,6 +29,7 @@ class Lumen implements LumenGame {
     private bagCounters: Counter[] = [];
     private display: LumenDisplay = 'fit-map-and-board-to-screen';
     private roundNumberCounter: Counter;
+    private controlCounters: { [playerId: number]: { [lumens: number]: Counter } } = {};
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -592,12 +593,22 @@ class Lumen implements LumenGame {
 
             document.getElementById(`overall_player_board_${playerId}`).style.background = `#${player.color}`;
 
-            dojo.place(`
+            let html = `
+            <div class="counters">
+                <div class="counters-title">${_('Controlled territories')}</div>
+                <div class="counters-wrapper">`;
+            [1,3,5,7].forEach(lumens => 
+                html += `<div class="counter-wrapper" data-hidden="${(!this.scenario.battlefields.some(battlefield => BATTLEFIELDS[battlefield.battlefieldId].territories.some(territory => territory.id % 10 == lumens))).toString()}">
+                    <div class="territory-img" data-lumens="${lumens}"></div><div id="controlled-territories-${player.id}-${lumens}" class="counter"></div>
+                </div>`
+            );
+            html += `</div></div>
             <div class="grid">
                 <div id="first-player-token-wrapper-${player.id}" class="first-player-token-wrapper"></div>
                 <div id="bag-${player.id}" class="bag" data-color="${player.color}"><span id="bag-${player.id}-counter"></span></div>
             </div>
-            `, `player_board_${player.id}`);
+            `;
+            dojo.place(html, `player_board_${player.id}`);
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place(`<div id="first-player-token" class="first-player-token"></div>`, `first-player-token-wrapper-${player.id}`);
             }
@@ -606,6 +617,13 @@ class Lumen implements LumenGame {
             this.bagCounters[playerId] = new ebg.counter();
             this.bagCounters[playerId].create(`bag-${player.id}-counter`);
             this.bagCounters[playerId].setValue(gamedatas.remainingCardsInBag[playerId]);
+
+            this.controlCounters[playerId] = {};
+            [1,3,5,7].forEach(lumens => {
+                this.controlCounters[playerId][lumens] = new ebg.counter();
+                this.controlCounters[playerId][lumens].create(`controlled-territories-${player.id}-${lumens}`);
+                this.controlCounters[playerId][lumens].setValue(player.controlCounters[lumens]);
+            });
         });
 
         this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
@@ -1086,6 +1104,7 @@ class Lumen implements LumenGame {
             ['score', 1],
             ['revealObjectiveTokens', ANIMATION_MS],
             ['endControlTerritory', ANIMATION_MS * 2],
+            ['updateControlCounters', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -1281,6 +1300,13 @@ class Lumen implements LumenGame {
 
     notif_revealObjectiveTokens(notif: Notif<NotifObjectiveTokensArgs>) {
         this.getPlayerTable(notif.args.playerId).revealObjectiveTokens(notif.args.tokens);
+    }
+
+    notif_updateControlCounters(notif: Notif<NotifUpdateControlCountersArgs>) {
+        Object.keys(notif.args.counters).forEach(key => {
+            const playerCounters = notif.args.counters[key];
+            [1, 3, 5, 7].forEach(lumens => this.controlCounters[key][lumens].toValue(playerCounters[lumens]))
+        });
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

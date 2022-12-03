@@ -48,6 +48,7 @@ interface LumenPlayer extends Player {
     links: Link[];
     discoverTiles: DiscoverTile[];
     objectiveTokens: ObjectiveToken[];
+    controlCounters: number[];
 }
 
 interface LumenGamedatas {
@@ -262,4 +263,8 @@ interface NotifScoreArgs {
 
 interface NotifEndControlTerritoryArgs extends NotifScoreArgs {
     territoryId: number;
+}
+
+interface NotifUpdateControlCountersArgs {
+    counters: { [playerId: number]: number[] };
 }

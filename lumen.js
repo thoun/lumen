@@ -1812,6 +1812,7 @@ var Lumen = /** @class */ (function () {
         this.bags = [];
         this.bagCounters = [];
         this.display = 'fit-map-and-board-to-screen';
+        this.controlCounters = {};
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var displayStr = localStorage.getItem(LOCAL_STORAGE_DISPLAY_KEY);
         if (displayStr && ['scroll', 'fit-map-to-screen', 'fit-map-and-board-to-screen'].includes(displayStr)) {
@@ -2323,7 +2324,12 @@ var Lumen = /** @class */ (function () {
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             document.getElementById("overall_player_board_".concat(playerId)).style.background = "#".concat(player.color);
-            dojo.place("\n            <div class=\"grid\">\n                <div id=\"first-player-token-wrapper-".concat(player.id, "\" class=\"first-player-token-wrapper\"></div>\n                <div id=\"bag-").concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"><span id=\"bag-").concat(player.id, "-counter\"></span></div>\n            </div>\n            "), "player_board_".concat(player.id));
+            var html = "\n            <div class=\"counters\">\n                <div class=\"counters-title\">".concat(_('Controlled territories'), "</div>\n                <div class=\"counters-wrapper\">");
+            [1, 3, 5, 7].forEach(function (lumens) {
+                return html += "<div class=\"counter-wrapper\" data-hidden=\"".concat((!_this.scenario.battlefields.some(function (battlefield) { return BATTLEFIELDS[battlefield.battlefieldId].territories.some(function (territory) { return territory.id % 10 == lumens; }); })).toString(), "\">\n                    <div class=\"territory-img\" data-lumens=\"").concat(lumens, "\"></div><div id=\"controlled-territories-").concat(player.id, "-").concat(lumens, "\" class=\"counter\"></div>\n                </div>");
+            });
+            html += "</div></div>\n            <div class=\"grid\">\n                <div id=\"first-player-token-wrapper-".concat(player.id, "\" class=\"first-player-token-wrapper\"></div>\n                <div id=\"bag-").concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"><span id=\"bag-").concat(player.id, "-counter\"></span></div>\n            </div>\n            ");
+            dojo.place(html, "player_board_".concat(player.id));
             if (gamedatas.firstPlayer == playerId) {
                 dojo.place("<div id=\"first-player-token\" class=\"first-player-token\"></div>", "first-player-token-wrapper-".concat(player.id));
             }
@@ -2331,6 +2337,12 @@ var Lumen = /** @class */ (function () {
             _this.bagCounters[playerId] = new ebg.counter();
             _this.bagCounters[playerId].create("bag-".concat(player.id, "-counter"));
             _this.bagCounters[playerId].setValue(gamedatas.remainingCardsInBag[playerId]);
+            _this.controlCounters[playerId] = {};
+            [1, 3, 5, 7].forEach(function (lumens) {
+                _this.controlCounters[playerId][lumens] = new ebg.counter();
+                _this.controlCounters[playerId][lumens].create("controlled-territories-".concat(player.id, "-").concat(lumens));
+                _this.controlCounters[playerId][lumens].setValue(player.controlCounters[lumens]);
+            });
         });
         this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
         dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n            <div class=\"grid\">\n                <div></div>\n                <div id=\"bag-0\" class=\"bag\"><span id=\"bag-0-counter\"></span></div>\n            </div>\n               \n            </div>\n        </div>", "player_boards", 'first');
@@ -2665,6 +2677,7 @@ var Lumen = /** @class */ (function () {
             ['score', 1],
             ['revealObjectiveTokens', ANIMATION_MS],
             ['endControlTerritory', ANIMATION_MS * 2],
+            ['updateControlCounters', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -2830,6 +2843,13 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_revealObjectiveTokens = function (notif) {
         this.getPlayerTable(notif.args.playerId).revealObjectiveTokens(notif.args.tokens);
+    };
+    Lumen.prototype.notif_updateControlCounters = function (notif) {
+        var _this = this;
+        Object.keys(notif.args.counters).forEach(function (key) {
+            var playerCounters = notif.args.counters[key];
+            [1, 3, 5, 7].forEach(function (lumens) { return _this.controlCounters[key][lumens].toValue(playerCounters[lumens]); });
+        });
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
