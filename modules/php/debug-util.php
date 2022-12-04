@@ -11,6 +11,17 @@ trait DebugUtilTrait {
             return;
         } 
 
+        $this->debugSetCircleValues(2343492, [3, 8], 4, 1);
+        $this->debugSetCircleValues(2343492, [13], 4);
+        
+        $this->debugSetCircleValues(2343492, [2, 6], 2, 2);
+        $this->debugSetCircleValues(2343492, [4, 10], 2, 3);
+
+        $this->debugSetCircleValues(2343492, [15, 19], 1);
+        $this->debugSetCircleValues(2343492, [18, 20], 5, 4);
+
+        $this->debugSetCircleValues(2343492, [11], 3);
+
         /*$this->debugAddObjectiveToken(2343492, 1);
         $this->debugAddDiscoverTile(2343492, 4, 1);
         $this->debugAddDiscoverTile(2343492, 5, 1);
@@ -67,6 +78,15 @@ trait DebugUtilTrait {
             } else {
                 $this->debug("Discover tile $type $powerOrLumens not found");
             }
+        }
+    }
+
+    public function debugSetCircleValues($playerId, $circlesIds, $value, $zoneId = null) {
+        foreach($circlesIds as $circleId) {
+            self::DbQuery($zoneId !== null ?
+                "INSERT INTO `circle` (`circle_id`, `player_id`, `value`, `zone`) VALUES ($circleId, $playerId, $value, $zoneId)" :
+                "INSERT INTO `circle` (`circle_id`, `player_id`, `value`) VALUES ($circleId, $playerId, $value)"
+            );
         }
     }
 

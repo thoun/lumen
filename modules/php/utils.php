@@ -450,8 +450,8 @@ trait UtilTrait {
         if(count($zones) == 1 && intval($zones[0]) == -1) {
             //new zones
             $zid = self::getUniqueValueFromDB( "SELECT max(zone) from circle where player_id = ".$playerId) + 1;
+            $newZoneCellCount = intval(self::getUniqueValueFromDB( "SELECT count(*) from circle where zone = -1 AND value = ".$circle['value']." and player_id = $playerId and circle_id in (".$neighttxt.", ".$circleId.")"));
             self::DbQuery("update circle set zone = ".$zid.' where value = '.$circle['value'].' and player_id = '.$playerId.' and circle_id in ('.$neighttxt.', '.$circleId.')');
-            $newZoneCellCount = 2;
         } else if(count($zones) == 1 && $zones[0] > -1) {
             self::DbQuery("update circle set zone = ".$zones[0].' where player_id = '.$playerId.' and circle_id = '.$circleId);
             $zid = $zones[0];
@@ -467,6 +467,9 @@ trait UtilTrait {
             if($zid == -1) {
                 //new zones resulting from 3 merges
                 $zid = self::getUniqueValueFromDB( "SELECT max(zone) from circle where player_id = ".$playerId) + 1;
+                $newZoneCellCount = 3;
+            } else {
+                $newZoneCellCount = intval(self::getUniqueValueFromDB( "SELECT count(*) from circle where zone = -1 AND value = ".$circle['value']." and player_id = $playerId and circle_id in (".$neighttxt.", ".$circleId.")"));
             }
             
             //merge adjacent value
@@ -478,7 +481,6 @@ trait UtilTrait {
                     self::DbQuery("update circle set zone = ".$zid.' where player_id = '.$playerId.' and zone = '.$zones[$i]);
                 }
             }
-            $newZoneCellCount = 1;
         }
                 
         if ($zid >= 0) {
