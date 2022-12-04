@@ -341,7 +341,7 @@ trait ArgsTrait {
                         case 3:
                             $currentAction = $this->getCurrentAction();
                             $remainingMoves = $currentAction->remaining;
-                            if ($remainingMoves >= 2) {
+                            if ($remainingMoves >= 2 && array_key_exists($selectedFighter->locationArg, $this->RIVER_CROSS_TERRITORIES)) {
                                 $territoriesIds = array_merge($territoriesIds, $this->RIVER_CROSS_TERRITORIES[$selectedFighter->locationArg]);
                             }
                             break;
