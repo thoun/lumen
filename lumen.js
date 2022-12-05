@@ -2136,7 +2136,6 @@ var Lumen = /** @class */ (function () {
                                 break;
                             case 21:
                                 this.addActionButton("chooseFighters_button", _('Remove selected fighters'), function () { return _this.chooseFighters(_this.chosenFighters); });
-                                document.getElementById("chooseFighters_button").classList.add('disabled');
                                 break;
                             case 23:
                                 this.addActionButton("chooseFighters_button", _('Swap selected fighters'), function () { return _this.chooseFighters(_this.chosenFighters); });
@@ -2489,7 +2488,10 @@ var Lumen = /** @class */ (function () {
             else {
                 this.chosenFighters.splice(index, 1);
             }
-            if ([21, 23].includes(args.move)) {
+            if (args.move == 21) {
+                document.getElementById("chooseFighters_button").classList.toggle('disabled', this.chosenFighters.length > args.selectionSize);
+            }
+            else if (args.move == 23) {
                 document.getElementById("chooseFighters_button").classList.toggle('disabled', this.chosenFighters.length !== args.selectionSize);
             }
         }
@@ -2582,8 +2584,15 @@ var Lumen = /** @class */ (function () {
             id: id
         });
     };
-    Lumen.prototype.chooseFighters = function (ids) {
+    Lumen.prototype.chooseFighters = function (ids, confirmed) {
+        var _this = this;
+        if (confirmed === void 0) { confirmed = false; }
         if (!this.checkAction('chooseFighters')) {
+            return;
+        }
+        var args = this.gamedatas.gamestate.args;
+        if (!confirmed && args.move == 21 && this.chosenFighters.length < args.selectionSize) {
+            this.confirmationDialog(_("Are you sure you choose only ${selected} fighter(s) (max : ${max}) ?").replace('${selected}', this.chosenFighters.length).replace('${max}', args.selectionSize), function () { return _this.chooseFighters(ids, true); });
             return;
         }
         this.takeAction('chooseFighters', {

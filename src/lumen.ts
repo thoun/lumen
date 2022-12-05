@@ -382,7 +382,6 @@ class Lumen implements LumenGame {
                                 break;
                             case 21:
                                 (this as any).addActionButton(`chooseFighters_button`, _('Remove selected fighters'), () => this.chooseFighters(this.chosenFighters));
-                                document.getElementById(`chooseFighters_button`).classList.add('disabled');
                                 break;
                             case 23:
                                 (this as any).addActionButton(`chooseFighters_button`, _('Swap selected fighters'), () => this.chooseFighters(this.chosenFighters));
@@ -869,7 +868,9 @@ class Lumen implements LumenGame {
                 this.chosenFighters.splice(index, 1);
             }
 
-            if ([21, 23].includes(args.move)) {
+            if (args.move == 21) {
+                document.getElementById(`chooseFighters_button`).classList.toggle('disabled', this.chosenFighters.length > args.selectionSize);
+            } else if (args.move == 23) {
                 document.getElementById(`chooseFighters_button`).classList.toggle('disabled', this.chosenFighters.length !== args.selectionSize);
             }
         }
@@ -988,8 +989,17 @@ class Lumen implements LumenGame {
         });
     }
 
-    public chooseFighters(ids: number[]) {
+    public chooseFighters(ids: number[], confirmed: boolean = false) {
         if(!(this as any).checkAction('chooseFighters')) {
+            return;
+        }
+
+        const args: EnteringChooseFighterArgs = this.gamedatas.gamestate.args;
+        if (!confirmed && args.move == 21 && this.chosenFighters.length < args.selectionSize) {
+            (this as any).confirmationDialog(
+                _("Are you sure you choose only ${selected} fighter(s) (max : ${max}) ?").replace('${selected}', this.chosenFighters.length).replace('${max}', args.selectionSize), 
+                () => this.chooseFighters(ids, true)
+            );
             return;
         }
 

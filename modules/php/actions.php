@@ -391,8 +391,14 @@ trait ActionTrait {
         $playerId = intval($this->getActivePlayerId());
 
         $args = $this->argChooseFighter();
-        if (!in_array($args['selectionSize'], [-1, count($ids)])) {
-            throw new BgaUserException("Invalid selection size");
+        if ($args['move'] == MOVE_FURY) {
+            if (count($ids) > $args['selectionSize']) {
+                throw new BgaUserException("Invalid selection size");
+            }
+        } else {
+            if (!in_array($args['selectionSize'], [-1, count($ids)])) {
+                throw new BgaUserException("Invalid selection size");
+            }
         }
         $fighters = [];
         $possibleTerritoryFightersIds = array_map(fn($fighter) => $fighter->id, $args['possibleTerritoryFighters']);
@@ -426,7 +432,7 @@ trait ActionTrait {
                 break;
 
             case ACTION_FURY:
-                if ($fighters[0]->locationArg == $fighters[1]->locationArg) {
+                if (count($fighters) >= 2 && $fighters[0]->locationArg == $fighters[1]->locationArg) {
                     throw new BgaUserException("You must select fighters of different territories");
                 }
                 $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
@@ -450,6 +456,7 @@ trait ActionTrait {
                 ]);
                 break;
         }
+        $this->incMoveCount(-1);
 
         $this->gamestate->nextState($nextState);
     }
