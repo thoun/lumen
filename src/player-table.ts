@@ -115,6 +115,7 @@ class PlayerTable {
             div.dataset.circle = `${circle.circleId}`;
             div.classList.add('circle');
             div.dataset.zone = ''+circle.zone;
+            div.dataset.value = ''+circle.value;
             div.innerHTML = `${circle.value !== null && circle.value !== -1 ? circle.value : ''}`;
             if (circle.value === -1) {
                 div.dataset.jamming = 'true';
@@ -206,6 +207,7 @@ class PlayerTable {
     public setPossibleCells(possibleCircles: number[], value: number) {
         possibleCircles.forEach(circleId => {
             const circleDiv = document.getElementById(`player-table-${this.playerId}-circle${circleId}`);
+            circleDiv.dataset.value = ''+value;
             circleDiv.classList.add('ghost');
             if (value === -1) {
                 circleDiv.dataset.jamming = 'true';
@@ -218,6 +220,7 @@ class PlayerTable {
     public setCircleValue(circleId: number, value: number) {
         const circleDiv = document.getElementById(`player-table-${this.playerId}-circle${circleId}`);
         circleDiv.classList.remove('ghost');
+        circleDiv.dataset.value = ''+value;
         circleDiv.innerHTML = value === -1 ? '' : ''+value;
         if (value === -1) {
             circleDiv.dataset.jamming = 'true';

@@ -1243,6 +1243,9 @@ body > .card {
 .player-table .circles .circle[data-jamming=true] {
   background-image: url("img/jamming.png");
 }
+.player-table .circles .circle[data-value="7"] {
+  transform: rotate(14deg);
+}
 .player-table .circles .circle[data-zone="0"] {
   background-color: rgba(128, 255, 128, 0.4);
 }

@@ -256,6 +256,10 @@ $circleWidth: 49.7px;
         background-image: url('img/jamming.png');
       }
 
+      &[data-value="7"] {
+        transform: rotate(14deg);
+      }
+
       &[data-zone="0"] { background-color: rgba(128, 255, 128, .4); }
       &[data-zone="1"] { background-color: rgba(255, 255, 128, .4); }
       &[data-zone="2"] { background-color: rgba(255, 128, 255, .4); }

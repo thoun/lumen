@@ -1623,6 +1623,7 @@ var PlayerTable = /** @class */ (function () {
             div.dataset.circle = "".concat(circle.circleId);
             div.classList.add('circle');
             div.dataset.zone = '' + circle.zone;
+            div.dataset.value = '' + circle.value;
             div.innerHTML = "".concat(circle.value !== null && circle.value !== -1 ? circle.value : '');
             if (circle.value === -1) {
                 div.dataset.jamming = 'true';
@@ -1704,6 +1705,7 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         possibleCircles.forEach(function (circleId) {
             var circleDiv = document.getElementById("player-table-".concat(_this.playerId, "-circle").concat(circleId));
+            circleDiv.dataset.value = '' + value;
             circleDiv.classList.add('ghost');
             if (value === -1) {
                 circleDiv.dataset.jamming = 'true';
@@ -1716,6 +1718,7 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.setCircleValue = function (circleId, value) {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-circle").concat(circleId));
         circleDiv.classList.remove('ghost');
+        circleDiv.dataset.value = '' + value;
         circleDiv.innerHTML = value === -1 ? '' : '' + value;
         if (value === -1) {
             circleDiv.dataset.jamming = 'true';
