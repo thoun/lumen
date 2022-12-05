@@ -1412,7 +1412,6 @@ var TableCenter = /** @class */ (function () {
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.curve, rotation, territoryInfos.id);
             _this.territoriesStocks[territoryInfos.id].onCardClick = function (card) {
-                console.log(card);
                 var selectableCards = _this.game.getChooseFighterSelectableMoveActivateCards();
                 var canClick = selectableCards === null || selectableCards === void 0 ? void 0 : selectableCards.some(function (fighter) { return fighter.id == card.id; });
                 if (canClick) {
@@ -1995,7 +1994,7 @@ var Lumen = /** @class */ (function () {
             else {
                 var selectableCards = this.getChooseFighterSelectableMoveActivateCards(args);
                 this.getCurrentPlayerTable().setSelectableMoveActivateCards(selectableCards);
-                this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+                this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1 || args.selectionSize == -1);
             }
         }
     };

@@ -237,7 +237,7 @@ class Lumen implements LumenGame {
             } else {
                 const selectableCards = this.getChooseFighterSelectableMoveActivateCards(args);
                 this.getCurrentPlayerTable().setSelectableMoveActivateCards(selectableCards);
-                this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1);
+                this.tableCenter.setSelectableCards(selectableCards, args.selectionSize > 1 || args.selectionSize == -1);
             }
         }
     }

@@ -411,16 +411,20 @@ trait ActionTrait {
         switch ($selectedFighter->power) {
             case POWER_PUSHER:                 
                 $this->setGameStateValue(PLAYER_SELECTED_TARGET, $fighter->id);
+                $this->incStat(1, 'activatedFighters', $playerId);
                 $nextState = 'chooseTerritory';
                 break;
             case POWER_ASSASSIN:
             case POWER_BOMBARDE:
                 $this->putBackInBag([$fighter]);
                 $this->checkTerritoriesDiscoverTileControl();
+                $this->incStat(1, 'activatedFighters', $playerId);
                 break;
             case POWER_PACIFICATEUR:
                 $this->setFightersActivated($fighters);
+                $this->incStat(1, 'activatedFighters', $playerId);
                 break;
+
             case ACTION_FURY:
                 if ($fighters[0]->locationArg == $fighters[1]->locationArg) {
                     throw new BgaUserException("You must select fighters of different territories");
