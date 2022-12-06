@@ -921,28 +921,6 @@ body > .card {
 .player-board .counters .counters-wrapper .counter-wrapper[data-hidden=true] {
   display: none;
 }
-.player-board .counters .counters-wrapper .counter-wrapper .territory-img {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 1px solid white;
-  background-image: url("img/battlefield6.png");
-  background-size: 1600%;
-  background-position: center center;
-}
-.player-board .counters .counters-wrapper .counter-wrapper .territory-img[data-lumens="1"] {
-  background-position: 55% 90%;
-}
-.player-board .counters .counters-wrapper .counter-wrapper .territory-img[data-lumens="3"] {
-  background-position: 20% 25%;
-}
-.player-board .counters .counters-wrapper .counter-wrapper .territory-img[data-lumens="5"] {
-  background-position: 40% 40%;
-}
-.player-board .counters .counters-wrapper .counter-wrapper .territory-img[data-lumens="7"] {
-  background-image: url("img/battlefield2.png");
-  background-position: 40% 40%;
-}
 .player-board .grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -1705,6 +1683,31 @@ html, .mode_3d #game_play_area_background {
 .die-icon[data-color=black] {
   background: #212322;
   color: #FFFFFF;
+}
+
+.territory-img {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid white;
+  border-radius: 50%;
+  vertical-align: middle;
+  background-image: url("img/battlefield6.png");
+  background-size: 1600%;
+  background-position: center center;
+}
+.territory-img[data-lumens="1"] {
+  background-position: 55% 90%;
+}
+.territory-img[data-lumens="3"] {
+  background-position: 20% 25%;
+}
+.territory-img[data-lumens="5"] {
+  background-position: 40% 40%;
+}
+.territory-img[data-lumens="7"] {
+  background-image: url("img/battlefield2.png");
+  background-position: 40% 40%;
 }
 
 .log .die-icon, .gamelogreview .die-icon {

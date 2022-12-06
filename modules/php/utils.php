@@ -775,7 +775,7 @@ trait UtilTrait {
         $this->discardDiscoverTile($discoverTile);
 
         $fighter = $this->getCardById(intval($cardDb['id']));
-        $this->applyMoveFighter($fighter, $territoryId, clienttranslate('${player_name} drops a new fighter on ${season} territory ${battlefieldId} : ${fighterType}'), [], true);
+        $this->applyMoveFighter($fighter, $territoryId, clienttranslate('${player_name} parachutes ${fighterType} on ${season} territory ${battlefieldId}'), [], true);
 
         $this->checkEmptyBag($playerId);
     }

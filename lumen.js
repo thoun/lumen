@@ -2320,6 +2320,14 @@ var Lumen = /** @class */ (function () {
         var orderedPlayers = playerIndex > 0 ? __spreadArray(__spreadArray([], players.slice(playerIndex), true), players.slice(0, playerIndex), true) : players;
         return orderedPlayers;
     };
+    Lumen.prototype.getSeasonName = function (lumens) {
+        switch (lumens) {
+            case 1: return _('Winter');
+            case 3: return _('Autumn');
+            case 5: return _('Summer');
+            case 7: return _('Spring');
+        }
+    };
     Lumen.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
@@ -2327,7 +2335,7 @@ var Lumen = /** @class */ (function () {
             document.getElementById("overall_player_board_".concat(playerId)).style.background = "#".concat(player.color);
             var html = "\n            <div class=\"counters\">\n                <div class=\"counters-title\">".concat(_('Controlled territories'), "</div>\n                <div class=\"counters-wrapper\">");
             [1, 3, 5, 7].forEach(function (lumens) {
-                return html += "<div class=\"counter-wrapper\" data-hidden=\"".concat((!_this.scenario.battlefields.some(function (battlefield) { return BATTLEFIELDS[battlefield.battlefieldId].territories.some(function (territory) { return territory.id % 10 == lumens; }); })).toString(), "\">\n                    <div class=\"territory-img\" data-lumens=\"").concat(lumens, "\"></div><div id=\"controlled-territories-").concat(player.id, "-").concat(lumens, "\" class=\"counter\"></div>\n                </div>");
+                return html += "<div class=\"counter-wrapper\" id=\"counter-wrapper-".concat(player.id, "-").concat(lumens, "\" data-hidden=\"").concat((!_this.scenario.battlefields.some(function (battlefield) { return BATTLEFIELDS[battlefield.battlefieldId].territories.some(function (territory) { return territory.id % 10 == lumens; }); })).toString(), "\">\n                    <div class=\"territory-img\" data-lumens=\"").concat(lumens, "\"></div><div id=\"controlled-territories-").concat(player.id, "-").concat(lumens, "\" class=\"counter\"></div>\n                </div>");
             });
             html += "</div></div>\n            <div class=\"grid\">\n                <div id=\"first-player-token-wrapper-".concat(player.id, "\" class=\"first-player-token-wrapper\"></div>\n                <div id=\"bag-").concat(player.id, "\" class=\"bag\" data-color=\"").concat(player.color, "\"><span id=\"bag-").concat(player.id, "-counter\"></span></div>\n            </div>\n            ");
             dojo.place(html, "player_board_".concat(player.id));
@@ -2343,6 +2351,11 @@ var Lumen = /** @class */ (function () {
                 _this.controlCounters[playerId][lumens] = new ebg.counter();
                 _this.controlCounters[playerId][lumens].create("controlled-territories-".concat(player.id, "-").concat(lumens));
                 _this.controlCounters[playerId][lumens].setValue(player.controlCounters[lumens]);
+            });
+            [1, 3, 5, 7].forEach(function (lumens) {
+                return _this.setTooltip("counter-wrapper-".concat(player.id, "-").concat(lumens), _('Les Territoires ${season} accueillent ${lumens} Lumen(s) = ${lumens} PV par Territoire contrôlé.')
+                    .replace('${season}', _this.getSeasonName(lumens))
+                    .replace(/\${lumens}/g, lumens));
             });
         });
         this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
@@ -2862,6 +2875,14 @@ var Lumen = /** @class */ (function () {
             [1, 3, 5, 7].forEach(function (lumens) { return _this.controlCounters[key][lumens].toValue(playerCounters[lumens]); });
         });
     };
+    Lumen.prototype.seasonToLumens = function (season) {
+        switch (season) {
+            case 'Winter': return 1;
+            case 'Autumn': return 3;
+            case 'Summer': return 5;
+            case 'Spring': return 7;
+        }
+    };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     Lumen.prototype.format_string_recursive = function (log, args) {
@@ -2880,6 +2901,11 @@ var Lumen = /** @class */ (function () {
                 if (args.discover_tile == '' && args.discoverTile) {
                     args.discover_tile = "<div class=\"discover-tile\" data-type=\"".concat(args.discoverTile.type, "\" data-sub-type=\"").concat(args.discoverTile.subType, "\"></div>");
                 }
+                ['season', 'originSeason'].forEach(function (field) {
+                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
+                        args[field] = "<div class=\"territory-img\" data-lumens=\"".concat(_this.seasonToLumens(args[field]), "\"></div> ").concat(_(args[field]));
+                    }
+                });
                 ['fighterType', 'fighterType2', 'fighterType3'].forEach(function (field) {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
                         args[field] = "<div class=\"fighter\" data-color=\"".concat(_this.getPlayerColor(args.playerId), "\" data-sub-type=\"").concat(args[field], "\"></div>");

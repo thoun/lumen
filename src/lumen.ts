@@ -585,6 +585,15 @@ class Lumen implements LumenGame {
         return orderedPlayers;
     }
 
+    private getSeasonName(lumens: number) {
+        switch (lumens) {
+            case 1: return _('Winter');
+            case 3: return _('Autumn');
+            case 5: return _('Summer');
+            case 7: return _('Spring');
+        }
+    }
+
     private createPlayerPanels(gamedatas: LumenGamedatas) {
 
         Object.values(gamedatas.players).forEach(player => {
@@ -597,7 +606,7 @@ class Lumen implements LumenGame {
                 <div class="counters-title">${_('Controlled territories')}</div>
                 <div class="counters-wrapper">`;
             [1,3,5,7].forEach(lumens => 
-                html += `<div class="counter-wrapper" data-hidden="${(!this.scenario.battlefields.some(battlefield => BATTLEFIELDS[battlefield.battlefieldId].territories.some(territory => territory.id % 10 == lumens))).toString()}">
+                html += `<div class="counter-wrapper" id="counter-wrapper-${player.id}-${lumens}" data-hidden="${(!this.scenario.battlefields.some(battlefield => BATTLEFIELDS[battlefield.battlefieldId].territories.some(territory => territory.id % 10 == lumens))).toString()}">
                     <div class="territory-img" data-lumens="${lumens}"></div><div id="controlled-territories-${player.id}-${lumens}" class="counter"></div>
                 </div>`
             );
@@ -623,6 +632,15 @@ class Lumen implements LumenGame {
                 this.controlCounters[playerId][lumens].create(`controlled-territories-${player.id}-${lumens}`);
                 this.controlCounters[playerId][lumens].setValue(player.controlCounters[lumens]);
             });
+
+            [1,3,5,7].forEach(lumens => 
+                this.setTooltip(
+                    `counter-wrapper-${player.id}-${lumens}`, 
+                    _('Les Territoires ${season} accueillent ${lumens} Lumen(s) = ${lumens} PV par Territoire contrôlé.')
+                    .replace('${season}', this.getSeasonName(lumens))
+                    .replace(/\${lumens}/g, lumens)
+                )
+            );
         });
 
         this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
@@ -1319,6 +1337,15 @@ class Lumen implements LumenGame {
         });
     }
 
+    private seasonToLumens(season: string) {        
+        switch (season) {
+            case 'Winter': return 1;
+            case 'Autumn': return 3;
+            case 'Summer': return 5;
+            case 'Spring': return 7;
+        }
+    }
+
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     public format_string_recursive(log: string, args: any) {
@@ -1337,6 +1364,12 @@ class Lumen implements LumenGame {
                 if (args.discover_tile == '' && args.discoverTile) {
                     args.discover_tile = `<div class="discover-tile" data-type="${args.discoverTile.type}" data-sub-type="${args.discoverTile.subType}"></div>`;
                 }
+
+                ['season', 'originSeason'].forEach(field => {
+                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
+                        args[field] = `<div class="territory-img" data-lumens="${this.seasonToLumens(args[field])}"></div> ${_(args[field])}`;
+                    }
+                });
 
                 ['fighterType', 'fighterType2', 'fighterType3'].forEach(field => {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {

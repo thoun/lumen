@@ -50,31 +50,6 @@
         &[data-hidden="true"] {
           display: none;
         }
-
-        .territory-img {
-          display: inline-block;
-          width: 20px;
-          height: 20px;
-          border: 1px solid white;
-
-          background-image: url('img/battlefield6.png');
-          background-size: 1600%;
-          background-position: center center;
-
-          &[data-lumens="1"] {
-            background-position: 55% 90%;
-          }
-          &[data-lumens="3"] {
-            background-position: 20% 25%;
-          }
-          &[data-lumens="5"] {
-            background-position: 40% 40%;
-          }
-          &[data-lumens="7"] {
-            background-image: url('img/battlefield2.png');
-            background-position: 40% 40%;
-          }
-        }
       }
     }
   }
