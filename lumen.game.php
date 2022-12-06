@@ -142,7 +142,7 @@ class Lumen extends Table {
         foreach(['table', 'player'] as $type) {
             foreach([
                 // 10+ : rounds/turns
-                'completedObjectives', 'tokensFromMissions',
+                'completedObjectives', 'tokensFromMissions', 'playObtained', 'moveObtained',
                 // 20+ : territories 
                 'controlledTerritories', 'tieControlTerritories', 'controlledTerritories1', 'controlledTerritories3', 'controlledTerritories5', 'controlledTerritories7',
                 // 30+ : fighters

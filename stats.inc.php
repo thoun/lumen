@@ -61,6 +61,16 @@ $commonStats = [
         "name" => totranslate("Objective tokens from missions"),
         "type" => "int"
     ],
+    "playObtained" => [
+        "id" => 19,
+        "name" => totranslate("Place actions optained"),
+        "type" => "int"
+    ],
+    "moveObtained" => [
+        "id" => 99,
+        "name" => totranslate("Move actions optained"),
+        "type" => "int"
+    ],
     // 20+ : territories 
     "controlledTerritories" => [
         "id" => 20,

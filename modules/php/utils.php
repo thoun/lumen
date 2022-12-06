@@ -999,6 +999,12 @@ trait UtilTrait {
             new Action('PLACE', $place),
             new Action('MOVE', $move),
         ]));
+
+        $playerId = $this->getActivePlayerId();
+        $this->incStat($place, 'playObtained');
+        $this->incStat($place, 'playObtained', $playerId);
+        $this->incStat($move, 'moveObtained');
+        $this->incStat($move, 'moveObtained', $playerId);
     }
 
     function getRemainingActions() {
@@ -1025,6 +1031,10 @@ trait UtilTrait {
     }
 
     function incPlaceCount(int $inc) {
+        if ($inc > 0) {
+            $this->incStat($inc, 'playObtained');
+            $this->incStat($inc, 'playObtained', $this->getActivePlayerId());
+        }
         $remainingActions = $this->getRemainingActions();
         $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'PLACE');
         $remainingActions->actions[$index]->remaining += $inc;
@@ -1032,6 +1042,10 @@ trait UtilTrait {
     }
 
     function incMoveCount(int $inc, bool $incInitial = false) {
+        if ($inc > 0) {
+            $this->incStat($inc, 'moveObtained');
+            $this->incStat($inc, 'moveObtained', $this->getActivePlayerId());
+        }
         $remainingActions = $this->getRemainingActions();
         $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'MOVE');
         $remainingActions->actions[$index]->remaining += $inc;
