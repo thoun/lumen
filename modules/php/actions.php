@@ -233,7 +233,8 @@ trait ActionTrait {
             $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
         }
         
-        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1 + ($isOtherCellInALink ? 0 : 1));
+        $linkAddedToCurrentCell = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) > 0;
+        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, ($linkAddedToCurrentCell ? 0 : 1) + ($isOtherCellInALink ? 0 : 1));
         
         $this->gamestate->nextState('chooseAction');
     }

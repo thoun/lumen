@@ -11,16 +11,8 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->debugSetCircleValues(2343492, [3, 8], 4, 1);
-        $this->debugSetCircleValues(2343492, [13], 4);
-        
-        $this->debugSetCircleValues(2343492, [2, 6], 2, 2);
-        $this->debugSetCircleValues(2343492, [4, 10], 2, 3);
-
-        $this->debugSetCircleValues(2343492, [15, 19], 1);
-        $this->debugSetCircleValues(2343492, [18, 20], 5, 4);
-
-        $this->debugSetCircleValues(2343492, [11], 3);
+        //$this->debugTestZones();
+        //$this->debugTestLinks();
 
         /*$this->debugAddObjectiveToken(2343492, 1);
         $this->debugAddDiscoverTile(2343492, 4, 1);
@@ -38,9 +30,9 @@ trait DebugUtilTrait {
         /*$this->debugAddNeutralFighter(2343492, 31, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 32, 'highCommand2343492', 2);
         $this->debugAddNeutralFighter(2343492, 33, 'highCommand2343492', 3);*/
-        $this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
+        /*$this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 22, 'highCommand2343492', 2);
-        $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);
+        $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);*/
         //$this->debugLastTurn();
     }
 
@@ -92,6 +84,35 @@ trait DebugUtilTrait {
 
     public function debugLastTurn() {
         $this->incStat(20, 'roundNumber');
+    }
+
+    public function debugTestZones() {
+        $this->debugSetCircleValues(2343492, [3, 8], 4, 1);
+        $this->debugSetCircleValues(2343492, [13], 4);
+        
+        $this->debugSetCircleValues(2343492, [2, 6], 2, 2);
+        $this->debugSetCircleValues(2343492, [4, 10], 2, 3);
+
+        $this->debugSetCircleValues(2343492, [15, 19], 1);
+        $this->debugSetCircleValues(2343492, [18, 20], 5, 4);
+
+        $this->debugSetCircleValues(2343492, [11], 3);
+    }
+
+    public function debugTestLinks() {
+        $this->debugSetCircleValues(2343492, [8], 3);
+        $this->debugSetCircleValues(2343492, [14], 4);
+        $this->addLink(2343492, 8, 14);
+        
+        $this->debugSetCircleValues(2343492, [1], 1, 4);
+        $this->debugSetCircleValues(2343492, [10], 3, 3);
+
+        $this->debugSetCircleValues(2343492, [15], 0);
+        $this->debugSetCircleValues(2343492, [16], 1);
+        $this->addLink(2343492, 15, 16);
+        $this->debugSetCircleValues(2343492, [20, 18], 3);
+        $this->debugSetCircleValues(2343492, [11], 4);
+        $this->addLink(2343492, 11, 18);
     }
 
     public function debugReplacePlayersIds() {
