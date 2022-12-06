@@ -426,10 +426,29 @@ trait ActionTrait {
                 $this->putBackInBag([$fighter]);
                 $this->checkTerritoriesDiscoverTileControl();
                 $this->incStat(1, 'activatedFighters', $playerId);
+                
+                self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to kill ${fighterType2} on ${season} territory ${battlefieldId}'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'fighterType' => $selectedFighter->subType, // for logs
+                    'fighterType2' => $fighter->subType, // for logs
+                    'season' => $this->getSeasonName($this->TERRITORIES[$fighter->locationArg]->lumens),
+                    'battlefieldId' => floor($fighter->locationArg / 10),
+                    'i18n' => ['season'],
+                    'preserve' => ['playerId', 'fighterType', 'fighterType2'],
+                ]);
                 break;
             case POWER_PACIFICATEUR:
                 $this->setFightersActivated($fighters);
                 $this->incStat(1, 'activatedFighters', $playerId);
+                
+                self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to set surrounding opponents to their inactive face'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'fighterType' => $selectedFighter->subType, // for logs
+                    'i18n' => ['season'],
+                    'preserve' => ['playerId', 'fighterType'],
+                ]);
                 break;
 
             case ACTION_FURY:
@@ -439,11 +458,37 @@ trait ActionTrait {
                 $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
                 $this->incStat(1, 'playedActions', $playerId);
                 $this->checkTerritoriesDiscoverTileControl();
+                
+                foreach($fighters as $iFighter) {
+                    self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to kill ${fighterType2} on ${season} territory ${battlefieldId}'), [
+                        'playerId' => $playerId,
+                        'player_name' => $this->getPlayerName($playerId),
+                        'fighterType' => $selectedFighter->subType, // for logs
+                        'fighterType2' => $iFighter->subType, // for logs
+                        'season' => $this->getSeasonName($this->TERRITORIES[$iFighter->locationArg]->lumens),
+                        'battlefieldId' => floor($iFighter->locationArg / 10),
+                        'i18n' => ['season'],
+                        'preserve' => ['playerId', 'fighterType', 'fighterType2'],
+                    ]);
+                }
                 break;
             case ACTION_RESET:
-                $fighters = $this->getCardsByLocation($fighter->location, $fighter->locationArg); // TODO check if it battlefield or territory
+                $fighters = $this->getCardsByLocation($fighter->location, $fighter->locationArg);
                 $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
                 $this->incStat(1, 'playedActions', $playerId);
+                
+                foreach($fighters as $iFighter) {
+                    self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to kill ${fighterType2} on ${season} territory ${battlefieldId}'), [
+                        'playerId' => $playerId,
+                        'player_name' => $this->getPlayerName($playerId),
+                        'fighterType' => $selectedFighter->subType, // for logs
+                        'fighterType2' => $iFighter->subType, // for logs
+                        'season' => $this->getSeasonName($this->TERRITORIES[$iFighter->locationArg]->lumens),
+                        'battlefieldId' => floor($iFighter->locationArg / 10),
+                        'i18n' => ['season'],
+                        'preserve' => ['playerId', 'fighterType', 'fighterType2'],
+                    ]);
+                }
                 break;
             case ACTION_TELEPORT:
                 $this->cards->moveCard($fighters[0]->id, 'territory', $fighters[1]->locationArg);
@@ -452,8 +497,14 @@ trait ActionTrait {
                 $this->incStat(1, 'playedActions', $playerId);
                 $this->checkTerritoriesDiscoverTileControl();
         
-                self::notifyAllPlayers("exchangedFighters", '', [
+                self::notifyAllPlayers("exchangedFighters", clienttranslate('${player_name} activates ${fighterType} to exchange ${fighterType2} with ${fighterType3}'), [
                     'fighters' => $fighters,
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'fighterType' => $selectedFighter->subType, // for logs
+                    'fighterType2' => $fighters[0]->subType, // for logs
+                    'fighterType3' => $fighters[1]->subType, // for logs
+                    'preserve' => ['playerId', 'fighterType', 'fighterType2', 'fighterType3'],
                 ]);
                 break;
         }
@@ -517,7 +568,7 @@ trait ActionTrait {
         $nextState = 'nextMove';
         switch ($move) {
             case MOVE_PLAY:
-                $this->applyMoveFighter($selectedFighter, $territoryId);
+                $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} plays ${fighterType} on ${season} territory ${battlefieldId}'));
                 $this->incPlaceCount(-1);
                 $this->incStat(1, 'placedFighters', $playerId);
                 if ($selectedFighter->type == 10) {                    
@@ -527,7 +578,11 @@ trait ActionTrait {
                 break;
             case MOVE_MOVE:
                 $originTerritoryId = $selectedFighter->locationArg;
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} moves ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
+                    'originSeason' => $this->getSeasonName($this->TERRITORIES[$originTerritoryId]->lumens),
+                    'originBattlefieldId' => floor($originTerritoryId / 10),
+                    'i18n' => ['originSeason'],
+                ]);
                 if ($redirectBrouillage) {
                     $nextState = 'chooseCellBrouillage';
                 }
@@ -541,7 +596,12 @@ trait ActionTrait {
                 $this->incStat(1, 'movedFighters', $playerId);
                 break;
             case MOVE_SUPER:
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                $originTerritoryId = $selectedFighter->locationArg;
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} moves ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
+                    'originSeason' => $this->getSeasonName($this->TERRITORIES[$originTerritoryId]->lumens),
+                    'originBattlefieldId' => floor($originTerritoryId / 10),
+                    'i18n' => ['originSeason'],
+                ]);
                 if ($redirectBrouillage) {
                     $nextState = 'chooseCellBrouillage';
                 } else {
@@ -557,23 +617,38 @@ trait ActionTrait {
                 }
                 break;
             case MOVE_PUSH:
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                $originTerritoryId = $selectedFighter->locationArg;
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} pushes ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
+                    'originSeason' => $this->getSeasonName($this->TERRITORIES[$originTerritoryId]->lumens),
+                    'originBattlefieldId' => floor($originTerritoryId / 10),
+                    'i18n' => ['originSeason'],
+                ]);
                 if ($redirectBrouillage) {
                     $nextState = 'chooseCellBrouillage';
                 }
                 break;
             case MOVE_FLY:
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId);
+                $originTerritoryId = $selectedFighter->locationArg;
+                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} flies ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
+                    'originSeason' => $this->getSeasonName($this->TERRITORIES[$originTerritoryId]->lumens),
+                    'originBattlefieldId' => floor($originTerritoryId / 10),
+                    'i18n' => ['originSeason'],
+                ]);
                 if ($redirectBrouillage) {
                     $nextState = 'chooseCellBrouillage';
                 }
                 break;
             case MOVE_IMPATIENT:
                 $this->setGameStateValue(INITIATIVE_MARKER_TERRITORY, $territoryId);
-                self::notifyAllPlayers('moveInitiativeMarker', clienttranslate('${player_name} moves the initiative marker'), [
+                self::notifyAllPlayers('moveInitiativeMarker', clienttranslate('${player_name} activates ${fighterType} to move the initiative marker to ${season} territory ${battlefieldId}'), [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
                     'territoryId' => $territoryId,
+                    'fighterType' => $selectedFighter->subType, // for logs
+                    'season' => $this->getSeasonName($this->TERRITORIES[$territoryId]->lumens),
+                    'battlefieldId' => floor($territoryId / 10),
+                    'i18n' => ['season'],
+                    'preserve' => ['playerId', 'fighterType'],
                 ]);
                 $this->incStat(1, 'activatedFighters', $playerId);
                 break;

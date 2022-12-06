@@ -48,6 +48,12 @@ trait StateTrait {
         $place = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
         $move = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
         $this->setActionsCount($place, $move);
+        
+        self::notifyAllPlayers('log', clienttranslate('${player_name} can place ${place} fighters and move/activate ${move} fighters'), [
+            'player_name' => $this->getPlayerName($playerId),
+            'place' => $place,
+            'move' => $move,
+        ]);
 
         $potentialMove = $move + count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
 

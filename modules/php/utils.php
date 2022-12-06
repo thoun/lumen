@@ -621,7 +621,7 @@ trait UtilTrait {
         }
     }
 
-    function applyMoveFighter(Card &$fighter, int $territoryId, bool $fromBag = false) { // return redirected for brouillage
+    function applyMoveFighter(Card &$fighter, int $territoryId, string $logMessage = '', array $logArgs = [], bool $fromBag = false) { // return redirected for brouillage
         if ($territoryId == 0) {
             // pushed to the river
             $this->putBackInBag([$fighter]);
@@ -632,10 +632,17 @@ trait UtilTrait {
         $this->cards->moveCard($fighter->id, 'territory', $territoryId);
         $fighter = $this->getCardById($fighter->id);
 
-        self::notifyAllPlayers("moveFighter", '', [
+        self::notifyAllPlayers("moveFighter", $logMessage, $logArgs + [
             'fighter' => $fighter,
             'territoryId' => $territoryId,
             'fromBag' => $fromBag,
+            'playerId' => $fighter->playerId,
+            'player_name' => $this->getPlayerName($fighter->playerId), // for logs
+            'fighterType' => $fighter->subType, // for logs
+            'season' => $this->getSeasonName($this->TERRITORIES[$territoryId]->lumens), // for logs
+            'battlefieldId' => floor($territoryId / 10), // for logs
+            'i18n' => array_merge(array_key_exists('i18n', $logArgs) ? $logArgs['i18n'] : [], ['season']),
+            'preserve' => ['playerId', 'fighterType'],
         ]);
 
         return $this->fighterMoved($fighter, $territoryId);
@@ -768,7 +775,7 @@ trait UtilTrait {
         $this->discardDiscoverTile($discoverTile);
 
         $fighter = $this->getCardById(intval($cardDb['id']));
-        $this->applyMoveFighter($fighter, $territoryId, true);
+        $this->applyMoveFighter($fighter, $territoryId, clienttranslate('${player_name} drops a new fighter on ${season} territory ${battlefieldId} : ${fighterType}'), [], true);
 
         $this->checkEmptyBag($playerId);
     }
@@ -928,6 +935,13 @@ trait UtilTrait {
                     $this->checkTerritoriesDiscoverTileControl();
                 }
                 $this->incStat(1, 'activatedFighters', $playerId);
+
+                self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to reset surrounding fighters to their active face'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'fighterType' => $fighter->subType, // for logs
+                    'preserve' => ['playerId', 'fighterType'],
+                ]);
                 break;
             case POWER_PUSHER:
                 if ($fighter->type === 10) { // super pusher                    
@@ -968,7 +982,14 @@ trait UtilTrait {
             case POWER_METAMORPH:
                 // every time a fighter with changing strength is flipped, we check if it makes a control to a visible Discover tile
                 $this->checkTerritoriesDiscoverTileControl();
-                $this->incStat(1, 'activatedFighters', $playerId);
+                $this->incStat(1, 'activatedFighters', $playerId);     
+
+                self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType}'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'fighterType' => $fighter->subType, // for logs
+                    'preserve' => ['playerId', 'fighterType'],
+                ]);
                 break;
         }
 

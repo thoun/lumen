@@ -2865,6 +2865,7 @@ var Lumen = /** @class */ (function () {
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     Lumen.prototype.format_string_recursive = function (log, args) {
+        var _this = this;
         try {
             if (log && args && !args.processed) {
                 if (args.whiteDieFace !== undefined && args.whiteDieFace[0] != '<') {
@@ -2879,6 +2880,11 @@ var Lumen = /** @class */ (function () {
                 if (args.discover_tile == '' && args.discoverTile) {
                     args.discover_tile = "<div class=\"discover-tile\" data-type=\"".concat(args.discoverTile.type, "\" data-sub-type=\"").concat(args.discoverTile.subType, "\"></div>");
                 }
+                ['fighterType', 'fighterType2', 'fighterType3'].forEach(function (field) {
+                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
+                        args[field] = "<div class=\"fighter\" data-color=\"".concat(_this.getPlayerColor(args.playerId), "\" data-sub-type=\"").concat(args[field], "\"></div>");
+                    }
+                });
                 ['cardinalDirection'].forEach(function (field) {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
                         args[field] = "<strong>".concat(_(args[field]), "</strong>");

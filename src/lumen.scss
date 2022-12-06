@@ -228,6 +228,54 @@ html, .mode_3d #game_play_area_background {
     margin-right: 2px;
   }
 
+  .fighter {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    border-radius: 10px;
+    vertical-align: middle;
+
+    @for $index from 1 through 6 {        
+        &[data-sub-type="#{$index}"][data-color="f28700"] {
+          background-size: auto 200%;
+          background-image: url('img/cards-day.png');
+        }
+        &[data-sub-type="#{$index}"][data-color="1f3067"] {
+          background-size: auto 200%;
+          background-image: url('img/cards-night.png');
+        }
+
+        &[data-sub-type="#{$index}"] {
+            background-position-x: #{($index - 1) * 100% / 5};
+        }
+    }
+
+    @for $index from 11 through 18 {
+        &[data-sub-type="#{$index}"] {
+          background-size: auto 200%;
+          background-image: url('img/cards-neutral-fighters.png');
+          background-position-x: #{($index - 11) * 100% / 7};
+        }
+    }
+
+    @for $index from 21 through 23 {
+        &[data-sub-type="#{$index}"]  {
+          background-size: auto 100%;
+          background-image: url('img/cards-neutral-special.png');
+          background-position-x: #{($index - 21) * 100% / 5};
+        }
+    }
+
+    @for $index from 31 through 33 {
+        &[data-sub-type="#{$index}"] {
+          background-size: auto 100%;
+          background-image: url('img/cards-neutral-special.png');
+          background-position-x: #{($index - 31 + 3) * 100% / 5};
+        }
+    }
+  }
+
   .discover-tile {
     display: inline-block;
     position: relative;

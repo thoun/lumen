@@ -69,53 +69,73 @@ $this->DISCOVER_TILES = [
   new DiscoverTileType(2, 2, POWER_COUP_FOURRE),
 ];
 
+
+$this->TERRITORIES = [
+  11 => new Territory(11, 1),
+  15 => new Territory(15, 5),  
+  27 => new Territory(27, 7),    
+  31 => new Territory(31, 1),
+  33 => new Territory(33, 3),
+  41 => new Territory(41, 1),
+  45 => new Territory(45, 5),
+  51 => new Territory(51, 1),
+  53 => new Territory(53, 3),
+  54 => new Territory(54, 3),
+  61 => new Territory(61, 1),
+  63 => new Territory(63, 3),
+  65 => new Territory(65, 5),
+  71 => new Territory(71, 1),
+  73 => new Territory(73, 3),
+  75 => new Territory(75, 5),
+];
+
 $this->BATTLEFIELDS = [
   1 => new Battlefield(1, [
-    new Territory(11, 1),
-    new Territory(15, 5),
+    $this->TERRITORIES[11],
+    $this->TERRITORIES[15],
   ],
   [
     11 => [15],
   ]),
   2 => new Battlefield(2, [
-    new Territory(27, 7),
+    $this->TERRITORIES[27],
   ], []),
   3 => new Battlefield(3, [
-    new Territory(31, 1),
-    new Territory(33, 3),
+    $this->TERRITORIES[31],
+    $this->TERRITORIES[33],
   ],
   [
     31 => [33],
   ]),
   4 => new Battlefield(4, [
-    new Territory(41, 1),
-    new Territory(45, 5),
+    $this->TERRITORIES[41],
+    $this->TERRITORIES[45],
   ],
   [
     41 => [45],
   ]),
   5 => new Battlefield(5, [
-    new Territory(51, 1),
-    new Territory(53, 3),
-    new Territory(54, 3),
+    $this->TERRITORIES[51],
+    $this->TERRITORIES[53],
+    $this->TERRITORIES[54],
   ],
   [
     51 => [53],
     53 => [54],
   ]),
   6 => new Battlefield(6, [
-    new Territory(61, 1),
-    new Territory(63, 3),
-    new Territory(65, 5),
+    $this->TERRITORIES[61],
+    $this->TERRITORIES[63],
+    $this->TERRITORIES[65],
   ],
   [
     61 => [65],
     63 => [65],
   ]),
   7 => new Battlefield(6, [
-    new Territory(71, 1),
-    new Territory(73, 3),
-    new Territory(75, 5),
+    $this->TERRITORIES[71],
+    $this->TERRITORIES[73],
+    $this->TERRITORIES[75],
   ],
   [
     71 => [73, 75],

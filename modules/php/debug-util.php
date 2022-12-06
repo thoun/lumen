@@ -30,9 +30,9 @@ trait DebugUtilTrait {
         /*$this->debugAddNeutralFighter(2343492, 31, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 32, 'highCommand2343492', 2);
         $this->debugAddNeutralFighter(2343492, 33, 'highCommand2343492', 3);*/
-        /*$this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
+        $this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 22, 'highCommand2343492', 2);
-        $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);*/
+        $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);
         //$this->debugLastTurn();
     }
 

@@ -232,7 +232,6 @@
   width: 100px;
   height: 100px;
   border-radius: 10px;
-  text-align: center;
 }
 .card.fighter .card-sides .card-side {
   border-radius: 24px;
@@ -1720,6 +1719,150 @@ html, .mode_3d #game_play_area_background {
   height: 20px;
   margin-left: 2px;
   margin-right: 2px;
+}
+.log .fighter, .gamelogreview .fighter {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+.log .fighter[data-sub-type="1"][data-color=f28700], .gamelogreview .fighter[data-sub-type="1"][data-color=f28700] {
+  background-size: auto 200%;
+  background-image: url("img/cards-day.png");
+}
+.log .fighter[data-sub-type="1"][data-color="1f3067"], .gamelogreview .fighter[data-sub-type="1"][data-color="1f3067"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-night.png");
+}
+.log .fighter[data-sub-type="1"], .gamelogreview .fighter[data-sub-type="1"] {
+  background-position-x: 0%;
+}
+.log .fighter[data-sub-type="2"][data-color=f28700], .gamelogreview .fighter[data-sub-type="2"][data-color=f28700] {
+  background-size: auto 200%;
+  background-image: url("img/cards-day.png");
+}
+.log .fighter[data-sub-type="2"][data-color="1f3067"], .gamelogreview .fighter[data-sub-type="2"][data-color="1f3067"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-night.png");
+}
+.log .fighter[data-sub-type="2"], .gamelogreview .fighter[data-sub-type="2"] {
+  background-position-x: 20%;
+}
+.log .fighter[data-sub-type="3"][data-color=f28700], .gamelogreview .fighter[data-sub-type="3"][data-color=f28700] {
+  background-size: auto 200%;
+  background-image: url("img/cards-day.png");
+}
+.log .fighter[data-sub-type="3"][data-color="1f3067"], .gamelogreview .fighter[data-sub-type="3"][data-color="1f3067"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-night.png");
+}
+.log .fighter[data-sub-type="3"], .gamelogreview .fighter[data-sub-type="3"] {
+  background-position-x: 40%;
+}
+.log .fighter[data-sub-type="4"][data-color=f28700], .gamelogreview .fighter[data-sub-type="4"][data-color=f28700] {
+  background-size: auto 200%;
+  background-image: url("img/cards-day.png");
+}
+.log .fighter[data-sub-type="4"][data-color="1f3067"], .gamelogreview .fighter[data-sub-type="4"][data-color="1f3067"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-night.png");
+}
+.log .fighter[data-sub-type="4"], .gamelogreview .fighter[data-sub-type="4"] {
+  background-position-x: 60%;
+}
+.log .fighter[data-sub-type="5"][data-color=f28700], .gamelogreview .fighter[data-sub-type="5"][data-color=f28700] {
+  background-size: auto 200%;
+  background-image: url("img/cards-day.png");
+}
+.log .fighter[data-sub-type="5"][data-color="1f3067"], .gamelogreview .fighter[data-sub-type="5"][data-color="1f3067"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-night.png");
+}
+.log .fighter[data-sub-type="5"], .gamelogreview .fighter[data-sub-type="5"] {
+  background-position-x: 80%;
+}
+.log .fighter[data-sub-type="6"][data-color=f28700], .gamelogreview .fighter[data-sub-type="6"][data-color=f28700] {
+  background-size: auto 200%;
+  background-image: url("img/cards-day.png");
+}
+.log .fighter[data-sub-type="6"][data-color="1f3067"], .gamelogreview .fighter[data-sub-type="6"][data-color="1f3067"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-night.png");
+}
+.log .fighter[data-sub-type="6"], .gamelogreview .fighter[data-sub-type="6"] {
+  background-position-x: 100%;
+}
+.log .fighter[data-sub-type="11"], .gamelogreview .fighter[data-sub-type="11"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 0%;
+}
+.log .fighter[data-sub-type="12"], .gamelogreview .fighter[data-sub-type="12"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 14.2857142857%;
+}
+.log .fighter[data-sub-type="13"], .gamelogreview .fighter[data-sub-type="13"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 28.5714285714%;
+}
+.log .fighter[data-sub-type="14"], .gamelogreview .fighter[data-sub-type="14"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 42.8571428571%;
+}
+.log .fighter[data-sub-type="15"], .gamelogreview .fighter[data-sub-type="15"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 57.1428571429%;
+}
+.log .fighter[data-sub-type="16"], .gamelogreview .fighter[data-sub-type="16"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 71.4285714286%;
+}
+.log .fighter[data-sub-type="17"], .gamelogreview .fighter[data-sub-type="17"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 85.7142857143%;
+}
+.log .fighter[data-sub-type="18"], .gamelogreview .fighter[data-sub-type="18"] {
+  background-size: auto 200%;
+  background-image: url("img/cards-neutral-fighters.png");
+  background-position-x: 100%;
+}
+.log .fighter[data-sub-type="21"], .gamelogreview .fighter[data-sub-type="21"] {
+  background-size: auto 100%;
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 0%;
+}
+.log .fighter[data-sub-type="22"], .gamelogreview .fighter[data-sub-type="22"] {
+  background-size: auto 100%;
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 20%;
+}
+.log .fighter[data-sub-type="23"], .gamelogreview .fighter[data-sub-type="23"] {
+  background-size: auto 100%;
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 40%;
+}
+.log .fighter[data-sub-type="31"], .gamelogreview .fighter[data-sub-type="31"] {
+  background-size: auto 100%;
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 60%;
+}
+.log .fighter[data-sub-type="32"], .gamelogreview .fighter[data-sub-type="32"] {
+  background-size: auto 100%;
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 80%;
+}
+.log .fighter[data-sub-type="33"], .gamelogreview .fighter[data-sub-type="33"] {
+  background-size: auto 100%;
+  background-image: url("img/cards-neutral-special.png");
+  background-position-x: 100%;
 }
 .log .discover-tile, .gamelogreview .discover-tile {
   display: inline-block;

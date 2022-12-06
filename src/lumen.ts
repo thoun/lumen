@@ -1338,6 +1338,12 @@ class Lumen implements LumenGame {
                     args.discover_tile = `<div class="discover-tile" data-type="${args.discoverTile.type}" data-sub-type="${args.discoverTile.subType}"></div>`;
                 }
 
+                ['fighterType', 'fighterType2', 'fighterType3'].forEach(field => {
+                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
+                        args[field] = `<div class="fighter" data-color="${this.getPlayerColor(args.playerId)}" data-sub-type="${args[field]}"></div>`;
+                    }
+                });
+
                 ['cardinalDirection'].forEach(field => {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
                         args[field] = `<strong>${_(args[field])}</strong>`;
