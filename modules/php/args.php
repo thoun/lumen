@@ -33,7 +33,7 @@ trait ArgsTrait {
             $operations[$type] = [
                 'currentNumber' => $current,
                 'value' => $this->getValue($die1, $die2, $type),
-                'possible' => $possible,
+                'disabled' => $possible ? null : 'complete',
             ];
         }
 
@@ -42,7 +42,7 @@ trait ArgsTrait {
             if ($playerId != $firstPlayer) {
                 $firstPlayerOperation = intval($this->getGameStateValue(FIRST_PLAYER_OPERATION));
                 if ($firstPlayerOperation > 0) {
-                    $operations[$firstPlayerOperation]['possible'] = false;
+                    $operations[$firstPlayerOperation]['disabled'] = 'first-player';
                 }
             }
         }

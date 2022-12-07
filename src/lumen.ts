@@ -332,8 +332,12 @@ class Lumen implements LumenGame {
                     Object.keys(chooseOperationArgs.operations).forEach((type: any) => {
                         const operation = chooseOperationArgs.operations[type];
                         (this as any).addActionButton(`chooseOperation${type}_button`, `<div class="operation-icon" data-type="${type}"></div> ${operation.value}`, () => this.chooseOperation(type), null, null, 'gray');
-                        if (!operation.possible) {
-                            document.getElementById(`chooseOperation${type}_button`).classList.add('disabled');
+                        if (operation.disabled) {
+                            const button = document.getElementById(`chooseOperation${type}_button`);
+                            button.classList.add('disabled', 'disabled-first-player');
+                            if (operation.disabled == 'first-player') {
+                                button.insertAdjacentHTML('beforeend', `<div class="first-player-token"></div>`);
+                            }
                         }    
                     });
                     break;

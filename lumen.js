@@ -2091,8 +2091,12 @@ var Lumen = /** @class */ (function () {
                     Object.keys(chooseOperationArgs_1.operations).forEach(function (type) {
                         var operation = chooseOperationArgs_1.operations[type];
                         _this.addActionButton("chooseOperation".concat(type, "_button"), "<div class=\"operation-icon\" data-type=\"".concat(type, "\"></div> ").concat(operation.value), function () { return _this.chooseOperation(type); }, null, null, 'gray');
-                        if (!operation.possible) {
-                            document.getElementById("chooseOperation".concat(type, "_button")).classList.add('disabled');
+                        if (operation.disabled) {
+                            var button = document.getElementById("chooseOperation".concat(type, "_button"));
+                            button.classList.add('disabled', 'disabled-first-player');
+                            if (operation.disabled == 'first-player') {
+                                button.insertAdjacentHTML('beforeend', "<div class=\"first-player-token\"></div>");
+                            }
                         }
                     });
                     break;

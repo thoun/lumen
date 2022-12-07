@@ -103,7 +103,7 @@ interface EnteringChooseOperationArgs {
     operations: { [operation: number]: {
         currentNumber: number;
         value: number;
-        possible: boolean;
+        disabled: null | 'complete' | 'first-player';
     } };
 }
 
