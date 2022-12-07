@@ -331,6 +331,28 @@ $circleWidth: 49.7px;
       }
     }
   }
+
+  .legend {
+    position: absolute;
+    width: 112px;
+    height: 73px;
+    top: 311px;
+
+    &.zone {
+      left: 671px;      
+    }
+    &.link {
+      left: 787px;      
+    }
+  }
+  .check-legend {
+    position: absolute;
+    width: 545px;
+    height: 26px;
+    background-color: #FF000080;
+    top: 102px;
+    left: 378px;
+  }
 }
       
 html[data-filling-pattern="true"] .circle[data-zone="0"] {

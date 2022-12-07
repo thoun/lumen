@@ -1593,7 +1593,7 @@ var PlayerTable = /** @class */ (function () {
         for (var i = 1; i <= 7; i++) {
             html += "<div id=\"player-table-".concat(this.playerId, "-check").concat(i, "\" class=\"check\" data-number=\"").concat(i, "\">").concat(player.checks >= i ? "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>") : '', "</div>");
         }
-        html += "    \n            </div>\n            <div id=\"player-table-".concat(this.playerId, "-operations\" class=\"operations\">\n                <div id=\"player-table-").concat(this.playerId, "-first-player-token\" class=\"first-player-token\" data-operation=\"").concat(firstPlayerOperation, "\" data-visible=\"").concat((firstPlayerOperation > 0).toString(), "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-circles\" class=\"circles\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-reserve\" class=\"reserve\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-highCommand\" class=\"highCommand\">\n            </div>\n            <div class=\"name-and-tiles\">\n                <div class=\"name-wrapper\">\n                    <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n                </div>\n                <div id=\"player-table-").concat(this.playerId, "-objective-tokens\" class=\"objective-tokens\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discover-tiles\" class=\"discover-tiles\"></div>\n            </div>\n        </div>\n        ");
+        html += "    \n            </div>\n            <div id=\"player-table-".concat(this.playerId, "-operations\" class=\"operations\">\n                <div id=\"player-table-").concat(this.playerId, "-first-player-token\" class=\"first-player-token\" data-operation=\"").concat(firstPlayerOperation, "\" data-visible=\"").concat((firstPlayerOperation > 0).toString(), "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-circles\" class=\"circles\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-reserve\" class=\"reserve\">\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-highCommand\" class=\"highCommand\">\n            </div>\n            <div class=\"name-and-tiles\">\n                <div class=\"name-wrapper\">\n                    <span class=\"name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</span>\n                </div>\n                <div id=\"player-table-").concat(this.playerId, "-objective-tokens\" class=\"objective-tokens\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discover-tiles\" class=\"discover-tiles\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-zone-legend\" class=\"zone legend\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-link-legend\" class=\"link legend\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-check-legend\" class=\"check-legend\"></div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         [1, 2, 3, 4, 5].forEach(function (operation) {
             (operation > 3 ? [1, 2, 3, 4] : [1, 2, 3]).forEach(function (number) {
@@ -1652,6 +1652,9 @@ var PlayerTable = /** @class */ (function () {
         this.objectiveTokens.addCards(player.objectiveTokens, undefined, { visible: Boolean((_a = player.objectiveTokens[0]) === null || _a === void 0 ? void 0 : _a.lumens) });
         this.discoverTiles = new CompressedLineStock(this.game.discoverTilesManager, document.getElementById("player-table-".concat(this.playerId, "-discover-tiles")), 100);
         player.discoverTiles.forEach(function (discoverTile) { return _this.discoverTiles.addCard(discoverTile, undefined, { visible: Boolean(discoverTile === null || discoverTile === void 0 ? void 0 : discoverTile.type) }); });
+        this.game.setTooltip("player-table-".concat(this.playerId, "-zone-legend"), _('TODO'));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-link-legend"), _('TODO'));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-check-legend"), _('TODO'));
     }
     PlayerTable.prototype.cardClick = function (card) {
         if (this.game.cardsManager.getCardElement(card).classList.contains('selectable')) {
@@ -2358,7 +2361,7 @@ var Lumen = /** @class */ (function () {
                     .replace(/\${lumens}/g, lumens));
             });
         });
-        this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
+        this.setTooltipToClass('bag', _('Bag of fighters (the number indicates the remaining card count)'));
         dojo.place("\n        <div id=\"overall_player_board_0\" class=\"player-board current-player-board\">\t\t\t\t\t\n            <div class=\"player_board_inner\" id=\"player_board_inner_982fff\">\n\n            <div class=\"grid\">\n                <div></div>\n                <div id=\"bag-0\" class=\"bag\"><span id=\"bag-0-counter\"></span></div>\n            </div>\n               \n            </div>\n        </div>", "player_boards", 'first');
         this.bags[0] = new VoidStock(this.cardsManager, document.getElementById("bag-0"));
         this.bagCounters[0] = new ebg.counter();

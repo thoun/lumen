@@ -81,6 +81,9 @@ class PlayerTable {
                 <div id="player-table-${this.playerId}-objective-tokens" class="objective-tokens"></div>
                 <div id="player-table-${this.playerId}-discover-tiles" class="discover-tiles"></div>
             </div>
+            <div id="player-table-${this.playerId}-zone-legend" class="zone legend"></div>
+            <div id="player-table-${this.playerId}-link-legend" class="link legend"></div>
+            <div id="player-table-${this.playerId}-check-legend" class="check-legend"></div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));
@@ -149,6 +152,10 @@ class PlayerTable {
 
         this.discoverTiles = new CompressedLineStock<DiscoverTile>(this.game.discoverTilesManager, document.getElementById(`player-table-${this.playerId}-discover-tiles`), 100);
         player.discoverTiles.forEach(discoverTile => this.discoverTiles.addCard(discoverTile, undefined, { visible: Boolean(discoverTile?.type) }));
+
+        this.game.setTooltip(`player-table-${this.playerId}-zone-legend`, _('TODO'));
+        this.game.setTooltip(`player-table-${this.playerId}-link-legend`, _('TODO'));
+        this.game.setTooltip(`player-table-${this.playerId}-check-legend`, _('TODO'));
     }
 
     private cardClick(card: Card) {

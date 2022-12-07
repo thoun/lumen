@@ -643,7 +643,7 @@ class Lumen implements LumenGame {
             );
         });
 
-        this.setTooltipToClass('bag', _('TODO bag of fighters (the number indicates the remaining card count)'));
+        this.setTooltipToClass('bag', _('Bag of fighters (the number indicates the remaining card count)'));
 
         dojo.place(`
         <div id="overall_player_board_0" class="player-board current-player-board">					
