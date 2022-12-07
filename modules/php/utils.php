@@ -921,7 +921,6 @@ trait UtilTrait {
         $playerId = intval($this->getActivePlayerId());
 
         $this->setFightersActivated([$fighter]);
-        $this->incMoveCount(-1);
 
         $nextState = 'nextMove';
         switch ($fighter->power) {
@@ -991,6 +990,9 @@ trait UtilTrait {
                     'preserve' => ['playerId', 'fighterType'],
                 ]);
                 break;
+        }
+        if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
+            $this->incMoveCount(-1);
         }
 
         $this->gamestate->nextState($nextState);

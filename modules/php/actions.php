@@ -508,7 +508,9 @@ trait ActionTrait {
                 ]);
                 break;
         }
-        $this->incMoveCount(-1);
+        if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
+            $this->incMoveCount(-1);
+        }
 
         $this->gamestate->nextState($nextState);
     }
@@ -565,11 +567,12 @@ trait ActionTrait {
             throw new BgaUserException("Invalid territory");
         }
 
+        $inc = 1;
+
         $nextState = 'nextMove';
         switch ($move) {
             case MOVE_PLAY:
                 $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} plays ${fighterType} on ${season} territory ${battlefieldId}'));
-                $this->incPlaceCount(-1);
                 $this->incStat(1, 'placedFighters', $playerId);
                 if ($selectedFighter->type == 10) {                    
                     $this->incStat(1, 'placedMercenaries', $playerId);
@@ -587,12 +590,9 @@ trait ActionTrait {
                     $nextState = 'chooseCellBrouillage';
                 }
 
-                $inc = -1;
-
                 if ($this->getScenarioId() == 3 && array_key_exists($originTerritoryId, $this->RIVER_CROSS_TERRITORIES) && in_array($territoryId, $this->RIVER_CROSS_TERRITORIES[$originTerritoryId])) {
-                    $inc = -2;
+                    $inc = 2;
                 }
-                $this->incMoveCount($inc);
                 $this->incStat(1, 'movedFighters', $playerId);
                 break;
             case MOVE_SUPER:
@@ -652,6 +652,13 @@ trait ActionTrait {
                 ]);
                 $this->incStat(1, 'activatedFighters', $playerId);
                 break;
+        }
+        if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
+            if ($move == MOVE_PLAY) {
+                $this->incPlaceCount(-1);
+            } else {
+                $this->incMoveCount(-$inc);
+            }
         }
 
         $this->gamestate->nextState($nextState);
