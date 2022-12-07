@@ -148,15 +148,17 @@ trait ActionTrait {
         }
 
         $links = $this->getLinks($playerId);
+        $currentCellInALink = false;
         $possibleUpperLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, 1);
         $possibleLowerLinkCirclesIds = $this->getPossibleLinkCirclesIds($playerId, $links, $cellId, $value, -1);
 
-        if (count($possibleUpperLinkCirclesIds) > 0 || count($possibleLowerLinkCirclesIds) > 0) {
-            $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
-        }
-
         if (count($possibleUpperLinkCirclesIds) === 1) {
             $this->addLink($playerId, $cellId, $possibleUpperLinkCirclesIds[0]);
+            if (!$currentCellInALink) {
+                $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+                $currentCellInALink = true;
+            }
+
             $isOtherCellInALink = $this->array_some($links, fn($link) => $link->index1 == $possibleUpperLinkCirclesIds[0] || $link->index2 == $possibleUpperLinkCirclesIds[0]);
             if (!$isOtherCellInALink) {
                 $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
@@ -164,6 +166,11 @@ trait ActionTrait {
         }
         if (count($possibleLowerLinkCirclesIds) === 1) {
             $this->addLink($playerId, $cellId, $possibleLowerLinkCirclesIds[0]);
+            if (!$currentCellInALink) {
+                $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
+                $currentCellInALink = true;
+            }
+
             $isOtherCellInALink = $this->array_some($links, fn($link) => $link->index1 == $possibleLowerLinkCirclesIds[0] || $link->index2 == $possibleLowerLinkCirclesIds[0]);
             if (!$isOtherCellInALink) {
                 $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
@@ -175,6 +182,29 @@ trait ActionTrait {
             return;
         }
 
+        $this->gamestate->nextState('chooseAction');
+    }
+
+    public function chooseCellLink(int $cellId) {
+        $this->checkAction('chooseCellLink'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+        
+        $args = $this->argChooseCellLink();
+        if (!in_array($cellId, $args['possibleLinkCirclesIds'])) {
+            throw new BgaUserException("Invalid cell");
+        }
+
+        $fromCell = $args['cellId'];
+
+        $links = $this->getLinks($playerId);
+        $isOtherCellInALink = $this->array_some($links, fn($link) => $link->index1 == $cellId || $link->index2 == $cellId);
+        $linkAddedToCurrentCell = $this->array_some($links, fn($link) => $link->index1 == $fromCell || $link->index2 == $fromCell);
+        
+        $this->addLink($playerId, $fromCell, $cellId);
+        
+        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, ($linkAddedToCurrentCell ? 0 : 1) + ($isOtherCellInALink ? 0 : 1));
+        
         $this->gamestate->nextState('chooseAction');
     }
 
@@ -215,31 +245,6 @@ trait ActionTrait {
         }
 
         $this->gamestate->nextState($nextState);
-    }
-
-    public function chooseCellLink(int $cellId) {
-        $this->checkAction('chooseCellLink'); 
-        
-        $playerId = intval($this->getActivePlayerId());
-        
-        $args = $this->argChooseCellLink();
-        if (!in_array($cellId, $args['possibleLinkCirclesIds'])) {
-            throw new BgaUserException("Invalid cell");
-        }
-
-        $fromCell = $args['cellId'];
-        $this->addLink($playerId, $fromCell, $cellId);
-
-        $links = $this->getLinks($playerId);
-        $isOtherCellInALink = $this->array_some($links, fn($link) => $link->index1 == $cellId || $link->index2 == $cellId);
-        if (!$isOtherCellInALink) {
-            $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, 1);
-        }
-        
-        $linkAddedToCurrentCell = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE)) > 0;
-        $this->incGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE, ($linkAddedToCurrentCell ? 0 : 1) + ($isOtherCellInALink ? 0 : 1));
-        
-        $this->gamestate->nextState('chooseAction');
     }
 
     public function startWithAction(int $id) {

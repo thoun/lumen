@@ -12,7 +12,7 @@ trait DebugUtilTrait {
         } 
 
         //$this->debugTestZones();
-        //$this->debugTestLinks();
+        $this->debugTestLinks();
 
         /*$this->debugAddObjectiveToken(2343492, 1);
         $this->debugAddDiscoverTile(2343492, 4, 1);
@@ -30,9 +30,9 @@ trait DebugUtilTrait {
         /*$this->debugAddNeutralFighter(2343492, 31, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 32, 'highCommand2343492', 2);
         $this->debugAddNeutralFighter(2343492, 33, 'highCommand2343492', 3);*/
-        $this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
+        /*$this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 22, 'highCommand2343492', 2);
-        $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);
+        $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);*/
         //$this->debugLastTurn();
     }
 
@@ -111,7 +111,7 @@ trait DebugUtilTrait {
         $this->debugSetCircleValues(2343492, [16], 1);
         $this->addLink(2343492, 15, 16);
         $this->debugSetCircleValues(2343492, [20, 18], 3);
-        $this->debugSetCircleValues(2343492, [11], 4);
+        $this->debugSetCircleValues(2343492, [11, 12], 4);
         $this->addLink(2343492, 11, 18);
     }
 
