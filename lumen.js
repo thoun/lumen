@@ -1700,9 +1700,12 @@ var PlayerTable = /** @class */ (function () {
         var fpDiv = document.getElementById("player-table-".concat(this.playerId, "-first-player-token"));
         fpDiv.dataset.visible = 'false';
     };
-    PlayerTable.prototype.setCancelledOperation = function (type, number) {
+    PlayerTable.prototype.setCancelledOperation = function (type, number, firstPlayer) {
         var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-operation").concat(type, "-number").concat(number + 1));
         circleDiv.innerHTML = '';
+        if (firstPlayer) {
+            document.getElementById("player-table-".concat(this.playerId, "-first-player-token")).dataset.visible = 'false';
+        }
     };
     PlayerTable.prototype.setPossibleCells = function (possibleCircles, value) {
         var _this = this;
@@ -2749,7 +2752,7 @@ var Lumen = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).setPlayedOperation(notif.args.type, notif.args.operationsNumber, notif.args.firstPlayer);
     };
     Lumen.prototype.notif_setCancelledOperation = function (notif) {
-        this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.operationsNumber);
+        this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.operationsNumber, notif.args.firstPlayer);
     };
     Lumen.prototype.notif_setCircleValue = function (notif) {
         this.getPlayerTable(notif.args.playerId).setCircleValue(notif.args.circleId, notif.args.value);

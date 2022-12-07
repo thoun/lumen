@@ -1186,7 +1186,7 @@ class Lumen implements LumenGame {
     } 
 
     notif_setCancelledOperation(notif: Notif<NotifSetPlayedOperationArgs>) {
-        this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.operationsNumber);
+        this.getPlayerTable(notif.args.playerId).setCancelledOperation(notif.args.type, notif.args.operationsNumber, notif.args.firstPlayer);
     } 
 
     notif_setCircleValue(notif: Notif<NotifSetCircleValueArgs>) {

@@ -95,6 +95,8 @@ trait ActionTrait {
         $this->checkAction('cancelOperation'); 
         
         $playerId = intval($this->getActivePlayerId());
+        $firstPlayer = intval($this->getGameStateValue(FIRST_PLAYER));
+        $isFirstPlayer = $playerId == $firstPlayer;
 
         $type = intval($this->getGameStateValue(PLAYER_OPERATION));
 
@@ -105,6 +107,7 @@ trait ActionTrait {
             'player_name' => $this->getPlayerName($playerId),
             'type' => $type,
             'operationsNumber' => intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type")),
+            'firstPlayer' => $isFirstPlayer,
         ]);
 
         $this->gamestate->nextState('cancel');

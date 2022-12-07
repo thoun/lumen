@@ -206,9 +206,13 @@ class PlayerTable {
         fpDiv.dataset.visible = 'false';
     }
     
-    setCancelledOperation(type: number, number: number) {
+    setCancelledOperation(type: number, number: number, firstPlayer: boolean) {
         const circleDiv = document.getElementById(`player-table-${this.playerId}-operation${type}-number${number+1}`);
         circleDiv.innerHTML = '';
+
+        if (firstPlayer) {
+            document.getElementById(`player-table-${this.playerId}-first-player-token`).dataset.visible = 'false';
+        }
     }
 
     public setPossibleCells(possibleCircles: number[], value: number) {
