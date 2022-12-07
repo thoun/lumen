@@ -99,12 +99,15 @@ interface LumenGame extends Game {
 
     territoryClick(id: number): void;
 }
+
+interface Operation {
+    currentNumber: number;
+    value: number;
+    disabled: null | 'complete' | 'first-player';
+}
+
 interface EnteringChooseOperationArgs {
-    operations: { [operation: number]: {
-        currentNumber: number;
-        value: number;
-        disabled: null | 'complete' | 'first-player';
-    } };
+    operations: { [operation: number]: Operation; };
 }
 
 interface EnteringChooseCellArgs {

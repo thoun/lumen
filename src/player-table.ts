@@ -170,7 +170,7 @@ class PlayerTable {
         }
     }
 
-    public setPossibleOperations(operations: { [operation: number]: { currentNumber: number; value: number; possible: boolean; }; }) {
+    public setPossibleOperations(operations: { [operation: number]: Operation; }) {
         Object.keys(operations).forEach(key => {
             const operation = operations[key];
             if (operation.possible) {
