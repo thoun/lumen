@@ -40,6 +40,8 @@ interface Link {
 
 interface LumenPlayer extends Player {
     playerNo: number;
+    visibleScore: number;
+    hiddenScore: number;
     checks: number;
     reserve: Card[];
     highCommand: Card[];
@@ -75,6 +77,7 @@ interface LumenGamedatas {
     realizedObjectives: string[];
     remainingCardsInBag: { [playerId: number]: number };
     roundNumber: number;
+    isEnd: boolean;
 }
 
 interface LumenGame extends Game {
@@ -87,6 +90,7 @@ interface LumenGame extends Game {
     getPlayerColor(playerId: number): string;
 
     setTooltip(id: string, html: string): void;   
+    getTerritoryTooltip(lumens: number): string;
     getChooseFighterSelectableMoveActivateCards(): Card[];
 
     operationClick(operation: number): void;
@@ -270,4 +274,9 @@ interface NotifEndControlTerritoryArgs extends NotifScoreArgs {
 
 interface NotifUpdateControlCountersArgs {
     counters: { [playerId: number]: number[] };
+}
+
+interface NotifUpdateScoreArgs {
+    playerId: number;
+    score: number;
 }

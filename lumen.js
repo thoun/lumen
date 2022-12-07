@@ -1409,6 +1409,7 @@ var TableCenter = /** @class */ (function () {
             territoryMask.dataset.id = '' + territoryInfos.id;
             territoryMask.classList.add('territory-mask');
             battlefield.prepend(territoryMask);
+            _this.game.setTooltip(territoryMask.id, _this.game.getTerritoryTooltip(territoryInfos.id % 10 == 4 ? 3 : territoryInfos.id % 10));
             territoryMask.addEventListener('click', function () { return _this.game.territoryClick(territoryInfos.id); });
             _this.territoriesStocks[territoryInfos.id] = new TerritoryStock(_this.game.cardsManager, document.getElementById("territory-".concat(territoryInfos.id, "-fighters")), territoryInfos.curve, rotation, territoryInfos.id);
             _this.territoriesStocks[territoryInfos.id].onCardClick = function (card) {
@@ -1916,6 +1917,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseTerritory':
                 this.onEnteringChooseTerritory(args.args);
                 break;
+            case 'endScore':
+                this.onEnteringEndScore();
+                break;
         }
     };
     Lumen.prototype.onEnteringNewRound = function () {
@@ -2016,6 +2020,9 @@ var Lumen = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             this.tableCenter.setSelectableTerritories(args.territoriesIds);
         }
+    };
+    Lumen.prototype.onEnteringEndScore = function () {
+        document.querySelectorAll('span.hidden-score').forEach(function (elem) { return elem.remove(); });
     };
     Lumen.prototype.onLeavingState = function (stateName) {
         var _a;
@@ -2338,11 +2345,26 @@ var Lumen = /** @class */ (function () {
             case 7: return _('Spring');
         }
     };
+    Lumen.prototype.getTerritoryTooltip = function (lumens) {
+        return _('Les Territoires ${season} accueillent ${lumens} Lumen(s) = ${lumens} PV par Territoire contrôlé.')
+            .replace('${season}', this.getSeasonName(lumens))
+            .replace(/\${lumens}/g, lumens);
+    };
     Lumen.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             document.getElementById("overall_player_board_".concat(playerId)).style.background = "#".concat(player.color);
+            if (!gamedatas.isEnd) {
+                // set hidden score
+                var currentPlayer = playerId == _this.getPlayerId();
+                dojo.place("<span class=\"hidden-score\"> (+ ".concat(currentPlayer ? "<span id=\"hidden-score-counter\"></span>" : '?', ")</span>"), "player_score_".concat(playerId), 'after');
+                if (currentPlayer) {
+                    _this.hiddenScoreCounter = new ebg.counter();
+                    _this.hiddenScoreCounter.create("hidden-score-counter");
+                    _this.hiddenScoreCounter.setValue(player.hiddenScore);
+                }
+            }
             var html = "\n            <div class=\"counters\">\n                <div class=\"counters-title\">".concat(_('Controlled territories'), "</div>\n                <div class=\"counters-wrapper\">");
             [1, 3, 5, 7].forEach(function (lumens) {
                 return html += "<div class=\"counter-wrapper\" id=\"counter-wrapper-".concat(player.id, "-").concat(lumens, "\" data-hidden=\"").concat((!_this.scenario.battlefields.some(function (battlefield) { return BATTLEFIELDS[battlefield.battlefieldId].territories.some(function (territory) { return territory.id % 10 == lumens; }); })).toString(), "\">\n                    <div class=\"territory-img\" data-lumens=\"").concat(lumens, "\"></div><div id=\"controlled-territories-").concat(player.id, "-").concat(lumens, "\" class=\"counter\"></div>\n                </div>");
@@ -2363,9 +2385,7 @@ var Lumen = /** @class */ (function () {
                 _this.controlCounters[playerId][lumens].setValue(player.controlCounters[lumens]);
             });
             [1, 3, 5, 7].forEach(function (lumens) {
-                return _this.setTooltip("counter-wrapper-".concat(player.id, "-").concat(lumens), _('Les Territoires ${season} accueillent ${lumens} Lumen(s) = ${lumens} PV par Territoire contrôlé.')
-                    .replace('${season}', _this.getSeasonName(lumens))
-                    .replace(/\${lumens}/g, lumens));
+                return _this.setTooltip("counter-wrapper-".concat(player.id, "-").concat(lumens), _this.getTerritoryTooltip(lumens));
             });
         });
         this.setTooltipToClass('bag', _('Bag of fighters (the number indicates the remaining card count)'));
@@ -2712,6 +2732,8 @@ var Lumen = /** @class */ (function () {
             ['revealObjectiveTokens', ANIMATION_MS],
             ['endControlTerritory', ANIMATION_MS * 2],
             ['updateControlCounters', 1],
+            ['updateVisibleScore', 1],
+            ['updateHiddenScore', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -2884,6 +2906,13 @@ var Lumen = /** @class */ (function () {
             var playerCounters = notif.args.counters[key];
             [1, 3, 5, 7].forEach(function (lumens) { return _this.controlCounters[key][lumens].toValue(playerCounters[lumens]); });
         });
+    };
+    Lumen.prototype.notif_updateVisibleScore = function (notif) {
+        var _a;
+        (_a = this.scoreCtrl[notif.args.playerId]) === null || _a === void 0 ? void 0 : _a.toValue(notif.args.score);
+    };
+    Lumen.prototype.notif_updateHiddenScore = function (notif) {
+        this.hiddenScoreCounter.toValue(notif.args.score);
     };
     Lumen.prototype.seasonToLumens = function (season) {
         switch (season) {

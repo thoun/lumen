@@ -60,7 +60,7 @@ trait ActionTrait {
 
         $args = $this->argChooseOperation();
         $operation = $args['operations'][$type];
-        if (!$operation || !$operation['possible']) {
+        if (!$operation || $operation['disabled'] != null) {
             throw new BgaUserException("This operation is impossible at the moment");
         }
         
@@ -427,7 +427,7 @@ trait ActionTrait {
             case POWER_ASSASSIN:
             case POWER_BOMBARDE:
                 $this->putBackInBag([$fighter]);
-                $this->checkTerritoriesDiscoverTileControl();
+                $this->checkTerritoriesDiscoverTileControl($playerId);
                 $this->incStat(1, 'activatedFighters', $playerId);
                 
                 self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to kill ${fighterType2} on ${season} territory ${battlefieldId}'), [
@@ -460,7 +460,7 @@ trait ActionTrait {
                 }
                 $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
                 $this->incStat(1, 'playedActions', $playerId);
-                $this->checkTerritoriesDiscoverTileControl();
+                $this->checkTerritoriesDiscoverTileControl($playerId);
                 
                 foreach($fighters as $iFighter) {
                     self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to kill ${fighterType2} on ${season} territory ${battlefieldId}'), [
@@ -498,7 +498,7 @@ trait ActionTrait {
                 $this->cards->moveCard($fighters[1]->id, 'territory', $fighters[0]->locationArg);
                 $this->putBackInBag([$selectedFighter]);
                 $this->incStat(1, 'playedActions', $playerId);
-                $this->checkTerritoriesDiscoverTileControl();
+                $this->checkTerritoriesDiscoverTileControl($playerId);
         
                 self::notifyAllPlayers("exchangedFighters", clienttranslate('${player_name} activates ${fighterType} to exchange ${fighterType2} with ${fighterType3}'), [
                     'fighters' => $fighters,
@@ -580,7 +580,7 @@ trait ActionTrait {
                 if ($selectedFighter->type == 10) {                    
                     $this->incStat(1, 'placedMercenaries', $playerId);
                 }
-                $this->checkTerritoriesDiscoverTileControl();
+                $this->checkTerritoriesDiscoverTileControl($playerId);
                 break;
             case MOVE_MOVE:
                 $originTerritoryId = $selectedFighter->locationArg;

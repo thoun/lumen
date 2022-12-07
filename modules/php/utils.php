@@ -561,6 +561,8 @@ trait UtilTrait {
         self::notifyPlayer($playerId, $logType, $message, $args + [
             'tokens' => $tokens,
         ]);
+        
+        $this->updateCurrentHiddenScore($playerId);
     }
 
     function takeScenarioObjectiveToken(int $playerId, /*string | null*/ $letter = null, $number = 1) {
@@ -625,7 +627,7 @@ trait UtilTrait {
         if ($territoryId == 0) {
             // pushed to the river
             $this->putBackInBag([$fighter]);
-            $this->checkTerritoriesDiscoverTileControl();
+            $this->checkTerritoriesDiscoverTileControl($fighter->playerId);
             return false;
         }
 
@@ -666,7 +668,7 @@ trait UtilTrait {
         }
 
         // every time a fighter moves, we check if it makes a control to a visible Discover tile
-        $this->checkTerritoriesDiscoverTileControl();
+        $this->checkTerritoriesDiscoverTileControl($fighter->playerId);
 
         $scenarioId = $this->getScenarioId();
         switch ($scenarioId) {
@@ -695,7 +697,7 @@ trait UtilTrait {
         return $redirectBrouillage;
     }
 
-    function checkTerritoriesDiscoverTileControl() {
+    function checkTerritoriesDiscoverTileControl(int $currentPlayer) {
         $discoverTiles = $this->getDiscoverTilesByLocation('territory', null, true);
         foreach($discoverTiles as &$discoverTile) {
             if ($discoverTile->type === 1) { // coffre
@@ -724,6 +726,12 @@ trait UtilTrait {
 
         $playersIds = $this->getPlayersIds();
         $this->updateControlCounters($scenario, $playersIds);
+        foreach($playersIds as $playerId) {
+            $this->updateCurrentVisibleScore($playerId); // will include territory control & butins
+        }
+        if ($currentPlayer !== null) {
+            $this->updateCurrentHiddenScore($currentPlayer);
+        }
     }
 
     function updateControlCounters(Scenario $scenario, array $playersIds) {
@@ -931,7 +939,7 @@ trait UtilTrait {
                 $this->setFightersUnactivated($unactivatedFighters);
                 if ($this->array_some($unactivatedFighters, fn($unactivatedFighter) => in_array($unactivatedFighter->power, [POWER_TISSEUSE, POWER_ROOTED, POWER_METAMORPH]))) {
                     // every time a fighter with changing strength with is flipped, we check if it makes a control to a visible Discover tile
-                    $this->checkTerritoriesDiscoverTileControl();
+                    $this->checkTerritoriesDiscoverTileControl($playerId);
                 }
                 $this->incStat(1, 'activatedFighters', $playerId);
 
@@ -980,7 +988,7 @@ trait UtilTrait {
             case POWER_ROOTED:
             case POWER_METAMORPH:
                 // every time a fighter with changing strength is flipped, we check if it makes a control to a visible Discover tile
-                $this->checkTerritoriesDiscoverTileControl();
+                $this->checkTerritoriesDiscoverTileControl($playerId);
                 $this->incStat(1, 'activatedFighters', $playerId);     
 
                 self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType}'), [
@@ -1076,5 +1084,51 @@ trait UtilTrait {
             $remainingActions->actions[$index]->initial += $inc;
         }
         $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+    }
+
+    function updateCurrentVisibleScore(int $playerId) {
+        $visibleScore = 0;
+
+        // visible score : territory control
+        $scenario = $this->getScenario();
+        foreach ($scenario->battlefieldsIds as $battlefieldId) {
+            foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                $controlledBy = $this->getTerritoryControlledPlayer($territory->id);
+                if ($controlledBy === $playerId) {
+                    $visibleScore += $territory->lumens;
+                }
+            }
+        }
+
+        // visible score : discover tiles
+        $playerDiscoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
+        foreach ($playerDiscoverTiles as $discoverTile) {
+            if ($discoverTile->type === 1) {
+                $visibleScore += $discoverTile->subType;
+            }
+        }
+
+        self::notifyAllPlayers("updateVisibleScore", '', [
+            'playerId' => $playerId,
+            'score' => $visibleScore,
+        ]);
+
+        return $visibleScore;
+    }
+
+    function updateCurrentHiddenScore(int $playerId) {
+        $hiddenScore = 0;
+
+        // hidden score : objective tokens
+        $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
+        foreach ($objectiveTokens as $objectiveToken) {
+            $hiddenScore += $objectiveToken->lumens;
+        }
+        self::notifyPlayer($playerId, "updateHiddenScore", '', [
+            'playerId' => $playerId,
+            'score' => $hiddenScore,
+        ]);
+
+        return $hiddenScore;
     }
 }

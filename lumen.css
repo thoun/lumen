@@ -894,6 +894,9 @@ body > .card {
   background-size: cover;
   background-position: center center;
 }
+.player-board .hidden-score {
+  font-size: 80%;
+}
 .player-board .counters {
   background: url("img/description-background.jpg");
   background-size: cover;

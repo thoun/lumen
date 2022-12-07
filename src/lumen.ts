@@ -27,6 +27,7 @@ class Lumen implements LumenGame {
     private chosenFighters: number[] = [];
     private bags: VoidStock<Card>[] = [];
     private bagCounters: Counter[] = [];
+    private hiddenScoreCounter: Counter;
     private display: LumenDisplay = 'fit-map-and-board-to-screen';
     private roundNumberCounter: Counter;
     private controlCounters: { [playerId: number]: { [lumens: number]: Counter } } = {};
@@ -140,7 +141,10 @@ class Lumen implements LumenGame {
                 break;   
             case 'chooseTerritory':
                 this.onEnteringChooseTerritory(args.args);
-                break;                
+                break;      
+            case 'endScore':  
+                this.onEnteringEndScore();
+                break;              
         }
     }
 
@@ -250,6 +254,10 @@ class Lumen implements LumenGame {
         if ((this as any).isCurrentPlayerActive()) {
             this.tableCenter.setSelectableTerritories(args.territoriesIds);
         }
+    }
+
+    private onEnteringEndScore() {
+        document.querySelectorAll('span.hidden-score').forEach(elem => elem.remove());
     }
 
     public onLeavingState(stateName: string) {
@@ -598,12 +606,29 @@ class Lumen implements LumenGame {
         }
     }
 
+    public getTerritoryTooltip(lumens: number) {
+        return _('Les Territoires ${season} accueillent ${lumens} Lumen(s) = ${lumens} PV par Territoire contrôlé.')
+        .replace('${season}', this.getSeasonName(lumens))
+        .replace(/\${lumens}/g, lumens);
+    }
+
     private createPlayerPanels(gamedatas: LumenGamedatas) {
 
         Object.values(gamedatas.players).forEach(player => {
             const playerId = Number(player.id);   
 
-            document.getElementById(`overall_player_board_${playerId}`).style.background = `#${player.color}`;
+            document.getElementById(`overall_player_board_${playerId}`).style.background = `#${player.color}`;  
+
+            if (!gamedatas.isEnd) {
+                // set hidden score
+                const currentPlayer = playerId == this.getPlayerId();
+                dojo.place(`<span class="hidden-score"> (+ ${currentPlayer ? `<span id="hidden-score-counter"></span>` : '?'})</span>`, `player_score_${playerId}`, 'after');
+                if (currentPlayer) {
+                    this.hiddenScoreCounter = new ebg.counter();
+                    this.hiddenScoreCounter.create(`hidden-score-counter`);
+                    this.hiddenScoreCounter.setValue(player.hiddenScore);
+                }
+            }
 
             let html = `
             <div class="counters">
@@ -638,12 +663,7 @@ class Lumen implements LumenGame {
             });
 
             [1,3,5,7].forEach(lumens => 
-                this.setTooltip(
-                    `counter-wrapper-${player.id}-${lumens}`, 
-                    _('Les Territoires ${season} accueillent ${lumens} Lumen(s) = ${lumens} PV par Territoire contrôlé.')
-                    .replace('${season}', this.getSeasonName(lumens))
-                    .replace(/\${lumens}/g, lumens)
-                )
+                this.setTooltip(`counter-wrapper-${player.id}-${lumens}`, this.getTerritoryTooltip(lumens))
             );
         });
 
@@ -1137,6 +1157,8 @@ class Lumen implements LumenGame {
             ['revealObjectiveTokens', ANIMATION_MS],
             ['endControlTerritory', ANIMATION_MS * 2],
             ['updateControlCounters', 1],
+            ['updateVisibleScore', 1],
+            ['updateHiddenScore', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -1339,6 +1361,14 @@ class Lumen implements LumenGame {
             const playerCounters = notif.args.counters[key];
             [1, 3, 5, 7].forEach(lumens => this.controlCounters[key][lumens].toValue(playerCounters[lumens]))
         });
+    }
+
+    notif_updateVisibleScore(notif: Notif<NotifUpdateScoreArgs>) {
+        (this as any).scoreCtrl[notif.args.playerId]?.toValue(notif.args.score);
+    }
+
+    notif_updateHiddenScore(notif: Notif<NotifUpdateScoreArgs>) {
+        this.hiddenScoreCounter.toValue(notif.args.score);
     }
 
     private seasonToLumens(season: string) {        

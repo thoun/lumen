@@ -88,6 +88,7 @@ class TableCenter {
             territoryMask.dataset.id = ''+territoryInfos.id;
             territoryMask.classList.add('territory-mask');
             battlefield.prepend(territoryMask);
+            this.game.setTooltip(territoryMask.id, this.game.getTerritoryTooltip(territoryInfos.id % 10 == 4 ? 3 : territoryInfos.id % 10))
             territoryMask.addEventListener('click', () => this.game.territoryClick(territoryInfos.id));
 
             this.territoriesStocks[territoryInfos.id] = new TerritoryStock(this.game.cardsManager, document.getElementById(`territory-${territoryInfos.id}-fighters`), territoryInfos.curve, rotation, territoryInfos.id);

@@ -189,11 +189,17 @@ class Lumen extends Table {
         $result['remainingCardsInBag'] = [0 => count($this->getCardsByLocation('bag0'))];
 
         $isEnd = intval($this->gamestate->state_id()) >= ST_END_SCORE;
+        $result['isEnd'] = $isEnd;
 
         $counters = $this->updateControlCounters($this->getScenario(), array_keys($result['players']));
   
         // Gather all information about current game situation (visible by player $current_player_id).
         foreach($result['players'] as $playerId => &$player) {
+            if (!$isEnd) {
+                $player['visibleScore'] = $this->updateCurrentVisibleScore($playerId);
+                $player['hiddenScore'] = $currentPlayerId == $playerId ? $this->updateCurrentHiddenScore($playerId) : null;
+                $player['score'] = $player['visibleScore'];
+            }
             $player['playerNo'] = intval($player['playerNo']);
             $player['checks'] = intval($player['checks']);
             $player['reserve'] = $this->getCardsByLocation('reserve'.$playerId);
