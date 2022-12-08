@@ -100,7 +100,7 @@ class TableCenter {
                 } else {
                     this.territoriesStocks[territoryInfos.id].unselectCard(card);
                 }
-            }     
+            }
             
             this.territoriesStocks[territoryInfos.id].onAnyClick = () => {
                 if ((this.game as any).gamedatas.gamestate.name == 'chooseTerritory') {
@@ -170,23 +170,30 @@ class TableCenter {
     private cancelFighterChoice() {
         const oldChoice = document.getElementById(`fighter-choice`);
         if (oldChoice) {
-            oldChoice.closest('.battlefield').classList.remove('temp-z-index');
             oldChoice.parentElement.removeChild(oldChoice);
         }
     }
 
     private createFighterChoice(card: Card) {
         const element = this.game.cardsManager.getCardElement(card);
-        element.closest('.battlefield').classList.add('temp-z-index');
 
         const canMove = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleFightersToMove.some(moveFighter => moveFighter.id == card.id);
         const canActivate = ((this.game as any).gamedatas.gamestate.args as EnteringChooseFighterArgs).possibleFightersToActivate.some(activateFighter => activateFighter.id == card.id);
 
-        dojo.place(`<div id="fighter-choice">
+        const map = document.getElementById(`map`);
+        const mapBR = map.getBoundingClientRect();
+        const elemBR = element.getBoundingClientRect();
+        const cumulativeZoom = Number(getComputedStyle(document.documentElement).getPropertyValue('--cumulative-scale'));
+        let left = (elemBR.left - mapBR.left) / cumulativeZoom;
+        let top = (elemBR.top - mapBR.top) / cumulativeZoom;
+        const upper = top + 100 + 50 / cumulativeZoom > Number(map.dataset.height); // 50 = height + paddings
+        console.log(upper, top, top + 100 + 50 / cumulativeZoom, Number(map.dataset.height));
+
+        dojo.place(`<div id="fighter-choice" class="${upper ? 'upper' : ''}" style="left: ${left - 60}px; top: ${top + (upper ? -55 : 105)}px;">
             <button id="fighter-choice-move" ${canMove ? '' : ' disabled="disabled"'}>${_('Move')}</button>
             <button id="fighter-choice-cancel">✖</button>
             <button id="fighter-choice-activate" ${canActivate ? '' : ' disabled="disabled"'}>${_('Activate')}</button>
-        </div>`, element);
+        </div>`, 'map');
 
         document.getElementById(`fighter-choice-move`).addEventListener('click', () => {
             this.game.moveFighter(card.id);

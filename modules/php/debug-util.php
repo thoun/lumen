@@ -14,6 +14,8 @@ trait DebugUtilTrait {
         //$this->debugTestZones();
         $this->debugTestLinks();
 
+        $this->debugAddPlayerEverywhere(2343492);
+
         /*$this->debugAddObjectiveToken(2343492, 1);
         $this->debugAddDiscoverTile(2343492, 4, 1);
         $this->debugAddDiscoverTile(2343492, 5, 1);
@@ -79,6 +81,28 @@ trait DebugUtilTrait {
                 "INSERT INTO `circle` (`circle_id`, `player_id`, `value`, `zone`) VALUES ($circleId, $playerId, $value, $zoneId)" :
                 "INSERT INTO `circle` (`circle_id`, `player_id`, `value`) VALUES ($circleId, $playerId, $value)"
             );
+        }
+    }
+
+    public function debugAddPlayerEverywhere($playerId) {
+        $scenario = $this->getScenario();
+        foreach ($scenario->battlefieldsIds as $battlefieldId) {
+            foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
+                if (count($this->getCardsByLocation('territory', $territory->id, $playerId)) == 0) {
+                    $cards = $this->getCardsByLocation('bag'.$playerId);
+                    if (count($cards) > 0) {
+                        $card = $cards[0];
+                        $this->cards->moveCard($card->id, 'territory', $territory->id);
+                    } else {
+                        $cards = $this->getCardsByLocation('bag0');
+                        if (count($cards) > 0) {
+                            $card = $cards[0];
+                            self::DbQuery("update card set player_id = $playerId where card_id = $card->id");
+                            $this->cards->moveCard($card->id, 'territory', $territory->id);
+                        }
+                    }
+                }
+            }
         }
     }
 

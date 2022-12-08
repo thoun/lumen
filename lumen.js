@@ -1480,17 +1480,23 @@ var TableCenter = /** @class */ (function () {
     TableCenter.prototype.cancelFighterChoice = function () {
         var oldChoice = document.getElementById("fighter-choice");
         if (oldChoice) {
-            oldChoice.closest('.battlefield').classList.remove('temp-z-index');
             oldChoice.parentElement.removeChild(oldChoice);
         }
     };
     TableCenter.prototype.createFighterChoice = function (card) {
         var _this = this;
         var element = this.game.cardsManager.getCardElement(card);
-        element.closest('.battlefield').classList.add('temp-z-index');
         var canMove = this.game.gamedatas.gamestate.args.possibleFightersToMove.some(function (moveFighter) { return moveFighter.id == card.id; });
         var canActivate = this.game.gamedatas.gamestate.args.possibleFightersToActivate.some(function (activateFighter) { return activateFighter.id == card.id; });
-        dojo.place("<div id=\"fighter-choice\">\n            <button id=\"fighter-choice-move\" ".concat(canMove ? '' : ' disabled="disabled"', ">").concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\" ").concat(canActivate ? '' : ' disabled="disabled"', ">").concat(_('Activate'), "</button>\n        </div>"), element);
+        var map = document.getElementById("map");
+        var mapBR = map.getBoundingClientRect();
+        var elemBR = element.getBoundingClientRect();
+        var cumulativeZoom = Number(getComputedStyle(document.documentElement).getPropertyValue('--cumulative-scale'));
+        var left = (elemBR.left - mapBR.left) / cumulativeZoom;
+        var top = (elemBR.top - mapBR.top) / cumulativeZoom;
+        var upper = top + 100 + 50 / cumulativeZoom > Number(map.dataset.height); // 50 = height + paddings
+        console.log(upper, top, top + 100 + 50 / cumulativeZoom, Number(map.dataset.height));
+        dojo.place("<div id=\"fighter-choice\" class=\"".concat(upper ? 'upper' : '', "\" style=\"left: ").concat(left - 60, "px; top: ").concat(top + (upper ? -55 : 105), "px;\">\n            <button id=\"fighter-choice-move\" ").concat(canMove ? '' : ' disabled="disabled"', ">").concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\" ").concat(canActivate ? '' : ' disabled="disabled"', ">").concat(_('Activate'), "</button>\n        </div>"), 'map');
         document.getElementById("fighter-choice-move").addEventListener('click', function () {
             _this.game.moveFighter(card.id);
             _this.cancelFighterChoice();

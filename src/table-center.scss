@@ -51,10 +51,6 @@
 
     .battlefield {
         z-index: 2;
-
-        &.temp-z-index {
-            z-index: 3;
-        }
         
         .territory {
             position: absolute;
@@ -203,14 +199,17 @@
         display: grid;
         grid-template-columns: 1fr 30px 1fr;
         gap: 10px;
-        bottom: -30px;
         width: 200px;
         height: 30px;
-        left: -60px;
         border-radius: 10px;
         box-shadow: 1px 1px 2px 1px #00000066;
         z-index: 20;
+        transform-origin: top center;
         transform: scale(calc(1 / var(--cumulative-scale)));
+
+        &.upper {
+            transform-origin: bottom center;
+        }
 
         button {
             background: white;
