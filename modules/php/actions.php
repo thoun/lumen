@@ -526,6 +526,13 @@ trait ActionTrait {
     public function cancelChooseFighters() {
         $this->checkAction('cancelChooseFighters');
 
+        $args = $this->argChooseFighter();
+
+        if (in_array($args['move'], [MOVE_PUSH, MOVE_KILL, MOVE_UNACTIVATE])) {
+            $selectedFighter = $this->getCardById(intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER)));
+            $this->setFightersUnactivated([$selectedFighter]);
+        }
+
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
 
@@ -678,6 +685,11 @@ trait ActionTrait {
         $args = $this->argChooseTerritory();
         if(!$args['canCancel']) {
             throw new BgaUserException("Cancel is not available");
+        }
+
+        if (in_array($args['move'], [MOVE_SUPER, MOVE_FLY, MOVE_IMPATIENT])) {
+            $selectedFighter = $this->getCardById(intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER)));
+            $this->setFightersUnactivated([$selectedFighter]);
         }
 
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
