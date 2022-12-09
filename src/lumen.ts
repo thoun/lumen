@@ -1422,8 +1422,9 @@ class Lumen implements LumenGame {
                 });
 
                 ['fighterType', 'fighterType2', 'fighterType3'].forEach(field => {
-                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
-                        args[field] = `<div class="fighter" data-color="${this.getPlayerColor(args.playerId)}" data-sub-type="${args[field]}"></div>`;
+                    const fighter: Card = args[field.replace('Type', '')];
+                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<' && fighter !== null) {
+                        args[field] = `<div class="fighter" data-color="${this.getPlayerColor(fighter.playerId)}" data-sub-type="${fighter.subType}"></div>`;
                     }
                 });
 

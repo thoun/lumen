@@ -441,12 +441,14 @@ trait ActionTrait {
                 self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to kill ${fighterType2} on ${season} territory ${battlefieldId}'), [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
+                    'fighter' => $selectedFighter, // for logs
                     'fighterType' => $selectedFighter->subType, // for logs
+                    'fighter2' => $fighter, // for logs
                     'fighterType2' => $fighter->subType, // for logs
                     'season' => $this->getSeasonName($this->TERRITORIES[$fighter->locationArg]->lumens),
                     'battlefieldId' => floor($fighter->locationArg / 10),
                     'i18n' => ['season'],
-                    'preserve' => ['playerId', 'fighterType', 'fighterType2'],
+                    'preserve' => ['fighter', 'fighterType', 'fighter2', 'fighterType2'],
                 ]);
                 break;
             case POWER_PACIFICATEUR:
@@ -456,9 +458,10 @@ trait ActionTrait {
                 self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to set surrounding opponents to their inactive face'), [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
+                    'fighter' => $selectedFighter, // for logs
                     'fighterType' => $selectedFighter->subType, // for logs
                     'i18n' => ['season'],
-                    'preserve' => ['playerId', 'fighterType'],
+                    'preserve' => ['fighter', 'fighterType'],
                 ]);
                 break;
 
@@ -474,12 +477,14 @@ trait ActionTrait {
                     self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to kill ${fighterType2} on ${season} territory ${battlefieldId}'), [
                         'playerId' => $playerId,
                         'player_name' => $this->getPlayerName($playerId),
+                        'fighter' => $selectedFighter, // for logs
                         'fighterType' => $selectedFighter->subType, // for logs
+                        'fighter2' => $iFighter, // for logs
                         'fighterType2' => $iFighter->subType, // for logs
                         'season' => $this->getSeasonName($this->TERRITORIES[$iFighter->locationArg]->lumens),
                         'battlefieldId' => floor($iFighter->locationArg / 10),
                         'i18n' => ['season'],
-                        'preserve' => ['playerId', 'fighterType', 'fighterType2'],
+                        'preserve' => ['fighter', 'fighterType', 'fighter2', 'fighterType2'],
                     ]);
                 }
                 break;
@@ -492,12 +497,14 @@ trait ActionTrait {
                     self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to kill ${fighterType2} on ${season} territory ${battlefieldId}'), [
                         'playerId' => $playerId,
                         'player_name' => $this->getPlayerName($playerId),
+                        'fighter' => $selectedFighter, // for logs
                         'fighterType' => $selectedFighter->subType, // for logs
+                        'fighter2' => $iFighter, // for logs
                         'fighterType2' => $iFighter->subType, // for logs
                         'season' => $this->getSeasonName($this->TERRITORIES[$iFighter->locationArg]->lumens),
                         'battlefieldId' => floor($iFighter->locationArg / 10),
                         'i18n' => ['season'],
-                        'preserve' => ['playerId', 'fighterType', 'fighterType2'],
+                        'preserve' => ['fighter', 'fighterType', 'fighter2', 'fighterType2'],
                     ]);
                 }
                 break;
@@ -512,10 +519,13 @@ trait ActionTrait {
                     'fighters' => $fighters,
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
+                    'fighter' => $selectedFighter, // for logs
                     'fighterType' => $selectedFighter->subType, // for logs
+                    'fighter2' => $fighters[0], // for logs
                     'fighterType2' => $fighters[0]->subType, // for logs
+                    'fighter3' => $fighters[1], // for logs
                     'fighterType3' => $fighters[1]->subType, // for logs
-                    'preserve' => ['playerId', 'fighterType', 'fighterType2', 'fighterType3'],
+                    'preserve' => ['fighter', 'fighterType', 'fighter2', 'fighterType2', 'fighter3', 'fighterType3'],
                 ]);
                 break;
         }
@@ -673,11 +683,12 @@ trait ActionTrait {
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
                     'territoryId' => $territoryId,
+                    'fighter' => $selectedFighter, // for logs
                     'fighterType' => $selectedFighter->subType, // for logs
                     'season' => $this->getSeasonName($this->TERRITORIES[$territoryId]->lumens),
                     'battlefieldId' => floor($territoryId / 10),
                     'i18n' => ['season'],
-                    'preserve' => ['playerId', 'fighterType'],
+                    'preserve' => ['fighter', 'fighterType'],
                 ]);
                 $this->incStat(1, 'activatedFighters', $playerId);
                 break;

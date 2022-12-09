@@ -651,7 +651,7 @@ trait UtilTrait {
             'season' => $this->getSeasonName($this->TERRITORIES[$territoryId]->lumens), // for logs
             'battlefieldId' => floor($territoryId / 10), // for logs
             'i18n' => array_merge(array_key_exists('i18n', $logArgs) ? $logArgs['i18n'] : [], ['season']),
-            'preserve' => ['playerId', 'fighterType'],
+            'preserve' => ['fighter', 'fighterType'],
         ]);
 
         return $this->fighterMoved($fighter, $territoryId);
@@ -953,8 +953,9 @@ trait UtilTrait {
                 self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType} to reset surrounding fighters to their active face'), [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
+                    'fighter' => $fighter, // for logs
                     'fighterType' => $fighter->subType, // for logs
-                    'preserve' => ['playerId', 'fighterType'],
+                    'preserve' => ['fighter', 'fighterType'],
                 ]);
                 break;
             case POWER_PUSHER:
@@ -1001,8 +1002,9 @@ trait UtilTrait {
                 self::notifyAllPlayers('log', clienttranslate('${player_name} activates ${fighterType}'), [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
+                    'fighter' => $fighter, // for logs
                     'fighterType' => $fighter->subType, // for logs
-                    'preserve' => ['playerId', 'fighterType'],
+                    'preserve' => ['fighter', 'fighterType'],
                 ]);
                 break;
         }

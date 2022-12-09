@@ -3011,8 +3011,9 @@ var Lumen = /** @class */ (function () {
                     }
                 });
                 ['fighterType', 'fighterType2', 'fighterType3'].forEach(function (field) {
-                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
-                        args[field] = "<div class=\"fighter\" data-color=\"".concat(_this.getPlayerColor(args.playerId), "\" data-sub-type=\"").concat(args[field], "\"></div>");
+                    var fighter = args[field.replace('Type', '')];
+                    if (args[field] !== null && args[field] !== undefined && args[field][0] != '<' && fighter !== null) {
+                        args[field] = "<div class=\"fighter\" data-color=\"".concat(_this.getPlayerColor(fighter.playerId), "\" data-sub-type=\"").concat(fighter.subType, "\"></div>");
                     }
                 });
                 ['cardinalDirection'].forEach(function (field) {
