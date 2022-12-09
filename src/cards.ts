@@ -50,7 +50,7 @@ class CardsManager extends CardManager<Card> {
         }
     }
 
-    public getStrength(subType: number) {
+    public getNotPlayedStrength(subType: number): number {
         switch (subType) {
             case 1: return 2;
             case 2: return 3;
@@ -63,10 +63,30 @@ class CardsManager extends CardManager<Card> {
             case 12: return 1;
             case 13: return 2;
             case 14: return 1;
-            case 15: return '2 / 1';
-            case 16: return '2 / 1';
+            case 15: return 2;
+            case 16: return 2;
             case 17: return 2;
-            case 18: return '1 / 3';
+            case 18: return 1;
+        }
+    }
+
+    public getStrength(subType: number): number | string {
+        switch (subType) {
+            case 1: return 2;
+            case 2: return 3;
+            case 3: return 1;
+            case 4: return 1;
+            case 5: return 1;
+            case 6: return 2;
+
+            case 11: return 1;
+            case 12: return 1;
+            case 13: return 2;
+            case 14: return 1;
+            case 15: return '2 <div class="strength-icon"></div> / 1';
+            case 16: return '2 <div class="strength-icon"></div> / 1';
+            case 17: return 2;
+            case 18: return '1 <div class="strength-icon"></div> / 3';
         }
     }
 
@@ -103,5 +123,16 @@ class CardsManager extends CardManager<Card> {
         ${subType < 20 ? `${_("Strength:")} <strong>${this.getStrength(subType)} <div class="strength-icon"></div></strong>` : ''}
         <p>${this.getDescription(subType)}</p>
         `;
+    }
+
+    public getCurrentStrength(fighter: Card): number {
+        if (fighter.played) {
+            if ([15, 16].includes(fighter.subType) /* Rooted, Tisseuse */) {
+                return 1;
+            } else if (fighter.subType == 18 /* Metamorph */) {
+                return 3;
+            }
+        }
+        return this.getNotPlayedStrength(fighter.subType);
     }
 }

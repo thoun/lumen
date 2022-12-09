@@ -65,10 +65,14 @@ html, .mode_3d #game_play_area_background {
     }
 
     .first-player-token {
-      transform: scale(0.8);
+      width: 45px;
+      height: 25px;
       display: inline-block;
       vertical-align: middle;
-      margin: -10px -15px -10px 2px;
+      margin-left: 2px;
+      margin-right: -5px;
+      margin-top: -5px;
+      margin-bottom: -5px;
     }
   }
 

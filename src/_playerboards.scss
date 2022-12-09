@@ -104,7 +104,9 @@
 }
   
 .first-player-token {
-  background: url('img/first-player.png');
+  background-image: url('img/first-player.png');
+  background-repeat: no-repeat;
+  background-size: contain;
   width: 54px;
-  height: 31px;
+  height: 30px;
 }

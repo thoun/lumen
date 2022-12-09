@@ -955,9 +955,11 @@ body > .card {
 }
 
 .first-player-token {
-  background: url("img/first-player.png");
+  background-image: url("img/first-player.png");
+  background-repeat: no-repeat;
+  background-size: contain;
   width: 54px;
-  height: 31px;
+  height: 30px;
 }
 
 .player-table {
@@ -1585,10 +1587,14 @@ html, .mode_3d #game_play_area_background {
   font-size: 26pt;
 }
 #page-title .action-button .first-player-token {
-  transform: scale(0.8);
+  width: 45px;
+  height: 25px;
   display: inline-block;
   vertical-align: middle;
-  margin: -10px -15px -10px 2px;
+  margin-left: 2px;
+  margin-right: -5px;
+  margin-top: -5px;
+  margin-bottom: -5px;
 }
 #page-title #pagemaintitletext .subtitle {
   color: gray;

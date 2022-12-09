@@ -29,7 +29,7 @@ class TerritoryStock extends ManualPositionStock<Card> {
     public onAnyClick?: () => void;
 
     constructor(
-        protected manager: CardManager<Card>, 
+        protected manager: CardsManager, 
         protected element: HTMLElement, 
         protected curve: number[][], 
         protected rotation: 0 | 90 | 180 | 270,
@@ -97,7 +97,11 @@ class TerritoryStock extends ManualPositionStock<Card> {
     }
 
     private getElements(): HTMLElement[] {
-        const elements = this.getCards().map(card => this.getCardElement(card));
+        const cards = this.getCards();
+        const elements = cards.map(card => this.getCardElement(card));
+        if (cards.length) {
+            // TODO elements.unshift(this.getStrengthCounter(cards));
+        }
         if (!this.discoverTileStock.isEmpty()) {
             elements.push(this.discoverTileStockDiv);
         }
@@ -107,6 +111,22 @@ class TerritoryStock extends ManualPositionStock<Card> {
         }
 
         return elements;
+    }
+    
+    private getStrengthCounter(cards: Card[]): HTMLElement {
+        const strengthes = {};
+        cards.forEach(card => {
+            if (!strengthes[card.playerId]) {
+                strengthes[card.playerId] = 0;
+            }
+            strengthes[card.playerId] += this.manager.getCurrentStrength(card);
+        });
+
+        Object.keys(strengthes).forEach(playerId => {
+
+        });
+
+        return document.createElement('div'); // TODO
     }
 
     private getPathCoordinates(cardPathLength: number) {

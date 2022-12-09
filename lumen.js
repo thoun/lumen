@@ -737,6 +737,24 @@ var CardsManager = /** @class */ (function (_super) {
             case 33: return _("Freluquets");
         }
     };
+    CardsManager.prototype.getNotPlayedStrength = function (subType) {
+        switch (subType) {
+            case 1: return 2;
+            case 2: return 3;
+            case 3: return 1;
+            case 4: return 1;
+            case 5: return 1;
+            case 6: return 2;
+            case 11: return 1;
+            case 12: return 1;
+            case 13: return 2;
+            case 14: return 1;
+            case 15: return 2;
+            case 16: return 2;
+            case 17: return 2;
+            case 18: return 1;
+        }
+    };
     CardsManager.prototype.getStrength = function (subType) {
         switch (subType) {
             case 1: return 2;
@@ -749,10 +767,10 @@ var CardsManager = /** @class */ (function (_super) {
             case 12: return 1;
             case 13: return 2;
             case 14: return 1;
-            case 15: return '2 / 1';
-            case 16: return '2 / 1';
+            case 15: return '2 <div class="strength-icon"></div> / 1';
+            case 16: return '2 <div class="strength-icon"></div> / 1';
             case 17: return 2;
-            case 18: return '1 / 3';
+            case 18: return '1 <div class="strength-icon"></div> / 3';
         }
     };
     CardsManager.prototype.getDescription = function (subType) {
@@ -781,6 +799,17 @@ var CardsManager = /** @class */ (function (_super) {
     };
     CardsManager.prototype.getTooltip = function (subType) {
         return "<h3>".concat(this.getName(subType), "</h3>\n        ").concat(subType < 20 ? "".concat(_("Strength:"), " <strong>").concat(this.getStrength(subType), " <div class=\"strength-icon\"></div></strong>") : '', "\n        <p>").concat(this.getDescription(subType), "</p>\n        ");
+    };
+    CardsManager.prototype.getCurrentStrength = function (fighter) {
+        if (fighter.played) {
+            if ([15, 16].includes(fighter.subType) /* Rooted, Tisseuse */) {
+                return 1;
+            }
+            else if (fighter.subType == 18 /* Metamorph */) {
+                return 3;
+            }
+        }
+        return this.getNotPlayedStrength(fighter.subType);
     };
     return CardsManager;
 }(CardManager));
@@ -1263,7 +1292,11 @@ var TerritoryStock = /** @class */ (function (_super) {
     };
     TerritoryStock.prototype.getElements = function () {
         var _this = this;
-        var elements = this.getCards().map(function (card) { return _this.getCardElement(card); });
+        var cards = this.getCards();
+        var elements = cards.map(function (card) { return _this.getCardElement(card); });
+        if (cards.length) {
+            // TODO elements.unshift(this.getStrengthCounter(cards));
+        }
         if (!this.discoverTileStock.isEmpty()) {
             elements.push(this.discoverTileStockDiv);
         }
@@ -1271,6 +1304,19 @@ var TerritoryStock = /** @class */ (function (_super) {
             elements.push(document.getElementById("initiative-marker"));
         }
         return elements;
+    };
+    TerritoryStock.prototype.getStrengthCounter = function (cards) {
+        var _this = this;
+        var strengthes = {};
+        cards.forEach(function (card) {
+            if (!strengthes[card.playerId]) {
+                strengthes[card.playerId] = 0;
+            }
+            strengthes[card.playerId] += _this.manager.getCurrentStrength(card);
+        });
+        Object.keys(strengthes).forEach(function (playerId) {
+        });
+        return document.createElement('div'); // TODO
     };
     TerritoryStock.prototype.getPathCoordinates = function (cardPathLength) {
         var currentDistance = 0;
