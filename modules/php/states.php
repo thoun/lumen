@@ -55,9 +55,7 @@ trait StateTrait {
             'move' => $move,
         ]);
 
-        $potentialMove = $move + count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE));
-
-        if ($place == 0 || $potentialMove == 0) {
+        if ($place == 0 || $move == 0) {
             $this->setActionOrder(1);
             $this->gamestate->nextState('nextMove');
         }
@@ -71,6 +69,12 @@ trait StateTrait {
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
         
         $remainingActions = $this->getRemainingActions();
+
+        if ($remainingActions->startWith == '') {
+            $this->gamestate->nextState('chooseAction');
+            return;
+        }
+
         $canDoAction = (
             $remainingActions->actions[0]->remaining + 
             $remainingActions->actions[1]->remaining
@@ -282,7 +286,7 @@ trait StateTrait {
 
                         $number = $alone ? 2 : 1;
                         $this->takeObjectiveTokens(
-                            $playerId, 
+                            $mostFighters, 
                             $number,
                             clienttranslate('${player_name} gets ${number} objective token(s) for objective ${letter} on ${cardinalDirection} island'), 
                             [
@@ -293,7 +297,7 @@ trait StateTrait {
                             ]
                         );
                         $this->incStat(1, 'completedObjectives');
-                        $this->incStat(1, 'completedObjectives', $playerId);
+                        $this->incStat(1, 'completedObjectives', $mostFighters);
                     }
                 }
                 break;

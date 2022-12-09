@@ -300,7 +300,10 @@ trait ActionTrait {
 
         $currentAction = $this->getCurrentAction();
         if ($currentAction->type != 'MOVE' || $currentAction->remaining == 0) {
-            throw new BgaUserException("No remaining action");
+            $remainingActions = $this->getRemainingActions();
+            if ($remainingActions->currentCoupFourreId == null) {
+                throw new BgaUserException("No remaining action");
+            }
         }
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
             throw new BgaUserException("Impossible to move a fighter now");
@@ -517,7 +520,7 @@ trait ActionTrait {
                 break;
         }
         if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
-            $this->incMoveCount(-1);
+            $this->decMoveCount(1);
         }
 
         $this->gamestate->nextState($nextState);
@@ -554,11 +557,22 @@ trait ActionTrait {
         if (count($tiles) < 1) {
             throw new BgaUserException("No POWER_COUP_FOURRE tile");
         }
-        $this->discardDiscoverTile($tiles[0]);
-
-        $this->incMoveCount(1, true);
+        
+        $remainingActions = $this->getRemainingActions();
+        $remainingActions->currentCoupFourreId = $tiles[0]->id;
+        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
 
         $this->gamestate->nextState('useCoupFourre');
+    }
+
+    public function cancelCoupFourre() {        
+        $this->checkAction('cancelCoupFourre');
+
+        $remainingActions = $this->getRemainingActions();
+        $remainingActions->currentCoupFourreId = null;
+        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+
+        $this->gamestate->nextState('nextMove');
     }
 
     public function chooseTerritory(int $territoryId) {
@@ -582,7 +596,7 @@ trait ActionTrait {
             throw new BgaUserException("Invalid territory");
         }
 
-        $inc = 1;
+        $dec = 1;
 
         $nextState = 'nextMove';
         switch ($move) {
@@ -606,7 +620,7 @@ trait ActionTrait {
                 }
 
                 if ($this->getScenarioId() == 3 && array_key_exists($originTerritoryId, $this->RIVER_CROSS_TERRITORIES) && in_array($territoryId, $this->RIVER_CROSS_TERRITORIES[$originTerritoryId])) {
-                    $inc = 2;
+                    $dec = 2;
                 }
                 $this->incStat(1, 'movedFighters', $playerId);
                 break;
@@ -670,9 +684,9 @@ trait ActionTrait {
         }
         if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
             if ($move == MOVE_PLAY) {
-                $this->incPlaceCount(-1);
+                $this->decPlaceCount(1);
             } else {
-                $this->incMoveCount(-$inc);
+                $this->decMoveCount($dec);
             }
         }
 
@@ -699,7 +713,7 @@ trait ActionTrait {
     }
 
     public function pass() {
-        $this->checkAction('pass'); 
+        $this->checkAction('pass');
 
         $this->gamestate->nextState('nextPlayer');
     }

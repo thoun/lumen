@@ -164,7 +164,7 @@ $playerActionsGameStates = [
             "useCoupFourre",
         ],
         "transitions" => [
-            "useCoupFourre" => ST_PLAYER_CHOOSE_ACTION,
+            "useCoupFourre" => ST_PLAYER_CHOOSE_FIGHTER,
             "nextMove" => ST_NEXT_MOVE,
         ]
     ],
@@ -201,7 +201,8 @@ $playerActionsGameStates = [
             "cancelChooseFighters",
             "pass",
             "passChooseFighters",
-            "useCoupFourre"
+            "useCoupFourre",
+            "cancelCoupFourre"
         ],
         "transitions" => [
             "useCoupFourre" => ST_PLAYER_CHOOSE_FIGHTER,

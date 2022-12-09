@@ -210,6 +210,14 @@
       self::ajaxResponse();
     }
 
+    public function cancelCoupFourre() {
+      self::setAjaxMode();
+
+      $this->game->cancelCoupFourre();
+
+      self::ajaxResponse();
+    }
+
   }
   
 

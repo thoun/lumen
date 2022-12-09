@@ -187,7 +187,6 @@ class TableCenter {
         let left = (elemBR.left - mapBR.left) / cumulativeZoom;
         let top = (elemBR.top - mapBR.top) / cumulativeZoom;
         const upper = top + 100 + 50 / cumulativeZoom > Number(map.dataset.height); // 50 = height + paddings
-        console.log(upper, top, top + 100 + 50 / cumulativeZoom, Number(map.dataset.height));
 
         dojo.place(`<div id="fighter-choice" class="${upper ? 'upper' : ''}" style="left: ${left - 60}px; top: ${top + (upper ? -55 : 105)}px;">
             <button id="fighter-choice-move" ${canMove ? '' : ' disabled="disabled"'}>${_('Move')}</button>

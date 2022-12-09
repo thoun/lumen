@@ -210,6 +210,13 @@ trait UtilTrait {
         $this->cards->shuffle('bag0');
     }
 
+    function getDiscoverTileById(int $id) {
+        $sql = "SELECT * FROM `discover_tile` WHERE `card_id` = $id";
+        $dbResults = $this->getCollectionFromDb($sql);
+        $cards = array_map(fn($dbCard) => new DiscoverTile($dbCard), array_values($dbResults));
+        return count($cards) > 0 ? $cards[0] : null;
+    }
+
     function getDiscoverTilesByLocation(string $location, /*int|null*/ $location_arg = null, /*bool|null*/ $visible = null, /*int|null*/ $type = null, /*int|null*/ $subType = null) {
         $sql = "SELECT * FROM `discover_tile` WHERE `card_location` = '$location'";
         if ($location_arg !== null) {
@@ -773,7 +780,6 @@ trait UtilTrait {
     }
 
     function applyParachutage(DiscoverTile &$discoverTile, int $playerId, int $territoryId) {
-        $this->highlightDiscoverTile($discoverTile);
         $cardDb = $this->cards->pickCardForLocation('bag'.$playerId, 'territory', $territoryId);
         if ($cardDb == null) {
             self::notifyAllPlayers("log", clienttranslate('The bag is empty, impossible to apply Parachutage'), []); // TODO check log
@@ -820,6 +826,7 @@ trait UtilTrait {
                         $this->moveDiscoverTileToPlayer($discoverTile, $playerId);
                         break;
                     case POWER_PARACHUTAGE:
+                        $this->highlightDiscoverTile($discoverTile);
                         $this->applyParachutage($discoverTile, $playerId, $territoryId);
                         break;
                     case POWER_MESSAGE_PRIORITAIRE:
@@ -1000,7 +1007,7 @@ trait UtilTrait {
                 break;
         }
         if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
-            $this->incMoveCount(-1);
+            $this->decMoveCount(1);
         }
 
         $this->gamestate->nextState($nextState);
@@ -1051,7 +1058,7 @@ trait UtilTrait {
 
     function setActionOrder(int $startWithAction) {
         $remainingActions = $this->getRemainingActions();
-        $remainingActions->startWith == 2 ? 'MOVE' : 'PLACE';
+        $remainingActions->startWith = $startWithAction == 2 ? 'MOVE' : 'PLACE';
         if ($startWithAction == 2) {
             $remainingActions->actions = [
                 $remainingActions->actions[1],
@@ -1061,28 +1068,28 @@ trait UtilTrait {
         $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
     }
 
-    function incPlaceCount(int $inc) {
-        if ($inc > 0) {
-            $this->incStat($inc, 'playObtained');
-            $this->incStat($inc, 'playObtained', $this->getActivePlayerId());
-        }
+    function decPlaceCount(int $dec) {
         $remainingActions = $this->getRemainingActions();
         $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'PLACE');
-        $remainingActions->actions[$index]->remaining += $inc;
+        $remainingActions->actions[$index]->remaining -= $dec;
         $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
     }
 
-    function incMoveCount(int $inc, bool $incInitial = false) {
-        if ($inc > 0) {
-            $this->incStat($inc, 'moveObtained');
-            $this->incStat($inc, 'moveObtained', $this->getActivePlayerId());
-        }
+    function decMoveCount(int $dec) {
         $remainingActions = $this->getRemainingActions();
-        $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'MOVE');
-        $remainingActions->actions[$index]->remaining += $inc;
-        if ($incInitial) {
-            $remainingActions->actions[$index]->initial += $inc;
+        
+        if ($remainingActions->currentCoupFourreId != null) {
+            $discoverTile = $this->getDiscoverTileById($remainingActions->currentCoupFourreId);
+            $this->discardDiscoverTile($discoverTile);
+            $remainingActions->currentCoupFourreId = null;
+            $dec--;
         }
+
+        if ($dec > 0) {
+            $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'MOVE');
+            $remainingActions->actions[$index]->remaining -= $dec;
+        }
+        
         $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
     }
 

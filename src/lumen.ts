@@ -222,11 +222,15 @@ class Lumen implements LumenGame {
 
             if (!onlyCoupFourre) {
                 const subTitle = document.createElement('span');
-                let texts = args.remainingActions.actions.filter(action => action.initial > 0).map(action => 
-                    `${action.initial - action.remaining}/${action.initial} <div class="action ${action.type.toLowerCase()}"></div>`
-                );
                 subTitle.classList.add('subtitle');
-                subTitle.innerHTML = '(' + (texts.length > 1 ? _('${action1} then ${action2}').replace('${action1}', texts[0]).replace('${action2}', texts[1]) : texts.join('')) + ')'; // TODO
+                if (args.usingCoupFourre) {
+                    subTitle.innerHTML = `(${_('${tileCoupFourre} extra action').replace('${tileCoupFourre}', '<div class="tile-coupFourre"></div>')})`;
+                } else {
+                    let texts = args.remainingActions.actions.filter(action => action.initial > 0).map(action => 
+                        `${action.initial - action.remaining}/${action.initial} <div class="action ${action.type.toLowerCase()}"></div>`
+                    );
+                    subTitle.innerHTML = `(${texts.length > 1 ? _('${action1} then ${action2}').replace('${action1}', texts[0]).replace('${action2}', texts[1]) : texts.join('')})`;
+                }
                 document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
                 document.getElementById(`pagemaintitletext`).appendChild(subTitle);
             }
@@ -322,6 +326,14 @@ class Lumen implements LumenGame {
         });
     }
 
+    private replacePlaceAndMove(text: string, args: EnteringChooseActionArgs) {
+        return text
+            .replace('${place}', `<div class="action place"></div>`)
+            .replace('${move}', `<div class="action move"></div>`)
+            .replace('${placeNumber}', ''+args.remainingPlays)
+            .replace('${placeMove}', ''+args.remainingMoves);
+    }
+
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -354,17 +366,9 @@ class Lumen implements LumenGame {
                     break;
                 case 'chooseAction':
                     const chooseActionArgs = args as EnteringChooseActionArgs;
-                    const replacePlaceAndMove = (text) => text.replace('${place}', `<div class="action place"></div>`).replace('${move}', `<div class="action move"></div>`);
-                    (this as any).addActionButton(`startWithActionPlay_button`, replacePlaceAndMove(_('Start with ${place} then ${move}')), () => this.startWithAction(1));
-                    const remainingPlays = chooseActionArgs.remainingPlays;
-                    const remainingMoves = chooseActionArgs.remainingMoves;
-                    if (remainingPlays == 0) {
-                        document.getElementById(`startWithActionPlay_button`).classList.add('disabled');
-                    }
-                    (this as any).addActionButton(`startWithActionMove_button`, replacePlaceAndMove(_('Start with ${move} then ${place}')), () => this.startWithAction(2));
-                    if (remainingMoves == 0) {
-                        document.getElementById(`startWithActionMove_button`).classList.add('disabled');
-                    }
+                    (this as any).addActionButton(`startWithActionPlay_button`, this.replacePlaceAndMove(_('Start with ${placeNumber} ${place} then ${placeMove} ${move}'), chooseActionArgs), () => this.startWithAction(1));
+                    (this as any).addActionButton(`startWithActionMove_button`, this.replacePlaceAndMove(_('Start with ${placeMove} ${move} then ${placeNumber} ${place}'), chooseActionArgs), () => this.startWithAction(2));
+
                     if (chooseActionArgs.canUseCoupFourre) {
                         (this as any).addActionButton(`useCoupFourre_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useCoupFourre());
                     }
@@ -372,14 +376,15 @@ class Lumen implements LumenGame {
                 case 'chooseFighter':
                     const chooseFighterArgs = args as EnteringChooseFighterArgs;
                     if (!chooseFighterArgs.move) {
-                        if (chooseFighterArgs.couldUseCoupFourre) {
+                        if (chooseFighterArgs.couldUseCoupFourre && !chooseFighterArgs.usingCoupFourre) {
                             (this as any).addActionButton(`useCoupFourre_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useCoupFourre());
-                            if (!chooseFighterArgs.canUseCoupFourre) {
-                                document.getElementById(`useCoupFourre_button`).classList.add('disabled');
-                            }
                         }
-                        const shouldntPass = chooseFighterArgs.remainingActions.actions.map(action => action.remaining).reduce((a, b) => a + b, 0) > 0;
-                        (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
+                        if (chooseFighterArgs.usingCoupFourre) {
+                            (this as any).addActionButton(`cancelCoupFourre_button`, _('Cancel'), () => this.cancelCoupFourre(), null, null, 'gray');
+                        } else {
+                            const shouldntPass = chooseFighterArgs.remainingActions.actions.map(action => action.remaining).reduce((a, b) => a + b, 0) > 0;
+                            (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
+                        }
                     } else {
                         switch (chooseFighterArgs.move) {
                             case 5:
@@ -1106,6 +1111,14 @@ class Lumen implements LumenGame {
         }
 
         this.takeAction('useCoupFourre');
+    }
+
+    public cancelCoupFourre() {
+        if(!(this as any).checkAction('cancelCoupFourre')) {
+            return;
+        }
+
+        this.takeAction('cancelCoupFourre');
     }
 
     public takeAction(action: string, data?: any) {

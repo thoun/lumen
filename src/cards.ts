@@ -100,7 +100,7 @@ class CardsManager extends CardManager<Card> {
 
     public getTooltip(subType: number) {
         return `<h3>${this.getName(subType)}</h3>
-        ${subType < 20 ? `${_("Strength:")} <strong>${this.getStrength(subType)}</strong>` : ''}
+        ${subType < 20 ? `${_("Strength:")} <strong>${this.getStrength(subType)} <div class="strength-icon"></div></strong>` : ''}
         <p>${this.getDescription(subType)}</p>
         `;
     }

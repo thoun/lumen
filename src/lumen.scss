@@ -94,6 +94,16 @@ html, .mode_3d #game_play_area_background {
       background-image: url('img/action-move.png');
     }
   }
+
+  .tile-coupFourre {
+    display: inline-block;
+    width: 45px;
+    height: 45px;
+    vertical-align: middle;
+    background-image: url('img/discover-tiles.png');
+    background-size: auto 100%;
+    background-position-x: 100%;
+  }
 }
 
 #zoom-wrapper {
@@ -246,6 +256,14 @@ html, .mode_3d #game_play_area_background {
     background-image: url('img/battlefield2.png');
     background-position: 40% 40%;
   }
+}
+
+.strength-icon {
+  display: inline-block;
+  width: 16px;
+  height: 10px;
+  background-image: url('img/strength.png');
+  background-size: contain;
 }
 
 .log, .gamelogreview {

@@ -780,7 +780,7 @@ var CardsManager = /** @class */ (function (_super) {
         }
     };
     CardsManager.prototype.getTooltip = function (subType) {
-        return "<h3>".concat(this.getName(subType), "</h3>\n        ").concat(subType < 20 ? "".concat(_("Strength:"), " <strong>").concat(this.getStrength(subType), "</strong>") : '', "\n        <p>").concat(this.getDescription(subType), "</p>\n        ");
+        return "<h3>".concat(this.getName(subType), "</h3>\n        ").concat(subType < 20 ? "".concat(_("Strength:"), " <strong>").concat(this.getStrength(subType), " <div class=\"strength-icon\"></div></strong>") : '', "\n        <p>").concat(this.getDescription(subType), "</p>\n        ");
     };
     return CardsManager;
 }(CardManager));
@@ -1495,7 +1495,6 @@ var TableCenter = /** @class */ (function () {
         var left = (elemBR.left - mapBR.left) / cumulativeZoom;
         var top = (elemBR.top - mapBR.top) / cumulativeZoom;
         var upper = top + 100 + 50 / cumulativeZoom > Number(map.dataset.height); // 50 = height + paddings
-        console.log(upper, top, top + 100 + 50 / cumulativeZoom, Number(map.dataset.height));
         dojo.place("<div id=\"fighter-choice\" class=\"".concat(upper ? 'upper' : '', "\" style=\"left: ").concat(left - 60, "px; top: ").concat(top + (upper ? -55 : 105), "px;\">\n            <button id=\"fighter-choice-move\" ").concat(canMove ? '' : ' disabled="disabled"', ">").concat(_('Move'), "</button>\n            <button id=\"fighter-choice-cancel\">\u2716</button>\n            <button id=\"fighter-choice-activate\" ").concat(canActivate ? '' : ' disabled="disabled"', ">").concat(_('Activate'), "</button>\n        </div>"), 'map');
         document.getElementById("fighter-choice-move").addEventListener('click', function () {
             _this.game.moveFighter(card.id);
@@ -1993,11 +1992,16 @@ var Lumen = /** @class */ (function () {
             }
             if (!onlyCoupFourre) {
                 var subTitle = document.createElement('span');
-                var texts = args.remainingActions.actions.filter(function (action) { return action.initial > 0; }).map(function (action) {
-                    return "".concat(action.initial - action.remaining, "/").concat(action.initial, " <div class=\"action ").concat(action.type.toLowerCase(), "\"></div>");
-                });
                 subTitle.classList.add('subtitle');
-                subTitle.innerHTML = '(' + (texts.length > 1 ? _('${action1} then ${action2}').replace('${action1}', texts[0]).replace('${action2}', texts[1]) : texts.join('')) + ')'; // TODO
+                if (args.usingCoupFourre) {
+                    subTitle.innerHTML = "(".concat(_('${tileCoupFourre} extra action').replace('${tileCoupFourre}', '<div class="tile-coupFourre"></div>'), ")");
+                }
+                else {
+                    var texts = args.remainingActions.actions.filter(function (action) { return action.initial > 0; }).map(function (action) {
+                        return "".concat(action.initial - action.remaining, "/").concat(action.initial, " <div class=\"action ").concat(action.type.toLowerCase(), "\"></div>");
+                    });
+                    subTitle.innerHTML = "(".concat(texts.length > 1 ? _('${action1} then ${action2}').replace('${action1}', texts[0]).replace('${action2}', texts[1]) : texts.join(''), ")");
+                }
                 document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
                 document.getElementById("pagemaintitletext").appendChild(subTitle);
             }
@@ -2085,6 +2089,13 @@ var Lumen = /** @class */ (function () {
             elem.dataset.jamming = 'false';
         });
     };
+    Lumen.prototype.replacePlaceAndMove = function (text, args) {
+        return text
+            .replace('${place}', "<div class=\"action place\"></div>")
+            .replace('${move}', "<div class=\"action move\"></div>")
+            .replace('${placeNumber}', '' + args.remainingPlays)
+            .replace('${placeMove}', '' + args.remainingMoves);
+    };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -2118,17 +2129,8 @@ var Lumen = /** @class */ (function () {
                     break;
                 case 'chooseAction':
                     var chooseActionArgs = args;
-                    var replacePlaceAndMove = function (text) { return text.replace('${place}', "<div class=\"action place\"></div>").replace('${move}', "<div class=\"action move\"></div>"); };
-                    this.addActionButton("startWithActionPlay_button", replacePlaceAndMove(_('Start with ${place} then ${move}')), function () { return _this.startWithAction(1); });
-                    var remainingPlays = chooseActionArgs.remainingPlays;
-                    var remainingMoves = chooseActionArgs.remainingMoves;
-                    if (remainingPlays == 0) {
-                        document.getElementById("startWithActionPlay_button").classList.add('disabled');
-                    }
-                    this.addActionButton("startWithActionMove_button", replacePlaceAndMove(_('Start with ${move} then ${place}')), function () { return _this.startWithAction(2); });
-                    if (remainingMoves == 0) {
-                        document.getElementById("startWithActionMove_button").classList.add('disabled');
-                    }
+                    this.addActionButton("startWithActionPlay_button", this.replacePlaceAndMove(_('Start with ${placeNumber} ${place} then ${placeMove} ${move}'), chooseActionArgs), function () { return _this.startWithAction(1); });
+                    this.addActionButton("startWithActionMove_button", this.replacePlaceAndMove(_('Start with ${placeMove} ${move} then ${placeNumber} ${place}'), chooseActionArgs), function () { return _this.startWithAction(2); });
                     if (chooseActionArgs.canUseCoupFourre) {
                         this.addActionButton("useCoupFourre_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useCoupFourre(); });
                     }
@@ -2136,14 +2138,16 @@ var Lumen = /** @class */ (function () {
                 case 'chooseFighter':
                     var chooseFighterArgs = args;
                     if (!chooseFighterArgs.move) {
-                        if (chooseFighterArgs.couldUseCoupFourre) {
+                        if (chooseFighterArgs.couldUseCoupFourre && !chooseFighterArgs.usingCoupFourre) {
                             this.addActionButton("useCoupFourre_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useCoupFourre(); });
-                            if (!chooseFighterArgs.canUseCoupFourre) {
-                                document.getElementById("useCoupFourre_button").classList.add('disabled');
-                            }
                         }
-                        var shouldntPass_1 = chooseFighterArgs.remainingActions.actions.map(function (action) { return action.remaining; }).reduce(function (a, b) { return a + b; }, 0) > 0;
-                        this.addActionButton("cancelOperation_button", _('Pass'), function () { return _this.pass(shouldntPass_1); }, null, null, shouldntPass_1 ? 'gray' : undefined);
+                        if (chooseFighterArgs.usingCoupFourre) {
+                            this.addActionButton("cancelCoupFourre_button", _('Cancel'), function () { return _this.cancelCoupFourre(); }, null, null, 'gray');
+                        }
+                        else {
+                            var shouldntPass_1 = chooseFighterArgs.remainingActions.actions.map(function (action) { return action.remaining; }).reduce(function (a, b) { return a + b; }, 0) > 0;
+                            this.addActionButton("cancelOperation_button", _('Pass'), function () { return _this.pass(shouldntPass_1); }, null, null, shouldntPass_1 ? 'gray' : undefined);
+                        }
                     }
                     else {
                         switch (chooseFighterArgs.move) {
@@ -2690,6 +2694,12 @@ var Lumen = /** @class */ (function () {
             return;
         }
         this.takeAction('useCoupFourre');
+    };
+    Lumen.prototype.cancelCoupFourre = function () {
+        if (!this.checkAction('cancelCoupFourre')) {
+            return;
+        }
+        this.takeAction('cancelCoupFourre');
     };
     Lumen.prototype.takeAction = function (action, data) {
         data = data || {};

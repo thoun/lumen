@@ -15,6 +15,7 @@ class Action {
 class Actions {
     public array $actions = [];
     public string $startWith = '';
+    public /*int|null*/ $currentCoupFourreId = null;
   
     public function __construct(array $actions) {
         $this->actions = $actions;

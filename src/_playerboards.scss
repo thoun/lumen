@@ -1,7 +1,9 @@
 
 
 .player-board {
-  color: white;
+  &:not(#spectatorbox) {
+    color: white;
+  }
 
   .player-name {
     a {

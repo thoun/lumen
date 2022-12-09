@@ -143,15 +143,15 @@ interface Actions {
 }
 
 interface EnteringChooseActionArgs {
-    canUseCoupFourre: boolean;
     remainingPlays: number;
     remainingMoves: number;
+    canUseCoupFourre: boolean;
 }
 
 interface EnteringChooseFighterArgs {
     canCancel: boolean;
     couldUseCoupFourre: boolean;
-    canUseCoupFourre: boolean;
+    usingCoupFourre: boolean;
     move: number;    
     remainingActions?: Actions,
     currentAction?: Action,

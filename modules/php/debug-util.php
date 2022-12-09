@@ -11,10 +11,11 @@ trait DebugUtilTrait {
             return;
         } 
 
-        //$this->debugTestZones();
-        $this->debugTestLinks();
+        $this->debugTestZones(2343492);
+        $this->debugTestLinks(2343493);
 
-        $this->debugAddPlayerEverywhere(2343492);
+        $this->debugAddPlayerEverywhere(2343492, 10);
+        $this->debugAddPlayerEverywhere(2343493, 8);
 
         /*$this->debugAddObjectiveToken(2343492, 1);
         $this->debugAddDiscoverTile(2343492, 4, 1);
@@ -35,6 +36,7 @@ trait DebugUtilTrait {
         /*$this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 22, 'highCommand2343492', 2);
         $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);*/
+        
         //$this->debugLastTurn();
     }
 
@@ -84,8 +86,9 @@ trait DebugUtilTrait {
         }
     }
 
-    public function debugAddPlayerEverywhere($playerId) {
+    public function debugAddPlayerEverywhere($playerId, $limit = 99) {
         $scenario = $this->getScenario();
+        $number = 0;
         foreach ($scenario->battlefieldsIds as $battlefieldId) {
             foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
                 if (count($this->getCardsByLocation('territory', $territory->id, $playerId)) == 0) {
@@ -93,12 +96,22 @@ trait DebugUtilTrait {
                     if (count($cards) > 0) {
                         $card = $cards[0];
                         $this->cards->moveCard($card->id, 'territory', $territory->id);
+
+                        $number++;
+                        if ($number >= $limit) {
+                            return;
+                        }
                     } else {
                         $cards = $this->getCardsByLocation('bag0');
                         if (count($cards) > 0) {
                             $card = $cards[0];
                             self::DbQuery("update card set player_id = $playerId where card_id = $card->id");
                             $this->cards->moveCard($card->id, 'territory', $territory->id);
+
+                            $number++;
+                            if ($number >= $limit) {
+                                return;
+                            }
                         }
                     }
                 }
@@ -110,33 +123,33 @@ trait DebugUtilTrait {
         $this->incStat(20, 'roundNumber');
     }
 
-    public function debugTestZones() {
-        $this->debugSetCircleValues(2343492, [3, 8], 4, 1);
-        $this->debugSetCircleValues(2343492, [13], 4);
+    public function debugTestZones($playerId) {
+        $this->debugSetCircleValues($playerId, [3, 8], 4, 1);
+        $this->debugSetCircleValues($playerId, [13], 4);
         
-        $this->debugSetCircleValues(2343492, [2, 6], 2, 2);
-        $this->debugSetCircleValues(2343492, [4, 10], 2, 3);
+        $this->debugSetCircleValues($playerId, [2, 6], 2, 2);
+        $this->debugSetCircleValues($playerId, [4, 10], 2, 3);
 
-        $this->debugSetCircleValues(2343492, [15, 19], 1);
-        $this->debugSetCircleValues(2343492, [18, 20], 5, 4);
+        $this->debugSetCircleValues($playerId, [15, 19], 1);
+        $this->debugSetCircleValues($playerId, [18, 20], 5, 4);
 
-        $this->debugSetCircleValues(2343492, [11], 3);
+        $this->debugSetCircleValues($playerId, [11], 3);
     }
 
-    public function debugTestLinks() {
-        $this->debugSetCircleValues(2343492, [8], 3);
-        $this->debugSetCircleValues(2343492, [14], 4);
-        $this->addLink(2343492, 8, 14);
+    public function debugTestLinks($playerId) {
+        $this->debugSetCircleValues($playerId, [8], 3);
+        $this->debugSetCircleValues($playerId, [14], 4);
+        $this->addLink($playerId, 8, 14);
         
-        $this->debugSetCircleValues(2343492, [1], 1, 4);
-        $this->debugSetCircleValues(2343492, [10], 3, 3);
+        $this->debugSetCircleValues($playerId, [1], 1, 4);
+        $this->debugSetCircleValues($playerId, [10], 3, 3);
 
-        $this->debugSetCircleValues(2343492, [15], 0);
-        $this->debugSetCircleValues(2343492, [16], 1);
-        $this->addLink(2343492, 15, 16);
-        $this->debugSetCircleValues(2343492, [20, 18], 3);
-        $this->debugSetCircleValues(2343492, [11, 12], 4);
-        $this->addLink(2343492, 11, 18);
+        $this->debugSetCircleValues($playerId, [15], 0);
+        $this->debugSetCircleValues($playerId, [16], 1);
+        $this->addLink($playerId, 15, 16);
+        $this->debugSetCircleValues($playerId, [20, 18], 3);
+        $this->debugSetCircleValues($playerId, [11, 12], 4);
+        $this->addLink($playerId, 11, 18);
     }
 
     public function debugReplacePlayersIds() {

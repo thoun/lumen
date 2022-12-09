@@ -181,14 +181,15 @@ trait ArgsTrait {
 
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());
+        
         $place = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
         $move = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
         $canUseCoupFourre = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
 
-        return[
-            'canUseCoupFourre' => $canUseCoupFourre,
+        return [
             'remainingPlays' => $place,
             'remainingMoves' => $move,
+            'canUseCoupFourre' => $canUseCoupFourre,
         ];
     }
 
@@ -205,11 +206,6 @@ trait ArgsTrait {
 
         $canCancel = $move > 0;
         $couldUseCoupFourre = $move == 0 && count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
-        $canUseCoupFourre = $couldUseCoupFourre;
-        
-        if ($currentAction->type == 'PLACE' && $remainingActions->actions[1]->type == 'PLACE') {
-            $canUseCoupFourre = false;
-        }
 
         $possibleTerritoryFighters = [];
         $selectionSize = 1;
@@ -224,8 +220,15 @@ trait ArgsTrait {
                 $possibleTerritoryFighters = $territoryFighters;
 
                 $scenarioId = $this->getScenarioId();
-                $onlyPlace = $remainingPlays > 0 && $currentAction->type == 'PLACE';
-                $onlyMove = $remainingMoves > 0 && $currentAction->type == 'MOVE';
+                
+                $onlyPlace = false;
+                $onlyMove = true; 
+                $usingCoupFourre = $remainingActions->currentCoupFourreId != null;
+                if (!$usingCoupFourre) {
+                    $onlyPlace = $remainingPlays > 0 && $currentAction->type == 'PLACE';
+                    $onlyMove = $remainingMoves > 0 && $currentAction->type == 'MOVE';
+                }
+
                 $possibleFightersToPlace = $onlyMove ? [] : array_merge(
                     $this->getCardsByLocation('reserve'.$playerId),
                     array_values(array_filter($highCommand, fn($fighter) => in_array($fighter->type, [1, 10])))
@@ -235,11 +238,12 @@ trait ArgsTrait {
 
                 $args = $args + [
                     'remainingActions' => $remainingActions,
-                    'currentAction' => $currentAction,
+                    'currentAction' => $usingCoupFourre ? 'MOVE' : $currentAction,
                     'possibleFightersToPlace' => $possibleFightersToPlace,
                     'possibleActions' => array_values(array_filter($highCommand, fn($fighter) => $fighter->type === 20)),
                     'possibleFightersToMove' => $possibleFightersToMove,
                     'possibleFightersToActivate' => $possibleFightersToActivate,
+                    'usingCoupFourre' => $usingCoupFourre,
                 ];
                 break;
             case MOVE_PUSH:
@@ -291,7 +295,6 @@ trait ArgsTrait {
         return $args + [
            'canCancel' => $canCancel,
            'couldUseCoupFourre' => $couldUseCoupFourre,
-           'canUseCoupFourre' => $canUseCoupFourre,
            'possibleTerritoryFighters' => $possibleTerritoryFighters,
            'selectionSize' => $selectionSize,
         ];
