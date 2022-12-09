@@ -2186,6 +2186,9 @@ var Lumen = /** @class */ (function () {
                     if (!chooseFighterArgs.move) {
                         if (chooseFighterArgs.couldUseCoupFourre && !chooseFighterArgs.usingCoupFourre) {
                             this.addActionButton("useCoupFourre_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useCoupFourre(); });
+                            if (!chooseFighterArgs.canPlayCoupFourre) {
+                                document.getElementById("useCoupFourre_button").classList.add('disabled');
+                            }
                         }
                         if (chooseFighterArgs.usingCoupFourre) {
                             this.addActionButton("cancelCoupFourre_button", _('Cancel'), function () { return _this.cancelCoupFourre(); }, null, null, 'gray');

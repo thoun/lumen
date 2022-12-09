@@ -181,7 +181,7 @@ trait ArgsTrait {
 
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());
-        
+
         $place = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
         $move = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
         $canUseCoupFourre = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
@@ -223,10 +223,13 @@ trait ArgsTrait {
                 
                 $onlyPlace = false;
                 $onlyMove = true; 
+                $canPlayCoupFourre = false;
                 $usingCoupFourre = $remainingActions->currentCoupFourreId != null;
                 if (!$usingCoupFourre) {
                     $onlyPlace = $remainingPlays > 0 && $currentAction->type == 'PLACE';
                     $onlyMove = $remainingMoves > 0 && $currentAction->type == 'MOVE';
+                    // we cannot play Coup Fourre in between two Place action, but we can just before or just after
+                    $canPlayCoupFourre = $currentAction->type != 'PLACE' || $remainingPlays == 0 || $remainingPlays == $currentAction->initial;
                 }
 
                 $possibleFightersToPlace = $onlyMove ? [] : array_merge(
@@ -237,6 +240,7 @@ trait ArgsTrait {
                 $possibleFightersToActivate = $onlyPlace ? [] : array_values(array_filter(array_merge($territoryFighters, $highCommand), fn($fighter) => $this->canActivateFighter($playerId, $fighter, $scenarioId)));
 
                 $args = $args + [
+                    'canPlayCoupFourre' => $canPlayCoupFourre,
                     'remainingActions' => $remainingActions,
                     'currentAction' => $usingCoupFourre ? 'MOVE' : $currentAction,
                     'possibleFightersToPlace' => $possibleFightersToPlace,

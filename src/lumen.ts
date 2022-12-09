@@ -378,6 +378,9 @@ class Lumen implements LumenGame {
                     if (!chooseFighterArgs.move) {
                         if (chooseFighterArgs.couldUseCoupFourre && !chooseFighterArgs.usingCoupFourre) {
                             (this as any).addActionButton(`useCoupFourre_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useCoupFourre());
+                            if (!chooseFighterArgs.canPlayCoupFourre) {
+                                document.getElementById(`useCoupFourre_button`).classList.add('disabled');
+                            }
                         }
                         if (chooseFighterArgs.usingCoupFourre) {
                             (this as any).addActionButton(`cancelCoupFourre_button`, _('Cancel'), () => this.cancelCoupFourre(), null, null, 'gray');
