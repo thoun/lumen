@@ -2163,7 +2163,7 @@ var Lumen = /** @class */ (function () {
                         _this.addActionButton("chooseOperation".concat(type, "_button"), "<div class=\"operation-icon\" data-type=\"".concat(type, "\"></div> ").concat(operation.value), function () { return _this.chooseOperation(type); }, null, null, 'gray');
                         if (operation.disabled) {
                             var button = document.getElementById("chooseOperation".concat(type, "_button"));
-                            button.classList.add('disabled', 'disabled-first-player');
+                            button.classList.add('disabled');
                             if (operation.disabled == 'first-player') {
                                 button.insertAdjacentHTML('beforeend', "<div class=\"first-player-token\"></div>");
                             }

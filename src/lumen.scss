@@ -51,6 +51,7 @@ html, .mode_3d #game_play_area_background {
 #page-title {
   .action-button {
     position: relative;
+    text-overflow: inherit;
 
     .operation-icon {
       width: 20px;
