@@ -717,8 +717,12 @@ trait ActionTrait {
             $this->setFightersUnactivated([$selectedFighter]);
         }
 
-        $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
-        $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
+        if (intval($this->getGameStateValue(PLAYER_SELECTED_TARGET)) > 0) {
+            $this->setGameStateValue(PLAYER_SELECTED_TARGET, 0);
+        } else {
+            $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, 0);
+            $this->setGameStateValue(PLAYER_CURRENT_MOVE, 0);
+        }
 
         $this->gamestate->nextState('cancel');
     }
