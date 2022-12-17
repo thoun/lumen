@@ -158,16 +158,16 @@ $this->SCENARIOS = [
   ],
   [
     15 => [
-      1 => [4],
+      PLAYER_COLOR_ORANGE => [4],
     ],
     31 => [
-      2 => [3],
+      PLAYER_COLOR_BLUE => [3],
     ],
     45 => [
-      2 => [4],
+      PLAYER_COLOR_BLUE => [4],
     ],
     51 => [
-      1 => [3],
+      PLAYER_COLOR_ORANGE => [3],
     ],
   ], 
   61,
@@ -190,14 +190,14 @@ $this->SCENARIOS = [
   ],
   [
     11 => [
-      2 => [3],
+      PLAYER_COLOR_BLUE => [3],
     ],
     41 => [
-      1 => [3],
-      2 => [3],
+      PLAYER_COLOR_ORANGE => [3],
+      PLAYER_COLOR_BLUE => [3],
     ],
     51 => [
-      1 => [3],
+      PLAYER_COLOR_ORANGE => [3],
     ],
   ], 
   61,
@@ -218,14 +218,14 @@ $this->SCENARIOS = [
   ],
   [
     31 => [
-      2 => [2],
+      PLAYER_COLOR_BLUE => [2],
     ],
     41 => [
-      1 => [2],
+      PLAYER_COLOR_ORANGE => [2],
     ],
     51 => [
-      1 => [6],
-      2 => [6],
+      PLAYER_COLOR_ORANGE => [6],
+      PLAYER_COLOR_BLUE => [6],
     ],
   ], 
   27,
@@ -244,12 +244,12 @@ $this->SCENARIOS = [
   ],
   [
     45 => [
-      1 => [1],
-      2 => [1],
+      PLAYER_COLOR_ORANGE => [1],
+      PLAYER_COLOR_BLUE => [1],
     ],
     65 => [
-      1 => [1],
-      2 => [1],
+      PLAYER_COLOR_ORANGE => [1],
+      PLAYER_COLOR_BLUE => [1],
     ],
   ], 
   33,
@@ -268,12 +268,12 @@ $this->SCENARIOS = [
   ],
   [
     31 => [
-      1 => [3],
-      2 => [4],
+      PLAYER_COLOR_ORANGE => [3],
+      PLAYER_COLOR_BLUE => [4],
     ],
     71 => [
-      1 => [4],
-      2 => [3],
+      PLAYER_COLOR_ORANGE => [4],
+      PLAYER_COLOR_BLUE => [3],
     ],
   ], 
   41,
@@ -297,14 +297,14 @@ $this->SCENARIOS = [
   ],
   [
     33 => [
-      1 => [3],
-      2 => [3],
+      PLAYER_COLOR_ORANGE => [3],
+      PLAYER_COLOR_BLUE => [3],
     ],
     53 => [
-      1 => [3],
+      PLAYER_COLOR_ORANGE => [3],
     ],
     63 => [
-      2 => [3],
+      PLAYER_COLOR_BLUE => [3],
     ],
   ], 
   73,
@@ -324,10 +324,10 @@ $this->SCENARIOS = [
   ],
   [
     65 => [
-      1 => [4, 5],
+      PLAYER_COLOR_ORANGE => [4, 5],
     ],
     75 => [
-      2 => [4, 5],
+      PLAYER_COLOR_BLUE => [4, 5],
     ],
   ], 
   31,

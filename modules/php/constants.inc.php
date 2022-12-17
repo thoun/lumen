@@ -1,5 +1,8 @@
 <?php
 
+define('PLAYER_COLOR_ORANGE', 'f28700');
+define('PLAYER_COLOR_BLUE', '1f3067');
+
 /*
  * State constants
  */

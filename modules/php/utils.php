@@ -265,18 +265,18 @@ trait UtilTrait {
 
     function initScenario(array $players) {
         $scenario = $this->getScenario();
-        $playersIdsByPlayerNo = [];
+        $playersIdsByPlayerColor = [];
         $territoriesWithFighters = [];
         foreach($players as $playerId => $player) {
-            $playersIdsByPlayerNo[intval($player['player_table_order'])] = intval($playerId);
+            $playersIdsByPlayerColor[$player['player_color']] = intval($playerId);
         }
 
-
+        
         // initial fighters
         foreach ($scenario->initialFighters as $territoryId => $playerFighters) {
-            foreach ($playerFighters as $playerNo => $fightersSubType) {
+            foreach ($playerFighters as $playerColor => $fightersSubType) {
                 foreach($fightersSubType as $fighterSubType) {
-                    $playerId = $playersIdsByPlayerNo[$playerNo];
+                    $playerId = $playersIdsByPlayerColor[$playerColor];
                     $cards = $this->getCardsByLocation('bag'.$playerId, null, null, null, $fighterSubType);
                     $this->cards->moveCard($cards[0]->id, 'territory', $territoryId);
                     $territoriesWithFighters[] = $territoryId;

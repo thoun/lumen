@@ -101,11 +101,11 @@ class Lumen extends Table {
             }
             $color = array_shift( $default_colors );
             $values[] = "('".$playerId."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+
+            $players[$playerId]['player_color'] = $color;
         }
         $sql .= implode(',', $values);
         self::DbQuery($sql);
-
-
 
         $sql = "INSERT INTO operation (player_id, operation, nb) VALUES ";
         $values = [];        

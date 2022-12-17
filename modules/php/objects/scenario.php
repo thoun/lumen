@@ -25,7 +25,7 @@ class Battlefield {
 class Scenario {
     public array $battlefieldsIds;
     public array $territoriesLinks;
-    public array $initialFighters; // first level index is territory. second is player_no (1,2), value is array of fighters
+    public array $initialFighters; // first level index is territory. second is player_color, value is array of fighters
     public int $initiative;
     public array $frontierObjectives;
 

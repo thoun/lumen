@@ -14,8 +14,8 @@ trait DebugUtilTrait {
         $this->debugTestZones(2343492);
         $this->debugTestLinks(2343493);
 
-        $this->debugAddPlayerEverywhere(2343492, 10);
-        $this->debugAddPlayerEverywhere(2343493, 8);
+        //$this->debugAddPlayerEverywhere(2343492, 10);
+        //$this->debugAddPlayerEverywhere(2343493, 8);
 
         /*$this->debugAddObjectiveToken(2343492, 1);
         $this->debugAddDiscoverTile(2343492, 4, 1);
@@ -150,6 +150,14 @@ trait DebugUtilTrait {
         $this->debugSetCircleValues($playerId, [20, 18], 3);
         $this->debugSetCircleValues($playerId, [11, 12], 4);
         $this->addLink($playerId, 11, 18);
+    }
+
+    public function debugInitScenario() {
+        $players = $this->loadPlayersBasicInfos();
+        foreach($players as &$player) {
+            $player['player_table_order'] = $player['player_no'];
+        }
+        $this->initScenario($players);
     }
 
     public function debugReplacePlayersIds() {
