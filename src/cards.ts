@@ -57,7 +57,7 @@ class CardsManager extends CardManager<Card> {
             case 3: return 1;
             case 4: return 1;
             case 5: return 1;
-            case 6: return 2;
+            case 6: return 1;
 
             case 11: return 1;
             case 12: return 1;
@@ -77,7 +77,7 @@ class CardsManager extends CardManager<Card> {
             case 3: return 1;
             case 4: return 1;
             case 5: return 1;
-            case 6: return 2;
+            case 6: return 1;
 
             case 11: return 1;
             case 12: return 1;

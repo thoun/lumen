@@ -74,7 +74,10 @@ interface LumenGamedatas {
     firstPlayerOperation: number;
     die1: number;
     die2: number;
-    realizedObjectives: string[];
+    realizedObjectives: {
+        letter: string;
+        realizedBy: string;
+    }[];
     remainingCardsInBag: { [playerId: number]: number };
     roundNumber: number;
     isEnd: boolean;
@@ -282,3 +285,9 @@ interface NotifUpdateScoreArgs {
     playerId: number;
     score: number;
 }
+
+interface NotifSetRealizedObjectiveArgs {
+    letter: string;
+    realizedBy: number;
+}
+

@@ -215,6 +215,7 @@ trait StateTrait {
                 $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY)));
                 if ($initiativeMarkerControlledPlayer !== null) {
                     $this->takeScenarioObjectiveToken($initiativeMarkerControlledPlayer);
+                    $this->setRealizedObjective('3', $initiativeMarkerControlledPlayer);
                     $this->incStat(1, 'completedObjectives');
                     $this->incStat(1, 'completedObjectives', $initiativeMarkerControlledPlayer);
                 }
@@ -244,6 +245,7 @@ trait StateTrait {
 
                 if ($leastOrphans !== null) {
                     $this->takeScenarioObjectiveToken($leastOrphans);
+                    $this->setRealizedObjective('2', $leastOrphans);
                     $this->incStat(1, 'completedObjectives');
                     $this->incStat(1, 'completedObjectives', $leastOrphans);
                 }
@@ -296,6 +298,10 @@ trait StateTrait {
                                 'i18n' => ['cardinalDirection'],
                             ]
                         );
+                        $this->setRealizedObjective('1'.$islandIndex, $mostFighters);
+                        if ($alone) {
+                            $this->setRealizedObjective('2'.$islandIndex, $mostFighters);
+                        }
                         $this->incStat(1, 'completedObjectives');
                         $this->incStat(1, 'completedObjectives', $mostFighters);
                     }
@@ -319,6 +325,7 @@ trait StateTrait {
 
                 if ($monstWinterFighters !== null) {
                     $this->takeScenarioObjectiveToken($monstWinterFighters);
+                    $this->setRealizedObjective('2', $monstWinterFighters);
                     $this->incStat(1, 'completedObjectives');
                     $this->incStat(1, 'completedObjectives', $monstWinterFighters);
                 }

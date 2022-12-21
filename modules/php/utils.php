@@ -314,12 +314,17 @@ trait UtilTrait {
     }
 
     function getRealizedObjectives() {
-        $dbResults = $this->getCollectionFromDb("SELECT `letter` FROM `realized_objective`");
-        return array_values(array_map(fn($dbResult) => $dbResult['letter'], $dbResults));
+        $dbResults = $this->getCollectionFromDb("SELECT `letter`, `realized_by` as `realizedBy` FROM `realized_objective`");
+        return array_values($dbResults);
     }    
 
-    function setRealizedObjective(string $letter, int $playerId = 0) {
-        self::DbQuery("INSERT INTO `realized_objective`(`letter`, `player_id`) VALUES ('$letter', $playerId )");
+    function setRealizedObjective(string $letter, int $realizedBy, int $playerId = 0) {
+        self::DbQuery("INSERT INTO `realized_objective`(`letter`, `player_id`, `realized_by`) VALUES ('$letter', $playerId, $realizedBy )");
+
+        self::notifyAllPlayers('setRealizedObjective', '', [
+            'letter' => $letter,
+            'realizedBy' => $realizedBy,
+        ]);
     }
 
     function getTerritoryNeighboursIds(int $territoryId) {
@@ -576,8 +581,9 @@ trait UtilTrait {
         $this->takeObjectiveTokens(
             $playerId, 
             $number,
-            $letter != null ? clienttranslate('${player_name} get an objective token for objective ${letter}') : clienttranslate('${player_name} get an objective token for a completed objective'), 
+            $letter != null ? clienttranslate('${player_name} gets ${number} objective token(s) for objective ${letter}') : clienttranslate('${player_name} gets ${number} objective token(s) for a completed objective'), 
             [
+                'number' => $number,
                 'letterId' => $letter,
                 'letter' => $letter,
             ]
@@ -588,7 +594,7 @@ trait UtilTrait {
         $this->takeObjectiveTokens(
             $playerId, 
             1,
-            clienttranslate('${player_name} get an objective token for checking the high-command check number ${check}'), 
+            clienttranslate('${player_name} gets an objective token for checking the high-command check number ${check}'), 
             [
                 'check' => $check,
             ]
@@ -682,7 +688,7 @@ trait UtilTrait {
             case 5:
                 if (!$this->isRealizedObjective('C') && $territoryId == 61) {
                     $this->takeScenarioObjectiveToken($fighter->playerId, 'C');
-                    $this->setRealizedObjective('C');
+                    $this->setRealizedObjective('C', $fighter->playerId);
                     $this->incStat(1, 'completedObjectives');
                     $this->incStat(1, 'completedObjectives', $fighter->playerId);
                 }
@@ -693,7 +699,7 @@ trait UtilTrait {
                     $playerNo = intval($this->array_find($players, fn($player) => intval($player['player_id']) == $fighter->playerId)['player_no']);
                     if (($playerNo == 1 && $territoryId == 75) || ($playerNo == 2 && $territoryId == 65)) {
                         $this->takeScenarioObjectiveToken($fighter->playerId, null, 3);
-                        $this->setRealizedObjective('2');
+                        $this->setRealizedObjective('2', $fighter->playerId);
                         $this->incStat(1, 'completedObjectives');
                         $this->incStat(1, 'completedObjectives', $fighter->playerId);
                     }
@@ -724,7 +730,7 @@ trait UtilTrait {
 
                 if (count(array_unique($controlledBy, SORT_REGULAR)) === 1 && $controlledBy[0] !== null) {
                     $this->takeScenarioObjectiveToken($controlledBy[0], $letter);
-                    $this->setRealizedObjective($letter);
+                    $this->setRealizedObjective($letter, $controlledBy[0]);
                     $this->incStat(1, 'completedObjectives');
                     $this->incStat(1, 'completedObjectives', $controlledBy[0]);
                 }
@@ -1026,7 +1032,7 @@ trait UtilTrait {
     function checkEmptyBag(int $playerId) {
         if ($this->getScenarioId() == 2 && intval($this->cards->countCardInLocation('bag'.$playerId)) == 0 && !$this->isRealizedObjective('1', $playerId)) {
             $this->takeScenarioObjectiveToken($playerId, null, 2);
-            $this->setRealizedObjective('1', $playerId);
+            $this->setRealizedObjective('1', $playerId, $playerId);
             $this->incStat(1, 'completedObjectives');
             $this->incStat(1, 'completedObjectives', $playerId);
         }

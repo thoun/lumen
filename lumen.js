@@ -839,7 +839,7 @@ var CardsManager = /** @class */ (function (_super) {
             case 3: return 1;
             case 4: return 1;
             case 5: return 1;
-            case 6: return 2;
+            case 6: return 1;
             case 11: return 1;
             case 12: return 1;
             case 13: return 2;
@@ -857,7 +857,7 @@ var CardsManager = /** @class */ (function (_super) {
             case 3: return 1;
             case 4: return 1;
             case 5: return 1;
-            case 6: return 2;
+            case 6: return 1;
             case 11: return 1;
             case 12: return 1;
             case 13: return 2;
@@ -1049,7 +1049,8 @@ var ObjectiveTokenPosition = /** @class */ (function () {
     return ObjectiveTokenPosition;
 }());
 var ObjectiveDescription = /** @class */ (function () {
-    function ObjectiveDescription(letters, timing, type, text) {
+    function ObjectiveDescription(visibleLetters, letters, timing, type, text) {
+        this.visibleLetters = visibleLetters;
         this.letters = letters;
         this.timing = timing;
         this.type = type;
@@ -1254,32 +1255,32 @@ var Scenario = /** @class */ (function (_super) {
         switch (number) {
             case 0: [];
             case 1: return [
-                new ObjectiveDescription([''], DURING_GAME, null, _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
-                new ObjectiveDescription(['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-                new ObjectiveDescription([''], END_GAME, null, _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
+                new ObjectiveDescription([''], ['1'], DURING_GAME, null, _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
+                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+                new ObjectiveDescription([''], ['3'], END_GAME, null, _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
             ]; // TODO
             case 2: return [
-                new ObjectiveDescription(['', ''], DURING_GAME, null, _("Chaque joueur qui réussit à vider son sac gagne 2 jetons Objectifs.")),
-                new ObjectiveDescription([''], END_GAME, null, _("Le joueur qui possède sur sa Fiche de Commandement le moins de cellules n’appartenant ni à une Zone ni à une Chaîne d’Ordres remporte un jeton Objectif. En cas d’égalité, personne ne reçoit de jeton Objectif.")),
+                new ObjectiveDescription(['', ''], ['1'], DURING_GAME, null, _("Chaque joueur qui réussit à vider son sac gagne 2 jetons Objectifs.")),
+                new ObjectiveDescription([''], ['5'], END_GAME, null, _("Le joueur qui possède sur sa Fiche de Commandement le moins de cellules n’appartenant ni à une Zone ni à une Chaîne d’Ordres remporte un jeton Objectif. En cas d’égalité, personne ne reçoit de jeton Objectif.")),
             ]; // TODO
             case 3: return [
-                new ObjectiveDescription(['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
             ]; // TODO
             case 4: return [
-                new ObjectiveDescription([''], null, null, _("Un jeton Objectif pour le joueur qui a le plus grand nombre de Combattants,")),
-                new ObjectiveDescription(['+1'], null, null, _("Un jeton Objectif supplémentaire si le joueur est seul sur l’île !")),
+                new ObjectiveDescription([''], ['10', '11', '12'], null, null, _("Un jeton Objectif pour le joueur qui a le plus grand nombre de Combattants,")),
+                new ObjectiveDescription(['+1'], ['20', '21', '22'], null, null, _("Un jeton Objectif supplémentaire si le joueur est seul sur l’île !")),
             ]; // TODO
             case 5: return [
-                new ObjectiveDescription(['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-                new ObjectiveDescription(['C'], DURING_GAME, null, _("Un jeton Objectif pour le premier joueur à atteindre ce territoire hiver.")),
+                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+                new ObjectiveDescription(['C'], ['C'], DURING_GAME, null, _("Un jeton Objectif pour le premier joueur à atteindre ce territoire hiver.")),
             ]; // TODO
             case 6: return [
-                new ObjectiveDescription(['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-                new ObjectiveDescription(['', ''], END_GAME, null, _("2 jetons Objectifs pour le joueur qui a le plus de combattants dans les territoires de l’hiver.")),
+                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+                new ObjectiveDescription(['', ''], ['5'], END_GAME, null, _("2 jetons Objectifs pour le joueur qui a le plus de combattants dans les territoires de l’hiver.")),
             ]; // TODO
             case 7: return [
-                new ObjectiveDescription(['A'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-                new ObjectiveDescription(['', '', ''], END_GAME, _("LA GRANDE TRAVERSÉE :"), _("3 jetons Objectifs pour le 1er joueur à atteindre le territoire de départ de son adversaire avec un de ses combattant.")),
+                new ObjectiveDescription(['A'], ['A'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
+                new ObjectiveDescription(['', '', ''], ['2'], DURING_GAME, _("LA GRANDE TRAVERSÉE :"), _("3 jetons Objectifs pour le 1er joueur à atteindre le territoire de départ de son adversaire avec un de ses combattant.")),
             ]; // TODO
         }
     };
@@ -1496,7 +1497,8 @@ var TableCenter = /** @class */ (function () {
             this.addRiver();
         }
         this.addBattlefields(scenario.battlefields);
-        this.addObjectiveTokens(scenario.objectiveTokens, gamedatas.realizedObjectives);
+        var realizedLetters = gamedatas.realizedObjectives.map(function (realizedObjectives) { return realizedObjectives.letter; });
+        this.addObjectiveTokens(scenario.objectiveTokens, realizedLetters);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         gamedatas.fightersOnTerritories.forEach(function (card) { return _this.territoriesStocks[card.locationArg].addCard(card, undefined, { visible: !card.played }); });
         gamedatas.discoverTilesOnTerritories.forEach(function (discoverTile) { return _this.territoriesStocks[discoverTile.locationArg].discoverTileStock.addCard(discoverTile, undefined, { visible: discoverTile.visible }); });
@@ -1594,9 +1596,9 @@ var TableCenter = /** @class */ (function () {
             ])*/
         });
     };
-    TableCenter.prototype.addObjectiveTokens = function (objectiveTokens, realizedObjectives) {
+    TableCenter.prototype.addObjectiveTokens = function (objectiveTokens, realizedLetters) {
         var map = document.getElementById("map");
-        objectiveTokens.filter(function (objectiveTokenInfos) { return !realizedObjectives.includes(objectiveTokenInfos.letter); }).forEach(function (objectiveTokenInfos) {
+        objectiveTokens.filter(function (objectiveTokenInfos) { return !realizedLetters.includes(objectiveTokenInfos.letter); }).forEach(function (objectiveTokenInfos) {
             var objectiveToken = document.createElement('div');
             objectiveToken.id = "objective-token-".concat(objectiveTokenInfos.letter);
             objectiveToken.classList.add('objective-token', 'token-with-letter');
@@ -1734,7 +1736,7 @@ var CompressedLineStock = /** @class */ (function (_super) {
         var _this = this;
         var halfClientWidth = element.clientWidth / 2;
         var MARGIN = 8;
-        var CARD_WIDTH = 100;
+        var CARD_WIDTH = 72;
         var cardDistance = CARD_WIDTH + MARGIN;
         var containerWidth = element.clientWidth;
         var uncompressedWidth = (cards.length * CARD_WIDTH) + ((cards.length - 1) * MARGIN);
@@ -2606,6 +2608,7 @@ var Lumen = /** @class */ (function () {
         this.playersTables.push(table);
     };
     Lumen.prototype.setScenarioInformations = function () {
+        var _this = this;
         var scenarioName = document.getElementById("scenario-name");
         var scenarioSynopsis = document.getElementById("scenario-synopsis");
         var scenarioSpecialRules = document.getElementById("scenario-special-rules");
@@ -2620,12 +2623,13 @@ var Lumen = /** @class */ (function () {
             _('Nothing'));
         scenarioObjectives.innerHTML = "<ul>".concat(this.scenario.objectives.map(function (description) {
             var _a, _b;
-            return "<li>\n                ".concat(description.letters.map(function (letter) { return "<div class=\"objective-description-token token-with-letter\">".concat(letter, "</div>"); }).join(''), "\n                <strong>").concat((_a = description.timing) !== null && _a !== void 0 ? _a : '', "</strong>\n                <strong>").concat((_b = description.type) !== null && _b !== void 0 ? _b : '', "</strong>\n                ").concat(description.text, "\n            </li>");
+            return "<li>\n                <span id=\"objective-tokens-legend-".concat(description.letters[0][0], "\" class=\"objective-tokens-legend-wrapper\">\n                    ").concat(description.visibleLetters.map(function (letter) { return "<div class=\"objective-description-token token-with-letter\">".concat(letter, "</div>"); }).join(''), "\n                    <div id=\"objective-tokens-legend-").concat(description.letters[0][0], "-f28700\" class=\"objective-tokens-legend\" data-color=\"f28700\"></div>\n                    <div id=\"objective-tokens-legend-").concat(description.letters[0][0], "-1f3067\" class=\"objective-tokens-legend\" data-color=\"1f3067\"></div>\n                </span>\n                <strong>").concat((_a = description.timing) !== null && _a !== void 0 ? _a : '', "</strong>\n                <strong>").concat((_b = description.type) !== null && _b !== void 0 ? _b : '', "</strong>\n                ").concat(description.text, "\n            </li>");
         }).join(''), "</ul>");
         if (this.gamedatas.scenario == 4) {
             scenarioObjectives.innerHTML = "<strong>".concat(_('En fin de partie sur chaque île :'), "</strong>") + scenarioObjectives.innerHTML;
             document.querySelector('.objective-description-token.token-with-letter:not(:empty)').classList.add('plus-one');
         }
+        this.gamedatas.realizedObjectives.forEach(function (realizedObjective) { return _this.markRealizedObjective(realizedObjective.letter, Number(realizedObjective.realizedBy)); });
         document.getElementById("dice").style.left = "".concat(this.scenario.diceLeft, "px");
         this.setTooltip(scenarioName.id, scenarioSynopsis.outerHTML + scenarioSpecialRules.outerHTML + scenarioObjectives.outerHTML);
     };
@@ -2939,6 +2943,7 @@ var Lumen = /** @class */ (function () {
             ['updateControlCounters', 1],
             ['updateVisibleScore', 1],
             ['updateHiddenScore', 1],
+            ['setRealizedObjective', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -3115,6 +3120,13 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_updateHiddenScore = function (notif) {
         this.hiddenScoreCounter.toValue(notif.args.score);
+    };
+    Lumen.prototype.notif_setRealizedObjective = function (notif) {
+        this.markRealizedObjective(notif.args.letter, notif.args.realizedBy);
+    };
+    Lumen.prototype.markRealizedObjective = function (letter, realizedBy) {
+        var color = this.getPlayerColor(realizedBy);
+        document.getElementById("objective-tokens-legend-".concat(letter[0], "-").concat(color)).insertAdjacentHTML('beforeend', "\n            <div class=\"player-token\" data-color=\"".concat(color, "\"></div>\n        "));
     };
     Lumen.prototype.seasonToLumens = function (season) {
         switch (season) {

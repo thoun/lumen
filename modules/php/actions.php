@@ -285,7 +285,7 @@ trait ActionTrait {
 
         if ($this->getScenarioId() == 1 && $fighter->type == 10 && !$this->isRealizedObjective('1')) {
             $this->takeScenarioObjectiveToken($playerId, '1');
-            $this->setRealizedObjective('1');
+            $this->setRealizedObjective('1', $playerId);
             $this->incStat(1, 'completedObjectives');
             $this->incStat(1, 'completedObjectives', $playerId);
         }

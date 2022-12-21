@@ -9,7 +9,8 @@ class TableCenter {
             this.addRiver();
         }
         this.addBattlefields(scenario.battlefields);
-        this.addObjectiveTokens(scenario.objectiveTokens, gamedatas.realizedObjectives);
+        const realizedLetters = gamedatas.realizedObjectives.map(realizedObjectives => realizedObjectives.letter);
+        this.addObjectiveTokens(scenario.objectiveTokens, realizedLetters);
         this.addInitiativeMarker(gamedatas.initiativeMarkerTerritory);
         
         gamedatas.fightersOnTerritories.forEach(card => this.territoriesStocks[card.locationArg].addCard(card, undefined, {visible: !card.played}));
@@ -117,9 +118,9 @@ class TableCenter {
         });
     }
 
-    private addObjectiveTokens(objectiveTokens: ObjectiveTokenPosition[], realizedObjectives: string[]) {
+    private addObjectiveTokens(objectiveTokens: ObjectiveTokenPosition[], realizedLetters: string[]) {
         const map = document.getElementById(`map`);
-        objectiveTokens.filter(objectiveTokenInfos => !realizedObjectives.includes(objectiveTokenInfos.letter)).forEach(objectiveTokenInfos => {
+        objectiveTokens.filter(objectiveTokenInfos => !realizedLetters.includes(objectiveTokenInfos.letter)).forEach(objectiveTokenInfos => {
             const objectiveToken = document.createElement('div');
             objectiveToken.id = `objective-token-${objectiveTokenInfos.letter}`;
             objectiveToken.classList.add('objective-token', 'token-with-letter');

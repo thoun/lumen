@@ -471,3 +471,30 @@ html, .mode_3d #game_play_area_background {
     }
   }
 }
+
+.objective-tokens-legend-wrapper {
+  display: inline-block;
+  position: relative;
+
+  .objective-tokens-legend {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    &[data-color="f28700"] {
+      left: 0;
+    }
+    &[data-color="1f3067"] {
+      right: 0;
+    }
+
+    .player-token {
+      position: relative;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}

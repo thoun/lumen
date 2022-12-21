@@ -38,7 +38,7 @@ $this->CARDS = [
   3 => new CardType(1, 2, 1, POWER_REANIMATRICE),
   4 => new CardType(1, 2, 1, POWER_PUSHER),
   5 => new CardType(1, 2, 1, POWER_ASSASSIN),
-  6 => new CardType(1, 2, 2, POWER_EMPLUME),
+  6 => new CardType(1, 2, 1, POWER_EMPLUME),
   
   11 => new CardType(10, 1, 1, POWER_PUSHER),
   12 => new CardType(10, 1, 1, POWER_ASSASSIN),

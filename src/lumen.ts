@@ -761,7 +761,11 @@ class Lumen implements LumenGame {
 
         scenarioObjectives.innerHTML = `<ul>${this.scenario.objectives.map(description => 
             `<li>
-                ${description.letters.map(letter => `<div class="objective-description-token token-with-letter">${letter}</div>`).join('')}
+                <span id="objective-tokens-legend-${description.letters[0][0]}" class="objective-tokens-legend-wrapper">
+                    ${description.visibleLetters.map(letter => `<div class="objective-description-token token-with-letter">${letter}</div>`).join('')}
+                    <div id="objective-tokens-legend-${description.letters[0][0]}-f28700" class="objective-tokens-legend" data-color="f28700"></div>
+                    <div id="objective-tokens-legend-${description.letters[0][0]}-1f3067" class="objective-tokens-legend" data-color="1f3067"></div>
+                </span>
                 <strong>${description.timing ?? ''}</strong>
                 <strong>${description.type ?? ''}</strong>
                 ${description.text}
@@ -771,6 +775,9 @@ class Lumen implements LumenGame {
             scenarioObjectives.innerHTML = `<strong>${_('En fin de partie sur chaque île :')}</strong>` + scenarioObjectives.innerHTML;
             document.querySelector('.objective-description-token.token-with-letter:not(:empty)').classList.add('plus-one');
         }
+
+        this.gamedatas.realizedObjectives.forEach(realizedObjective => this.markRealizedObjective(realizedObjective.letter, Number(realizedObjective.realizedBy)));
+        
 
         document.getElementById(`dice`).style.left = `${this.scenario.diceLeft}px`;
 
@@ -1208,6 +1215,7 @@ class Lumen implements LumenGame {
             ['updateControlCounters', 1],
             ['updateVisibleScore', 1],
             ['updateHiddenScore', 1],
+            ['setRealizedObjective', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -1415,6 +1423,17 @@ class Lumen implements LumenGame {
 
     notif_updateHiddenScore(notif: Notif<NotifUpdateScoreArgs>) {
         this.hiddenScoreCounter.toValue(notif.args.score);
+    }
+
+    notif_setRealizedObjective(notif: Notif<NotifSetRealizedObjectiveArgs>) {
+        this.markRealizedObjective(notif.args.letter, notif.args.realizedBy);
+    }
+
+    private markRealizedObjective(letter: string, realizedBy: number) {
+        const color = this.getPlayerColor(realizedBy);
+        document.getElementById(`objective-tokens-legend-${letter[0]}-${color}`).insertAdjacentHTML('beforeend', `
+            <div class="player-token" data-color="${color}"></div>
+        `);
     }
 
     private seasonToLumens(season: string) {        

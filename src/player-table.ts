@@ -24,7 +24,7 @@ class CompressedLineStock<T> extends ManualPositionStock<T> {
     private manualPosition(element: HTMLElement, cards: T[]) {
         const halfClientWidth = element.clientWidth / 2;
         const MARGIN = 8;
-        const CARD_WIDTH = 100;
+        const CARD_WIDTH = 72;
         let cardDistance = CARD_WIDTH + MARGIN;
         const containerWidth = element.clientWidth;
         const uncompressedWidth = (cards.length * CARD_WIDTH) + ((cards.length - 1) * MARGIN);

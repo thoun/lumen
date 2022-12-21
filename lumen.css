@@ -362,21 +362,6 @@
 .card.fighter.highlight .card-side {
   animation: highlight-card-animation 1s alternate 2 ease-in-out;
 }
-.card.fighter .player-token {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.6);
-}
-.card.fighter .player-token[data-color=f28700] {
-  background-image: url("img/faction-token-day.png");
-}
-.card.fighter .player-token[data-color="1f3067"] {
-  background-image: url("img/faction-token-night.png");
-}
 
 .card-stock.selectable .card:not(.disabled):not(.selectable) {
   cursor: default;
@@ -398,6 +383,22 @@
     box-shadow: 0 0 10px 10px red;
   }
 }
+.player-token {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.6);
+}
+.player-token[data-color=f28700] {
+  background-image: url("img/faction-token-day.png");
+}
+.player-token[data-color="1f3067"] {
+  background-image: url("img/faction-token-night.png");
+}
+
 .card.discover-tile {
   display: inline-block;
   position: relative;
@@ -1023,7 +1024,7 @@ body > .card {
   gap: 5px;
 }
 .player-table .name-and-tiles > div {
-  background: rgba(255, 255, 255, 0.5019607843);
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 10px;
 }
 .player-table .name-and-tiles > div.objective-tokens {
@@ -1034,6 +1035,25 @@ body > .card {
 }
 .player-table .name-and-tiles > div:empty {
   display: none;
+}
+.player-table .name-and-tiles .manual-position-stock.discover-tiles {
+  height: 72px;
+  padding: 5px;
+}
+.player-table .name-and-tiles .manual-position-stock.objective-tokens {
+  height: 80px;
+  padding: 5px;
+}
+.player-table .name-and-tiles .manual-position-stock .card.discover-tile {
+  margin: 0;
+  width: 72px;
+  height: 72px;
+}
+.player-table .name-and-tiles .manual-position-stock .card.objective-token {
+  vertical-align: middle;
+  display: inline-block;
+  width: 72px;
+  height: 80px;
 }
 .player-table .name-and-tiles .name-wrapper {
   background: rgba(255, 255, 255, 0.8);
@@ -2091,4 +2111,28 @@ html, .mode_3d #game_play_area_background {
 }
 #scenario-objectives .objective-description-token:not(:first-child) {
   margin-left: -20px;
+}
+
+.objective-tokens-legend-wrapper {
+  display: inline-block;
+  position: relative;
+}
+.objective-tokens-legend-wrapper .objective-tokens-legend {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.objective-tokens-legend-wrapper .objective-tokens-legend[data-color=f28700] {
+  left: 0;
+}
+.objective-tokens-legend-wrapper .objective-tokens-legend[data-color="1f3067"] {
+  right: 0;
+}
+.objective-tokens-legend-wrapper .objective-tokens-legend .player-token {
+  position: relative;
+  width: 24px;
+  height: 24px;
 }
