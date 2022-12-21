@@ -25,6 +25,7 @@ class TerritoryStock extends ManualPositionStock<Card> {
     private initiativeMarker: boolean;
     private discoverTileStockDiv: HTMLDivElement;
     private pathLength: number = 0;
+    private strengthCounter: HTMLDivElement;
 
     public onAnyClick?: () => void;
 
@@ -33,7 +34,7 @@ class TerritoryStock extends ManualPositionStock<Card> {
         protected element: HTMLElement, 
         protected curve: number[][], 
         protected rotation: 0 | 90 | 180 | 270,
-        territoryId: number) {
+        private territoryId: number) {
         super(manager, element, () => this.manualPosition());
         element.classList.add('territory-stock');
 
@@ -60,6 +61,15 @@ class TerritoryStock extends ManualPositionStock<Card> {
         this.element.addEventListener('click', () => this.onAnyClick?.());
 
         // this.debugShowCurveCanvas();
+
+        this.strengthCounter = document.createElement('div');
+        this.strengthCounter.classList.add('strength-counter');
+        this.strengthCounter.dataset.visible = 'false';
+        this.strengthCounter.innerHTML = `
+            <div><span id="strength-counter-${territoryId}-orange"></span> <div class="strength-icon"></div></div>
+            <div><span id="strength-counter-${territoryId}-blue"></span> <div class="strength-icon"></div></div>
+        `;
+        element.appendChild(this.strengthCounter);
     }
 
     public addInitiativeMarker() {
@@ -99,8 +109,10 @@ class TerritoryStock extends ManualPositionStock<Card> {
     private getElements(): HTMLElement[] {
         const cards = this.getCards();
         const elements = cards.map(card => this.getCardElement(card));
-        if (cards.length) {
-            // TODO elements.unshift(this.getStrengthCounter(cards));
+        const showStrengthCounter = this.showStrengthCounter(cards);
+        this.strengthCounter.dataset.visible = showStrengthCounter.toString();
+        if (showStrengthCounter) {
+            elements.unshift(this.getStrengthCounter(cards));
         }
         if (!this.discoverTileStock.isEmpty()) {
             elements.push(this.discoverTileStockDiv);
@@ -112,6 +124,11 @@ class TerritoryStock extends ManualPositionStock<Card> {
 
         return elements;
     }
+
+    private showStrengthCounter(cards: Card[]): boolean {
+        console.log(cards.length >= 3 && cards.map(card => card.playerId).filter((value, index, self) => self.indexOf(value) === index).length > 1, cards.length >= 3, cards.map(card => card.playerId).filter((value, index, self) => self.indexOf(value) === index));
+        return cards.length >= 3 && cards.map(card => card.playerId).filter((value, index, self) => self.indexOf(value) === index).length > 1;
+    }
     
     private getStrengthCounter(cards: Card[]): HTMLElement {
         const strengthes = {};
@@ -122,11 +139,17 @@ class TerritoryStock extends ManualPositionStock<Card> {
             strengthes[card.playerId] += this.manager.getCurrentStrength(card);
         });
 
-        Object.keys(strengthes).forEach(playerId => {
+        const totalStrength = Object.values(strengthes).reduce((a: number, b: number) => a + b, 0) as number;
+        const orangePlayerId = this.manager.game.getPlayerIdByColor('f28700');
+        const bluePlayerId = this.manager.game.getPlayerIdByColor('1f3067');
+        const orangePlayerStrength = strengthes[orangePlayerId];
 
-        });
+        document.getElementById(`strength-counter-${this.territoryId}-orange`).innerHTML = strengthes[orangePlayerId];
+        document.getElementById(`strength-counter-${this.territoryId}-blue`).innerHTML = strengthes[bluePlayerId];
 
-        return document.createElement('div'); // TODO
+        this.strengthCounter.style.setProperty('--percent', `${orangePlayerStrength * 100 / totalStrength}%`);
+
+        return this.strengthCounter;
     }
 
     private getPathCoordinates(cardPathLength: number) {

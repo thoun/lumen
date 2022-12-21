@@ -1239,6 +1239,7 @@ var TerritoryStock = /** @class */ (function (_super) {
         _this.element = element;
         _this.curve = curve;
         _this.rotation = rotation;
+        _this.territoryId = territoryId;
         _this.pathLength = 0;
         element.classList.add('territory-stock');
         if ([90, 270].includes(rotation)) {
@@ -1257,8 +1258,13 @@ var TerritoryStock = /** @class */ (function (_super) {
             _this.pathLength += _this.getPathLength(_this.curve[i - 1], _this.curve[i]);
         }
         _this.element.addEventListener('click', function () { var _a; return (_a = _this.onAnyClick) === null || _a === void 0 ? void 0 : _a.call(_this); });
-        return _this;
         // this.debugShowCurveCanvas();
+        _this.strengthCounter = document.createElement('div');
+        _this.strengthCounter.classList.add('strength-counter');
+        _this.strengthCounter.dataset.visible = 'false';
+        _this.strengthCounter.innerHTML = "\n            <div><span id=\"strength-counter-".concat(territoryId, "-orange\"></span> <div class=\"strength-icon\"></div></div>\n            <div><span id=\"strength-counter-").concat(territoryId, "-blue\"></span> <div class=\"strength-icon\"></div></div>\n        ");
+        element.appendChild(_this.strengthCounter);
+        return _this;
     }
     TerritoryStock.prototype.addInitiativeMarker = function () {
         this.initiativeMarker = true;
@@ -1294,8 +1300,10 @@ var TerritoryStock = /** @class */ (function (_super) {
         var _this = this;
         var cards = this.getCards();
         var elements = cards.map(function (card) { return _this.getCardElement(card); });
-        if (cards.length) {
-            // TODO elements.unshift(this.getStrengthCounter(cards));
+        var showStrengthCounter = this.showStrengthCounter(cards);
+        this.strengthCounter.dataset.visible = showStrengthCounter.toString();
+        if (showStrengthCounter) {
+            elements.unshift(this.getStrengthCounter(cards));
         }
         if (!this.discoverTileStock.isEmpty()) {
             elements.push(this.discoverTileStockDiv);
@@ -1304,6 +1312,10 @@ var TerritoryStock = /** @class */ (function (_super) {
             elements.push(document.getElementById("initiative-marker"));
         }
         return elements;
+    };
+    TerritoryStock.prototype.showStrengthCounter = function (cards) {
+        console.log(cards.length >= 3 && cards.map(function (card) { return card.playerId; }).filter(function (value, index, self) { return self.indexOf(value) === index; }).length > 1, cards.length >= 3, cards.map(function (card) { return card.playerId; }).filter(function (value, index, self) { return self.indexOf(value) === index; }));
+        return cards.length >= 3 && cards.map(function (card) { return card.playerId; }).filter(function (value, index, self) { return self.indexOf(value) === index; }).length > 1;
     };
     TerritoryStock.prototype.getStrengthCounter = function (cards) {
         var _this = this;
@@ -1314,9 +1326,14 @@ var TerritoryStock = /** @class */ (function (_super) {
             }
             strengthes[card.playerId] += _this.manager.getCurrentStrength(card);
         });
-        Object.keys(strengthes).forEach(function (playerId) {
-        });
-        return document.createElement('div'); // TODO
+        var totalStrength = Object.values(strengthes).reduce(function (a, b) { return a + b; }, 0);
+        var orangePlayerId = this.manager.game.getPlayerIdByColor('f28700');
+        var bluePlayerId = this.manager.game.getPlayerIdByColor('1f3067');
+        var orangePlayerStrength = strengthes[orangePlayerId];
+        document.getElementById("strength-counter-".concat(this.territoryId, "-orange")).innerHTML = strengthes[orangePlayerId];
+        document.getElementById("strength-counter-".concat(this.territoryId, "-blue")).innerHTML = strengthes[bluePlayerId];
+        this.strengthCounter.style.setProperty('--percent', "".concat(orangePlayerStrength * 100 / totalStrength, "%"));
+        return this.strengthCounter;
     };
     TerritoryStock.prototype.getPathCoordinates = function (cardPathLength) {
         var currentDistance = 0;
@@ -1915,15 +1932,20 @@ var Lumen = /** @class */ (function () {
         this.setupPreferences();
         this.addHelp();
         this.setActiveDisplayButton();
-        var btnMapScroll = document.getElementById('display-map-scroll');
+        [100, 75, 50].forEach(function (zoomFactor) {
+            var btnMapScroll = document.getElementById("display-map-scroll-".concat(zoomFactor));
+            _this.setTooltip(btnMapScroll.id, _('Scroll in map'));
+            btnMapScroll.addEventListener('click', function () { return _this.setMapScroll(zoomFactor); });
+        });
         var btnFitMap = document.getElementById('display-fit-map');
         var btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
-        this.setTooltip(btnMapScroll.id, _('Scroll in map'));
+        var btnFitMapAndBoardBis = document.getElementById('display-fit-map-and-board-bis');
         this.setTooltip(btnFitMap.id, _('Fit map to screen'));
         this.setTooltip(btnFitMapAndBoard.id, _('Fit map and board to screen'));
-        btnMapScroll.addEventListener('click', function () { return _this.setMapScroll(); });
+        this.setTooltip(btnFitMapAndBoardBis.id, _('Fit map and board to screen'));
         btnFitMap.addEventListener('click', function () { return _this.setFitMap(); });
-        btnFitMapAndBoard.addEventListener('click', function () { return _this.setFitMapAndBoard(); });
+        btnFitMapAndBoard.addEventListener('click', function () { return _this.setFitMapAndBoard(false); });
+        btnFitMapAndBoardBis.addEventListener('click', function () { return _this.setFitMapAndBoard(true); });
         ['left', 'right', 'top', 'bottom'].forEach(function (direction) { return document.getElementById("scroll-".concat(direction)).addEventListener('click', function () { return _this.scroll(direction); }); });
         document.getElementById('map-frame').addEventListener('scroll', function () { return _this.onMapFrameScroll(); });
         this.onScreenWidthChange = function () {
@@ -2247,6 +2269,9 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.getPlayerColor = function (playerId) {
         return this.gamedatas.players[playerId].color;
     };
+    Lumen.prototype.getPlayerIdByColor = function (color) {
+        return Number(Object.values(this.gamedatas.players).find(function (player) { return player.color == color; }).id);
+    };
     Lumen.prototype.getPlayer = function (playerId) {
         return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
     };
@@ -2263,14 +2288,14 @@ var Lumen = /** @class */ (function () {
         this.setActiveDisplayButton();
         this.updateDisplay();
     };
-    Lumen.prototype.setFitMapAndBoard = function () {
-        this.display = 'fit-map-and-board-to-screen';
+    Lumen.prototype.setFitMapAndBoard = function (sameScale) {
+        this.display = 'fit-map-and-board-to-screen' + (sameScale ? '-bis' : '');
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
         this.setActiveDisplayButton();
         this.updateDisplay();
     };
-    Lumen.prototype.setMapScroll = function () {
-        this.display = 'scroll';
+    Lumen.prototype.setMapScroll = function (zoomFactor) {
+        this.display = "scroll-".concat(zoomFactor);
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
         this.setActiveDisplayButton();
         this.updateDisplay();
@@ -2285,7 +2310,7 @@ var Lumen = /** @class */ (function () {
         var mapFrame = document.getElementById('map-frame');
         var mapFrameBR = mapFrame.getBoundingClientRect();
         var fullTable = document.getElementById('full-table');
-        var scroll = this.display === 'scroll';
+        var scroll = this.display.startsWith('scroll');
         var spaceBeforeMap = mapFrameBR.top - document.body.getBoundingClientRect().top;
         var bgaZoom = 1;
         var bgaZoomStr = document.getElementById('page-content').style.zoom;
@@ -2299,19 +2324,40 @@ var Lumen = /** @class */ (function () {
         fullTable.style.margin = '';
         fullTable.style.height = '';
         var zoom = 1;
+        var mapWidth = Number(map.dataset.width);
+        var mapHeight = Number(map.dataset.height);
         if (scroll) {
-            this.mapZoom = 1;
             fullTable.style.transform = '';
+            var zoomFactor = Number(this.display.split('-')[1]);
+            if (zoomFactor < 100) {
+                this.mapZoom = zoomFactor / 100;
+                var newMapWidth = mapWidth * this.mapZoom;
+                var newMapHeight = Math.min(playAreaViewportHeight, mapHeight * this.mapZoom);
+                map.style.transform = "scale(".concat(this.mapZoom, ")");
+                map.style.maxHeight = "".concat(newMapHeight, "px");
+                map.style.width = "".concat(newMapWidth, "px");
+                map.style.height = "".concat(newMapHeight, "px");
+            }
+            else {
+                this.mapZoom = 1;
+                map.style.transform = "";
+                map.style.maxHeight = "";
+                map.style.width = "".concat(map.dataset.width, "px");
+                map.style.height = "".concat(map.dataset.height, "px");
+            }
+            mapFrame.style.height = "";
+            this.onMapFrameScroll();
+        }
+        else if (this.display === 'fit-map-and-board-to-screen-bis') {
+            mapFrame.style.maxHeight = "".concat(map.dataset.height, "px");
+            this.mapZoom = 1;
             map.style.transform = "";
             map.style.maxHeight = "";
             map.style.width = "".concat(map.dataset.width, "px");
             map.style.height = "".concat(map.dataset.height, "px");
-            mapFrame.style.height = "";
-            this.onMapFrameScroll();
+            zoom = Math.min(1, playAreaViewportHeight / (mapHeight + 20 + document.getElementsByClassName('player-table')[0].clientHeight), mapFrame.clientWidth / mapWidth);
         }
         else {
-            var mapWidth = Number(map.dataset.width);
-            var mapHeight = Number(map.dataset.height);
             var xScale = mapFrame.clientWidth / mapWidth;
             var yScale = playAreaViewportHeight / mapHeight;
             this.mapZoom = /*Math.max(0.1, */ Math.min(1, Math.min(xScale, yScale)) /*)*/;

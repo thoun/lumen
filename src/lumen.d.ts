@@ -88,6 +88,7 @@ interface LumenGame extends Game {
 
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
+    getPlayerIdByColor(color: string): number;
 
     setTooltip(id: string, html: string): void;   
     getTerritoryTooltip(lumens: number): string;

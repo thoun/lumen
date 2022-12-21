@@ -5,7 +5,7 @@ declare const dojo: Dojo;
 declare const _;
 declare const g_gamethemeurl;
 
-type LumenDisplay = 'scroll' | 'fit-map-to-screen' | 'fit-map-and-board-to-screen';
+type LumenDisplay = 'scroll-100' | 'scroll-75' | 'scroll-50' | 'fit-map-to-screen' | 'fit-map-and-board-to-screen' | 'fit-map-and-board-to-screen-bis';
 
 const ANIMATION_MS = 500;
 const ACTION_TIMER_DURATION = 5;
@@ -83,15 +83,20 @@ class Lumen implements LumenGame {
         this.addHelp();
 
         this.setActiveDisplayButton();
-        const btnMapScroll = document.getElementById('display-map-scroll');
+        [100, 75, 50].forEach((zoomFactor : 100 | 75 | 50) => {
+            const btnMapScroll = document.getElementById(`display-map-scroll-${zoomFactor}`);
+            this.setTooltip(btnMapScroll.id, _('Scroll in map'));
+            btnMapScroll.addEventListener('click', () => this.setMapScroll(zoomFactor));
+        });
         const btnFitMap = document.getElementById('display-fit-map');
         const btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
-        this.setTooltip(btnMapScroll.id, _('Scroll in map'));
+        const btnFitMapAndBoardBis = document.getElementById('display-fit-map-and-board-bis');
         this.setTooltip(btnFitMap.id, _('Fit map to screen'));
         this.setTooltip(btnFitMapAndBoard.id, _('Fit map and board to screen'));
-        btnMapScroll.addEventListener('click', () => this.setMapScroll());
+        this.setTooltip(btnFitMapAndBoardBis.id, _('Fit map and board to screen'));
         btnFitMap.addEventListener('click', () => this.setFitMap());
-        btnFitMapAndBoard.addEventListener('click', () => this.setFitMapAndBoard());
+        btnFitMapAndBoard.addEventListener('click', () => this.setFitMapAndBoard(false));
+        btnFitMapAndBoardBis.addEventListener('click', () => this.setFitMapAndBoard(true));
         ['left', 'right', 'top', 'bottom'].forEach(direction => document.getElementById(`scroll-${direction}`).addEventListener('click', () => this.scroll(direction as any)));
         document.getElementById('map-frame').addEventListener('scroll', () => this.onMapFrameScroll());
 
@@ -444,6 +449,10 @@ class Lumen implements LumenGame {
         return this.gamedatas.players[playerId].color;
     }
 
+    public getPlayerIdByColor(color: string): number {
+        return Number(Object.values(this.gamedatas.players).find(player => player.color == color).id);
+    }
+
     private getPlayer(playerId: number): LumenPlayer {
         return Object.values(this.gamedatas.players).find(player => Number(player.id) == playerId);
     }
@@ -463,15 +472,15 @@ class Lumen implements LumenGame {
         this.updateDisplay();
     }
 
-    private setFitMapAndBoard() {
-        this.display = 'fit-map-and-board-to-screen';
+    private setFitMapAndBoard(sameScale: boolean) {
+        this.display = 'fit-map-and-board-to-screen' + (sameScale ? '-bis' : '') as any;
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
         this.setActiveDisplayButton();
         this.updateDisplay();
     }
 
-    private setMapScroll() {
-        this.display = 'scroll';
+    private setMapScroll(zoomFactor: 100 | 75 | 50) {
+        this.display = `scroll-${zoomFactor}`;
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
         this.setActiveDisplayButton();  
         this.updateDisplay();
@@ -488,7 +497,7 @@ class Lumen implements LumenGame {
         const mapFrame = document.getElementById('map-frame');
         const mapFrameBR = mapFrame.getBoundingClientRect();
         const fullTable = document.getElementById('full-table');
-        const scroll = this.display === 'scroll';
+        const scroll = this.display.startsWith('scroll');
        
         let spaceBeforeMap = mapFrameBR.top - document.body.getBoundingClientRect().top;
         let bgaZoom = 1;
@@ -504,18 +513,42 @@ class Lumen implements LumenGame {
         fullTable.style.height = '';
         let zoom = 1;
 
+        const mapWidth = Number(map.dataset.width);
+        const mapHeight = Number(map.dataset.height);
+
         if (scroll) {
-            this.mapZoom = 1;
             fullTable.style.transform = '';
+            const zoomFactor = Number(this.display.split('-')[1]);
+            if (zoomFactor < 100) {
+                this.mapZoom = zoomFactor / 100;
+                const newMapWidth = mapWidth * this.mapZoom;
+                const newMapHeight = Math.min(playAreaViewportHeight, mapHeight * this.mapZoom);
+                map.style.transform = `scale(${this.mapZoom})`;
+                map.style.maxHeight = `${newMapHeight}px`;
+                map.style.width = `${newMapWidth}px`;
+                map.style.height = `${newMapHeight}px`;
+            } else {
+                this.mapZoom = 1;
+                map.style.transform = ``;
+                map.style.maxHeight = ``;
+                map.style.width = `${map.dataset.width}px`;
+                map.style.height = `${map.dataset.height}px`;
+            }
+            mapFrame.style.height = ``;
+            this.onMapFrameScroll();
+        } else if (this.display === 'fit-map-and-board-to-screen-bis') {
+            mapFrame.style.maxHeight = `${map.dataset.height}px`;
+
+            this.mapZoom = 1;
             map.style.transform = ``;
             map.style.maxHeight = ``;
             map.style.width = `${map.dataset.width}px`;
             map.style.height = `${map.dataset.height}px`;
-            mapFrame.style.height = ``;
-            this.onMapFrameScroll();
+
+            zoom = Math.min(1, playAreaViewportHeight / (mapHeight + 20 + document.getElementsByClassName('player-table')[0].clientHeight),
+                    mapFrame.clientWidth / mapWidth
+                    );
         } else {
-            const mapWidth = Number(map.dataset.width);
-            const mapHeight = Number(map.dataset.height);
 
             const xScale = mapFrame.clientWidth / mapWidth;
             const yScale = playAreaViewportHeight / mapHeight;

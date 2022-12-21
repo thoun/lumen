@@ -134,14 +134,14 @@ html, .mode_3d #game_play_area_background {
         border-color: #4871b6;
       }
 
-      &[data-display="scroll"] {
+      &[data-display^="scroll"] {
         background-image: url('img/display-scroll.png');
       }
       &[data-display="fit-map-to-screen"] {
         background-image: url('img/display-fit-map.png');
       }
 
-      &[data-display="fit-map-and-board-to-screen"] {
+      &[data-display^="fit-map-and-board-to-screen"] {
         background-image: url('img/display-fit-map-and-board.png');
       }
     }
@@ -269,6 +269,7 @@ html, .mode_3d #game_play_area_background {
   height: 10px;
   background-image: url('img/strength.png');
   background-size: contain;
+  vertical-align: middle;
 }
 
 .log, .gamelogreview {

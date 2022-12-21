@@ -853,6 +853,33 @@ body > .card {
 #map #fighter-choice button[disabled] {
   cursor: not-allowed;
 }
+#map .strength-counter {
+  position: absolute;
+  background: linear-gradient(90deg, #f28700 var(--percent), #1f3067 var(--percent));
+  color: white;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  text-align: center;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 0px 4px 3px white;
+  font-size: 32px;
+}
+#map .strength-counter > div {
+  margin: 8px;
+  white-space: nowrap;
+}
+#map .strength-counter > div .strength-icon {
+  display: inline-block;
+  width: 24px;
+  height: 15px;
+  margin: -10px;
+}
+#map .strength-counter[data-visible=false] {
+  display: none;
+}
 
 @keyframes selectable-territory-animation {
   0% {
@@ -1646,13 +1673,13 @@ html, .mode_3d #game_play_area_background {
 #zoom-wrapper #map-controls button.active {
   border-color: #4871b6;
 }
-#zoom-wrapper #map-controls button[data-display=scroll] {
+#zoom-wrapper #map-controls button[data-display^=scroll] {
   background-image: url("img/display-scroll.png");
 }
 #zoom-wrapper #map-controls button[data-display=fit-map-to-screen] {
   background-image: url("img/display-fit-map.png");
 }
-#zoom-wrapper #map-controls button[data-display=fit-map-and-board-to-screen] {
+#zoom-wrapper #map-controls button[data-display^=fit-map-and-board-to-screen] {
   background-image: url("img/display-fit-map-and-board.png");
 }
 #zoom-wrapper #full-table {
@@ -1764,6 +1791,7 @@ html, .mode_3d #game_play_area_background {
   height: 10px;
   background-image: url("img/strength.png");
   background-size: contain;
+  vertical-align: middle;
 }
 
 .log .die-icon, .gamelogreview .die-icon {

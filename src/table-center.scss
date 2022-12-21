@@ -222,6 +222,37 @@
             }
         }
     }
+
+    .strength-counter {
+        position: absolute;
+        background: linear-gradient(90deg, #f28700 var(--percent), #1f3067 var(--percent));
+        color: white;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        text-align: center;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0px 0px 4px 3px white;
+        font-size: 32px;
+
+        &>div {
+            margin: 8px;
+            white-space: nowrap;
+            
+            .strength-icon {
+                display: inline-block;
+                width: 24px;
+                height: 15px;
+                margin: -10px;
+            }
+        }
+
+        &[data-visible="false"] {
+            display: none;
+        }
+    }
 }
 
 
