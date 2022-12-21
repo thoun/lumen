@@ -13,10 +13,7 @@ class DiscoverTilesManager extends CardManager<DiscoverTile> {
         })
     }  
 
-    public setupFrontDiv(card: DiscoverTile, div?: HTMLDivElement) {
-        if (!div) {
-            div = this.getCardElement(card).getElementsByClassName('front')[0] as HTMLDivElement;
-        }
+    public setupFrontDiv(card: DiscoverTile, div: HTMLDivElement) {
         div.id = `discover-tile-${card.id}-front`;
 
         if (card.type) {

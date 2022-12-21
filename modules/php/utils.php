@@ -868,6 +868,10 @@ trait UtilTrait {
         
         $fightersIds = array_map(fn($fighter) => $fighter->id, $fighters);
         self::DbQuery("update card set played = true where card_id IN (".implode(',', $fightersIds).")");
+        
+        foreach($fighters as &$fighter) {
+            $fighter->played = true;
+        }
 
         self::notifyAllPlayers("setFightersActivated", '', [
             'fighters' => $fighters,
@@ -881,6 +885,10 @@ trait UtilTrait {
 
         $fightersIds = array_map(fn($fighter) => $fighter->id, $fighters);
         self::DbQuery("update card set played = false where card_id IN (".implode(',', $fightersIds).")");
+
+        foreach($fighters as &$fighter) {
+            $fighter->played = false;
+        }
 
         self::notifyAllPlayers("setFightersUnactivated", '', [
             'fighters' => $fighters,

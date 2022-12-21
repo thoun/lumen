@@ -14,6 +14,7 @@
         "src/slide-utils.ts",
         "node_modules/bga-cards/src/animations.ts",
         "node_modules/bga-cards/src/animations-functions.ts",
+        "node_modules/bga-cards/src/stock.ts",
         "node_modules/bga-cards/src/stocks/card-stock.ts",
         "node_modules/bga-cards/src/stocks/line-stock.ts",
         "node_modules/bga-cards/src/stocks/slot-stock.ts",

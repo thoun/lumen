@@ -159,8 +159,7 @@ class TableCenter {
     }
     
     public revealDiscoverTile(discoverTile: DiscoverTile) {
-        this.game.discoverTilesManager.setupFrontDiv(discoverTile);
-        this.game.discoverTilesManager.getCardElement(discoverTile).dataset.side = 'front';
+        this.game.discoverTilesManager.setCardVisible(discoverTile, true);
     }
     
     public highlightDiscoverTile(discoverTile: DiscoverTile) {
@@ -252,5 +251,9 @@ class TableCenter {
         //map.style.height = `${maxBottom + 10}px`;
         map.dataset.width = `${maxRight}`;
         map.dataset.height = `${maxBottom + 10}`;
+    }
+    
+    public setFightersActivated(card: Card, activated: boolean): void {
+        this.territoriesStocks[card.locationArg].setCardVisible(card, !activated);
     }
 }

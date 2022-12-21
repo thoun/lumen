@@ -1359,19 +1359,16 @@ class Lumen implements LumenGame {
         });
     }
     
-    private setFightersSide(fighters: Card[], side: string) {
-        fighters.forEach(card => {
-            const element = this.cardsManager.getCardElement(card);
-            element.dataset.side = side;
-        });
+    private setFightersActivated(fighters: Card[], activated: boolean) {
+        fighters.forEach(card => this.tableCenter.setFightersActivated(card, activated));
     }
 
     notif_setFightersActivated(notif: Notif<NotifSetFightersActivatedArgs>) {
-        this.setFightersSide(notif.args.fighters, 'back');        
+        this.setFightersActivated(notif.args.fighters, true);        
     }
 
     notif_setFightersUnactivated(notif: Notif<NotifSetFightersActivatedArgs>) {
-        this.setFightersSide(notif.args.fighters, 'front');
+        this.setFightersActivated(notif.args.fighters, false);
     }
 
     notif_exchangedFighters(notif: Notif<NotifSetFightersActivatedArgs>) {

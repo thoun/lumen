@@ -18,7 +18,7 @@ class CompressedLineStock<T> extends ManualPositionStock<T> {
         protected element: HTMLElement, 
         protected cardWidth: number
     ) {
-        super(manager, element, (element: HTMLElement, cards: T[]) => this.manualPosition(element, cards));
+        super(manager, element, undefined, (element: HTMLElement, cards: T[]) => this.manualPosition(element, cards));
     }
 
     private manualPosition(element: HTMLElement, cards: T[]) {
@@ -313,10 +313,6 @@ class PlayerTable {
     
     public revealObjectiveTokens(tokens: ObjectiveToken[]) {
         this.objectiveTokens.addCards(tokens);
-        tokens.forEach(card => {
-            const elem = this.objectiveTokens.getCardElement(card);
-            this.game.objectiveTokensManager.setupFrontDiv(card);
-            elem.dataset.side = 'front';
-        });
+        tokens.forEach(card => this.objectiveTokens.setCardVisible(card, true));
     }
 }

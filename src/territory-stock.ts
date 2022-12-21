@@ -35,7 +35,7 @@ class TerritoryStock extends ManualPositionStock<Card> {
         protected curve: number[][], 
         protected rotation: 0 | 90 | 180 | 270,
         private territoryId: number) {
-        super(manager, element, () => this.manualPosition());
+        super(manager, element, undefined, () => this.manualPosition());
         element.classList.add('territory-stock');
 
         
@@ -80,6 +80,12 @@ class TerritoryStock extends ManualPositionStock<Card> {
 
     public initiativeMarkerRemoved() {
         this.initiativeMarker = false;
+        this.manualPosition();
+    }
+
+    public setCardVisible(card: Card, visible: boolean, settings?: FlipCardSettings): void {
+        super.setCardVisible(card, visible, settings);
+        // to update stength when a fighter is flipped in case strength has changed
         this.manualPosition();
     }
 
