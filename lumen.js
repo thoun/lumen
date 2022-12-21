@@ -1262,7 +1262,7 @@ var TerritoryStock = /** @class */ (function (_super) {
         _this.strengthCounter = document.createElement('div');
         _this.strengthCounter.classList.add('strength-counter');
         _this.strengthCounter.dataset.visible = 'false';
-        _this.strengthCounter.innerHTML = "\n            <div><span id=\"strength-counter-".concat(territoryId, "-orange\"></span> <div class=\"strength-icon\"></div></div>\n            <div><span id=\"strength-counter-").concat(territoryId, "-blue\"></span> <div class=\"strength-icon\"></div></div>\n        ");
+        _this.strengthCounter.innerHTML = "\n            <div><span id=\"strength-counter-".concat(territoryId, "-orange\" style=\"--color: #f28700;\"></span> <div class=\"strength-icon\"></div></div>\n            <div><span id=\"strength-counter-").concat(territoryId, "-blue\" style=\"--color: #1f3067;\"></span> <div class=\"strength-icon\"></div></div>\n        ");
         element.appendChild(_this.strengthCounter);
         return _this;
     }
@@ -1291,9 +1291,10 @@ var TerritoryStock = /** @class */ (function (_super) {
         var _this = this;
         var elements = this.getElements();
         elements.forEach(function (cardDiv, index) {
-            var _a = _this.getCoordinates(index, elements.length), x = _a.x, y = _a.y;
+            var _a = _this.getCoordinates(index, elements.length), x = _a.x, y = _a.y, scale = _a.scale;
             cardDiv.style.left = "".concat(x - CARD_WIDTH / 2, "px");
             cardDiv.style.top = "".concat(y - CARD_HEIGHT / 2, "px");
+            cardDiv.style.transform = scale === 1 ? '' : "scale(".concat(scale, ")");
         });
     };
     TerritoryStock.prototype.getElements = function () {
@@ -1314,7 +1315,6 @@ var TerritoryStock = /** @class */ (function (_super) {
         return elements;
     };
     TerritoryStock.prototype.showStrengthCounter = function (cards) {
-        console.log(cards.length >= 3 && cards.map(function (card) { return card.playerId; }).filter(function (value, index, self) { return self.indexOf(value) === index; }).length > 1, cards.length >= 3, cards.map(function (card) { return card.playerId; }).filter(function (value, index, self) { return self.indexOf(value) === index; }));
         return cards.length >= 3 && cards.map(function (card) { return card.playerId; }).filter(function (value, index, self) { return self.indexOf(value) === index; }).length > 1;
     };
     TerritoryStock.prototype.getStrengthCounter = function (cards) {
@@ -1355,11 +1355,13 @@ var TerritoryStock = /** @class */ (function (_super) {
         var halfPathLength = this.pathLength / 2;
         var cardDistance = CARD_DISTANCE;
         var maxDistance = this.pathLength - CARD_DISTANCE;
+        var scale = 1;
         if ((elementLength - 1) * cardDistance > maxDistance) {
             cardDistance = Math.floor(maxDistance / (elementLength - 1));
+            scale = (cardDistance * 2 + CARD_DISTANCE) / (CARD_DISTANCE * 3);
         }
         var cardPathLength = halfPathLength + cardDistance * (index - elementLength / 2) + CARD_DISTANCE / 4;
-        return this.getPathCoordinates(cardPathLength);
+        return __assign(__assign({}, this.getPathCoordinates(cardPathLength)), { scale: scale });
     };
     TerritoryStock.prototype.getPathLength = function (point1, point2) {
         var x = point1[0] - point2[0];

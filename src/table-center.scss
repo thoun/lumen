@@ -240,6 +240,10 @@
         &>div {
             margin: 8px;
             white-space: nowrap;
+
+            span {
+                text-shadow: 0 0 1px var(--color), 0 0 5px var(--color), 0 0 6px var(--color), 0 0 4px var(--color);
+            }
             
             .strength-icon {
                 display: inline-block;

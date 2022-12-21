@@ -871,6 +871,9 @@ body > .card {
   margin: 8px;
   white-space: nowrap;
 }
+#map .strength-counter > div span {
+  text-shadow: 0 0 1px var(--color), 0 0 5px var(--color), 0 0 6px var(--color), 0 0 4px var(--color);
+}
 #map .strength-counter > div .strength-icon {
   display: inline-block;
   width: 24px;

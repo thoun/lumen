@@ -66,8 +66,8 @@ class TerritoryStock extends ManualPositionStock<Card> {
         this.strengthCounter.classList.add('strength-counter');
         this.strengthCounter.dataset.visible = 'false';
         this.strengthCounter.innerHTML = `
-            <div><span id="strength-counter-${territoryId}-orange"></span> <div class="strength-icon"></div></div>
-            <div><span id="strength-counter-${territoryId}-blue"></span> <div class="strength-icon"></div></div>
+            <div><span id="strength-counter-${territoryId}-orange" style="--color: #f28700;"></span> <div class="strength-icon"></div></div>
+            <div><span id="strength-counter-${territoryId}-blue" style="--color: #1f3067;"></span> <div class="strength-icon"></div></div>
         `;
         element.appendChild(this.strengthCounter);
     }
@@ -100,9 +100,10 @@ class TerritoryStock extends ManualPositionStock<Card> {
     private manualPosition() {
         const elements = this.getElements();
         elements.forEach((cardDiv, index) => {
-            const {x, y} = this.getCoordinates(index, elements.length);
+            const {x, y, scale} = this.getCoordinates(index, elements.length);
             cardDiv.style.left = `${x - CARD_WIDTH / 2}px`;
             cardDiv.style.top = `${y - CARD_HEIGHT / 2}px`;
+            cardDiv.style.transform = scale === 1 ? '' : `scale(${scale})`;
         });
     }
 
@@ -126,7 +127,6 @@ class TerritoryStock extends ManualPositionStock<Card> {
     }
 
     private showStrengthCounter(cards: Card[]): boolean {
-        console.log(cards.length >= 3 && cards.map(card => card.playerId).filter((value, index, self) => self.indexOf(value) === index).length > 1, cards.length >= 3, cards.map(card => card.playerId).filter((value, index, self) => self.indexOf(value) === index));
         return cards.length >= 3 && cards.map(card => card.playerId).filter((value, index, self) => self.indexOf(value) === index).length > 1;
     }
     
@@ -148,7 +148,6 @@ class TerritoryStock extends ManualPositionStock<Card> {
         document.getElementById(`strength-counter-${this.territoryId}-blue`).innerHTML = strengthes[bluePlayerId];
 
         this.strengthCounter.style.setProperty('--percent', `${orangePlayerStrength * 100 / totalStrength}%`);
-
         return this.strengthCounter;
     }
 
@@ -173,11 +172,16 @@ class TerritoryStock extends ManualPositionStock<Card> {
         const halfPathLength = this.pathLength / 2;
         let cardDistance = CARD_DISTANCE;
         const maxDistance = this.pathLength - CARD_DISTANCE;
+        let scale = 1;
         if ((elementLength - 1) * cardDistance > maxDistance) {
             cardDistance = Math.floor(maxDistance / (elementLength - 1));
+            scale = (cardDistance * 2 + CARD_DISTANCE) / (CARD_DISTANCE * 3);
         }
         const cardPathLength = halfPathLength + cardDistance * (index - elementLength / 2) + CARD_DISTANCE / 4;
-        return this.getPathCoordinates(cardPathLength);
+        return {
+            ...this.getPathCoordinates(cardPathLength),
+            scale,
+        };
     }
 
     private getPathLength(point1: number[], point2: number[]) {
