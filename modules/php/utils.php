@@ -1154,4 +1154,28 @@ trait UtilTrait {
 
         return $hiddenScore;
     }
+    
+    function getDiscoverTilesPoints(int $playerId) {
+        $playerDiscoverTiles = $this->getDiscoverTilesByLocation('player', $playerId);
+
+        $points = 0;
+        foreach ($playerDiscoverTiles as $discoverTile) {
+            if ($discoverTile->type === 1) {
+                $points += $discoverTile->subType;
+            }
+        }
+
+        return $points;
+    }
+
+    function getObjectiveTokensPoints(int $playerId) {
+        $objectiveTokens = $this->getObjectiveTokensFromDb($this->objectiveTokens->getCardsInLocation('player', $playerId));
+
+        $points = 0;
+        foreach ($objectiveTokens as $objectiveToken) {
+            $points += $objectiveToken->lumens;
+        }
+
+        return $points;
+    }
 }

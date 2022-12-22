@@ -40,24 +40,6 @@
       font-weight: bold;
       text-align: center;
     }
-
-    .counters-wrapper {
-      display: flex;
-
-      .counter-wrapper {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 5px;
-        margin: 3px;
-        font-weight: bold;
-
-        &[data-hidden="true"] {
-          display: none;
-        }
-      }
-    }
   }
 
   .grid {
@@ -109,4 +91,33 @@
   background-size: contain;
   width: 54px;
   height: 30px;
+}
+
+
+
+.counters-wrapper {
+  display: flex;
+  align-items: center;
+
+  .counter-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 3px;
+    font-weight: bold;
+  
+    &[data-hidden="true"] {
+      display: none;
+    }
+  }
+}
+
+#score-territories {
+  .counters-wrapper {
+    .counter-wrapper {
+      font-weight: normal;
+    }
+  }
 }

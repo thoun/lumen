@@ -82,6 +82,10 @@ class Lumen implements LumenGame {
         this.setupPreferences();
         this.addHelp();
 
+        if (Number(gamedatas.gamestate.id) >= 90) { // score or end
+            this.onEnteringEndScore(true);
+        }
+
         this.setActiveDisplayButton();
         [100, 75, 50].forEach((zoomFactor : 100 | 75 | 50) => {
             const btnMapScroll = document.getElementById(`display-map-scroll-${zoomFactor}`);
@@ -265,8 +269,61 @@ class Lumen implements LumenGame {
         }
     }
 
-    private onEnteringEndScore() {
-        document.querySelectorAll('span.hidden-score').forEach(elem => elem.remove());
+    private onEnteringEndScore(fromReload: boolean = false) {
+        document.querySelectorAll('span.hidden-score').forEach(elem => elem.remove()); // remove the (+?)
+    
+        document.getElementById('score').style.display = 'flex';
+
+        const players = Object.values(this.gamedatas.players);
+
+        const headers = document.getElementById('scoretr');
+        if (!headers.childElementCount) {
+            let html = `<th></th>`;
+            players.forEach(player => html += `<td style="background: #${player.color};">${player.name}</td>`);
+            dojo.place(html, headers);
+        }
+        
+        const scoreTerritories = document.getElementById('score-territories');
+        if (!scoreTerritories.childElementCount) {
+            let html = `<th>${_('Controlled territories')}</th>`;
+            players.forEach(player => {
+                html += `<td style="background: #${player.color};">
+                    <div id="score-controlled-territories-${player.id}">${
+                        fromReload ? [1,3,5,7].map(lumens => player.controlCounters[lumens] * lumens).reduce((a, b) => a + b, 0) : '0'
+                    }</div>
+                    <div class="counters-wrapper">(`;
+                
+                [1,3,5,7].forEach(lumens => 
+                    html += `<div class="counter-wrapper" id="counter-wrapper-${player.id}-${lumens}" data-hidden="${(!this.scenario.battlefields.some(battlefield => BATTLEFIELDS[battlefield.battlefieldId].territories.some(territory => territory.id % 10 == lumens))).toString()}">
+                        <div class="territory-img" data-lumens="${lumens}"></div><span id="score-controlled-territories-${player.id}-${lumens}">${fromReload ? player.controlCounters[lumens] * lumens : '0'}</span>
+                    </div>`
+                );
+
+                html += `)</div></td>`;
+            });
+            dojo.place(html, scoreTerritories);
+        }
+        
+        const scoreDiscoverTiles = document.getElementById('score-discover-tiles');
+        if (!scoreDiscoverTiles.childElementCount) {
+            let html = `<th>${_('Discover tiles')}</th>`;
+            players.forEach(player => html += `<td style="background: #${player.color};" id="score-discover-tiles-${player.id}">${fromReload ? player.discoverTilesPoints : '0'}</td>`);
+            dojo.place(html, scoreDiscoverTiles);
+        }
+        
+        const scoreObjectiveTokens = document.getElementById('score-objective-tokens');
+        if (!scoreObjectiveTokens.childElementCount) {
+            let html = `<th>${_('Objective tokens')}</th>`;
+            players.forEach(player => html += `<td style="background: #${player.color};" id="score-objective-tokens-${player.id}">${fromReload ? player.objectiveTokensPoints : '0'}</td>`);
+            dojo.place(html, scoreObjectiveTokens);
+        }
+
+        const footers = document.getElementById('scorefoot');
+        if (!footers.childElementCount) {
+            let html = `<th>${_('Final score')}</th>`;
+            players.forEach(player => html += `<td style="background: #${player.color};" id="score-final-${player.id}">${fromReload ? player.score : '0'}</td>`);
+            dojo.place(html, footers);
+        }
     }
 
     public onLeavingState(stateName: string) {
@@ -1211,7 +1268,7 @@ class Lumen implements LumenGame {
             ['exchangedFighters', ANIMATION_MS],
             ['score', 1],
             ['revealObjectiveTokens', ANIMATION_MS],
-            ['endControlTerritory', ANIMATION_MS * 2],
+            ['endControlTerritory', 1 /*ANIMATION_MS * 2*/],
             ['updateControlCounters', 1],
             ['updateVisibleScore', 1],
             ['updateHiddenScore', 1],
@@ -1388,20 +1445,41 @@ class Lumen implements LumenGame {
         stock0.addCard(card1);
     }
 
+    private incFinalScore(playerId: number, incScore: number) {
+        const scoreDiv = document.getElementById(`score-final-${playerId}`);
+        scoreDiv.innerHTML = `${Number(scoreDiv.innerHTML) + incScore}`;
+    }
+
     notif_score(notif: Notif<NotifScoreArgs>) {
         const playerId = notif.args.playerId;
+        const incScore = notif.args.incScore;
         (this as any).scoreCtrl[playerId]?.toValue(notif.args.newScore);
+        if (Number(this.gamedatas.gamestate.id) >= 90) { // score or end
+            if (notif.args.scoreType === 'endControlTerritory') {
+                const scoreDiv = document.getElementById(`score-controlled-territories-${playerId}`);
+                const scoreTerritoryDiv = document.getElementById(`score-controlled-territories-${playerId}-${notif.args.lumens}`);
 
-        /*const incScore = notif.args.incScore;
-        if (incScore != null && incScore !== undefined) {
-            (this as any).displayScoring(`player-table-${playerId}-table-cards`, this.getPlayerColor(playerId), incScore, ANIMATION_MS * 3);
-        }*/
+                scoreDiv.innerHTML = `${Number(scoreDiv.innerHTML) + incScore}`;
+                scoreTerritoryDiv.innerHTML = `${Number(scoreTerritoryDiv.innerHTML) + incScore}`;
+                this.incFinalScore(playerId, incScore);
+            } else if (notif.args.scoreType === 'discoverTiles') {
+                const scoreDiv = document.getElementById(`score-discover-tiles-${playerId}`);
+                scoreDiv.innerHTML = `${Number(scoreDiv.innerHTML) + incScore}`;
+                this.incFinalScore(playerId, incScore);
+            } else if (notif.args.scoreType === 'objectiveTokens') {
+                const scoreDiv = document.getElementById(`score-objective-tokens-${playerId}`);
+                scoreDiv.innerHTML = `${Number(scoreDiv.innerHTML) + incScore}`;
+                this.incFinalScore(playerId, incScore);
+            }
+        }
     }
 
     notif_endControlTerritory(notif: Notif<NotifEndControlTerritoryArgs>) {
-        document.getElementById(`territory-mask-${notif.args.territoryId}`)?.classList.add('highlight');
-        if (notif.args.playerId) {
-            (this as any).displayScoring(`territory-${notif.args.territoryId}`, this.getPlayerColor(notif.args.playerId), notif.args.incScore, ANIMATION_MS * 2);
+        const playerId = notif.args.playerId;
+        const incScore = notif.args.incScore;
+        //document.getElementById(`territory-mask-${notif.args.territoryId}`)?.classList.add('highlight');
+        if (playerId) {
+            (this as any).displayScoring(`territory-${notif.args.territoryId}`, this.getPlayerColor(playerId), incScore, ANIMATION_MS * 2);
         }
         this.notif_score(notif);
     }

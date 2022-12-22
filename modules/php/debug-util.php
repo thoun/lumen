@@ -17,11 +17,11 @@ trait DebugUtilTrait {
         $this->debugAddPlayerEverywhere(2343492, 10);
         $this->debugAddPlayerEverywhere(2343493, 8);
 
-        /*$this->debugAddObjectiveToken(2343492, 1);
+        $this->debugAddObjectiveToken(2343492, 1);
         $this->debugAddDiscoverTile(2343492, 4, 1);
         $this->debugAddDiscoverTile(2343492, 5, 1);
         $this->debugAddDiscoverTile(2343492, 3, 1);
-        $this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
+        /*$this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
         $this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);
         
         $this->debugAddObjectiveToken(2343493, 6);*/
@@ -37,7 +37,7 @@ trait DebugUtilTrait {
         $this->debugAddNeutralFighter(2343492, 22, 'highCommand2343492', 2);
         $this->debugAddNeutralFighter(2343492, 23, 'highCommand2343492', 3);*/
         
-        //$this->debugLastTurn();
+        $this->debugLastTurn();
     }
 
     public function debugAddPlayerFighter(int $playerId, int $subType, string $location, $locationArg = null, $played = false) {

@@ -195,7 +195,10 @@ class Lumen extends Table {
   
         // Gather all information about current game situation (visible by player $current_player_id).
         foreach($result['players'] as $playerId => &$player) {
-            if (!$isEnd) {
+            if ($isEnd) {
+                $player['discoverTilesPoints'] = $this->getDiscoverTilesPoints($playerId);
+                $player['objectiveTokensPoints'] = $this->getObjectiveTokensPoints($playerId);
+            } else {
                 $player['visibleScore'] = $this->updateCurrentVisibleScore($playerId);
                 $player['hiddenScore'] = $currentPlayerId == $playerId ? $this->updateCurrentHiddenScore($playerId) : null;
                 $player['score'] = $player['visibleScore'];

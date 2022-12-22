@@ -941,21 +941,6 @@ body > .card {
   font-weight: bold;
   text-align: center;
 }
-.player-board .counters .counters-wrapper {
-  display: flex;
-}
-.player-board .counters .counters-wrapper .counter-wrapper {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  margin: 3px;
-  font-weight: bold;
-}
-.player-board .counters .counters-wrapper .counter-wrapper[data-hidden=true] {
-  display: none;
-}
 .player-board .grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -991,6 +976,27 @@ body > .card {
   background-size: contain;
   width: 54px;
   height: 30px;
+}
+
+.counters-wrapper {
+  display: flex;
+  align-items: center;
+}
+.counters-wrapper .counter-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 3px;
+  font-weight: bold;
+}
+.counters-wrapper .counter-wrapper[data-hidden=true] {
+  display: none;
+}
+
+#score-territories .counters-wrapper .counter-wrapper {
+  font-weight: normal;
 }
 
 .player-table {
@@ -1571,6 +1577,39 @@ html[data-filling-pattern=true] .circle[data-zone="19"] {
 }
 #help-popin #help-discover-tiles-1-1 .discover-tile:not(:first-child) {
   margin-left: -50px;
+}
+
+#score {
+  display: none;
+  justify-content: center;
+}
+#score #table-wrapper {
+  padding: 8px;
+  background: url("img/description-background.jpg");
+  background-size: cover;
+  background-position: center center;
+  box-shadow: inset 0 0 5px #a79572, 2px 2px 4px 0px rgba(0, 0, 0, 0.4);
+}
+#score #table-wrapper table {
+  color: white;
+  /*tbody, tfoot {
+      tr {
+          border-top: 1px solid white;
+      }
+  }*/
+}
+#score #table-wrapper table tr td, #score #table-wrapper table tr th {
+  text-align: center;
+  padding: 8px;
+}
+#score #table-wrapper table tr th {
+  color: black;
+}
+#score #table-wrapper table tr td {
+  text-shadow: 0px 0px 1px black, 0px 0px 2px black, 0px 0px 3px black;
+}
+#score #table-wrapper table tr#scoretr, #score #table-wrapper table tr#scorefoot {
+  font-weight: bold;
 }
 
 /* make space between buttons on touch devices */

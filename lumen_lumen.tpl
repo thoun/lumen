@@ -1,5 +1,23 @@
 {OVERALL_GAME_HEADER}
 
+<div id="score">
+    <div id="table-wrapper">
+        <table>
+            <thead>
+                <tr id="scoretr"></tr>
+            </thead>
+            <tbody>
+                <tr id="score-territories"></tr>
+                <tr id="score-discover-tiles"></tr>
+                <tr id="score-objective-tokens"></tr>
+            </tbody>
+            <tfoot>
+                <tr id="scorefoot"></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
 <div id="zoom-wrapper">
     <div id="full-table">
         <div id="scenario-name">

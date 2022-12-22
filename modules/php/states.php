@@ -128,6 +128,7 @@ trait StateTrait {
                     $this->incPlayerScore($controlPlayer, $territory->lumens, clienttranslate('${player_name} controls the ${season} territory on battlefield ${battlefieldId}'), [
                         'scoreType' => 'endControlTerritory',
                         'territoryId' => $territory->id,
+                        'lumens' => $territory->lumens,
                         'season' => $this->getSeasonName($territory->lumens),
                         'battlefieldId' => $battlefieldId,
                         'i18n' => ['season'],

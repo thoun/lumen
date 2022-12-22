@@ -40,8 +40,10 @@ interface Link {
 
 interface LumenPlayer extends Player {
     playerNo: number;
-    visibleScore: number;
-    hiddenScore: number;
+    visibleScore?: number;
+    hiddenScore?: number;
+    discoverTilesPoints?: number;
+    objectiveTokensPoints?: number;
     checks: number;
     reserve: Card[];
     highCommand: Card[];
@@ -271,6 +273,8 @@ interface NotifScoreArgs {
     playerId: number;
     newScore: number;
     incScore: number;
+    scoreType: string;
+    lumens?: number;
 }
 
 interface NotifEndControlTerritoryArgs extends NotifScoreArgs {

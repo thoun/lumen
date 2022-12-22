@@ -2027,6 +2027,9 @@ var Lumen = /** @class */ (function () {
         this.setupNotifications();
         this.setupPreferences();
         this.addHelp();
+        if (Number(gamedatas.gamestate.id) >= 90) { // score or end
+            this.onEnteringEndScore(true);
+        }
         this.setActiveDisplayButton();
         [100, 75, 50].forEach(function (zoomFactor) {
             var btnMapScroll = document.getElementById("display-map-scroll-".concat(zoomFactor));
@@ -2195,8 +2198,48 @@ var Lumen = /** @class */ (function () {
             this.tableCenter.setSelectableTerritories(args.territoriesIds);
         }
     };
-    Lumen.prototype.onEnteringEndScore = function () {
-        document.querySelectorAll('span.hidden-score').forEach(function (elem) { return elem.remove(); });
+    Lumen.prototype.onEnteringEndScore = function (fromReload) {
+        var _this = this;
+        if (fromReload === void 0) { fromReload = false; }
+        document.querySelectorAll('span.hidden-score').forEach(function (elem) { return elem.remove(); }); // remove the (+?)
+        document.getElementById('score').style.display = 'flex';
+        var players = Object.values(this.gamedatas.players);
+        var headers = document.getElementById('scoretr');
+        if (!headers.childElementCount) {
+            var html_1 = "<th></th>";
+            players.forEach(function (player) { return html_1 += "<td style=\"background: #".concat(player.color, ";\">").concat(player.name, "</td>"); });
+            dojo.place(html_1, headers);
+        }
+        var scoreTerritories = document.getElementById('score-territories');
+        if (!scoreTerritories.childElementCount) {
+            var html_2 = "<th>".concat(_('Controlled territories'), "</th>");
+            players.forEach(function (player) {
+                html_2 += "<td style=\"background: #".concat(player.color, ";\">\n                    <div id=\"score-controlled-territories-").concat(player.id, "\">").concat(fromReload ? [1, 3, 5, 7].map(function (lumens) { return player.controlCounters[lumens] * lumens; }).reduce(function (a, b) { return a + b; }, 0) : '0', "</div>\n                    <div class=\"counters-wrapper\">(");
+                [1, 3, 5, 7].forEach(function (lumens) {
+                    return html_2 += "<div class=\"counter-wrapper\" id=\"counter-wrapper-".concat(player.id, "-").concat(lumens, "\" data-hidden=\"").concat((!_this.scenario.battlefields.some(function (battlefield) { return BATTLEFIELDS[battlefield.battlefieldId].territories.some(function (territory) { return territory.id % 10 == lumens; }); })).toString(), "\">\n                        <div class=\"territory-img\" data-lumens=\"").concat(lumens, "\"></div><span id=\"score-controlled-territories-").concat(player.id, "-").concat(lumens, "\">").concat(fromReload ? player.controlCounters[lumens] * lumens : '0', "</span>\n                    </div>");
+                });
+                html_2 += ")</div></td>";
+            });
+            dojo.place(html_2, scoreTerritories);
+        }
+        var scoreDiscoverTiles = document.getElementById('score-discover-tiles');
+        if (!scoreDiscoverTiles.childElementCount) {
+            var html_3 = "<th>".concat(_('Discover tiles'), "</th>");
+            players.forEach(function (player) { return html_3 += "<td style=\"background: #".concat(player.color, ";\" id=\"score-discover-tiles-").concat(player.id, "\">").concat(fromReload ? player.discoverTilesPoints : '0', "</td>"); });
+            dojo.place(html_3, scoreDiscoverTiles);
+        }
+        var scoreObjectiveTokens = document.getElementById('score-objective-tokens');
+        if (!scoreObjectiveTokens.childElementCount) {
+            var html_4 = "<th>".concat(_('Objective tokens'), "</th>");
+            players.forEach(function (player) { return html_4 += "<td style=\"background: #".concat(player.color, ";\" id=\"score-objective-tokens-").concat(player.id, "\">").concat(fromReload ? player.objectiveTokensPoints : '0', "</td>"); });
+            dojo.place(html_4, scoreObjectiveTokens);
+        }
+        var footers = document.getElementById('scorefoot');
+        if (!footers.childElementCount) {
+            var html_5 = "<th>".concat(_('Final score'), "</th>");
+            players.forEach(function (player) { return html_5 += "<td style=\"background: #".concat(player.color, ";\" id=\"score-final-").concat(player.id, "\">").concat(fromReload ? player.score : '0', "</td>"); });
+            dojo.place(html_5, footers);
+        }
     };
     Lumen.prototype.onLeavingState = function (stateName) {
         var _a;
@@ -2939,7 +2982,7 @@ var Lumen = /** @class */ (function () {
             ['exchangedFighters', ANIMATION_MS],
             ['score', 1],
             ['revealObjectiveTokens', ANIMATION_MS],
-            ['endControlTerritory', ANIMATION_MS * 2],
+            ['endControlTerritory', 1 /*ANIMATION_MS * 2*/],
             ['updateControlCounters', 1],
             ['updateVisibleScore', 1],
             ['updateHiddenScore', 1],
@@ -3087,20 +3130,41 @@ var Lumen = /** @class */ (function () {
         stock1.addCard(card0);
         stock0.addCard(card1);
     };
+    Lumen.prototype.incFinalScore = function (playerId, incScore) {
+        var scoreDiv = document.getElementById("score-final-".concat(playerId));
+        scoreDiv.innerHTML = "".concat(Number(scoreDiv.innerHTML) + incScore);
+    };
     Lumen.prototype.notif_score = function (notif) {
         var _a;
         var playerId = notif.args.playerId;
+        var incScore = notif.args.incScore;
         (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(notif.args.newScore);
-        /*const incScore = notif.args.incScore;
-        if (incScore != null && incScore !== undefined) {
-            (this as any).displayScoring(`player-table-${playerId}-table-cards`, this.getPlayerColor(playerId), incScore, ANIMATION_MS * 3);
-        }*/
+        if (Number(this.gamedatas.gamestate.id) >= 90) { // score or end
+            if (notif.args.scoreType === 'endControlTerritory') {
+                var scoreDiv = document.getElementById("score-controlled-territories-".concat(playerId));
+                var scoreTerritoryDiv = document.getElementById("score-controlled-territories-".concat(playerId, "-").concat(notif.args.lumens));
+                scoreDiv.innerHTML = "".concat(Number(scoreDiv.innerHTML) + incScore);
+                scoreTerritoryDiv.innerHTML = "".concat(Number(scoreTerritoryDiv.innerHTML) + incScore);
+                this.incFinalScore(playerId, incScore);
+            }
+            else if (notif.args.scoreType === 'discoverTiles') {
+                var scoreDiv = document.getElementById("score-discover-tiles-".concat(playerId));
+                scoreDiv.innerHTML = "".concat(Number(scoreDiv.innerHTML) + incScore);
+                this.incFinalScore(playerId, incScore);
+            }
+            else if (notif.args.scoreType === 'objectiveTokens') {
+                var scoreDiv = document.getElementById("score-objective-tokens-".concat(playerId));
+                scoreDiv.innerHTML = "".concat(Number(scoreDiv.innerHTML) + incScore);
+                this.incFinalScore(playerId, incScore);
+            }
+        }
     };
     Lumen.prototype.notif_endControlTerritory = function (notif) {
-        var _a;
-        (_a = document.getElementById("territory-mask-".concat(notif.args.territoryId))) === null || _a === void 0 ? void 0 : _a.classList.add('highlight');
-        if (notif.args.playerId) {
-            this.displayScoring("territory-".concat(notif.args.territoryId), this.getPlayerColor(notif.args.playerId), notif.args.incScore, ANIMATION_MS * 2);
+        var playerId = notif.args.playerId;
+        var incScore = notif.args.incScore;
+        //document.getElementById(`territory-mask-${notif.args.territoryId}`)?.classList.add('highlight');
+        if (playerId) {
+            this.displayScoring("territory-".concat(notif.args.territoryId), this.getPlayerColor(playerId), incScore, ANIMATION_MS * 2);
         }
         this.notif_score(notif);
     };
