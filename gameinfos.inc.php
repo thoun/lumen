@@ -13,7 +13,7 @@
 $gameinfos = [
 
 // Name of the game in English (will serve as the basis for translation) 
-'game_name' => "Lumen",
+'game_name' => "Lumen: The Lost World",
 
 // Game designer (or game designers, separated by commas)
 'designer' => 'Bruno Cathala, Corentin Lebrat',       
@@ -34,7 +34,7 @@ $gameinfos = [
 'publisher_bgg_id' => 36884,
 
 // Board game geek ID of the game
-'bgg_id' => 0, // TODO
+'bgg_id' => 377947,
 
 
 // Players configuration that can be played (ex: 2 to 4 players)
