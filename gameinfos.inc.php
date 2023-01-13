@@ -132,10 +132,11 @@ $gameinfos = [
 // Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
 // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
 'presentation' => [
-//    totranslate("This wonderful game is about geometric shapes!"),
-//    totranslate("It was awarded best triangle game of the year in 2005 and nominated for the Spiel des Jahres."),
-//    ...
-], // TODO
+    totranslate("In LUMEN, two peoples clash in the Lost World where the seasons coexist in harmony. The People of the Day and the People of the Night are at perpetual war for possession of the Lumens."),
+    totranslate("In LUMEN, players will try to spice up their choices and recruit mercenaries by developing the skills of their factions. The game is a territorial duel driven by a roll-and-write mechanism."),
+    totranslate("Each round, the players will choose to combine the result on 2 dice in order to recruit fighters and/or to give orders to those existing on the board. Each territory is worth Lumens. With each movement, reveal the discovery tokens which will bring you Lumens or bonus actions. The player with the most Lumens wins the game."),
+    totranslate("The game comes with 7 different scenarios."),
+],
 
 // Games tags (categories)
 //  You can attribute a maximum of ten "tags" for your game.
