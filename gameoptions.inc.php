@@ -32,32 +32,32 @@ $game_options = [
         'name' => totranslate('Scenario'),
         'values' => [
             1 => [
-                'name' => totranslate('A - First Contact'),
-                'tmdisplay' => totranslate('A - First Contact'),
+                'name' => totranslate('A - First contact'),
+                'tmdisplay' => totranslate('A - First contact'),
             ],
             2 => [
-                'name' => totranslate('B - La grosse cavalerie'), // TODO
-                'tmdisplay' => totranslate('B - La grosse cavalerie'), // TODO
+                'name' => totranslate('B - Disturbance on the western front'),
+                'tmdisplay' => totranslate('B - Disturbance on the western front'),
             ],
             3 => [
-                'name' => totranslate('C - UN TERRITOIRE TROP LOIN'), // TODO
-                'tmdisplay' => totranslate('C - UN TERRITOIRE TROP LOIN'), // TODO
+                'name' => totranslate('C - A territory too far'),
+                'tmdisplay' => totranslate('C - A territory too far'),
             ],
             4 => [
-                'name' => totranslate('D - LA POSSIBILITÉ D’UNE ÎLE'), // TODO
-                'tmdisplay' => totranslate('D - LA POSSIBILITÉ D’UNE ÎLE'), // TODO
+                'name' => totranslate('D - Isles of promise'),
+                'tmdisplay' => totranslate('D - Isles of promise'),
             ],
             5 => [
-                'name' => totranslate('E - APRÈS MOI LE DÉLUGE'), // TODO
-                'tmdisplay' => totranslate('E - APRÈS MOI LE DÉLUGE'), // TODO
+                'name' => totranslate('E - After the flood'),
+                'tmdisplay' => totranslate('E - After the flood'),
             ],
             6 => [
-                'name' => totranslate('F - LE SOLDAT DE L’HIVER'), // TODO
-                'tmdisplay' => totranslate('F - LE SOLDAT DE L’HIVER'), // TODO
+                'name' => totranslate('F - The winter soldier'),
+                'tmdisplay' => totranslate('F - The winter soldier'),
             ],
             7 => [
-                'name' => totranslate('G - LA GRANDE TRAVERSÉE'), // TODO
-                'tmdisplay' => totranslate('G - LA GRANDE TRAVERSÉE'), // TODO
+                'name' => totranslate('G - The great crossing'),
+                'tmdisplay' => totranslate('G - The great crossing'),
             ],
         ],
         'default' => 1,

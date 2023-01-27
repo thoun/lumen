@@ -814,7 +814,7 @@ class Lumen implements LumenGame {
 
         scenarioSpecialRules.innerHTML = `<div class="title">${_('Special rules')}</div>${this.scenario.specialRules.length ? 
             `<ul>${this.scenario.specialRules.map(text => `<li>${text}</li>`).join('')}</ul>` : 
-            _('Nothing')}`;
+            _('None')}`;
 
         scenarioObjectives.innerHTML = `<ul>${this.scenario.objectives.map(description => 
             `<li>
@@ -829,7 +829,7 @@ class Lumen implements LumenGame {
             </li>`
             ).join('')}</ul>`;
         if (this.gamedatas.scenario == 4) {
-            scenarioObjectives.innerHTML = `<strong>${_('En fin de partie sur chaque île :')}</strong>` + scenarioObjectives.innerHTML;
+            scenarioObjectives.innerHTML = `<strong>${_('At the end of the game, check each island:')}</strong>` + scenarioObjectives.innerHTML;
             document.querySelector('.objective-description-token.token-with-letter:not(:empty)').classList.add('plus-one');
         }
 

@@ -1195,25 +1195,25 @@ var Scenario = /** @class */ (function (_super) {
     Scenario.getTitle = function (number) {
         switch (number) {
             case 0: return '';
-            case 1: return _("A : First Contact"); // TODO
-            case 2: return _("B : La grosse cavalerie"); // TODO
-            case 3: return _("C - UN TERRITOIRE TROP LOIN"); // TODO
-            case 4: return _("D - LA POSSIBILITÉ D’UNE ÎLE"); // TODO
-            case 5: return _("E - APRÈS MOI LE DÉLUGE"); // TODO
-            case 6: return _("F - LE SOLDAT DE L’HIVER"); // TODO
-            case 7: return _("G - LA GRANDE TRAVERSÉE"); // TODO
+            case 1: return _("A : First contact");
+            case 2: return _("B - Disturbance on the western front");
+            case 3: return _("C - A territory too far");
+            case 4: return _("D - Isles of promise");
+            case 5: return _("E - After the flood");
+            case 6: return _("F - The winter soldier");
+            case 7: return _("G - The great crossing");
         }
     };
     Scenario.getSynopsis = function (number) {
         switch (number) {
             case 0: return '';
-            case 1: return _("À chaque aurore et chaque crépuscule, les peuples du Monde Perdu s’attèlent à la recherche et la capture de lumens. Il est parfois necessaire de s’aventurer dans des terrtioires inconnus. La place n’est malheuresuement pas toujours libre…"); // TODO
-            case 2: return _("Il est parfois nécessaire d’envoyer tout une armée afin de s’assurer la victoire. Mais attention à bien gérer votre campagne et ne pas perdre de temps !"); // TODO
-            case 3: return _("Quand une zone s’apauvrie en Lumens il est necéssaire de s’aventurer dans des zones souvent inaccessibles."); // TODO
-            case 4: return _("Les freluquets, combattants de base et non moins malins, arpentent les îles à la recherche de lumens via un réseau de galerie existant sous le Monde Perdu."); // TODO
-            case 5: return _("Le Monde Perdu subit des intempéries hors du commun. certains peuple profiteront plus que d’autres de la situation !"); // TODO
-            case 6: return _("Certains territoires du Monde Perdu subissent un hiver rude et localisé. Les combattants affronteront la rudesse du terrain… ou tenteront de la contourner !"); // TODO
-            case 7: return _("Le printemps est rare sur le Monde Perdu mais source d’une grande quantité de lumens. Les peuples le savent et savent aussi qu’ils ne sont jamais seuls dans cette course aux lumens. Les plus rapides prennent souvent une option sur la victoire !"); // TODO
+            case 1: return _("No one really knows exactly how or why it all began. And yet, the tale of this first battle is still deeply etched in our memories. Ever since, at every dusk and every dawn, the Night and Day clans battle for control over the Lumen, trying to tip the balance of the Lost World in THEIR favor.");
+            case 2: return _("All of the intel our spies have gathered points to the same conclusion. If we want to get the upper hand in this battle, we need to move West, and take control of the coveted Spring Territory and its seven Lumen. To the victor go the spoils.");
+            case 3: return _("In order to access these highly coveted Territories, we’ll have to go far... Very far. All the way across the river. Luckily, nothing is impossible when you have wings!");
+            case 4: return _("The battle has found its way to the Archipelago. It's time to put your Shroomlings to good use. Although the other fighters like to mock them for their puny appearance, Shroomlings are the only creatures able to freely move from one island to another. For this purpose, they use a network of small, underground passages connecting the Winter Territories to the islets of the Archipelago.");
+            case 5: return _("The conflict is getting bogged down... Literally and figuratively. There seems to be no end to the fighting, and now a cold and heavy rain has transformed the Lost World and its battlefields into an inextricable swamp. Well... Not for everyone. The Mudshells are delighted! Use them to your advantage.");
+            case 6: return _("Winter is here. An icy cold slows down the advancements of even the bravest of troops. And yet... These Winter Territories offer a decisive advantage to whoever has the most Fighters there at the end of the battle.");
+            case 7: return _("Infiltrating the enemy and stealing their secret plans is a sure-fire way to achieve victory. Will one of your Fighters be able to accomplish this difficult mission, even though the morning fog makes flying over the Spring Territory impossible?");
         }
     };
     Scenario.getSpecialRules = function (number) {
@@ -1224,64 +1224,65 @@ var Scenario = /** @class */ (function (_super) {
                 return [];
             case 3:
                 return [
-                    _("Traverser la rivière par voie terrestre coûte 2 actions."),
-                    _("On peut voler au dessus de la rivière."),
-                    _("Un jeton poussé dans la rivière est remis dans le sac de son propriétaire"), // TODO
+                    _("Crossing the river by land costs 2 actions."),
+                    _("However, you can also move by air over the river."),
+                    _("A Fighter that gets pushed into the river is returned to its colored bag and can rejoin the battle later."),
                 ];
             case 4:
                 return [
-                    _("Les effets spéciaux (vol, tir, ..) sont autorisés à l’intérieur d’une île, mais pas d’une île à une autre"),
-                    _("Les territoires d’hiver sont tous connectés par des galeries empruntables UNIQUEMENT par les freluquets."), // TODO
+                    _("Players can use the special abilities of their Fighters and Glow Actions on the islands themselves, but not from one island to another."),
+                    _("UNDERGROUND PASSAGES - Shroomlings can move by land from one Winter Territory to another, even if those spaces are located on different islands."),
                 ];
             case 5:
                 return [
-                    _("Sauts interdits."),
-                    _("Les baveux peuvent faire des déplacements terrestres."),
-                    _("Les territoires verts sont boueux : impossible d’en sortir sauf pour les baveux ou en se faisant pousser."), // TODO
+                    _("Moving by air is not allowed."),
+                    _("The Mudshells can move by land."),
+                    _("The Summer Territories (green) are muddy. Leaving these spaces is impossible, except for the Mudshells, or by getting pushed."),
                 ];
             case 6:
                 return [
-                    _("Les combattants dans les territoires de l’hiver ne peuvent pas utiliser leurs capacités spéciales."), // TODO
+                    _("Fighters inside the Winter Territories are unable to activate their special abilities."),
                 ];
             case 7:
                 return [
-                    _("Vol par dessus le territoire de printemps interdit."), // TODO
+                    _("Moving by air to, from, or over the Spring Territory is not allowed."),
                 ];
         }
     };
     Scenario.getObjectives = function (number) {
-        var DURING_GAME = _('En cours de partie :');
-        var END_GAME = _('En fin de partie :');
+        var DURING_GAME = _('During the game:');
+        var END_GAME = _('At the end of the game:');
+        var FRONTIERS = _("FRONTIERS") + ' - ';
         switch (number) {
             case 0: [];
             case 1: return [
-                new ObjectiveDescription([''], ['1'], DURING_GAME, null, _("Le premier joueur qui réussit à amener <i>un mercenaire</i> sur le champ de bataille gagne ce jeton Objectif.")),
-                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-                new ObjectiveDescription([''], ['3'], END_GAME, null, _("Le joueur qui possède le jeton d’intiative en fin de partie remporte cette pierre.")),
-            ]; // TODO
+                new ObjectiveDescription([''], ['1'], DURING_GAME, null, _("The first player to deploy a <i>Mercenary Fighter</i> to the Battlefield receives an Objective token.")),
+                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, FRONTIERS, _("The first player to seize control of the 3 border Territories marked A or the 2 border Territories marked B immediately receives an Objective token.")),
+                new ObjectiveDescription([''], ['3'], END_GAME, null, _("The player with the Initiative marker at the end of the game receives an Objective token.")),
+            ];
             case 2: return [
-                new ObjectiveDescription(['', ''], ['1'], DURING_GAME, null, _("Chaque joueur qui réussit à vider son sac gagne 2 jetons Objectifs.")),
-                new ObjectiveDescription([''], ['5'], END_GAME, null, _("Le joueur qui possède sur sa Fiche de Commandement le moins de cellules n’appartenant ni à une Zone ni à une Chaîne d’Ordres remporte un jeton Objectif. En cas d’égalité, personne ne reçoit de jeton Objectif.")),
-            ]; // TODO
+                new ObjectiveDescription(['', ''], ['1'], DURING_GAME, null, _("Each player who manages to empty their colored bag receives 2 Objective tokens (maximum once per player).")),
+                new ObjectiveDescription([''], ['5'], END_GAME, null, _("The player with the fewest cells on their Command board that aren't part of an Area or a Chain of Orders receives an Objective token*. In case of a tie, neither player receives the Objective token.")),
+            ];
             case 3: return [
-                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-            ]; // TODO
+                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, FRONTIERS, _("The first player to seize control of the 3 border Territories marked A or the 3 border Territories marked B immediately receives an Objective token.")),
+            ];
             case 4: return [
-                new ObjectiveDescription([''], ['10', '11', '12'], null, null, _("Un jeton Objectif pour le joueur qui a le plus grand nombre de Combattants,")),
-                new ObjectiveDescription(['+1'], ['20', '21', '22'], null, null, _("Un jeton Objectif supplémentaire si le joueur est seul sur l’île !")),
-            ]; // TODO
+                new ObjectiveDescription([''], ['10', '11', '12'], null, null, _("The player with the most Fighters on it receives an Objective token. In case of a tie, neither player receives an Objective token.")),
+                new ObjectiveDescription(['+1'], ['20', '21', '22'], null, null, _("if you are alone on the island, you receive an additional Objective token!")),
+            ];
             case 5: return [
-                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-                new ObjectiveDescription(['C'], ['C'], DURING_GAME, null, _("Un jeton Objectif pour le premier joueur à atteindre ce territoire hiver.")),
-            ]; // TODO
+                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, FRONTIERS, _("The first player to seize control of the 2 border Territories marked A or the 2 border Territories marked B immediately receives an Objective token.")),
+                new ObjectiveDescription(['C'], ['C'], DURING_GAME, null, _("The first player to reach this Winter Territory receives an Objective token.")),
+            ];
             case 6: return [
-                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-                new ObjectiveDescription(['', ''], ['5'], END_GAME, null, _("2 jetons Objectifs pour le joueur qui a le plus de combattants dans les territoires de l’hiver.")),
-            ]; // TODO
+                new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, FRONTIERS, _("The first player to seize control of the 2 border Territories marked A or the 2 border Territories marked B immediately receives an Objective token.")),
+                new ObjectiveDescription(['', ''], ['5'], END_GAME, null, _("The player with the most Fighters in the Winter Territories receives 2 Objective tokens. In case of a tie, neither player receives the Objective tokens.")),
+            ];
             case 7: return [
-                new ObjectiveDescription(['A'], ['A'], DURING_GAME, _("Frontières :"), _("Aussitôt qu’un joueur contrôle chaque territoire limitrophe, il gagne ce jeton Objectif définitivement.")),
-                new ObjectiveDescription(['', '', ''], ['2'], DURING_GAME, _("LA GRANDE TRAVERSÉE :"), _("3 jetons Objectifs pour le 1er joueur à atteindre le territoire de départ de son adversaire avec un de ses combattant.")),
-            ]; // TODO
+                new ObjectiveDescription(['A'], ['A'], DURING_GAME, FRONTIERS, _("The first player to seize control of the 2 border Territories marked A immediately receives an Objective token.")),
+                new ObjectiveDescription(['', '', ''], ['2'], DURING_GAME, _("THE GREAT CROSSING") + ' - ', _("The first player to move a Fighter into their opponent's starting Territory receives 3 Objective tokens.")),
+            ];
         }
     };
     Scenario.getDiceLeft = function (number) {
@@ -2663,13 +2664,13 @@ var Lumen = /** @class */ (function () {
         scenarioSynopsis.innerHTML = this.scenario.synopsis;
         scenarioSpecialRules.innerHTML = "<div class=\"title\">".concat(_('Special rules'), "</div>").concat(this.scenario.specialRules.length ?
             "<ul>".concat(this.scenario.specialRules.map(function (text) { return "<li>".concat(text, "</li>"); }).join(''), "</ul>") :
-            _('Nothing'));
+            _('None'));
         scenarioObjectives.innerHTML = "<ul>".concat(this.scenario.objectives.map(function (description) {
             var _a, _b;
             return "<li>\n                <span id=\"objective-tokens-legend-".concat(description.letters[0][0], "\" class=\"objective-tokens-legend-wrapper\">\n                    ").concat(description.visibleLetters.map(function (letter) { return "<div class=\"objective-description-token token-with-letter\">".concat(letter, "</div>"); }).join(''), "\n                    <div id=\"objective-tokens-legend-").concat(description.letters[0][0], "-f28700\" class=\"objective-tokens-legend\" data-color=\"f28700\"></div>\n                    <div id=\"objective-tokens-legend-").concat(description.letters[0][0], "-1f3067\" class=\"objective-tokens-legend\" data-color=\"1f3067\"></div>\n                </span>\n                <strong>").concat((_a = description.timing) !== null && _a !== void 0 ? _a : '', "</strong>\n                <strong>").concat((_b = description.type) !== null && _b !== void 0 ? _b : '', "</strong>\n                ").concat(description.text, "\n            </li>");
         }).join(''), "</ul>");
         if (this.gamedatas.scenario == 4) {
-            scenarioObjectives.innerHTML = "<strong>".concat(_('En fin de partie sur chaque île :'), "</strong>") + scenarioObjectives.innerHTML;
+            scenarioObjectives.innerHTML = "<strong>".concat(_('At the end of the game, check each island:'), "</strong>") + scenarioObjectives.innerHTML;
             document.querySelector('.objective-description-token.token-with-letter:not(:empty)').classList.add('plus-one');
         }
         this.gamedatas.realizedObjectives.forEach(function (realizedObjective) { return _this.markRealizedObjective(realizedObjective.letter, Number(realizedObjective.realizedBy)); });
