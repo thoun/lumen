@@ -153,7 +153,7 @@ class Scenario extends ScenarioInfos {
   private static getTitle(number: number): string {
     switch (number) {
       case 0: return '';
-      case 1: return _("A : First contact");
+      case 1: return _("A - First contact");
       case 2: return _("B - Disturbance on the western front");
       case 3: return _("C - A territory too far");
       case 4: return _("D - Isles of promise");

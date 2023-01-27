@@ -1,7 +1,7 @@
 <?php
 
 class CardType {
-    public int $type; // 1 for basic fighter, 2 for mercenaries, 3 for action d'éclat TODO, 4 for personal missions
+    public int $type; // 1 for basic fighter, 2 for mercenaries, 3 for glow actions, 4 for secret missions
     public int $number;
     public int $strength;
     public /* int | null*/ $power;
@@ -54,7 +54,7 @@ class Card extends CardType {
 
     public function getStrength() {
         if ($this->played) {
-            if ($this->power === POWER_TISSEUSE || $this->power === POWER_ROOTED) {
+            if ($this->power === POWER_WEAVER || $this->power === POWER_ROOTSPRING) {
                 return 1;
             } else if ($this->power === POWER_METAMORPH) {
                 return 3;

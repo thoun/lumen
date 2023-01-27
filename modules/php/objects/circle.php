@@ -2,7 +2,7 @@
 
 class Circle {
     public int $circleId;
-    public /*int | null*/ $value; // -1 for grayed
+    public /*int | null*/ $value; // -1 for barred
     public int $zone;
     public array $neighbours;
 

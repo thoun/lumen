@@ -11,14 +11,14 @@ trait ActionTrait {
         (note: each method below must match an input method in nicodemus.action.php)
     */
 
-    public function activatePlanification() {
-        $this->checkAction('activatePlanification'); 
+    public function activatePlanning() {
+        $this->checkAction('activatePlanning'); 
 
         $this->gamestate->nextState('activate');
     }
 
-    public function passPlanification() {
-        $this->checkAction('passPlanification'); 
+    public function passPlanning() {
+        $this->checkAction('passPlanning'); 
 
         $this->gamestate->nextState('pass');
     }
@@ -32,9 +32,9 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
 
-        $planificationTiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_PLANIFICATION);
-        if (count($planificationTiles) < 1) {
-            throw new BgaUserException("No planification token");
+        $planningTiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_PLANNING);
+        if (count($planningTiles) < 1) {
+            throw new BgaUserException("No planning token");
         }
 
         $this->setGameStateValue(DIE1, $die1);
@@ -50,7 +50,7 @@ trait ActionTrait {
         ]);
 
         // remove the used planification tile
-        $this->discardDiscoverTile($planificationTiles[0]);
+        $this->discardDiscoverTile($planningTiles[0]);
 
         $this->gamestate->nextState('chooseOperation');
     }
@@ -84,9 +84,6 @@ trait ActionTrait {
             'operationsNumber' => intval(self::getUniqueValueFromDB( "SELECT nb from operation where player_id = $playerId and operation = $type")),
             'firstPlayer' => $isFirstPlayer,
         ]);
-
-        /* TODO $this->incStat(1, 'operation'.$type);
-        $this->incStat(1, 'operation'.$type, $playerId); */
 
         $this->gamestate->nextState('chooseCell');
     }
@@ -208,20 +205,20 @@ trait ActionTrait {
         $this->gamestate->nextState('chooseAction');
     }
 
-    public function chooseCellBrouillage(int $cellId) {
-        $this->checkAction('chooseCellBrouillage'); 
+    public function chooseCellInterference(int $cellId) {
+        $this->checkAction('chooseCellInterference'); 
         
         $playerId = intval($this->getActivePlayerId());
         $opponentId = $this->getOpponentId($playerId);
         
-        $args = $this->argChooseCellBrouillage();
+        $args = $this->argChooseCellInterference();
         if (!in_array($cellId, $args['possibleCircles'])) {
             throw new BgaUserException("Invalid cell");
         }
 
         self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($opponentId, $cellId, -1)");
 
-        self::notifyAllPlayers('setCircleValue', clienttranslate('${player_name} Brouillage an opponent circle'), [
+        self::notifyAllPlayers('setCircleValue', clienttranslate('${player_name} interfere an opponent circle'), [
             'playerId' => $opponentId,
             'player_name' => $this->getPlayerName($playerId),
             'circleId' => $cellId,
@@ -301,7 +298,7 @@ trait ActionTrait {
         $currentAction = $this->getCurrentAction();
         if ($currentAction->type != 'MOVE' || $currentAction->remaining == 0) {
             $remainingActions = $this->getRemainingActions();
-            if ($remainingActions->currentCoupFourreId == null) {
+            if ($remainingActions->currentFoulPlayId == null) {
                 throw new BgaUserException("No remaining action");
             }
         }
@@ -322,13 +319,13 @@ trait ActionTrait {
             throw new BgaUserException("Invalid fighter");
         }
 
-        if ($fighter->power === POWER_BAVEUX && $this->getScenarioId() != 5) {
+        if ($fighter->power === POWER_MUDSHELL && $this->getScenarioId() != 5) {
             throw new BgaUserException("The Baveux cannot be moved");
         }
-        if ($fighter->power === POWER_TISSEUSE && $fighter->played) {
+        if ($fighter->power === POWER_WEAVER && $fighter->played) {
             throw new BgaUserException("The Tisseuse cannot be moved when activated");
         }
-        if ($fighter->power === POWER_ROOTED && $fighter->played) {
+        if ($fighter->power === POWER_ROOTSPRING && $fighter->played) {
             throw new BgaUserException("The Rooted cannot be moved when activated");
         }
         if ($fighter->power === POWER_METAMORPH && !$fighter->played) {
@@ -341,7 +338,7 @@ trait ActionTrait {
                 throw new BgaUserException("An opponent Tisseuse prevents you to leave the territory");
             }
 
-            if ($fighter->locationArg % 10 == 5 && $this->getScenarioId() == 5 && $fighter->power !== POWER_BAVEUX) {
+            if ($fighter->locationArg % 10 == 5 && $this->getScenarioId() == 5 && $fighter->power !== POWER_MUDSHELL) {
                 throw new BgaUserException("Only Baveux can move from a green territory");
             }
         }
@@ -386,7 +383,7 @@ trait ActionTrait {
         if ($fighter->played) {
             throw new BgaUserException("This fighter is already played");
         }
-        if (!$fighter->power || $fighter->power === POWER_BAVEUX) {
+        if (!$fighter->power || $fighter->power === POWER_MUDSHELL) {
             throw new BgaUserException("This fighter has no activable power");
         }*/
 
@@ -433,7 +430,7 @@ trait ActionTrait {
                 $nextState = 'chooseTerritory';
                 break;
             case POWER_ASSASSIN:
-            case POWER_BOMBARDE:
+            case POWER_BOMBER:
                 $this->putBackInBag([$fighter]);
                 $this->checkTerritoriesDiscoverTileControl($playerId);
                 $this->incStat(1, 'activatedFighters', $playerId);
@@ -451,7 +448,7 @@ trait ActionTrait {
                     'preserve' => ['fighter', 'fighterType', 'fighter2', 'fighterType2'],
                 ]);
                 break;
-            case POWER_PACIFICATEUR:
+            case POWER_HYPNOTIST:
                 $this->setFightersActivated($fighters);
                 $this->incStat(1, 'activatedFighters', $playerId);
                 
@@ -488,7 +485,7 @@ trait ActionTrait {
                     ]);
                 }
                 break;
-            case ACTION_RESET:
+            case ACTION_CLEAN_SHEET:
                 $fighters = $this->getCardsByLocation($fighter->location, $fighter->locationArg);
                 $this->putBackInBag(array_merge($fighters, [$selectedFighter]));
                 $this->incStat(1, 'playedActions', $playerId);
@@ -508,14 +505,14 @@ trait ActionTrait {
                     ]);
                 }
                 break;
-            case ACTION_TELEPORT:
+            case ACTION_TELEPORTATION:
                 $this->cards->moveCard($fighters[0]->id, 'territory', $fighters[1]->locationArg);
                 $this->cards->moveCard($fighters[1]->id, 'territory', $fighters[0]->locationArg);
                 $this->putBackInBag([$selectedFighter]);
                 $this->incStat(1, 'playedActions', $playerId);
                 $this->checkTerritoriesDiscoverTileControl($playerId);
         
-                self::notifyAllPlayers("exchangedFighters", clienttranslate('${player_name} activates ${fighterType} to exchange ${fighterType2} with ${fighterType3}'), [
+                self::notifyAllPlayers("swappedFighters", clienttranslate('${player_name} activates ${fighterType} to swap ${fighterType2} with ${fighterType3}'), [
                     'fighters' => $fighters,
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
@@ -529,7 +526,7 @@ trait ActionTrait {
                 ]);
                 break;
         }
-        if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
+        if (in_array($nextState, ['nextMove', 'chooseCellInterference'])) {
             $this->decMoveCount(1);
         }
 
@@ -558,28 +555,28 @@ trait ActionTrait {
         $this->gamestate->nextState('nextMove');
     }
 
-    public function useCoupFourre() {        
-        $this->checkAction('useCoupFourre');
+    public function useFoulPlay() {        
+        $this->checkAction('useFoulPlay');
         
         $playerId = intval($this->getActivePlayerId());
 
-        $tiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE);
+        $tiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_FOUL_PLAY);
         if (count($tiles) < 1) {
-            throw new BgaUserException("No POWER_COUP_FOURRE tile");
+            throw new BgaUserException("No Foul Play tile");
         }
         
         $remainingActions = $this->getRemainingActions();
-        $remainingActions->currentCoupFourreId = $tiles[0]->id;
+        $remainingActions->currentFoulPlayId = $tiles[0]->id;
         $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
 
-        $this->gamestate->nextState('useCoupFourre');
+        $this->gamestate->nextState('useFoulPlay');
     }
 
-    public function cancelCoupFourre() {        
-        $this->checkAction('cancelCoupFourre');
+    public function cancelFoulPlay() {        
+        $this->checkAction('cancelFoulPlay');
 
         $remainingActions = $this->getRemainingActions();
-        $remainingActions->currentCoupFourreId = null;
+        $remainingActions->currentFoulPlayId = null;
         $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
 
         $this->gamestate->nextState('nextMove');
@@ -620,13 +617,13 @@ trait ActionTrait {
                 break;
             case MOVE_MOVE:
                 $originTerritoryId = $selectedFighter->locationArg;
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} moves ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
+                $redirectInterference = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} moves ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
                     'originSeason' => $this->getSeasonName($this->TERRITORIES[$originTerritoryId]->lumens),
                     'originBattlefieldId' => floor($originTerritoryId / 10),
                     'i18n' => ['originSeason'],
                 ]);
-                if ($redirectBrouillage) {
-                    $nextState = 'chooseCellBrouillage';
+                if ($redirectInterference) {
+                    $nextState = 'chooseCellInterference';
                 }
 
                 if ($this->getScenarioId() == 3 && array_key_exists($originTerritoryId, $this->RIVER_CROSS_TERRITORIES) && in_array($territoryId, $this->RIVER_CROSS_TERRITORIES[$originTerritoryId])) {
@@ -636,13 +633,13 @@ trait ActionTrait {
                 break;
             case MOVE_SUPER:
                 $originTerritoryId = $selectedFighter->locationArg;
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} moves ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
+                $redirectInterference = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} moves ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
                     'originSeason' => $this->getSeasonName($this->TERRITORIES[$originTerritoryId]->lumens),
                     'originBattlefieldId' => floor($originTerritoryId / 10),
                     'i18n' => ['originSeason'],
                 ]);
-                if ($redirectBrouillage) {
-                    $nextState = 'chooseCellBrouillage';
+                if ($redirectInterference) {
+                    $nextState = 'chooseCellInterference';
                 } else {
                     switch ($selectedFighter->power) {
                         case POWER_PUSHER:
@@ -657,24 +654,24 @@ trait ActionTrait {
                 break;
             case MOVE_PUSH:
                 $originTerritoryId = $selectedFighter->locationArg;
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} pushes ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
+                $redirectInterference = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} pushes ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
                     'originSeason' => $this->getSeasonName($this->TERRITORIES[$originTerritoryId]->lumens),
                     'originBattlefieldId' => floor($originTerritoryId / 10),
                     'i18n' => ['originSeason'],
                 ]);
-                if ($redirectBrouillage) {
-                    $nextState = 'chooseCellBrouillage';
+                if ($redirectInterference) {
+                    $nextState = 'chooseCellInterference';
                 }
                 break;
             case MOVE_FLY:
                 $originTerritoryId = $selectedFighter->locationArg;
-                $redirectBrouillage = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} flies ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
+                $redirectInterference = $this->applyMoveFighter($selectedFighter, $territoryId, clienttranslate('${player_name} flies ${fighterType} from ${originSeason} territory ${originBattlefieldId} to ${season} territory ${battlefieldId}'), [
                     'originSeason' => $this->getSeasonName($this->TERRITORIES[$originTerritoryId]->lumens),
                     'originBattlefieldId' => floor($originTerritoryId / 10),
                     'i18n' => ['originSeason'],
                 ]);
-                if ($redirectBrouillage) {
-                    $nextState = 'chooseCellBrouillage';
+                if ($redirectInterference) {
+                    $nextState = 'chooseCellInterference';
                 }
                 break;
             case MOVE_IMPATIENT:
@@ -693,7 +690,7 @@ trait ActionTrait {
                 $this->incStat(1, 'activatedFighters', $playerId);
                 break;
         }
-        if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
+        if (in_array($nextState, ['nextMove', 'chooseCellInterference'])) {
             if ($move == MOVE_PLAY) {
                 $this->decPlaceCount(1);
             } else {

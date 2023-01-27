@@ -142,8 +142,8 @@ class Lumen implements LumenGame {
             case 'chooseCellLink':
                 this.onEnteringChooseCellLink(args.args);
                 break;
-            case 'chooseCellBrouillage':
-                this.onEnteringChooseCellBrouillage(args.args);
+            case 'chooseCellInterference':
+                this.onEnteringChooseCellInterference(args.args);
                 break;
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
@@ -202,7 +202,7 @@ class Lumen implements LumenGame {
         }
     }
     
-    private onEnteringChooseCellBrouillage(args: EnteringChooseCellJammingArgs) {
+    private onEnteringChooseCellInterference(args: EnteringChooseCellJammingArgs) {
         if ((this as any).isCurrentPlayerActive()) {
             this.getPlayerTable(args.opponentId)?.setPossibleCells(args.possibleCircles, -1);
             document.getElementById(`player-table-${args.opponentId}`).scrollIntoView({ behavior: 'smooth' });
@@ -222,18 +222,18 @@ class Lumen implements LumenGame {
     
     private onEnteringChooseFighter(args: EnteringChooseFighterArgs) {
         if (!args.move) {
-            const onlyCoupFourre = args.remainingActions.actions.map(action => action.remaining).reduce((a, b) => a + b, 0) == 0;
-            if (onlyCoupFourre) {
-                this.setGamestateDescription('OnlyCoupFourre');
+            const onlyFoolPlay = args.remainingActions.actions.map(action => action.remaining).reduce((a, b) => a + b, 0) == 0;
+            if (onlyFoolPlay) {
+                this.setGamestateDescription('OnlyFoolPlay');
             } else {
                 this.setGamestateDescription(args.currentAction.type);
             }
 
-            if (!onlyCoupFourre) {
+            if (!onlyFoolPlay) {
                 const subTitle = document.createElement('span');
                 subTitle.classList.add('subtitle');
-                if (args.usingCoupFourre) {
-                    subTitle.innerHTML = `(${_('${tileCoupFourre} extra action').replace('${tileCoupFourre}', '<div class="tile-coupFourre"></div>')})`;
+                if (args.usingFoolPlay) {
+                    subTitle.innerHTML = `(${_('${tileFoolPlay} extra action').replace('${tileFoolPlay}', '<div class="tile-foul-play"></div>')})`;
                 } else {
                     let texts = args.remainingActions.actions.filter(action => action.initial > 0).map(action => 
                         `${action.initial - action.remaining}/${action.initial} <div class="action ${action.type.toLowerCase()}"></div>`
@@ -343,8 +343,8 @@ class Lumen implements LumenGame {
             case 'chooseCellLink':
                 this.onLeavingChooseCellLink();
                 break;
-            case 'chooseCellBrouillage':
-                this.onLeavingChooseCellBrouillage();
+            case 'chooseCellInterference':
+                this.onLeavingChooseCellInterference();
                 break;
             case 'chooseFighter':
                 this.onLeavingChooseFighter();
@@ -381,7 +381,7 @@ class Lumen implements LumenGame {
         document.querySelectorAll('.link.selectable').forEach(elem => elem.remove());
     }
 
-    private onLeavingChooseCellBrouillage() {
+    private onLeavingChooseCellInterference() {
         document.querySelectorAll('[data-jamming="true"].ghost').forEach((elem: HTMLElement) => {
             elem.classList.remove('selectable');
             elem.dataset.jamming = 'false';
@@ -402,9 +402,9 @@ class Lumen implements LumenGame {
     public onUpdateActionButtons(stateName: string, args: any) {
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'askActivatePlanification':
-                    (this as any).addActionButton(`activatePlanification_button`, _('Activate'), () => this.activatePlanification());
-                    (this as any).addActionButton(`passPlanification_button`, _('Pass'), () => this.passPlanification());
+                case 'askActivatePlanning':
+                    (this as any).addActionButton(`activatePlanning_button`, _('Activate'), () => this.activatePlanning());
+                    (this as any).addActionButton(`passPlanification_button`, _('Pass'), () => this.passPlanning());
                     break;
                 case 'planificationChooseFaces':
                     this.onEnteringPlanificationChooseFaces();
@@ -431,21 +431,21 @@ class Lumen implements LumenGame {
                     (this as any).addActionButton(`startWithActionPlay_button`, this.replacePlaceAndMove(_('Start with ${placeNumber} ${place} then ${placeMove} ${move}'), chooseActionArgs), () => this.startWithAction(1));
                     (this as any).addActionButton(`startWithActionMove_button`, this.replacePlaceAndMove(_('Start with ${placeMove} ${move} then ${placeNumber} ${place}'), chooseActionArgs), () => this.startWithAction(2));
 
-                    if (chooseActionArgs.canUseCoupFourre) {
-                        (this as any).addActionButton(`useCoupFourre_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useCoupFourre());
+                    if (chooseActionArgs.canUseFoulPlay) {
+                        (this as any).addActionButton(`useFoulPlay_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useFoulPlay());
                     }
                     break;
                 case 'chooseFighter':
                     const chooseFighterArgs = args as EnteringChooseFighterArgs;
                     if (!chooseFighterArgs.move) {
-                        if (chooseFighterArgs.couldUseCoupFourre && !chooseFighterArgs.usingCoupFourre) {
-                            (this as any).addActionButton(`useCoupFourre_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useCoupFourre());
-                            if (!chooseFighterArgs.canPlayCoupFourre) {
-                                document.getElementById(`useCoupFourre_button`).classList.add('disabled');
+                        if (chooseFighterArgs.couldUseFoulPlay && !chooseFighterArgs.usingFoolPlay) {
+                            (this as any).addActionButton(`useFoulPlay_button`, _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), () => this.useFoulPlay());
+                            if (!chooseFighterArgs.canPlayFoolPlay) {
+                                document.getElementById(`useFoulPlay_button`).classList.add('disabled');
                             }
                         }
-                        if (chooseFighterArgs.usingCoupFourre) {
-                            (this as any).addActionButton(`cancelCoupFourre_button`, _('Cancel'), () => this.cancelCoupFourre(), null, null, 'gray');
+                        if (chooseFighterArgs.usingFoolPlay) {
+                            (this as any).addActionButton(`cancelFoulPlay_button`, _('Cancel'), () => this.cancelFoulPlay(), null, null, 'gray');
                         } else {
                             const shouldntPass = chooseFighterArgs.remainingActions.actions.map(action => action.remaining).reduce((a, b) => a + b, 0) > 0;
                             (this as any).addActionButton(`cancelOperation_button`, _('Pass'), () => this.pass(shouldntPass), null, null, shouldntPass ? 'gray' : undefined);
@@ -988,8 +988,8 @@ class Lumen implements LumenGame {
             case 'chooseCellLink':
                 this.chooseCellLink(cell);
                 break;
-            case 'chooseCellBrouillage':
-                this.chooseCellBrouillage(cell);
+            case 'chooseCellInterference':
+                this.chooseCellInterference(cell);
                 break;
         }
     }
@@ -1022,20 +1022,20 @@ class Lumen implements LumenGame {
         }
     }
 
-    public activatePlanification() {
-        if(!(this as any).checkAction('activatePlanification')) {
+    public activatePlanning() {
+        if(!(this as any).checkAction('activatePlanning')) {
             return;
         }
 
-        this.takeAction('activatePlanification');
+        this.takeAction('activatePlanning');
     }
 
-    public passPlanification() {
-        if(!(this as any).checkAction('passPlanification')) {
+    public passPlanning() {
+        if(!(this as any).checkAction('passPlanning')) {
             return;
         }
 
-        this.takeAction('passPlanification');
+        this.takeAction('passPlanning');
     }
 
     
@@ -1085,12 +1085,12 @@ class Lumen implements LumenGame {
         });
     }
 
-    private chooseCellBrouillage(cell: number) {
-        if(!(this as any).checkAction('chooseCellBrouillage')) {
+    private chooseCellInterference(cell: number) {
+        if(!(this as any).checkAction('chooseCellInterference')) {
             return;
         }
 
-        this.takeAction('chooseCellBrouillage', {
+        this.takeAction('chooseCellInterference', {
             cell
         });
     }
@@ -1204,20 +1204,20 @@ class Lumen implements LumenGame {
         this.takeAction('passChooseFighters');
     }
 
-    public useCoupFourre() {
-        if(!(this as any).checkAction('useCoupFourre')) {
+    public useFoulPlay() {
+        if(!(this as any).checkAction('useFoulPlay')) {
             return;
         }
 
-        this.takeAction('useCoupFourre');
+        this.takeAction('useFoulPlay');
     }
 
-    public cancelCoupFourre() {
-        if(!(this as any).checkAction('cancelCoupFourre')) {
+    public cancelFoulPlay() {
+        if(!(this as any).checkAction('cancelFoulPlay')) {
             return;
         }
 
-        this.takeAction('cancelCoupFourre');
+        this.takeAction('cancelFoulPlay');
     }
 
     public takeAction(action: string, data?: any) {
@@ -1264,7 +1264,7 @@ class Lumen implements LumenGame {
             ['putBackInBag', ANIMATION_MS],
             ['setFightersActivated', ANIMATION_MS],
             ['setFightersUnactivated', ANIMATION_MS],
-            ['exchangedFighters', ANIMATION_MS],
+            ['swappedFighters', ANIMATION_MS],
             ['score', 1],
             ['revealObjectiveTokens', ANIMATION_MS],
             ['endControlTerritory', 1 /*ANIMATION_MS * 2*/],
@@ -1435,7 +1435,7 @@ class Lumen implements LumenGame {
         this.setFightersActivated(notif.args.fighters, false);
     }
 
-    notif_exchangedFighters(notif: Notif<NotifSetFightersActivatedArgs>) {
+    notif_swappedFighters(notif: Notif<NotifSetFightersActivatedArgs>) {
         const card0 = notif.args.fighters[0];
         const card1 = notif.args.fighters[1];
         const stock0 = this.cardsManager.getCardStock(card0);

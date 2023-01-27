@@ -82,22 +82,22 @@ $chooseCellTransitions = [
 
 $playerActionsGameStates = [
 
-    ST_PLAYER_ASK_ACTIVATE_PLANIFICATION => [
-        "name" => "askActivatePlanification",
-        "description" => clienttranslate('${actplayer} can activate Planification'),
-        "descriptionmyturn" => clienttranslate('${you} can activate Planification'),
+    ST_PLAYER_ASK_ACTIVATE_PLANNING => [
+        "name" => "askActivatePlanning",
+        "description" => clienttranslate('${actplayer} can activate Planning'),
+        "descriptionmyturn" => clienttranslate('${you} can activate Planning'),
         "type" => "activeplayer",
         "possibleactions" => [ 
-            "activatePlanification",
-            "passPlanification",
+            "activatePlanning",
+            "passPlanning",
         ],
         "transitions" => [
-            "activate" => ST_PLAYER_PLANIFICATION_CHOOSE_FACES,
+            "activate" => ST_PLAYER_PLANNING_CHOOSE_FACES,
             "pass" => ST_ROLL_DICE,
         ]
     ],
 
-    ST_PLAYER_PLANIFICATION_CHOOSE_FACES => [
+    ST_PLAYER_PLANNING_CHOOSE_FACES => [
         "name" => "planificationChooseFaces",
         "description" => clienttranslate('${actplayer} must choose dice faces'),
         "descriptionmyturn" => clienttranslate('${you} must choose dice faces'),
@@ -161,10 +161,10 @@ $playerActionsGameStates = [
         "args" => "argChooseAction", 
         "possibleactions" => [ 
             "startWithAction",
-            "useCoupFourre",
+            "useFoulPlay",
         ],
         "transitions" => [
-            "useCoupFourre" => ST_PLAYER_CHOOSE_FIGHTER,
+            "useFoulPlay" => ST_PLAYER_CHOOSE_FIGHTER,
             "nextMove" => ST_NEXT_MOVE,
         ]
     ],
@@ -173,8 +173,8 @@ $playerActionsGameStates = [
         "name" => "chooseFighter",
         "description" => clienttranslate('${actplayer} must choose a fighter to play, move or activate'),
         "descriptionmyturn" => clienttranslate('${you} must choose a fighter to play, move or activate'),
-        "descriptionOnlyCoupFourre" => clienttranslate('${actplayer} can use Coup Fourre'),
-        "descriptionmyturnOnlyCoupFourre" => clienttranslate('${you} can use Coup Fourre'),
+        "descriptionOnlyFoolPlay" => clienttranslate('${actplayer} can use Foul Play'),
+        "descriptionmyturnOnlyFoolPlay" => clienttranslate('${you} can use Foul Play'),
         "descriptionPLACE" => clienttranslate('${actplayer} must choose a fighter to play'),
         "descriptionmyturnPLACE" => clienttranslate('${you} must choose a fighter to play'),
         "descriptionMOVE" => clienttranslate('${actplayer} must choose a fighter to move or activate'),
@@ -201,11 +201,11 @@ $playerActionsGameStates = [
             "cancelChooseFighters",
             "pass",
             "passChooseFighters",
-            "useCoupFourre",
-            "cancelCoupFourre"
+            "useFoulPlay",
+            "cancelFoulPlay"
         ],
         "transitions" => [
-            "useCoupFourre" => ST_PLAYER_CHOOSE_FIGHTER,
+            "useFoulPlay" => ST_PLAYER_CHOOSE_FIGHTER,
             "cancel" => ST_PLAYER_CHOOSE_FIGHTER,
             "chooseTerritory" => ST_PLAYER_CHOOSE_TERRITORY,
             "chooseFighter" => ST_PLAYER_CHOOSE_FIGHTER,
@@ -238,20 +238,20 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "cancel" => ST_PLAYER_CHOOSE_FIGHTER,
-            "chooseCellBrouillage" => ST_PLAYER_CHOOSE_CELL_BROUILLAGE,
+            "chooseCellInterference" => ST_PLAYER_CHOOSE_CELL_INTERFERENCE,
             "chooseFighter" => ST_PLAYER_CHOOSE_FIGHTER,
             "nextMove" => ST_NEXT_MOVE,
         ]
     ],
 
-    ST_PLAYER_CHOOSE_CELL_BROUILLAGE => [
-        "name" => "chooseCellBrouillage",
-        "description" => clienttranslate('${actplayer} must choose a circle for Brouillage'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a circle for Brouillage'),
+    ST_PLAYER_CHOOSE_CELL_INTERFERENCE => [
+        "name" => "chooseCellInterference",
+        "description" => clienttranslate('${actplayer} must choose a circle for Interference'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a circle for Interference'),
         "type" => "activeplayer", 
-        "args" => "argChooseCellBrouillage", 
+        "args" => "argChooseCellInterference", 
         "possibleactions" => [ 
-            "chooseCellBrouillage",
+            "chooseCellInterference",
         ],
         "transitions" => [
             "nextMove" => ST_NEXT_MOVE,
@@ -268,7 +268,7 @@ $gameGameStates = [
         "action" => "stNewRound",
         "updateGameProgression" => true,
         "transitions" => [
-            "askActivatePlanification" => ST_PLAYER_ASK_ACTIVATE_PLANIFICATION,
+            "askActivatePlanning" => ST_PLAYER_ASK_ACTIVATE_PLANNING,
             "rollDice" => ST_ROLL_DICE,
         ],
     ],

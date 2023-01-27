@@ -15,12 +15,12 @@ trait StateTrait {
         $playerId = intval($this->getActivePlayerId());
         $this->setGameStateValue(FIRST_PLAYER_OPERATION, 0);
 
-        $planificationTiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_PLANIFICATION);
-        $canActivatePlanification = count($planificationTiles) > 0;
+        $planningTiles = $this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_PLANNING);
+        $canActivatePlanning = count($planningTiles) > 0;
 
         $this->incStat(1, 'roundsAsFirstPlayer', $playerId);        
 
-        $this->gamestate->nextState($canActivatePlanification ? 'askActivatePlanification' : 'rollDice');
+        $this->gamestate->nextState($canActivatePlanning ? 'askActivatePlanning' : 'rollDice');
     }    
 
     function stRollDice() {
@@ -78,7 +78,7 @@ trait StateTrait {
         $canDoAction = (
             $remainingActions->actions[0]->remaining + 
             $remainingActions->actions[1]->remaining
-        ) > 0 || count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;;
+        ) > 0 || count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_FOUL_PLAY)) > 0;;
         $this->gamestate->nextState($canDoAction ? 'chooseFighter' : 'nextPlayer');
     }
 
@@ -157,7 +157,7 @@ trait StateTrait {
 
             foreach ($missions as $mission) {
                 switch ($mission->power) {
-                    case MISSION_COFFRE:
+                    case MISSION_LOOT:
                         $discoverTokens = $this->getDiscoverTilesByLocation('player', $playerId, null, 1);
                         $count = count($discoverTokens);
                         $this->takeMissionObjectiveToken($playerId, $count - 1, $mission);
@@ -173,7 +173,7 @@ trait StateTrait {
                         }
                         $this->takeMissionObjectiveToken($playerId, $controlledWinterTerritories - 1, $mission); 
                         break;
-                    case MISSION_FRELUQUETS:
+                    case MISSION_SHROOMLING:
                         $tokensCount = 0;
                         foreach ($scenario->battlefieldsIds as $battlefieldId) {
                             foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {

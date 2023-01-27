@@ -21,8 +21,8 @@ trait DebugUtilTrait {
         $this->debugAddDiscoverTile(2343492, 4, 1);
         $this->debugAddDiscoverTile(2343492, 5, 1);
         $this->debugAddDiscoverTile(2343492, 3, 1);
-        /*$this->debugAddDiscoverTile(2343492, POWER_PLANIFICATION);
-        $this->debugAddDiscoverTile(2343492, POWER_COUP_FOURRE);
+        /*$this->debugAddDiscoverTile(2343492, POWER_PLANNING);
+        $this->debugAddDiscoverTile(2343492, POWER_FOUL_PLAY);
         
         $this->debugAddObjectiveToken(2343493, 6);*/
         /*for ($i=0;$i<3;$i++) $this->debugAddPlayerFighter(2343492, 1, 'territory', 11);

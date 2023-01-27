@@ -153,9 +153,9 @@ class PlayerTable {
         this.discoverTiles = new CompressedLineStock<DiscoverTile>(this.game.discoverTilesManager, document.getElementById(`player-table-${this.playerId}-discover-tiles`), 100);
         player.discoverTiles.forEach(discoverTile => this.discoverTiles.addCard(discoverTile, undefined, { visible: Boolean(discoverTile?.type) }));
 
-        this.game.setTooltip(`player-table-${this.playerId}-zone-legend`, _('TODO'));
-        this.game.setTooltip(`player-table-${this.playerId}-link-legend`, _('TODO'));
-        this.game.setTooltip(`player-table-${this.playerId}-check-legend`, _('TODO'));
+        this.game.setTooltip(`player-table-${this.playerId}-zone-legend`, _('TODO zone-legend'));
+        this.game.setTooltip(`player-table-${this.playerId}-link-legend`, _('TODO link-legend'));
+        this.game.setTooltip(`player-table-${this.playerId}-check-legend`, _('As soon as all boxes underneath an available slot are crossed off, draw a Bonus token from the neutral bag and place it in this slot'));
     }
 
     private cardClick(card: Card) {

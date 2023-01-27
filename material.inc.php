@@ -34,39 +34,39 @@ $this->SLOTS_BY_CHECKS = [
 
 $this->CARDS = [
   1 => new CardType(1, 6, 2),
-  2 => new CardType(1, 2, 3, POWER_BAVEUX),
-  3 => new CardType(1, 2, 1, POWER_REANIMATRICE),
+  2 => new CardType(1, 2, 3, POWER_MUDSHELL),
+  3 => new CardType(1, 2, 1, POWER_RESTORER),
   4 => new CardType(1, 2, 1, POWER_PUSHER),
   5 => new CardType(1, 2, 1, POWER_ASSASSIN),
-  6 => new CardType(1, 2, 1, POWER_EMPLUME),
+  6 => new CardType(1, 2, 1, POWER_FEATHERED),
   
   11 => new CardType(10, 1, 1, POWER_PUSHER),
   12 => new CardType(10, 1, 1, POWER_ASSASSIN),
   13 => new CardType(10, 1, 2, POWER_IMPATIENT),
-  14 => new CardType(10, 1, 1, POWER_BOMBARDE),
-  15 => new CardType(10, 1, 2, POWER_TISSEUSE),
-  16 => new CardType(10, 1, 2, POWER_ROOTED),
-  17 => new CardType(10, 1, 2, POWER_PACIFICATEUR),
+  14 => new CardType(10, 1, 1, POWER_BOMBER),
+  15 => new CardType(10, 1, 2, POWER_WEAVER),
+  16 => new CardType(10, 1, 2, POWER_ROOTSPRING),
+  17 => new CardType(10, 1, 2, POWER_HYPNOTIST),
   18 => new CardType(10, 1, 1, POWER_METAMORPH),
 
   21 => new CardType(20, 1, 0, ACTION_FURY), 
-  22 => new CardType(20, 1, 0, ACTION_RESET),
-  23 => new CardType(20, 1, 0, ACTION_TELEPORT),
+  22 => new CardType(20, 1, 0, ACTION_CLEAN_SHEET),
+  23 => new CardType(20, 1, 0, ACTION_TELEPORTATION),
   
-  31 => new CardType(30, 1, 0, MISSION_COFFRE), 
+  31 => new CardType(30, 1, 0, MISSION_LOOT), 
   32 => new CardType(30, 1, 0, MISSION_WINTER), 
-  33 => new CardType(30, 1, 0, MISSION_FRELUQUETS), 
+  33 => new CardType(30, 1, 0, MISSION_SHROOMLING), 
 ];
 
 $this->DISCOVER_TILES = [
   new DiscoverTileType(1, 2, 3),
   new DiscoverTileType(1, 2, 4),
   new DiscoverTileType(1, 1, 5),
-  new DiscoverTileType(2, 2, POWER_BROUILLAGE),
-  new DiscoverTileType(2, 2, POWER_PLANIFICATION),
-  new DiscoverTileType(2, 2, POWER_PARACHUTAGE),
-  new DiscoverTileType(2, 2, POWER_MESSAGE_PRIORITAIRE),
-  new DiscoverTileType(2, 2, POWER_COUP_FOURRE),
+  new DiscoverTileType(2, 2, POWER_INTERFERENCE),
+  new DiscoverTileType(2, 2, POWER_PLANNING),
+  new DiscoverTileType(2, 2, POWER_PARATROOPING),
+  new DiscoverTileType(2, 2, POWER_PRIORITY_MESSAGE),
+  new DiscoverTileType(2, 2, POWER_FOUL_PLAY),
 ];
 
 

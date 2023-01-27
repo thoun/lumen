@@ -107,10 +107,10 @@ trait ArgsTrait {
     function canMoveFighter(int $playerId, Card $fighter, int $scenarioId) {
         $canMove = $fighter->playerId == $playerId && $fighter->location == 'territory';
 
-        if ($canMove && $fighter->power === POWER_BAVEUX && $scenarioId != 5) {
+        if ($canMove && $fighter->power === POWER_MUDSHELL && $scenarioId != 5) {
             $canMove = false;
         }
-        if (in_array($fighter->power, [POWER_TISSEUSE, POWER_ROOTED]) && $fighter->played) {
+        if (in_array($fighter->power, [POWER_WEAVER, POWER_ROOTSPRING]) && $fighter->played) {
             $canMove = false;
         }
         if ($fighter->power === POWER_METAMORPH && !$fighter->played) {
@@ -123,7 +123,7 @@ trait ArgsTrait {
                 $canMove = false;
             }
 
-            if ($fighter->locationArg % 10 == 5 && $scenarioId == 5 && $fighter->power !== POWER_BAVEUX) {
+            if ($fighter->locationArg % 10 == 5 && $scenarioId == 5 && $fighter->power !== POWER_MUDSHELL) {
                 $canMove = false;
             }
         }
@@ -133,11 +133,11 @@ trait ArgsTrait {
 
 
     function canActivateFighter(int $playerId, Card $fighter, int $scenarioId) {
-        $canActivate = !$fighter->played && $fighter->power !== null && $fighter->power !== POWER_BAVEUX;
+        $canActivate = !$fighter->played && $fighter->power !== null && $fighter->power !== POWER_MUDSHELL;
 
         if ($canActivate && $fighter->type == 1 && $fighter->power == POWER_ASSASSIN) {
             $opponentFighters = $this->getCardsByLocation('territory', $fighter->locationArg, $this->getOpponentId($fighter->playerId));
-            $canActivate = count($opponentFighters) > 0 && $this->array_some($opponentFighters, fn($opponentFighter) => $opponentFighter->power !== POWER_BAVEUX);
+            $canActivate = count($opponentFighters) > 0 && $this->array_some($opponentFighters, fn($opponentFighter) => $opponentFighter->power !== POWER_MUDSHELL);
         }
         
         $action = $fighter->type === 20;
@@ -161,7 +161,7 @@ trait ArgsTrait {
         if ($canActivate) {
             switch ($scenarioId) {
                 case 5:
-                    if ($fighter->power === POWER_EMPLUME) {
+                    if ($fighter->power === POWER_FEATHERED) {
                         $canActivate = false;
                     }
                     break;
@@ -171,7 +171,7 @@ trait ArgsTrait {
                     }
                     break;
                 case 7:
-                    if ($fighter->power === POWER_EMPLUME && $fighter->locationArg % 10 == 7) {
+                    if ($fighter->power === POWER_FEATHERED && $fighter->locationArg % 10 == 7) {
                         $canActivate = false;
                     }
             }
@@ -184,12 +184,12 @@ trait ArgsTrait {
 
         $place = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
         $move = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
-        $canUseCoupFourre = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
+        $canUseFoulPlay = count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_FOUL_PLAY)) > 0;
 
         return [
             'remainingPlays' => $place,
             'remainingMoves' => $move,
-            'canUseCoupFourre' => $canUseCoupFourre,
+            'canUseFoulPlay' => $canUseFoulPlay,
         ];
     }
 
@@ -205,7 +205,7 @@ trait ArgsTrait {
         $currentAction = $this->getCurrentAction($remainingActions);
 
         $canCancel = $move > 0;
-        $couldUseCoupFourre = $move == 0 && count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_COUP_FOURRE)) > 0;
+        $couldUseFoulPlay = $move == 0 && count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_FOUL_PLAY)) > 0;
 
         $possibleTerritoryFighters = [];
         $selectionSize = 1;
@@ -223,13 +223,13 @@ trait ArgsTrait {
                 
                 $onlyPlace = false;
                 $onlyMove = true; 
-                $canPlayCoupFourre = false;
-                $usingCoupFourre = $remainingActions->currentCoupFourreId != null;
-                if (!$usingCoupFourre) {
+                $canPlayFoolPlay = false;
+                $usingFoolPlay = $remainingActions->currentFoulPlayId != null;
+                if (!$usingFoolPlay) {
                     $onlyPlace = $remainingPlays > 0 && $currentAction->type == 'PLACE';
                     $onlyMove = $remainingMoves > 0 && $currentAction->type == 'MOVE';
-                    // we cannot play Coup Fourre in between two Place action, but we can just before or just after
-                    $canPlayCoupFourre = $currentAction->type != 'PLACE' || $remainingPlays == 0 || $remainingPlays == $currentAction->initial;
+                    // we cannot play Foul Play in between two Place action, but we can just before or just after
+                    $canPlayFoolPlay = $currentAction->type != 'PLACE' || $remainingPlays == 0 || $remainingPlays == $currentAction->initial;
                 }
 
                 $possibleFightersToPlace = $onlyMove ? [] : array_merge(
@@ -240,14 +240,14 @@ trait ArgsTrait {
                 $possibleFightersToActivate = $onlyPlace ? [] : array_values(array_filter(array_merge($territoryFighters, $highCommand), fn($fighter) => $this->canActivateFighter($playerId, $fighter, $scenarioId)));
 
                 $args = $args + [
-                    'canPlayCoupFourre' => $canPlayCoupFourre,
+                    'canPlayFoolPlay' => $canPlayFoolPlay,
                     'remainingActions' => $remainingActions,
-                    'currentAction' => $usingCoupFourre ? 'MOVE' : $currentAction,
+                    'currentAction' => $usingFoolPlay ? 'MOVE' : $currentAction,
                     'possibleFightersToPlace' => $possibleFightersToPlace,
                     'possibleActions' => array_values(array_filter($highCommand, fn($fighter) => $fighter->type === 20)),
                     'possibleFightersToMove' => $possibleFightersToMove,
                     'possibleFightersToActivate' => $possibleFightersToActivate,
-                    'usingCoupFourre' => $usingCoupFourre,
+                    'usingFoolPlay' => $usingFoolPlay,
                 ];
                 break;
             case MOVE_PUSH:
@@ -259,7 +259,7 @@ trait ArgsTrait {
             case MOVE_KILL:
                 $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
                 $selectedFighter = $this->getCardById($selectedFighterId);
-                if ($selectedFighter->power == POWER_BOMBARDE) {
+                if ($selectedFighter->power == POWER_BOMBER) {
                     $battlefieldsIds = $this->getBattlefieldsIds($selectedFighter->locationArg);                    
                     $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $this->getOpponentId($playerId));
                     $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => in_array($fighter->locationArg % 10, $battlefieldsIds)));
@@ -267,7 +267,7 @@ trait ArgsTrait {
                     $possibleTerritoryFighters = $this->getCardsByLocation('territory', $selectedFighter->locationArg, $this->getOpponentId($playerId));
                 }
 
-                $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->power != POWER_BAVEUX));
+                $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->power != POWER_MUDSHELL));
                 break;
             case MOVE_UNACTIVATE:
                 $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
@@ -276,20 +276,20 @@ trait ArgsTrait {
                 $opponentId = $this->getOpponentId($playerId);
                 foreach($territoriesIds as $territoryId) {
                     $opponentFighters = $this->getCardsByLocation('territory', $territoryId, $opponentId);
-                    $opponentFighters = array_values(array_filter($opponentFighters, fn($fighter) => !$fighter->played && $fighter->power != POWER_BAVEUX && $fighter->power !== null));
+                    $opponentFighters = array_values(array_filter($opponentFighters, fn($fighter) => !$fighter->played && $fighter->power != POWER_MUDSHELL && $fighter->power !== null));
                     $possibleTerritoryFighters = array_merge($possibleTerritoryFighters, $opponentFighters);
                 }
                 $selectionSize = -1;
                 break;
             case ACTION_FURY:
                 $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $this->getOpponentId($playerId));
-                $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->power != POWER_BAVEUX));
+                $possibleTerritoryFighters = array_values(array_filter($possibleTerritoryFighters, fn($fighter) => $fighter->power != POWER_MUDSHELL));
                 $selectionSize = 2;
                 break;
-            case ACTION_RESET:
+            case ACTION_CLEAN_SHEET:
                 $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $playerId);
                 break;
-            case ACTION_TELEPORT:
+            case ACTION_TELEPORTATION:
                 $possibleTerritoryFighters = $this->getCardsByLocation('territory', null, $playerId);
                 $selectionSize = 2;
                 break;
@@ -298,7 +298,7 @@ trait ArgsTrait {
 
         return $args + [
            'canCancel' => $canCancel,
-           'couldUseCoupFourre' => $couldUseCoupFourre,
+           'couldUseFoulPlay' => $couldUseFoulPlay,
            'possibleTerritoryFighters' => $possibleTerritoryFighters,
            'selectionSize' => $selectionSize,
         ];
@@ -378,7 +378,7 @@ trait ArgsTrait {
                     } else {
                         $battlefieldsIds = [2];
                     }
-                } // TODO check si on peut s'arrpeter sur le 2 depuis 1 3 6 ou si on doit d'arrêter avant. Et si on peut voler depuis le 2
+                }
                 foreach ($battlefieldsIds as $battlefieldId) {
                     foreach ($this->BATTLEFIELDS[$battlefieldId]->territories as $territory) {
                         if ($territory->id != $selectedFighter->locationArg) {
@@ -401,7 +401,7 @@ trait ArgsTrait {
         ];
     }
 
-    function argChooseCellBrouillage() {
+    function argChooseCellInterference() {
         $playerId = intval($this->getActivePlayerId());
         $opponentId = $this->getOpponentId($playerId);
 

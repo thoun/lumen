@@ -63,12 +63,12 @@ $commonStats = [
     ],
     "playObtained" => [
         "id" => 19,
-        "name" => totranslate("Place actions optained"),
+        "name" => totranslate("Place actions obtained"),
         "type" => "int"
     ],
     "moveObtained" => [
         "id" => 99,
-        "name" => totranslate("Move actions optained"),
+        "name" => totranslate("Move actions obtained"),
         "type" => "int"
     ],
     // 20+ : territories 

@@ -300,7 +300,7 @@ trait UtilTrait {
     function initPlayersCards(array $players) {
         foreach($players as $playerId => $player) {
             for ($i=1; $i<=3; $i++) {
-                $this->cards->pickCardForLocation('bag'.$playerId, 'reserve'.$playerId, $i); // TODO check translation
+                $this->cards->pickCardForLocation('bag'.$playerId, 'reserve'.$playerId, $i);
             }
         }
     }
@@ -366,7 +366,7 @@ trait UtilTrait {
         }
         self::DbQuery("update player set checks = checks + 1 where player_id = $playerId");
         $checks++;
-        self::notifyAllPlayers('addCheck', clienttranslate('${player_name} checks a box in the high command section'), [ // TODO check translation
+        self::notifyAllPlayers('addCheck', clienttranslate('${player_name} crosses a box in the high command section'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'checks' => $checks,
@@ -375,12 +375,12 @@ trait UtilTrait {
         $slot = $this->SLOTS_BY_CHECKS[$checks];
 
         if ($slot > 0) {
-            $this->cards->pickCardForLocation('bag0', 'highCommand'.$playerId, $slot); // TODO check translation
+            $this->cards->pickCardForLocation('bag0', 'highCommand'.$playerId, $slot);
             $card = $this->getCardsByLocation('highCommand'.$playerId, $slot)[0];
             self::DbQuery("update card set player_id = $playerId WHERE card_id=$card->id");
             $card->playerId = $playerId;
 
-            self::notifyAllPlayers('addHighCommandCard', clienttranslate('${player_name} get a new high command card'), [ // TODO check translation
+            self::notifyAllPlayers('addHighCommandCard', clienttranslate('${player_name} get a new high command card'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'card' => $card,
@@ -604,9 +604,9 @@ trait UtilTrait {
     function takeMissionObjectiveToken(int $playerId, int $number, Card $missionCard) {
         $mission = '';
         switch ($missionCard->power) {
-            case MISSION_COFFRE: $mission = clienttranslate('Coffre'); break; // TODO
-            case MISSION_WINTER: $mission = clienttranslate('Hiver'); break; // TODO
-            case MISSION_FRELUQUETS: $mission = clienttranslate('Freluquet'); break; // TODO
+            case MISSION_LOOT: $mission = clienttranslate('Loot'); break;
+            case MISSION_WINTER: $mission = clienttranslate('Winter'); break;
+            case MISSION_SHROOMLING: $mission = clienttranslate('Shroomling'); break;
         }
 
         if ($number > 0) {
@@ -636,7 +636,7 @@ trait UtilTrait {
         }
     }
 
-    function applyMoveFighter(Card &$fighter, int $territoryId, string $logMessage = '', array $logArgs = [], bool $fromBag = false) { // return redirected for brouillage
+    function applyMoveFighter(Card &$fighter, int $territoryId, string $logMessage = '', array $logArgs = [], bool $fromBag = false) { // return redirected for Interference
         if ($territoryId == 0) {
             // pushed to the river
             $this->putBackInBag([$fighter]);
@@ -670,13 +670,13 @@ trait UtilTrait {
         }
     }
 
-    function fighterMoved(Card &$fighter, int $territoryId) { // return redirected for brouillage
-        $redirectBrouillage = false;
+    function fighterMoved(Card &$fighter, int $territoryId) { // return redirected for Interference
+        $redirectInterference = false;
         $discoverTiles = $this->getDiscoverTilesByLocation('territory', $territoryId, false);
         //we reveal hidden discover tiles
         foreach($discoverTiles as &$discoverTile) {
             if ($this->revealDiscoverTile($discoverTile, $fighter->playerId, $territoryId)) {
-                $redirectBrouillage = true;
+                $redirectInterference = true;
             }
         }
 
@@ -707,7 +707,7 @@ trait UtilTrait {
                 break;
         }
 
-        return $redirectBrouillage;
+        return $redirectInterference;
     }
 
     function checkTerritoriesDiscoverTileControl(int $currentPlayer) {
@@ -740,7 +740,7 @@ trait UtilTrait {
         $playersIds = $this->getPlayersIds();
         $this->updateControlCounters($scenario, $playersIds);
         foreach($playersIds as $playerId) {
-            $this->updateCurrentVisibleScore($playerId); // will include territory control & butins
+            $this->updateCurrentVisibleScore($playerId); // will include territory control & loot
         }
         if ($currentPlayer !== null) {
             $this->updateCurrentHiddenScore($currentPlayer);
@@ -785,17 +785,17 @@ trait UtilTrait {
         ]);
     }
 
-    function applyParachutage(DiscoverTile &$discoverTile, int $playerId, int $territoryId) {
+    function applyParatrooper(DiscoverTile &$discoverTile, int $playerId, int $territoryId) {
         $cardDb = $this->cards->pickCardForLocation('bag'.$playerId, 'territory', $territoryId);
         if ($cardDb == null) {
-            self::notifyAllPlayers("log", clienttranslate('The bag is empty, impossible to apply Parachutage'), []); // TODO check log
+            self::notifyAllPlayers("log", clienttranslate('The bag is empty, impossible to apply Paratrooper'), []);
             return;
         }
 
         $this->discardDiscoverTile($discoverTile);
 
         $fighter = $this->getCardById(intval($cardDb['id']));
-        $this->applyMoveFighter($fighter, $territoryId, clienttranslate('${player_name} parachutes ${fighterType} on ${season} territory ${battlefieldId}'), [], true);
+        $this->applyMoveFighter($fighter, $territoryId, clienttranslate('${player_name} drops paratrooper ${fighterType} on ${season} territory ${battlefieldId}'), [], true);
 
         $this->checkEmptyBag($playerId);
     }
@@ -806,7 +806,7 @@ trait UtilTrait {
         ]);
     }
 
-    function revealDiscoverTile(DiscoverTile &$discoverTile, int $playerId, int $territoryId) { // return redirected for brouillage
+    function revealDiscoverTile(DiscoverTile &$discoverTile, int $playerId, int $territoryId) { // return redirected for Interference
         self::DbQuery("update discover_tile set visible = true where card_id = $discoverTile->id");
         $discoverTile->visible = true;
         self::notifyAllPlayers("revealDiscoverTile", clienttranslate('${player_name} reveals discover tile ${discover_tile}'), [
@@ -818,24 +818,24 @@ trait UtilTrait {
         ]);
 
         switch ($discoverTile->type) {
-            case 1: // coffre
-                // nothing, will be checked for all coffre in fighterMoved
+            case 1: // loot
+                // nothing, will be checked for all loots in fighterMoved
                 break;
             case 2: // power
                 switch ($discoverTile->power) {
-                    case POWER_BROUILLAGE:
+                    case POWER_INTERFERENCE:
                         $this->highlightDiscoverTile($discoverTile);
                         $this->discardDiscoverTile($discoverTile);
                         return true;
-                    case POWER_PLANIFICATION:
-                    case POWER_COUP_FOURRE:
+                    case POWER_PLANNING:
+                    case POWER_FOUL_PLAY:
                         $this->moveDiscoverTileToPlayer($discoverTile, $playerId);
                         break;
-                    case POWER_PARACHUTAGE:
+                    case POWER_PARATROOPING:
                         $this->highlightDiscoverTile($discoverTile);
-                        $this->applyParachutage($discoverTile, $playerId, $territoryId);
+                        $this->applyParatrooper($discoverTile, $playerId, $territoryId);
                         break;
-                    case POWER_MESSAGE_PRIORITAIRE:
+                    case POWER_PRIORITY_MESSAGE:
                         $this->highlightDiscoverTile($discoverTile);
                         $this->addCheck($playerId);
                         $this->discardDiscoverTile($discoverTile);
@@ -933,10 +933,10 @@ trait UtilTrait {
             case ACTION_FURY:
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_FURY);
                 break;
-            case ACTION_RESET:
+            case ACTION_CLEAN_SHEET:
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_RESET);
                 break;
-            case ACTION_TELEPORT:
+            case ACTION_TELEPORTATION:
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_TELEPORT);
                 break;
         }
@@ -953,12 +953,12 @@ trait UtilTrait {
 
         $nextState = 'nextMove';
         switch ($fighter->power) {
-            case POWER_REANIMATRICE:
+            case POWER_RESTORER:
                 $territories = [$fighter->locationArg, ...$this->getTerritoryNeighboursIds($fighter->locationArg)];
                 $playerFighters = $this->getCardsByLocation('territory', null, $fighter->playerId);
                 $unactivatedFighters = array_values(array_filter($playerFighters, fn($playerFighter) => $playerFighter->played && $playerFighter->id != $fighter->id && in_array($playerFighter->locationArg, $territories)));
                 $this->setFightersUnactivated($unactivatedFighters);
-                if ($this->array_some($unactivatedFighters, fn($unactivatedFighter) => in_array($unactivatedFighter->power, [POWER_TISSEUSE, POWER_ROOTED, POWER_METAMORPH]))) {
+                if ($this->array_some($unactivatedFighters, fn($unactivatedFighter) => in_array($unactivatedFighter->power, [POWER_WEAVER, POWER_ROOTSPRING, POWER_METAMORPH]))) {
                     // every time a fighter with changing strength with is flipped, we check if it makes a control to a visible Discover tile
                     $this->checkTerritoriesDiscoverTileControl($playerId);
                 }
@@ -990,7 +990,7 @@ trait UtilTrait {
                     $nextState = 'chooseFighter';
                 }
                 break;
-            case POWER_EMPLUME:
+            case POWER_FEATHERED:
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_FLY);
                 $nextState = 'chooseTerritory';
                 break;
@@ -998,16 +998,16 @@ trait UtilTrait {
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_IMPATIENT);
                 $nextState = 'chooseTerritory';
                 break;
-            case POWER_BOMBARDE:
+            case POWER_BOMBER:
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_KILL);
                 $nextState = 'chooseFighter';
                 break;
-            case POWER_PACIFICATEUR:
+            case POWER_HYPNOTIST:
                 $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_UNACTIVATE);
                 $nextState = 'chooseFighter';
                 break;
-            case POWER_TISSEUSE:
-            case POWER_ROOTED:
+            case POWER_WEAVER:
+            case POWER_ROOTSPRING:
             case POWER_METAMORPH:
                 // every time a fighter with changing strength is flipped, we check if it makes a control to a visible Discover tile
                 $this->checkTerritoriesDiscoverTileControl($playerId);
@@ -1022,7 +1022,7 @@ trait UtilTrait {
                 ]);
                 break;
         }
-        if (in_array($nextState, ['nextMove', 'chooseCellBrouillage'])) {
+        if (in_array($nextState, ['nextMove', 'chooseCellInterference'])) {
             $this->decMoveCount(1);
         }
 
@@ -1094,10 +1094,10 @@ trait UtilTrait {
     function decMoveCount(int $dec) {
         $remainingActions = $this->getRemainingActions();
         
-        if ($remainingActions->currentCoupFourreId != null) {
-            $discoverTile = $this->getDiscoverTileById($remainingActions->currentCoupFourreId);
+        if ($remainingActions->currentFoulPlayId != null) {
+            $discoverTile = $this->getDiscoverTileById($remainingActions->currentFoulPlayId);
             $this->discardDiscoverTile($discoverTile);
-            $remainingActions->currentCoupFourreId = null;
+            $remainingActions->currentFoulPlayId = null;
             $dec--;
         }
 

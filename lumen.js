@@ -1195,7 +1195,7 @@ var Scenario = /** @class */ (function (_super) {
     Scenario.getTitle = function (number) {
         switch (number) {
             case 0: return '';
-            case 1: return _("A : First contact");
+            case 1: return _("A - First contact");
             case 2: return _("B - Disturbance on the western front");
             case 3: return _("C - A territory too far");
             case 4: return _("D - Isles of promise");
@@ -1822,9 +1822,9 @@ var PlayerTable = /** @class */ (function () {
         this.objectiveTokens.addCards(player.objectiveTokens, undefined, { visible: Boolean((_a = player.objectiveTokens[0]) === null || _a === void 0 ? void 0 : _a.lumens) });
         this.discoverTiles = new CompressedLineStock(this.game.discoverTilesManager, document.getElementById("player-table-".concat(this.playerId, "-discover-tiles")), 100);
         player.discoverTiles.forEach(function (discoverTile) { return _this.discoverTiles.addCard(discoverTile, undefined, { visible: Boolean(discoverTile === null || discoverTile === void 0 ? void 0 : discoverTile.type) }); });
-        this.game.setTooltip("player-table-".concat(this.playerId, "-zone-legend"), _('TODO'));
-        this.game.setTooltip("player-table-".concat(this.playerId, "-link-legend"), _('TODO'));
-        this.game.setTooltip("player-table-".concat(this.playerId, "-check-legend"), _('TODO'));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-zone-legend"), _('TODO zone-legend'));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-link-legend"), _('TODO link-legend'));
+        this.game.setTooltip("player-table-".concat(this.playerId, "-check-legend"), _('As soon as all boxes underneath an available slot are crossed off, draw a Bonus token from the neutral bag and place it in this slot'));
     }
     PlayerTable.prototype.cardClick = function (card) {
         if (this.game.cardsManager.getCardElement(card).classList.contains('selectable')) {
@@ -2081,8 +2081,8 @@ var Lumen = /** @class */ (function () {
             case 'chooseCellLink':
                 this.onEnteringChooseCellLink(args.args);
                 break;
-            case 'chooseCellBrouillage':
-                this.onEnteringChooseCellBrouillage(args.args);
+            case 'chooseCellInterference':
+                this.onEnteringChooseCellInterference(args.args);
                 break;
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
@@ -2133,7 +2133,7 @@ var Lumen = /** @class */ (function () {
             (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setPossibleCellLinks(args.possibleLinkCirclesIds, args.cellId);
         }
     };
-    Lumen.prototype.onEnteringChooseCellBrouillage = function (args) {
+    Lumen.prototype.onEnteringChooseCellInterference = function (args) {
         var _a;
         if (this.isCurrentPlayerActive()) {
             (_a = this.getPlayerTable(args.opponentId)) === null || _a === void 0 ? void 0 : _a.setPossibleCells(args.possibleCircles, -1);
@@ -2151,18 +2151,18 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.onEnteringChooseFighter = function (args) {
         var _a;
         if (!args.move) {
-            var onlyCoupFourre = args.remainingActions.actions.map(function (action) { return action.remaining; }).reduce(function (a, b) { return a + b; }, 0) == 0;
-            if (onlyCoupFourre) {
-                this.setGamestateDescription('OnlyCoupFourre');
+            var onlyFoolPlay = args.remainingActions.actions.map(function (action) { return action.remaining; }).reduce(function (a, b) { return a + b; }, 0) == 0;
+            if (onlyFoolPlay) {
+                this.setGamestateDescription('OnlyFoolPlay');
             }
             else {
                 this.setGamestateDescription(args.currentAction.type);
             }
-            if (!onlyCoupFourre) {
+            if (!onlyFoolPlay) {
                 var subTitle = document.createElement('span');
                 subTitle.classList.add('subtitle');
-                if (args.usingCoupFourre) {
-                    subTitle.innerHTML = "(".concat(_('${tileCoupFourre} extra action').replace('${tileCoupFourre}', '<div class="tile-coupFourre"></div>'), ")");
+                if (args.usingFoolPlay) {
+                    subTitle.innerHTML = "(".concat(_('${tileFoolPlay} extra action').replace('${tileFoolPlay}', '<div class="tile-foul-play"></div>'), ")");
                 }
                 else {
                     var texts = args.remainingActions.actions.filter(function (action) { return action.initial > 0; }).map(function (action) {
@@ -2259,8 +2259,8 @@ var Lumen = /** @class */ (function () {
             case 'chooseCellLink':
                 this.onLeavingChooseCellLink();
                 break;
-            case 'chooseCellBrouillage':
-                this.onLeavingChooseCellBrouillage();
+            case 'chooseCellInterference':
+                this.onLeavingChooseCellInterference();
                 break;
             case 'chooseFighter':
                 this.onLeavingChooseFighter();
@@ -2291,7 +2291,7 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.onLeavingChooseCellLink = function () {
         document.querySelectorAll('.link.selectable').forEach(function (elem) { return elem.remove(); });
     };
-    Lumen.prototype.onLeavingChooseCellBrouillage = function () {
+    Lumen.prototype.onLeavingChooseCellInterference = function () {
         document.querySelectorAll('[data-jamming="true"].ghost').forEach(function (elem) {
             elem.classList.remove('selectable');
             elem.dataset.jamming = 'false';
@@ -2311,9 +2311,9 @@ var Lumen = /** @class */ (function () {
         var _this = this;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'askActivatePlanification':
-                    this.addActionButton("activatePlanification_button", _('Activate'), function () { return _this.activatePlanification(); });
-                    this.addActionButton("passPlanification_button", _('Pass'), function () { return _this.passPlanification(); });
+                case 'askActivatePlanning':
+                    this.addActionButton("activatePlanning_button", _('Activate'), function () { return _this.activatePlanning(); });
+                    this.addActionButton("passPlanification_button", _('Pass'), function () { return _this.passPlanning(); });
                     break;
                 case 'planificationChooseFaces':
                     this.onEnteringPlanificationChooseFaces();
@@ -2339,21 +2339,21 @@ var Lumen = /** @class */ (function () {
                     var chooseActionArgs = args;
                     this.addActionButton("startWithActionPlay_button", this.replacePlaceAndMove(_('Start with ${placeNumber} ${place} then ${placeMove} ${move}'), chooseActionArgs), function () { return _this.startWithAction(1); });
                     this.addActionButton("startWithActionMove_button", this.replacePlaceAndMove(_('Start with ${placeMove} ${move} then ${placeNumber} ${place}'), chooseActionArgs), function () { return _this.startWithAction(2); });
-                    if (chooseActionArgs.canUseCoupFourre) {
-                        this.addActionButton("useCoupFourre_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useCoupFourre(); });
+                    if (chooseActionArgs.canUseFoulPlay) {
+                        this.addActionButton("useFoulPlay_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useFoulPlay(); });
                     }
                     break;
                 case 'chooseFighter':
                     var chooseFighterArgs = args;
                     if (!chooseFighterArgs.move) {
-                        if (chooseFighterArgs.couldUseCoupFourre && !chooseFighterArgs.usingCoupFourre) {
-                            this.addActionButton("useCoupFourre_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useCoupFourre(); });
-                            if (!chooseFighterArgs.canPlayCoupFourre) {
-                                document.getElementById("useCoupFourre_button").classList.add('disabled');
+                        if (chooseFighterArgs.couldUseFoulPlay && !chooseFighterArgs.usingFoolPlay) {
+                            this.addActionButton("useFoulPlay_button", _('Use ${card}').replace('${card}', this.discoverTilesManager.getName(2, 5)), function () { return _this.useFoulPlay(); });
+                            if (!chooseFighterArgs.canPlayFoolPlay) {
+                                document.getElementById("useFoulPlay_button").classList.add('disabled');
                             }
                         }
-                        if (chooseFighterArgs.usingCoupFourre) {
-                            this.addActionButton("cancelCoupFourre_button", _('Cancel'), function () { return _this.cancelCoupFourre(); }, null, null, 'gray');
+                        if (chooseFighterArgs.usingFoolPlay) {
+                            this.addActionButton("cancelFoulPlay_button", _('Cancel'), function () { return _this.cancelFoulPlay(); }, null, null, 'gray');
                         }
                         else {
                             var shouldntPass_1 = chooseFighterArgs.remainingActions.actions.map(function (action) { return action.remaining; }).reduce(function (a, b) { return a + b; }, 0) > 0;
@@ -2752,8 +2752,8 @@ var Lumen = /** @class */ (function () {
             case 'chooseCellLink':
                 this.chooseCellLink(cell);
                 break;
-            case 'chooseCellBrouillage':
-                this.chooseCellBrouillage(cell);
+            case 'chooseCellInterference':
+                this.chooseCellInterference(cell);
                 break;
         }
     };
@@ -2785,17 +2785,17 @@ var Lumen = /** @class */ (function () {
             }
         }
     };
-    Lumen.prototype.activatePlanification = function () {
-        if (!this.checkAction('activatePlanification')) {
+    Lumen.prototype.activatePlanning = function () {
+        if (!this.checkAction('activatePlanning')) {
             return;
         }
-        this.takeAction('activatePlanification');
+        this.takeAction('activatePlanning');
     };
-    Lumen.prototype.passPlanification = function () {
-        if (!this.checkAction('passPlanification')) {
+    Lumen.prototype.passPlanning = function () {
+        if (!this.checkAction('passPlanning')) {
             return;
         }
-        this.takeAction('passPlanification');
+        this.takeAction('passPlanning');
     };
     Lumen.prototype.chooseDiceFaces = function () {
         if (!this.checkAction('chooseDiceFaces')) {
@@ -2833,11 +2833,11 @@ var Lumen = /** @class */ (function () {
             cell: cell
         });
     };
-    Lumen.prototype.chooseCellBrouillage = function (cell) {
-        if (!this.checkAction('chooseCellBrouillage')) {
+    Lumen.prototype.chooseCellInterference = function (cell) {
+        if (!this.checkAction('chooseCellInterference')) {
             return;
         }
-        this.takeAction('chooseCellBrouillage', {
+        this.takeAction('chooseCellInterference', {
             cell: cell
         });
     };
@@ -2925,17 +2925,17 @@ var Lumen = /** @class */ (function () {
         }
         this.takeAction('passChooseFighters');
     };
-    Lumen.prototype.useCoupFourre = function () {
-        if (!this.checkAction('useCoupFourre')) {
+    Lumen.prototype.useFoulPlay = function () {
+        if (!this.checkAction('useFoulPlay')) {
             return;
         }
-        this.takeAction('useCoupFourre');
+        this.takeAction('useFoulPlay');
     };
-    Lumen.prototype.cancelCoupFourre = function () {
-        if (!this.checkAction('cancelCoupFourre')) {
+    Lumen.prototype.cancelFoulPlay = function () {
+        if (!this.checkAction('cancelFoulPlay')) {
             return;
         }
-        this.takeAction('cancelCoupFourre');
+        this.takeAction('cancelFoulPlay');
     };
     Lumen.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -2979,7 +2979,7 @@ var Lumen = /** @class */ (function () {
             ['putBackInBag', ANIMATION_MS],
             ['setFightersActivated', ANIMATION_MS],
             ['setFightersUnactivated', ANIMATION_MS],
-            ['exchangedFighters', ANIMATION_MS],
+            ['swappedFighters', ANIMATION_MS],
             ['score', 1],
             ['revealObjectiveTokens', ANIMATION_MS],
             ['endControlTerritory', 1 /*ANIMATION_MS * 2*/],
@@ -3122,7 +3122,7 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.notif_setFightersUnactivated = function (notif) {
         this.setFightersActivated(notif.args.fighters, false);
     };
-    Lumen.prototype.notif_exchangedFighters = function (notif) {
+    Lumen.prototype.notif_swappedFighters = function (notif) {
         var card0 = notif.args.fighters[0];
         var card1 = notif.args.fighters[1];
         var stock0 = this.cardsManager.getCardStock(card0);

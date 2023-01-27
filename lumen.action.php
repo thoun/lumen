@@ -34,18 +34,18 @@
       }
   	}
 
-    public function activatePlanification() {
+    public function activatePlanning() {
       self::setAjaxMode();
 
-      $this->game->activatePlanification();
+      $this->game->activatePlanning();
 
       self::ajaxResponse();
     }
 
-    public function passPlanification() {
+    public function passPlanning() {
       self::setAjaxMode();
 
-      $this->game->passPlanification();
+      $this->game->passPlanning();
 
       self::ajaxResponse();
     }
@@ -99,12 +99,12 @@
       self::ajaxResponse();
     }
 
-    public function chooseCellBrouillage() {
+    public function chooseCellInterference() {
       self::setAjaxMode();
 
       $cell = self::getArg("cell", AT_posint, true);
 
-      $this->game->chooseCellBrouillage($cell);
+      $this->game->chooseCellInterference($cell);
 
       self::ajaxResponse();
     }
@@ -202,18 +202,18 @@
       self::ajaxResponse();
     }
 
-    public function useCoupFourre() {
+    public function useFoulPlay() {
       self::setAjaxMode();
 
-      $this->game->useCoupFourre();
+      $this->game->useFoulPlay();
 
       self::ajaxResponse();
     }
 
-    public function cancelCoupFourre() {
+    public function cancelFoulPlay() {
       self::setAjaxMode();
 
-      $this->game->cancelCoupFourre();
+      $this->game->cancelFoulPlay();
 
       self::ajaxResponse();
     }

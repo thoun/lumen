@@ -1,9 +1,9 @@
 <?php
 
 class DiscoverTileType {
-    public int $type; // 1 for coffre, 2 for power
+    public int $type; // 1 for Loot, 2 for power
     public int $number;
-    public int $power; // or lumen value for coffre
+    public int $power; // or lumen value for Loot
   
     public function __construct(int $type, int $number, int $power) {
         $this->type = $type;
