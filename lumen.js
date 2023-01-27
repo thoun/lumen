@@ -810,26 +810,26 @@ var CardsManager = /** @class */ (function (_super) {
     }
     CardsManager.prototype.getName = function (subType) {
         switch (subType) {
-            case 1: return _("Freluquet");
-            case 2: return _("Baveux");
-            case 3: return _("Réanimatrice");
-            case 4: return _("Pusher");
-            case 5: return _("Assassin");
-            case 6: return _("Emplumé");
-            case 11: return _("Super Pusher");
-            case 12: return _("Super Assassin");
-            case 13: return _("Impatient");
-            case 14: return _("Bombarde");
-            case 15: return _("Tisseuse");
-            case 16: return _("Rooted");
-            case 17: return _("Pacificateur");
-            case 18: return _("Metamorph");
+            case 1: return _("The Shroomling");
+            case 2: return _("The Mudshell");
+            case 3: return _("The Restorer");
+            case 4: return _("The Pusher");
+            case 5: return _("The Assassin");
+            case 6: return _("The Feathered");
+            case 11: return _("The Epic Pusher");
+            case 12: return _("The Epic Assassin");
+            case 13: return _("The Impatient");
+            case 14: return _("The Bomber");
+            case 15: return _("The Weaver");
+            case 16: return _("The Rootspring");
+            case 17: return _("The Hypnotist");
+            case 18: return _("The Metamorph");
             case 21: return _("Fury");
-            case 22: return _("Reset");
-            case 23: return _("Teleport");
-            case 31: return _("Coffre");
-            case 32: return _("Winter");
-            case 33: return _("Freluquets");
+            case 22: return _("Clean Sheet");
+            case 23: return _("Teleportation");
+            case 31: return _("Discovery Mission");
+            case 32: return _("Winter Mission");
+            case 33: return _("Shroomling Mission");
         }
     };
     CardsManager.prototype.getNotPlayedStrength = function (subType) {
@@ -870,34 +870,34 @@ var CardsManager = /** @class */ (function (_super) {
     };
     CardsManager.prototype.getDescription = function (subType) {
         switch (subType) {
-            case 1: return _("Pas d’effet spécial");
-            case 2: return _("La coquille du Baveux le protège contre les agressions des Combattants Tueurs et de la Furie. Le Baveux ne peut pas effectuer de déplacement lors dela phase 3 Transmission des Ordres.");
-            case 3: return _("Lorsque vous retournez la Réanimatrice sur sa face INACTIF, replacez sur leur face ACTIF tous vos autres Combattants présents sur son Territoire, ainsi que sur les Territoires voisins");
-            case 4: return _("Lorsque vous retournez le Pousseur sur sa face INACTIF, vous pouvez pousser n’importe quel autre Combattant (allié ou adverse) vers un Territoire voisin");
-            case 5: return _("Fait partie de la famille des Combattants Tueurs. Lorsque vous retournez l’Assassin sur sa face INACTIF, éliminez un Combattant adverse de Base ou Mercenaire du Territoire sur lequel il est présent. Ce Combattant est remis dans son sac d’origine et pourra éventuellement revenir en jeu plus tard.");
-            case 6: return _("Lorsque vous retournez l’Emplumé sur sa face INACTIF, il prend son envol, et se déplace par voie aérienne vers n’importe quel autre Territoire du Champ de Bataille");
-            case 11: return _("Lorsque vous le retournez sur sa face INACTIF, le Super Pousseur : d DOIT d’abord exécuter un déplacement par voie terrestre. d PUIS pousse n’importe quel autre Combattant (allié ou adverse) vers un Territoire voisin.");
-            case 12: return _("Fait partie de la famille des Combattants Tueurs. Lorsque vous le retournez sur sa face INACTIF, le Super Assassin : d DOIT d’abord effectuer un déplacement par voie terrestre. d PUIS il élimine de ce Territoire un Combattant adverse de Base ou Mercenaire. Ce Combattant est remis dans son sac d’origine et pourra éventuellement revenir en jeu plus tard");
-            case 13: return _("Lorsque vous le retournez sur sa face INACTIF, l’Impatient prend le marqueur Initiative et le replace sur son Territoire ou n’importe quel autre Territoire voisin.");
-            case 14: return _("Fait partie de la famille des Combattants Tueurs. Lorsque vous retournez la Bombarde sur sa face INACTIF, éliminez un Combattant adverse de Base ou Mercenaire n’importe où sur le Champ de Bataille. Ce Combattant est remis dans son sac d’origine et pourra éventuellement revenir en jeu plus tard.");
-            case 15: return _("Lorsqu’elle est retournée sur sa face INACTIF, la Tisseuse : d ne peut plus se déplacer. d emprisonne tous les Combattants adverses présents sur son Territoire. Il est toujours possible pour les Combattants adverses de rentrer sur ce Territoire, que ce soit par voie terrestre ou aérienne, mais il n’est plus possible d’en sortir tant que la Tisseuse est présente sur sa face INACTIF.La Tisseuse n’a aucun effet sur les Combattants alliés.");
-            case 16: return _("Lorsqu’elle est retournée sur sa face INACTIF, l’Enracinée déploie ses racines tout autour du Territoire sur lequel elle est située, empêchant es Combattants adverses d’y pénétrer par voie terrestre");
-            case 17: return _("Lorsqu’il est retourné sur sa face INACTIF, retournez sur leur face INACTIF les Combattants adverses de votre choix présents sur son Territoire, ainsi que sur les Territoires voisins.");
-            case 18: return _("Lorsqu’il est sur sa face ACTIF, le Métamorphe ne peut pas effectuer de déplacement lors de la phase 3 Transmission des Ordres (il peut bien sûr être la cible d’un Pousseur). Lorsqu’il est retourné sur sa face INACTIF, il se transforme en un Combattant de force 3, se déplaçant par voie terrestre.");
-            case 21: return _("Supprimez du Champ de Bataille deux Combattants adverses de Base ou Mercenaires situés dans deux Territoires différents. Ces Combattants sont remis dans leur sac d’origine et pourront éventuellement revenir en jeu plus tard.");
-            case 22: return _("Désignez un de vos Combattants de Base ou Mercenaire. Retirez-le du Champ de Bataille ainsi que TOUS les autres Combattants de Base ou Mercenaires adverses et alliés présents, sans exception, dans le même Territoire. Ces Combattants sont remis dans leur sac d’origine et pourront éventuellement revenir en jeu plus tard.");
-            case 23: return _("Echangez la position de deux de vos Combattants sur le Champ de Bataille.");
-            case 31: return _("Remportez un jeton Objectif si vous possédez deux jetons Découvertes en fin de partie, plus un jeton Objectif par jeton Découverte supplémentaire.");
-            case 32: return _("Remportez un jeton Objectif si vous contrôlez deux Territoires de l’Hiver en fin de partie, plus un jeton Objectif par Territoire de l’Hiver contrôlé supplémentaire");
-            case 33: return _("Pour chaque Territoire dans lequel vous avez des Freluquets, remportez un jeton Objectif si vous possédez deux Freluquets dans ce Territoire, plus un jeton Objectif par Freluquet supplémentaire.");
+            case 1: return _("No special ability");
+            case 2: return _("This creature's shell offers protection against Deadly Fighters and the Fury. The Mudshell cannot be moved during phase 3 Issuing Orders.");
+            case 3: return _("When you flip the Restorer to its INACTIVE side, flip all other Fighters in its Territory and all adjacent Territories back to their ACTIVE side.");
+            case 4: return _("When you flip the Pusher to its INACTIVE side, push 1 Fighter of your choice (yours or your opponent's) to an adjacent Territory.");
+            case 5: return _("This creature belongs to the family of Deadly Fighters. When you flip the Assassin to its INACTIVE side, remove 1 of your opponent's Basic Fighters or Mercenary Fighters from the same Territory. This Fighter is returned to its colored bag and can rejoin the battle later.");
+            case 6: return _("When you flip the Feathered to its INACTIVE side, it takes off and moves by air to any other Territory on the Battlefield.");
+            case 11: return "".concat(_("When you flip it to its INACTIVE side, the Epic Pusher:"), "<br> \n                &nbsp; ").concat(_("MUST first move 1 space by land."), "<br> \n                &nbsp; ").concat(_("THEN, it pushes 1 other Fighter of your choice (yours or your opponent's) to an adjacent Territory."));
+            case 12: return "".concat(_("This creature belongs to the family of Deadly Fighters. When you flip it to its INACTIVE side, the Epic Assassin:"), "<br> \n                &nbsp; ").concat(_("MUST first move 1 space by land."), "<br> \n                &nbsp; ").concat(_("THEN, it removes 1 of the opponent's Basic Fighters or Mercenary Fighters from the same Territory. This Fighter is returned to its colored bag and can rejoin the battle later."));
+            case 13: return _("When you flip it to its INACTIVE side, the Impatient takes the Initiative marker and places it on its own Territory or an adjacent Territory.");
+            case 14: return _("This creature belongs to the family of Deadly Fighters. When you flip the Bomber to its INACTIVE side, remove 1 of your opponent's Basic Fighters or Mercenary Fighters from anywhere on the Battlefield. This Fighter is returned to its colored bag and can rejoin the battle later.");
+            case 15: return "".concat(_("When you flip it to its INACTIVE side, the Weaver:"), "<br> \n                &nbsp; ").concat(_("- cannot move."), "<br> \n                &nbsp; ").concat(_("- captures all enemy Fighters inside its Territory. It's still possible for enemy Fighters to enter this Territory by air or by land, but it's not possible to leave the Territory as long as the Weaver is flipped to its INACTIVE side. The Weaver does not affect allied Fighters."));
+            case 16: return "".concat(_("When you flip it to its INACTIVE side, the Rootspring:"), "<br> \n                &nbsp; ").concat(_("- cannot move."), "<br> \n                &nbsp; ").concat(_("- spreads its roots all around its Territory, preventing enemy Fighters from entering or leaving the Territory by land."));
+            case 17: return _("When you flip the Hypnotist to its INACTIVE side, flip the enemy Fighters of your choice - in or adjacent to its Territory - to their INACTIVE side.");
+            case 18: return _("While it's ACTIVE, the Metamorph cannot move during phase 3 Issuing Orders (but it can still be targeted by a Pusher). When you flip it to its INACTIVE side, it transforms into a Fighter with a Combat Strength of 3 that can move by land.");
+            case 21: return _("Remove 2 enemy Fighters (Basic or Mercenary) from 2 different Territories of the Battlefield. These Fighters are returned to their colored bag and can rejoin the battle later.");
+            case 22: return _("Choose a Territory: remove all Fighters present there (yours and your opponent’s). These Fighters are returned to their colored bags and can rejoin the battle later.");
+            case 23: return _("Swap the positions of 2 of your Fighters on the Battlefield.");
+            case 31: return _("Receive 1 Objective token if you have 2 Discovery tokens at the end of the game, and 1 additional Objective token for each additional Discovery token.");
+            case 32: return _("Receive 1 Objective token if you control 2 Winter Territories at the end of the game, and 1 additional Objective token for each additional Winter Territory you control.");
+            case 33: return _("Receive 1 Objective token for each of your Territories containing 2 Shroomlings at the end of the game, and 1 additional Objective token for each additional Shroomling in those Territories.");
         }
     };
     CardsManager.prototype.getTooltip = function (subType) {
-        return "<h3>".concat(this.getName(subType), "</h3>\n        ").concat(subType < 20 ? "".concat(_("Strength:"), " <strong>").concat(this.getStrength(subType), " <div class=\"strength-icon\"></div></strong>") : '', "\n        <p>").concat(this.getDescription(subType), "</p>\n        ");
+        return "<h3>".concat(this.getName(subType), "</h3>\n        ").concat(subType < 20 ? "".concat(_("Combat Strength:"), " <strong>").concat(this.getStrength(subType), " <div class=\"strength-icon\"></div></strong>") : '', "\n        <p>").concat(this.getDescription(subType), "</p>\n        ");
     };
     CardsManager.prototype.getCurrentStrength = function (fighter) {
         if (fighter.played) {
-            if ([15, 16].includes(fighter.subType) /* Rooted, Tisseuse */) {
+            if ([15, 16].includes(fighter.subType) /* Rootspring, Weaver */) {
                 return 1;
             }
             else if (fighter.subType == 18 /* Metamorph */) {
@@ -933,27 +933,27 @@ var DiscoverTilesManager = /** @class */ (function (_super) {
     };
     DiscoverTilesManager.prototype.getName = function (type, subType) {
         switch (type) {
-            case 1: return _("Butin");
+            case 1: return _("Loot");
             case 2:
                 switch (subType) {
-                    case 1: return _("Brouillage");
-                    case 2: return _("Planification");
-                    case 3: return _("Parachutage");
-                    case 4: return _("Message prioritaire");
-                    case 5: return _("Coup fourré");
+                    case 1: return _("Interference");
+                    case 2: return _("Planning");
+                    case 3: return _("Paratrooper");
+                    case 4: return _("Priority Message");
+                    case 5: return _("Foul Play");
                 }
         }
     };
     DiscoverTilesManager.prototype.getDescription = function (type, subType) {
         switch (type) {
-            case 1: return _("Lorsque vous révélez un jeton Butin, laissez-le sur le Territoire jusqu’à ce qu’une faction soit en mesure de s’en emparer. Chaque jeton contient de 3 à 5 Lumens. Pour s’en emparer définitivement, il faut que la Force cumulée des Combattants d’une faction présents sur ce Territoire soit supérieure à celle des Combattants adverses présents sur ce même Territoire, avec un écart au moins égal au nombre de Lumens de ce jeton. Si aucun adversaire n’est présent sur le Territoire, sa force est égale à 0. Aussitôt qu’une faction remplie cette condition, elle s’empare du jeton Butin et marquera en fin de partie le nombre de PV indiqué au dos de ce jeton.");
+            case 1: return _("When you reveal a Loot token, leave it on its Territory until one of the clans is able to claim it. Each Loot token is worth 3 to 5 Lumen. To permanently claim a Loot token on a Territory, the combined Combat Strength of one clan's Fighters in that Territory must be bigger than the other clan's combined Combat Strength, with a difference that's equal to or higher than the number of Lumen on the Loot token. If your opponent has no Fighters on the Territory, their Combat Strength is 0. In that case, the combined Combat Strength of your Fighters must be equal to the number on the Loot token before you can claim it. As soon as a clan meets the condition, they claim the Loot token and will score its VP at the end of the game.");
             case 2:
                 switch (subType) {
-                    case 1: return _("Lorsque vous révélez ce jeton, défaussez-le. Eliminez immédiatement une cellule de votre choix sur la Fiche de Commandement adverse en la rayant.");
-                    case 2: return _("Lorsque vous révélez ce jeton, conservez-le devant vous, face visible, près de votre Fiche de Commandement. Lors d’un prochain tour, si vous êtes premier joueur uniquement, vous pouvez décider de défausser ce jeton. Dans ce cas, ne lancez pas le dés, mais placez-les sur les faces de votre choix !");
-                    case 3: return _("Lorsque vous révélez ce jeton, défaussez-le. Piochez un Combattant au hasard dans votre sac et placez-le immédiatement en Renfort sur ce Territoire.");
-                    case 4: return _("Lorsque vous révélez ce jeton, défaussez-le. Cochez immédiatement la case disponible la plus à gauche de la zone de Haut Commandement de votre Fiche de Commandement. Appliquez les conséquences de cette case, tout juste cochée, le cas échéant.");
-                    case 5: return _("Lorsque vous révélez ce jeton, conservez-le devant vous, face visible, près de votre Fiche de Commandement.Lors de la phase 3 Transmission des Ordres de n’importe lequel de vos tours, vous pouvez défausser ce jeton pour obtenir une action gratuite supplémentaire (Déplacement, Activation d’un effet spécial de Combattant, ou déclenchement d’une Action d’Éclat). Si vous possédez les deux jetons Coup Fourré, vous pouvez les utiliser tous les deux dans le même tour pour obtenir deux fois une action gratuite supplémentaire.");
+                    case 1: return _("When you reveal this token, discard it.") + ' ' + _("Immediately destroy 1 cell of your choice on your opponent's Command board by barring it.");
+                    case 2: return _("When you reveal this token, place it face up next to your Command board.") + ' ' + _("On a future turn in which you are the first player, you may discard it. If you do, you don't have to roll the dice. Instead, you may freely choose their values!");
+                    case 3: return _("When you reveal this token, discard it.") + ' ' + _("Draw a Fighter from your bag at random, and immediately add it to this Territory as a Reinforcement.");
+                    case 4: return _("When you reveal this token, discard it.") + ' ' + _("Immediately cross off the leftmost available box of the High Command area on your Command board. Apply the effects of this box, if any.");
+                    case 5: return _("When you reveal this token, place it face up next to your Command board.") + ' ' + _("During phase 3 Issuing Orders, each Foul Play token you discard allows you to gain an extra action (Move a Fighter by land or by air, Activate a special ability, or Apply the effect of a Glow Action token). If you have both Foul Play tokens, you’re allowed to use both of them during the same turn in order to gain 2 additional free actions.");
                 }
         }
     };
@@ -2031,20 +2031,20 @@ var Lumen = /** @class */ (function () {
             this.onEnteringEndScore(true);
         }
         this.setActiveDisplayButton();
-        [100, 75, 50].forEach(function (zoomFactor) {
+        [/*100, */ 75 /*, 50*/].forEach(function (zoomFactor) {
             var btnMapScroll = document.getElementById("display-map-scroll-".concat(zoomFactor));
             _this.setTooltip(btnMapScroll.id, _('Scroll in map'));
             btnMapScroll.addEventListener('click', function () { return _this.setMapScroll(zoomFactor); });
         });
         var btnFitMap = document.getElementById('display-fit-map');
         var btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
-        var btnFitMapAndBoardBis = document.getElementById('display-fit-map-and-board-bis');
+        //const btnFitMapAndBoardBis = document.getElementById('display-fit-map-and-board-bis');
         this.setTooltip(btnFitMap.id, _('Fit map to screen'));
         this.setTooltip(btnFitMapAndBoard.id, _('Fit map and board to screen'));
-        this.setTooltip(btnFitMapAndBoardBis.id, _('Fit map and board to screen'));
+        //this.setTooltip(btnFitMapAndBoardBis.id, _('Fit map and board to screen'));
         btnFitMap.addEventListener('click', function () { return _this.setFitMap(); });
         btnFitMapAndBoard.addEventListener('click', function () { return _this.setFitMapAndBoard(false); });
-        btnFitMapAndBoardBis.addEventListener('click', function () { return _this.setFitMapAndBoard(true); });
+        //btnFitMapAndBoardBis.addEventListener('click', () => this.setFitMapAndBoard(true));
         ['left', 'right', 'top', 'bottom'].forEach(function (direction) { return document.getElementById("scroll-".concat(direction)).addEventListener('click', function () { return _this.scroll(direction); }); });
         document.getElementById('map-frame').addEventListener('scroll', function () { return _this.onMapFrameScroll(); });
         this.onScreenWidthChange = function () {
@@ -2687,12 +2687,11 @@ var Lumen = /** @class */ (function () {
         helpDialog.create('lumenHelpDialog');
         helpDialog.setTitle(_("Card details").toUpperCase());
         var baseFighters = [1, 2, 3, 4, 5, 6].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-base-".concat(subType, "\"></div>\n            <div>").concat(_this.cardsManager.getTooltip(subType), "</div>\n        </div>\n        "); }).join('');
-        var bonusCards = [11, 12, 13, 14, 15, 16, 17, 18].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-bonus-".concat(subType, "\"></div>\n            <div>").concat(_this.cardsManager.getTooltip(subType), "</div>\n        </div>\n        "); }).join('');
+        var mercenaries = [11, 12, 13, 14, 15, 16, 17, 18].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-mercenaries-".concat(subType, "\"></div>\n            <div>").concat(_this.cardsManager.getTooltip(subType), "</div>\n        </div>\n        "); }).join('');
         var actions = [21, 22, 23].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-actions-".concat(subType, "\"></div>\n            <div>").concat(_this.cardsManager.getTooltip(subType), "</div>\n        </div>\n        "); }).join('');
         var missions = [31, 32, 33].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-missions-".concat(subType, "\"></div>\n            <div>").concat(_this.cardsManager.getTooltip(subType), "</div>\n        </div>\n        "); }).join('');
         var discoverTiles = "\n        <div class=\"help-section\">\n            <div id=\"help-discover-tiles-1-1\"></div>\n            <div>".concat(this.discoverTilesManager.getTooltip(1, 1), "</div>\n        </div>\n        ") + [1, 2, 3, 4, 5].map(function (subType) { return "\n        <div class=\"help-section\">\n            <div id=\"help-discover-tiles-2-".concat(subType, "\"></div>\n            <div>").concat(_this.discoverTilesManager.getTooltip(2, subType), "</div>\n        </div>\n        "); }).join('');
-        // TODO
-        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("LES COMBATANTS DE BASE"), "</h1>\n            ").concat(baseFighters, "\n            <h1>").concat(_("LES JETONS BONUS"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(bonusCards, "\n            <h1>").concat(_("LES ACTIONS D’ÉCLAT"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(actions, "\n            <h1>").concat(_("LES MISSIONS PERSONNELLES"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(missions, "\n            <h1>").concat(_("LES TUILES DECOUVERTES"), "</h1>\n            <div>").concat(_('TODO'), "</div>\n            ").concat(discoverTiles, "\n        </div>\n        ");
+        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("BASIC FIGHTERS"), "</h1>\n            ").concat(baseFighters, "\n            <h1>").concat(_("MERCENARY FIGHTERS"), "</h1>\n            <div>").concat(_("When you receive a Mercenary Fighter during phase 2 Planning Orders, place it in the slot of your High Command area you just crossed off. This Mercenary Fighter is now part of your clan, and may be deployed during phase 3 Issuing Orders of the current turn or any future turn. When you deploy it to the Battlefield, a Clan marker is placed on it to indicate it belongs to you."), "</div>\n            ").concat(mercenaries, "\n            <h1>").concat(_("GLOW ACTIONS"), "</h1>\n            <div>").concat(_("When you receive a Glow Action token during phase 2 Planning Orders, place it in the slot of your High Command area you just crossed off. This token can now be used during phase 3 Issuing Orders of the current turn or any future turn."), "</div>\n            ").concat(actions, "\n            <h1>").concat(_("SECRET MISSIONS"), "</h1>\n            <div>").concat(_("When you receive a Secret Mission token during phase 2 Planning Orders, place it in the slot of your High Command area you just crossed off. At the end of the game, before final scoring, receive a number of Objective tokens based on the success of your Secret Missions."), "</div>\n            ").concat(missions, "\n            <h1>").concat(_("DISCOVERY TOKENS"), "</h1>\n            <div>").concat(_("When 1 of your Fighters moves into a Territory containing a face-down Discovery token, flip the token face up and apply its effects."), "</div>\n            ").concat(discoverTiles, "\n        </div>\n        ");
         // Show the dialog
         helpDialog.setContent(html);
         helpDialog.show();
@@ -2705,9 +2704,9 @@ var Lumen = /** @class */ (function () {
                 { id: 2000 + subType, type: 1, subType: subType, playerId: player2id },
             ]);
         });
-        // bonus
+        // mercenaries
         [11, 12, 13, 14, 15, 16, 17, 18].forEach(function (subType) {
-            return new LineStock(_this.cardsManager, document.getElementById("help-bonus-".concat(subType))).addCard({ id: 1000 + subType, type: 1, subType: subType });
+            return new LineStock(_this.cardsManager, document.getElementById("help-mercenaries-".concat(subType))).addCard({ id: 1000 + subType, type: 1, subType: subType });
         });
         // actions
         [21, 22, 23].forEach(function (subType) {

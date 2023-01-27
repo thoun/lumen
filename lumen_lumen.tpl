@@ -66,12 +66,12 @@
         </div>
     </div>
     <div id="map-controls">
-        <button class="bgabutton bgabutton_gray" id="display-map-scroll-100" data-display="scroll-100"></button>
+        <!--<button class="bgabutton bgabutton_gray" id="display-map-scroll-100" data-display="scroll-100"></button>-->
         <button class="bgabutton bgabutton_gray" id="display-map-scroll-75" data-display="scroll-75"></button>
-        <button class="bgabutton bgabutton_gray" id="display-map-scroll-50" data-display="scroll-50"></button>
+        <!--<button class="bgabutton bgabutton_gray" id="display-map-scroll-50" data-display="scroll-50"></button>-->
         <button class="bgabutton bgabutton_gray" id="display-fit-map" data-display="fit-map-to-screen"></button>
         <button class="bgabutton bgabutton_gray" id="display-fit-map-and-board" data-display="fit-map-and-board-to-screen"></button>
-        <button class="bgabutton bgabutton_gray" id="display-fit-map-and-board-bis" data-display="fit-map-and-board-to-screen-bis"></button>
+        <!--<button class="bgabutton bgabutton_gray" id="display-fit-map-and-board-bis" data-display="fit-map-and-board-to-screen-bis"></button>-->
     </div>
 </div>
 

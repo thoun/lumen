@@ -67,7 +67,7 @@ $gameinfos = [
 // Note: if you are NOT using any tie breaker, leave the empty string.
 //
 // Example: 'tie_breaker_description' => totranslate( "Number of remaining cards in hand" ),
-'tie_breaker_description' => totranslate("En cas d’égalité, le joueur qui contrôle le territoire avec le marqueur initiative en fin de partie est déclaré vainqueur."), // TODO
+'tie_breaker_description' => totranslate("The player who controls the Territory containing the Initiative marker at the end of the game"),
 
 // If in the game, all losers are equal (no score to rank them or explicit in the rules that losers are not ranked between them), set this to true 
 // The game end result will display "Winner" for the 1st player and "Loser" for all other players
@@ -131,11 +131,8 @@ $gameinfos = [
 // Short game presentation text that will appear on the game description page, structured as an array of paragraphs.
 // Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
 // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
-'presentation' => [
-    totranslate("In LUMEN, two peoples clash in the Lost World where the seasons coexist in harmony. The People of the Day and the People of the Night are at perpetual war for possession of the Lumens."),
-    totranslate("In LUMEN, players will try to spice up their choices and recruit mercenaries by developing the skills of their factions. The game is a territorial duel driven by a roll-and-write mechanism."),
-    totranslate("Each round, the players will choose to combine the result on 2 dice in order to recruit fighters and/or to give orders to those existing on the board. Each territory is worth Lumens. With each movement, reveal the discovery tokens which will bring you Lumens or bonus actions. The player with the most Lumens wins the game."),
-    totranslate("The game comes with 7 different scenarios."),
+'presentation' => [ // from PDF rules, p2
+    totranslate("In LUMEN, two clans face each other in the Lost World, where the seasons coexist in harmony. The Day clan and the Night clan are caught in a never-ending battle for the possession of Lumen. This source of life and power represents the balance between light and dark, and only appears at dawn and dusk."),
 ],
 
 // Games tags (categories)

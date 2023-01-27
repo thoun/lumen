@@ -24,30 +24,30 @@ class DiscoverTilesManager extends CardManager<DiscoverTile> {
         this.game.setTooltip(div.id, this.getTooltip(card.type, card.subType));
     }
 
-    public getName(type: number, subType: number) { // TODO
+    public getName(type: number, subType: number) {
         switch (type) {
-            case 1: return _("Butin");
+            case 1: return _("Loot");
             case 2:
                 switch (subType) {
-                    case 1: return _("Brouillage");
-                    case 2: return _("Planification");
-                    case 3: return _("Parachutage");
-                    case 4: return _("Message prioritaire");
-                    case 5: return _("Coup fourré");
+                    case 1: return _("Interference");
+                    case 2: return _("Planning");
+                    case 3: return _("Paratrooper");
+                    case 4: return _("Priority Message");
+                    case 5: return _("Foul Play");
                 }
         }
     }
 
-    public getDescription(type: number, subType: number) { // TODO
+    public getDescription(type: number, subType: number) {
         switch (type) {
-            case 1: return _("Lorsque vous révélez un jeton Butin, laissez-le sur le Territoire jusqu’à ce qu’une faction soit en mesure de s’en emparer. Chaque jeton contient de 3 à 5 Lumens. Pour s’en emparer définitivement, il faut que la Force cumulée des Combattants d’une faction présents sur ce Territoire soit supérieure à celle des Combattants adverses présents sur ce même Territoire, avec un écart au moins égal au nombre de Lumens de ce jeton. Si aucun adversaire n’est présent sur le Territoire, sa force est égale à 0. Aussitôt qu’une faction remplie cette condition, elle s’empare du jeton Butin et marquera en fin de partie le nombre de PV indiqué au dos de ce jeton.");
+            case 1: return _("When you reveal a Loot token, leave it on its Territory until one of the clans is able to claim it. Each Loot token is worth 3 to 5 Lumen. To permanently claim a Loot token on a Territory, the combined Combat Strength of one clan's Fighters in that Territory must be bigger than the other clan's combined Combat Strength, with a difference that's equal to or higher than the number of Lumen on the Loot token. If your opponent has no Fighters on the Territory, their Combat Strength is 0. In that case, the combined Combat Strength of your Fighters must be equal to the number on the Loot token before you can claim it. As soon as a clan meets the condition, they claim the Loot token and will score its VP at the end of the game.");
             case 2:
                 switch (subType) {
-                    case 1: return _("Lorsque vous révélez ce jeton, défaussez-le. Eliminez immédiatement une cellule de votre choix sur la Fiche de Commandement adverse en la rayant.");
-                    case 2: return _("Lorsque vous révélez ce jeton, conservez-le devant vous, face visible, près de votre Fiche de Commandement. Lors d’un prochain tour, si vous êtes premier joueur uniquement, vous pouvez décider de défausser ce jeton. Dans ce cas, ne lancez pas le dés, mais placez-les sur les faces de votre choix !");
-                    case 3: return _("Lorsque vous révélez ce jeton, défaussez-le. Piochez un Combattant au hasard dans votre sac et placez-le immédiatement en Renfort sur ce Territoire.");
-                    case 4: return _("Lorsque vous révélez ce jeton, défaussez-le. Cochez immédiatement la case disponible la plus à gauche de la zone de Haut Commandement de votre Fiche de Commandement. Appliquez les conséquences de cette case, tout juste cochée, le cas échéant.");
-                    case 5: return _("Lorsque vous révélez ce jeton, conservez-le devant vous, face visible, près de votre Fiche de Commandement.Lors de la phase 3 Transmission des Ordres de n’importe lequel de vos tours, vous pouvez défausser ce jeton pour obtenir une action gratuite supplémentaire (Déplacement, Activation d’un effet spécial de Combattant, ou déclenchement d’une Action d’Éclat). Si vous possédez les deux jetons Coup Fourré, vous pouvez les utiliser tous les deux dans le même tour pour obtenir deux fois une action gratuite supplémentaire.");
+                    case 1: return _("When you reveal this token, discard it.") + ' ' + _("Immediately destroy 1 cell of your choice on your opponent's Command board by barring it.");
+                    case 2: return _("When you reveal this token, place it face up next to your Command board.") + ' ' + _("On a future turn in which you are the first player, you may discard it. If you do, you don't have to roll the dice. Instead, you may freely choose their values!");
+                    case 3: return _("When you reveal this token, discard it.") + ' ' + _("Draw a Fighter from your bag at random, and immediately add it to this Territory as a Reinforcement.");
+                    case 4: return _("When you reveal this token, discard it.") + ' ' + _("Immediately cross off the leftmost available box of the High Command area on your Command board. Apply the effects of this box, if any.");
+                    case 5: return _("When you reveal this token, place it face up next to your Command board.") + ' ' + _("During phase 3 Issuing Orders, each Foul Play token you discard allows you to gain an extra action (Move a Fighter by land or by air, Activate a special ability, or Apply the effect of a Glow Action token). If you have both Foul Play tokens, you’re allowed to use both of them during the same turn in order to gain 2 additional free actions.");
                 }
         }
     }

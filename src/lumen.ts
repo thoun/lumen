@@ -87,20 +87,20 @@ class Lumen implements LumenGame {
         }
 
         this.setActiveDisplayButton();
-        [100, 75, 50].forEach((zoomFactor : 100 | 75 | 50) => {
+        [/*100, */75/*, 50*/].forEach((zoomFactor : 100 | 75 | 50) => {
             const btnMapScroll = document.getElementById(`display-map-scroll-${zoomFactor}`);
             this.setTooltip(btnMapScroll.id, _('Scroll in map'));
             btnMapScroll.addEventListener('click', () => this.setMapScroll(zoomFactor));
         });
         const btnFitMap = document.getElementById('display-fit-map');
         const btnFitMapAndBoard = document.getElementById('display-fit-map-and-board');
-        const btnFitMapAndBoardBis = document.getElementById('display-fit-map-and-board-bis');
+        //const btnFitMapAndBoardBis = document.getElementById('display-fit-map-and-board-bis');
         this.setTooltip(btnFitMap.id, _('Fit map to screen'));
         this.setTooltip(btnFitMapAndBoard.id, _('Fit map and board to screen'));
-        this.setTooltip(btnFitMapAndBoardBis.id, _('Fit map and board to screen'));
+        //this.setTooltip(btnFitMapAndBoardBis.id, _('Fit map and board to screen'));
         btnFitMap.addEventListener('click', () => this.setFitMap());
         btnFitMapAndBoard.addEventListener('click', () => this.setFitMapAndBoard(false));
-        btnFitMapAndBoardBis.addEventListener('click', () => this.setFitMapAndBoard(true));
+        //btnFitMapAndBoardBis.addEventListener('click', () => this.setFitMapAndBoard(true));
         ['left', 'right', 'top', 'bottom'].forEach(direction => document.getElementById(`scroll-${direction}`).addEventListener('click', () => this.scroll(direction as any)));
         document.getElementById('map-frame').addEventListener('scroll', () => this.onMapFrameScroll());
 
@@ -860,9 +860,9 @@ class Lumen implements LumenGame {
         </div>
         `).join('');
 
-        const bonusCards = [11, 12, 13, 14, 15, 16, 17, 18].map(subType => `
+        const mercenaries = [11, 12, 13, 14, 15, 16, 17, 18].map(subType => `
         <div class="help-section">
-            <div id="help-bonus-${subType}"></div>
+            <div id="help-mercenaries-${subType}"></div>
             <div>${this.cardsManager.getTooltip(subType)}</div>
         </div>
         `).join('');
@@ -893,22 +893,21 @@ class Lumen implements LumenGame {
         </div>
         `).join('');
         
-        // TODO
         let html = `
         <div id="help-popin">
-            <h1>${_("LES COMBATANTS DE BASE")}</h1>
+            <h1>${_("BASIC FIGHTERS")}</h1>
             ${baseFighters}
-            <h1>${_("LES JETONS BONUS")}</h1>
-            <div>${_('TODO')}</div>
-            ${bonusCards}
-            <h1>${_("LES ACTIONS D’ÉCLAT")}</h1>
-            <div>${_('TODO')}</div>
+            <h1>${_("MERCENARY FIGHTERS")}</h1>
+            <div>${_("When you receive a Mercenary Fighter during phase 2 Planning Orders, place it in the slot of your High Command area you just crossed off. This Mercenary Fighter is now part of your clan, and may be deployed during phase 3 Issuing Orders of the current turn or any future turn. When you deploy it to the Battlefield, a Clan marker is placed on it to indicate it belongs to you.")}</div>
+            ${mercenaries}
+            <h1>${_("GLOW ACTIONS")}</h1>
+            <div>${_("When you receive a Glow Action token during phase 2 Planning Orders, place it in the slot of your High Command area you just crossed off. This token can now be used during phase 3 Issuing Orders of the current turn or any future turn.")}</div>
             ${actions}
-            <h1>${_("LES MISSIONS PERSONNELLES")}</h1>
-            <div>${_('TODO')}</div>
+            <h1>${_("SECRET MISSIONS")}</h1>
+            <div>${_("When you receive a Secret Mission token during phase 2 Planning Orders, place it in the slot of your High Command area you just crossed off. At the end of the game, before final scoring, receive a number of Objective tokens based on the success of your Secret Missions.")}</div>
             ${missions}
-            <h1>${_("LES TUILES DECOUVERTES")}</h1>
-            <div>${_('TODO')}</div>
+            <h1>${_("DISCOVERY TOKENS")}</h1>
+            <div>${_("When 1 of your Fighters moves into a Territory containing a face-down Discovery token, flip the token face up and apply its effects.")}</div>
             ${discoverTiles}
         </div>
         `;
@@ -928,9 +927,9 @@ class Lumen implements LumenGame {
                 {id: 2000 + subType, type: 1, subType, playerId: player2id } as Card,
             ])
         );
-        // bonus
+        // mercenaries
         [11, 12, 13, 14, 15, 16, 17, 18].forEach(subType => 
-            new LineStock<Card>(this.cardsManager, document.getElementById(`help-bonus-${subType}`)).addCard(
+            new LineStock<Card>(this.cardsManager, document.getElementById(`help-mercenaries-${subType}`)).addCard(
                 {id: 1000 + subType, type: 1, subType } as Card,
             )
         );

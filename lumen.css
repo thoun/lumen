@@ -1557,8 +1557,9 @@ html[data-filling-pattern=true] .circle[data-zone="19"] {
 }
 #help-popin h1 {
   color: #3d3d3d;
-  font-size: 18px;
-  margin: 8px 0;
+  font-size: 20px;
+  margin-top: 10px;
+  font-weight: bold;
 }
 #help-popin .help-section {
   color: black;
