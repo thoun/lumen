@@ -499,3 +499,30 @@ html, .mode_3d #game_play_area_background {
     }
   }
 }
+
+#zoom-notice {
+  position: absolute;
+  background: white;
+  min-width: 300px;
+  right: 170px;
+  top: 0;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px 0px #000000cc;
+
+  #hide-zoom-notice {
+      font-weight: bold;
+      cursor: pointer;
+  }
+
+  .arrow-right {
+    width: 0; 
+    height: 0; 
+    border-top: 12px solid transparent; 
+    border-bottom: 12px solid transparent;
+    border-left: 12px solid white;
+    position:absolute;
+    right:-12px;
+    top: 8px;
+  }
+}

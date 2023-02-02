@@ -2422,6 +2422,23 @@ var Lumen = /** @class */ (function () {
         var _this = this;
         return this.playersTables.find(function (playerTable) { return playerTable.playerId === _this.getPlayerId(); });
     };
+    Lumen.prototype.toggleZoomNotice = function (visible) {
+        var elem = document.getElementById('zoom-notice');
+        if (visible) {
+            if (!elem) {
+                dojo.place("\n                <div id=\"zoom-notice\">\n                    ".concat(_("Use map controls to adapt map size !"), "\n                    <div style=\"text-align: center; margin-top: 10px;\"><a id=\"hide-zoom-notice\">").concat(_("Dismiss"), "</a></div>\n                    <div class=\"arrow-right\"></div>\n                </div>\n                "), 'map-controls');
+                document.getElementById('hide-zoom-notice').addEventListener('click', function () {
+                    var select = document.getElementById('preference_control_299');
+                    select.value = '2';
+                    var event = new Event('change');
+                    select.dispatchEvent(event);
+                });
+            }
+        }
+        else if (elem) {
+            elem.parentElement.removeChild(elem);
+        }
+    };
     Lumen.prototype.setFitMap = function () {
         this.display = 'fit-map-to-screen';
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
@@ -2567,11 +2584,18 @@ var Lumen = /** @class */ (function () {
         dojo.query(".preference_control").connect("onchange", onchange);
         // Call onPreferenceChange() now
         dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
+        try {
+            document.getElementById('preference_control_299').closest(".preference_choice").style.display = 'none';
+        }
+        catch (e) { }
     };
     Lumen.prototype.onPreferenceChange = function (prefId, prefValue) {
         switch (prefId) {
             case 201:
                 document.getElementsByTagName('html')[0].dataset.fillingPattern = (prefValue == 2).toString();
+                break;
+            case 299:
+                this.toggleZoomNotice(prefValue == 1);
                 break;
         }
     };

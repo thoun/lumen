@@ -522,6 +522,31 @@ class Lumen implements LumenGame {
         return this.playersTables.find(playerTable => playerTable.playerId === this.getPlayerId());
     }
 
+    private toggleZoomNotice(visible: boolean) {
+        const elem = document.getElementById('zoom-notice');
+        if (visible) {
+            if (!elem) {
+                dojo.place(`
+                <div id="zoom-notice">
+                    ${_("Use map controls to adapt map size !")}
+                    <div style="text-align: center; margin-top: 10px;"><a id="hide-zoom-notice">${_("Dismiss")}</a></div>
+                    <div class="arrow-right"></div>
+                </div>
+                `, 'map-controls');
+
+                document.getElementById('hide-zoom-notice').addEventListener('click', () => {
+                    const select = document.getElementById('preference_control_299') as HTMLSelectElement;
+                    select.value = '2';
+    
+                    var event = new Event('change');
+                    select.dispatchEvent(event);
+                });
+            }
+        } else if (elem) {
+            elem.parentElement.removeChild(elem);
+        }
+    }
+
     private setFitMap() {
         this.display = 'fit-map-to-screen';
         localStorage.setItem(LOCAL_STORAGE_DISPLAY_KEY, this.display);
@@ -678,12 +703,19 @@ class Lumen implements LumenGame {
           dojo.query("#ingame_menu_content .preference_control"),
           el => onchange({ target: el })
         );
+
+        try {
+            (document.getElementById('preference_control_299').closest(".preference_choice") as HTMLDivElement).style.display = 'none';
+        } catch (e) {}
     }
       
     private onPreferenceChange(prefId: number, prefValue: number) {
         switch (prefId) {
             case 201: 
                 (document.getElementsByTagName('html')[0] as HTMLHtmlElement).dataset.fillingPattern = (prefValue == 2).toString();
+                break;
+            case 299: 
+                this.toggleZoomNotice(prefValue == 1);
                 break;
         }
     }
