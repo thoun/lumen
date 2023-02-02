@@ -851,9 +851,15 @@ class Lumen implements LumenGame {
         scenarioObjectives.innerHTML = `<ul>${this.scenario.objectives.map(description => 
             `<li>
                 <span id="objective-tokens-legend-${description.letters[0][0]}" class="objective-tokens-legend-wrapper">
-                    ${description.visibleLetters.map(letter => `<div class="objective-description-token token-with-letter">${letter}</div>`).join('')}
-                    <div id="objective-tokens-legend-${description.letters[0][0]}-f28700" class="objective-tokens-legend" data-color="f28700"></div>
-                    <div id="objective-tokens-legend-${description.letters[0][0]}-1f3067" class="objective-tokens-legend" data-color="1f3067"></div>
+                    ${description.visibleLetters.map(letter => `<div class="objective-description-token token-with-letter">${letter}
+                        <div id="objective-tokens-legend-${letter}-f28700" class="objective-tokens-legend" data-color="f28700"></div>
+                        <div id="objective-tokens-legend-${letter}-1f3067" class="objective-tokens-legend" data-color="1f3067"></div>
+                    </div>`).join('')}
+                    ${!description.visibleLetters.length || (description.visibleLetters.length === 1 && description.visibleLetters[0] === '') ? `
+                        <div id="objective-tokens-legend-${description.letters[0][0]}-f28700" class="objective-tokens-legend" data-color="f28700"></div>
+                        <div id="objective-tokens-legend-${description.letters[0][0]}-1f3067" class="objective-tokens-legend" data-color="1f3067"></div>
+                    ` : ''}
+                    
                 </span>
                 <strong>${description.timing ?? ''}</strong>
                 <strong>${description.type ?? ''}</strong>

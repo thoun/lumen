@@ -167,8 +167,8 @@ trait DebugUtilTrait {
 
 		// These are the id's from the BGAtable I need to debug.
 		$ids = [
-            83846198,
-            86175279
+            84319026,
+86175279
 		];
 
 		// Id of the first player in BGA Studio
@@ -189,7 +189,8 @@ trait DebugUtilTrait {
 			$this->DbQuery("UPDATE circle SET player_id=$sid WHERE player_id = $id" );
 			$this->DbQuery("UPDATE operation SET player_id=$sid WHERE player_id = $id" );
 			$this->DbQuery("UPDATE realized_objective SET player_id=$sid WHERE player_id = $id" );
-			
+			$this->DbQuery("UPDATE realized_objective SET realized_by=$sid WHERE realized_by = $id" );
+            
 			++$sid;
 		}
 
