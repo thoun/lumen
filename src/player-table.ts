@@ -175,14 +175,15 @@ class PlayerTable {
     public setPossibleOperations(operations: { [operation: number]: Operation; }) {
         Object.keys(operations).forEach(key => {
             const operation = operations[key];
-            if (operation.possible) {
+            if (!operation.disabled) {
                 const operationNumberDiv = document.getElementById(`player-table-${this.playerId}-operation${key}-number${operation.currentNumber + 1}`);
                 operationNumberDiv.classList.add('ghost');
                 operationNumberDiv.innerHTML = `<img src="${g_gamethemeurl}img/mul.gif"/>`;
             }
 
             const bubble = document.getElementById(`player-table-${this.playerId}-operation${key}-bubble`);
-            bubble.innerHTML = operation.possible ? `<span>${operation.value}</span>` : `<img src="${g_gamethemeurl}img/mul.gif"/>`;
+            console.log(operation);
+            bubble.innerHTML = !operation.disabled ? `<span>${operation.value}</span>` : `<img src="${g_gamethemeurl}img/mul.gif"/>`;
             bubble.dataset.visible = 'true';
         });
     }

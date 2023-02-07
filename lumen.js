@@ -1843,13 +1843,14 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         Object.keys(operations).forEach(function (key) {
             var operation = operations[key];
-            if (operation.possible) {
+            if (!operation.disabled) {
                 var operationNumberDiv = document.getElementById("player-table-".concat(_this.playerId, "-operation").concat(key, "-number").concat(operation.currentNumber + 1));
                 operationNumberDiv.classList.add('ghost');
                 operationNumberDiv.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
             }
             var bubble = document.getElementById("player-table-".concat(_this.playerId, "-operation").concat(key, "-bubble"));
-            bubble.innerHTML = operation.possible ? "<span>".concat(operation.value, "</span>") : "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
+            console.log(operation);
+            bubble.innerHTML = !operation.disabled ? "<span>".concat(operation.value, "</span>") : "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
             bubble.dataset.visible = 'true';
         });
     };
