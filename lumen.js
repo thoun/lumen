@@ -3011,6 +3011,8 @@ var Lumen = /** @class */ (function () {
             ['updateVisibleScore', 1],
             ['updateHiddenScore', 1],
             ['setRealizedObjective', 1],
+            ['elimination', 1],
+            ['doubleElimination', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -3211,6 +3213,15 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.notif_setRealizedObjective = function (notif) {
         this.markRealizedObjective(notif.args.letter, notif.args.realizedBy);
+    };
+    Lumen.prototype.notif_elimination = function (notif) {
+        var _a, _b;
+        (_a = this.scoreCtrl[notif.args.playerId]) === null || _a === void 0 ? void 0 : _a.toValue(0);
+        (_b = this.scoreCtrl[notif.args.opponentId]) === null || _b === void 0 ? void 0 : _b.toValue(1);
+    };
+    Lumen.prototype.notif_doubleElimination = function () {
+        var _this = this;
+        Object.keys(this.gamedatas.players).forEach(function (playerId) { var _a; return (_a = _this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(0); });
     };
     Lumen.prototype.markRealizedObjective = function (letter, realizedBy) {
         var color = this.getPlayerColor(realizedBy);

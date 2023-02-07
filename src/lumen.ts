@@ -1310,6 +1310,8 @@ class Lumen implements LumenGame {
             ['updateVisibleScore', 1],
             ['updateHiddenScore', 1],
             ['setRealizedObjective', 1],
+            ['elimination', 1],
+            ['doubleElimination', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -1542,6 +1544,15 @@ class Lumen implements LumenGame {
 
     notif_setRealizedObjective(notif: Notif<NotifSetRealizedObjectiveArgs>) {
         this.markRealizedObjective(notif.args.letter, notif.args.realizedBy);
+    }
+
+    notif_elimination(notif: Notif<any>) {
+        (this as any).scoreCtrl[notif.args.playerId]?.toValue(0);
+        (this as any).scoreCtrl[notif.args.opponentId]?.toValue(1);
+    }
+
+    notif_doubleElimination() {
+        Object.keys(this.gamedatas.players).forEach(playerId => (this as any).scoreCtrl[playerId]?.toValue(0));
     }
 
     private markRealizedObjective(letter: string, realizedBy: number) {

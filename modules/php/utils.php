@@ -1178,4 +1178,35 @@ trait UtilTrait {
 
         return $points;
     }
+
+    function checkPlayerElimination() { // return player(s) eliminated
+        $playersIds = $this->getPlayersIds();
+        $playersFightersCount = [];
+        foreach ($playersIds as $playerId) {
+            $playersFightersCount[$playerId] = count($this->getCardsByLocation('territory', null, $playerId));
+        }
+
+        if ($this->array_every($playersFightersCount, fn($count) => $count === 0)) {
+            self::notifyAllPlayers("doubleElimination", clienttranslate('There is no fighter on the territories for both players, they are both eliminated'), []);
+            $this->DbQuery("UPDATE player SET `player_score` = 0, `player_score_aux` = 0");
+
+            return true;
+        }
+
+        $playerWithNoFighters = $this->array_find_key($playersFightersCount, fn($count) => $count === 0);
+        if ($playerWithNoFighters !== null) {
+            $opponentId = $this->getOpponentId($playerWithNoFighters);
+            self::notifyAllPlayers("elimination", clienttranslate('${player_name} is eliminated because there is no fighter on the territories for this player'), [
+                'playerId' => $playerWithNoFighters,
+                'player_name' => $this->getPlayerName($playerWithNoFighters),
+                'opponentId' => $opponentId,
+            ]);
+            $this->DbQuery("UPDATE player SET `player_score` = 0, `player_score_aux` = 0 WHERE player_id = $playerWithNoFighters");
+            $this->DbQuery("UPDATE player SET `player_score` = 1, `player_score_aux` = 0 WHERE player_id = $opponentId");
+
+            return true;
+        }
+
+        return false;
+    }
 }

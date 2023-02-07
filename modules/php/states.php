@@ -83,6 +83,11 @@ trait StateTrait {
     }
 
     function stNextPlayer() {
+        if ($this->checkPlayerElimination()) {
+            $this->gamestate->jumpToState(ST_END_GAME);
+            return;
+        }
+
         $playerId = intval($this->getActivePlayerId());
         $this->refillReserve($playerId);
 
