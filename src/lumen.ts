@@ -737,7 +737,7 @@ class Lumen implements LumenGame {
     }
 
     public getTerritoryTooltip(lumens: number) {
-        return _('Les Territoires ${season} accueillent ${lumens} Lumen(s) = ${lumens} PV par Territoire contrôlé.')
+        return _('The ${season} Territories score ${lumens} Lumen. = ${lumens} VP per Territory you control.')
         .replace('${season}', this.getSeasonName(lumens))
         .replace(/\${lumens}/g, lumens);
     }
