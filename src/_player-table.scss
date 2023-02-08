@@ -1,14 +1,14 @@
-$circleWidth: 49.7px;
+$circleWidth: 51px;
 
 .player-table {
   width: 960px;
-  height: 410px;
+  height: 420px;
   position: relative;
   margin: 10px;
 
   .background {
     position: absolute;
-    top: 33px; // height: 
+    top: 43px; // height: 
     height: 377px;
     //bottom: 0;
     left: 0;
@@ -17,10 +17,16 @@ $circleWidth: 49.7px;
     box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.5);
 
     &[data-color="f28700"] {
-      background-image: url('img/playerboard-day.png');
+      background-image: url('img/playerboard-day.jpg');
     }
     &[data-color="1f3067"] {
-      background-image: url('img/playerboard-night.png');
+      background-image: url('img/playerboard-night.jpg');
+    }
+  }
+
+  &[data-color="1f3067"] {
+    .circles {
+      top: 155px;
     }
   }
 
@@ -98,22 +104,22 @@ $circleWidth: 49.7px;
 
   .reserve {
     position: absolute;
-    width: 327px;
-    left: 20px;
+    width: 333px;
+    left: 18px;
     justify-content: space-between !important;
   }
   .highCommand {
     position: absolute;
-    width: 548px;
-    left: 375px;
+    width: 558px;
+    left: 385px;
     justify-content: space-between !important;
   }
 
   .checks {
     position: absolute;
     width: 540px;
-    left: 380px;
-    top: 106px;
+    left: 388px;
+    top: 107px;
 
     .check {
       position: absolute;
@@ -130,13 +136,13 @@ $circleWidth: 49.7px;
       }
       @for $index from 3 through 4 {
         &[data-number="#{$index}"] {
-            left: #{139px + ($index - 3) * 22px};
+            left: #{143px + ($index - 3) * 22px};
         }
       }
 
       @for $index from 5 through 7 {
         &[data-number="#{$index}"] {
-            left: #{262px + ($index - 5) * 112px};
+            left: #{269px + ($index - 5) * 115px};
         }
       }
 
@@ -150,14 +156,14 @@ $circleWidth: 49.7px;
     position: absolute;
     display: flex;
     flex-wrap: wrap;
-    left: 855px;
-    top: 177px;
+    left: 858px;
+    top: 193px;
 
     .operation-bubble {
       cursor: pointer;
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 21px;
+      height: 20.5px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -168,7 +174,7 @@ $circleWidth: 49.7px;
 
       @for $index from 1 through 5 {
         &[data-operation="#{$index}"] {
-            top: #{($index - 1) * 20px};
+            top: #{2 + ($index - 1) * 20.5px};
         }
       }
 
@@ -199,20 +205,20 @@ $circleWidth: 49.7px;
 
     .operation-number {
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 21px;
+      height: 20.5px;
       display: flex;
       justify-content: center;
       align-items: center;
 
       @for $index from 1 through 5 {
         &[data-operation="#{$index}"] {
-            top: #{($index - 1) * 20px};
+            top: #{($index - 1) * 20.5px};
         }
       }
       @for $index from 1 through 4 {
         &[data-number="#{$index}"] {
-            left: #{($index - 1) * 20px};
+            left: #{($index - 1) * 21px};
         }
       }
 
@@ -254,8 +260,11 @@ $circleWidth: 49.7px;
     position: absolute;
     display: flex;
     flex-wrap: wrap;
-    left: 416px;
-    top: 151px;
+    left: 425px;
+    top: 164px;
+      
+    width: 300px;
+    height: 200px;
 
     .circle {
       position: absolute;
@@ -270,7 +279,7 @@ $circleWidth: 49.7px;
       letter-spacing: -2px;
       color: #3d3d3d;
       background-size: contain;
-      background-position: center center;  
+      background-position: center center;
 
       &.ghost {
         opacity: 0.2;
@@ -298,38 +307,38 @@ $circleWidth: 49.7px;
       @for $index from 1 through 3 {
         &[data-circle="#{$index}"] {
           top: 0px;
-          left: #{145px + ($circleWidth * ($index - 1))};
+          left: #{146px + ($circleWidth * ($index - 1))};
         }
       }
       &[data-circle="3"] {
         top: 0px;
-        left: #{145px + ($circleWidth * 3)};
+        left: #{146px + ($circleWidth * 3)};
       }
       @for $index from 4 through 8 {
         &[data-circle="#{$index}"] {
-          top: 42px;
+          top: 43px;
           left: #{120px + ($circleWidth * ($index - 4))};
         }
       }
       @for $index from 9 through 14 {
         &[data-circle="#{$index}"] {
-          top: 86px;
+          top: 88px;
           left: #{45px + ($circleWidth * ($index - 9))};
         }
       }
       &[data-circle="15"] {
-        top: 111px;
+        top: 114px;
         left: 0;
       }
       @for $index from 16 through 18 {
         &[data-circle="#{$index}"] {
-          top: 136px;
+          top: 140px;
           left: #{45px + ($circleWidth * ($index - 16))};
         }
       }
       @for $index from 19 through 20 {
         &[data-circle="#{$index}"] {
-          top: 180px;
+          top: 185px;
           left: #{70px + ($circleWidth * ($index - 19))};
         }
       }
@@ -361,13 +370,13 @@ $circleWidth: 49.7px;
     position: absolute;
     width: 112px;
     height: 73px;
-    top: 311px;
+    top: 319px;
 
     &.zone {
-      left: 671px;      
+      left: 687px;      
     }
     &.link {
-      left: 787px;      
+      left: 806px;      
     }
   }
   .check-legend {

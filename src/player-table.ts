@@ -1,7 +1,7 @@
 const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
-const CIRCLE_WIDTH = 49.7;
+const CIRCLE_WIDTH = 51;
 const CIRCLES = [];
 
 [1, 2, 3].forEach(index => CIRCLES[index] = [0, 145 + CIRCLE_WIDTH * (index == 3 ? 3 : index - 1)]);
@@ -56,7 +56,7 @@ class PlayerTable {
         this.currentPlayer = this.playerId == this.game.getPlayerId();
 
         let html = `
-        <div id="player-table-${this.playerId}" class="player-table">
+        <div id="player-table-${this.playerId}" class="player-table" data-color="${player.color}">
             <div class="background" data-color="${player.color}"></div>
             <div id="player-table-${this.playerId}-hand-cards" class="hand cards" data-player-id="${this.playerId}" data-current-player="${this.currentPlayer.toString()}" data-my-hand="${this.currentPlayer.toString()}"></div>
             <div id="player-table-${this.playerId}-checks" class="checks">`;
