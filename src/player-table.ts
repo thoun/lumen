@@ -5,11 +5,11 @@ const CIRCLE_WIDTH = 51;
 const CIRCLES = [];
 
 [1, 2, 3].forEach(index => CIRCLES[index] = [0, 145 + CIRCLE_WIDTH * (index == 3 ? 3 : index - 1)]);
-[4, 5, 6, 7, 8].forEach(index => CIRCLES[index] = [42, 120 + CIRCLE_WIDTH * (index - 4)]);
-[9, 10, 11, 12, 13, 14].forEach(index => CIRCLES[index] = [86, 45 + CIRCLE_WIDTH * (index - 9)]);
-CIRCLES[15] = [111, 0];
-[16, 17, 18].forEach(index => CIRCLES[index] = [136, 45 + CIRCLE_WIDTH * (index - 16)]);
-[19, 20].forEach(index => CIRCLES[index] = [180, 70 + CIRCLE_WIDTH * (index - 19)]);
+[4, 5, 6, 7, 8].forEach(index => CIRCLES[index] = [43, 120 + CIRCLE_WIDTH * (index - 4)]);
+[9, 10, 11, 12, 13, 14].forEach(index => CIRCLES[index] = [88, 45 + CIRCLE_WIDTH * (index - 9)]);
+CIRCLES[15] = [114, 0];
+[16, 17, 18].forEach(index => CIRCLES[index] = [140, 45 + CIRCLE_WIDTH * (index - 16)]);
+[19, 20].forEach(index => CIRCLES[index] = [185, 70 + CIRCLE_WIDTH * (index - 19)]);
 
 class CompressedLineStock<T> extends ManualPositionStock<T> {
 

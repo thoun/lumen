@@ -10,7 +10,6 @@ class CardsManager extends CardManager<Card> {
                 if (card.playerId) {
                     div.dataset.color = game.getPlayerColor(card.playerId);
                 }
-                game.setTooltip(div.id, this.getTooltip(card.subType));
 
                 if (card.type == 10 && card.playerId) {
                     const playerToken = document.createElement('div');
@@ -18,6 +17,14 @@ class CardsManager extends CardManager<Card> {
                     playerToken.dataset.color = game.getPlayerColor(card.playerId);
                     div.appendChild(playerToken);
                 }
+            },
+            setupFrontDiv: (card, div) => {
+                div.id = `${this.getId(card)}-front`;
+                game.setTooltip(div.id, this.getTooltip(card.subType, _('Active')));
+            },
+            setupBackDiv: (card, div) => {
+                div.id = `${this.getId(card)}-back`;
+                game.setTooltip(div.id, this.getTooltip(card.subType, _('Inactive')));
             },
         });
     }  
@@ -126,11 +133,15 @@ class CardsManager extends CardManager<Card> {
         }
     }
 
-    public getTooltip(subType: number) {
-        return `<h3>${this.getName(subType)}</h3>
+    public getTooltip(subType: number, side?: string) {
+        let html = `<h3>${this.getName(subType)}</h3>
         ${subType < 20 ? `${_("Combat Strength:")} <strong>${this.getStrength(subType)} <div class="strength-icon"></div></strong>` : ''}
         <p>${this.getDescription(subType)}</p>
         `;
+        if (side && subType > 2 && subType < 20) {
+            html += `<p><strong>${_('Side:')}</strong>  ${side}</p>`;
+        }
+        return html;
     }
 
     public getCurrentStrength(fighter: Card): number {

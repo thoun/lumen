@@ -796,13 +796,20 @@ var CardsManager = /** @class */ (function (_super) {
                 if (card.playerId) {
                     div.dataset.color = game.getPlayerColor(card.playerId);
                 }
-                game.setTooltip(div.id, _this.getTooltip(card.subType));
                 if (card.type == 10 && card.playerId) {
                     var playerToken = document.createElement('div');
                     playerToken.classList.add('player-token');
                     playerToken.dataset.color = game.getPlayerColor(card.playerId);
                     div.appendChild(playerToken);
                 }
+            },
+            setupFrontDiv: function (card, div) {
+                div.id = "".concat(_this.getId(card), "-front");
+                game.setTooltip(div.id, _this.getTooltip(card.subType, _('Active')));
+            },
+            setupBackDiv: function (card, div) {
+                div.id = "".concat(_this.getId(card), "-back");
+                game.setTooltip(div.id, _this.getTooltip(card.subType, _('Inactive')));
             },
         }) || this;
         _this.game = game;
@@ -892,8 +899,12 @@ var CardsManager = /** @class */ (function (_super) {
             case 33: return _("Receive 1 Objective token for each of your Territories containing 2 Shroomlings at the end of the game, and 1 additional Objective token for each additional Shroomling in those Territories.");
         }
     };
-    CardsManager.prototype.getTooltip = function (subType) {
-        return "<h3>".concat(this.getName(subType), "</h3>\n        ").concat(subType < 20 ? "".concat(_("Combat Strength:"), " <strong>").concat(this.getStrength(subType), " <div class=\"strength-icon\"></div></strong>") : '', "\n        <p>").concat(this.getDescription(subType), "</p>\n        ");
+    CardsManager.prototype.getTooltip = function (subType, side) {
+        var html = "<h3>".concat(this.getName(subType), "</h3>\n        ").concat(subType < 20 ? "".concat(_("Combat Strength:"), " <strong>").concat(this.getStrength(subType), " <div class=\"strength-icon\"></div></strong>") : '', "\n        <p>").concat(this.getDescription(subType), "</p>\n        ");
+        if (side && subType > 2 && subType < 20) {
+            html += "<p><strong>".concat(_('Side:'), "</strong>  ").concat(side, "</p>");
+        }
+        return html;
     };
     CardsManager.prototype.getCurrentStrength = function (fighter) {
         if (fighter.played) {
@@ -1719,11 +1730,11 @@ var log = isDebug ? console.log.bind(window.console) : function () { };
 var CIRCLE_WIDTH = 51;
 var CIRCLES = [];
 [1, 2, 3].forEach(function (index) { return CIRCLES[index] = [0, 145 + CIRCLE_WIDTH * (index == 3 ? 3 : index - 1)]; });
-[4, 5, 6, 7, 8].forEach(function (index) { return CIRCLES[index] = [42, 120 + CIRCLE_WIDTH * (index - 4)]; });
-[9, 10, 11, 12, 13, 14].forEach(function (index) { return CIRCLES[index] = [86, 45 + CIRCLE_WIDTH * (index - 9)]; });
-CIRCLES[15] = [111, 0];
-[16, 17, 18].forEach(function (index) { return CIRCLES[index] = [136, 45 + CIRCLE_WIDTH * (index - 16)]; });
-[19, 20].forEach(function (index) { return CIRCLES[index] = [180, 70 + CIRCLE_WIDTH * (index - 19)]; });
+[4, 5, 6, 7, 8].forEach(function (index) { return CIRCLES[index] = [43, 120 + CIRCLE_WIDTH * (index - 4)]; });
+[9, 10, 11, 12, 13, 14].forEach(function (index) { return CIRCLES[index] = [88, 45 + CIRCLE_WIDTH * (index - 9)]; });
+CIRCLES[15] = [114, 0];
+[16, 17, 18].forEach(function (index) { return CIRCLES[index] = [140, 45 + CIRCLE_WIDTH * (index - 16)]; });
+[19, 20].forEach(function (index) { return CIRCLES[index] = [185, 70 + CIRCLE_WIDTH * (index - 19)]; });
 var CompressedLineStock = /** @class */ (function (_super) {
     __extends(CompressedLineStock, _super);
     function CompressedLineStock(manager, element, cardWidth) {

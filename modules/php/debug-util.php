@@ -14,7 +14,7 @@ trait DebugUtilTrait {
         $this->debugTestZones(2343492);
         $this->debugTestLinks(2343493);
 
-        //$this->debugAddPlayerEverywhere(2343492, 10);
+        $this->debugAddPlayerEverywhere(2343492, 10);
         //$this->debugAddPlayerEverywhere(2343493, 8);
 
         //$this->debugAddObjectiveToken(2343492, 1);
