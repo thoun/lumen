@@ -355,7 +355,10 @@ trait ActionTrait {
 
         $currentAction = $this->getCurrentAction();
         if ($currentAction->type != 'MOVE' || $currentAction->remaining == 0) {
-            throw new BgaUserException("No remaining action");
+            $remainingActions = $this->getRemainingActions();
+            if ($remainingActions->currentFoulPlayId == null) {
+                throw new BgaUserException("No remaining action");
+            }
         }
         if (intval($this->getGameStateValue(PLAYER_CURRENT_MOVE)) > 0) {
             throw new BgaUserException("Impossible to activate a fighter now");
