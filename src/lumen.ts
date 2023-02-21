@@ -1557,9 +1557,14 @@ class Lumen implements LumenGame {
 
     private markRealizedObjective(letter: string, realizedBy: number) {
         const color = this.getPlayerColor(realizedBy);
-        document.getElementById(`objective-tokens-legend-${letter[0]}-${color}`).insertAdjacentHTML('beforeend', `
-            <div class="player-token" data-color="${color}"></div>
-        `);
+        const div = document.getElementById(`objective-tokens-legend-${letter[0]}-${color}`);
+        if (div) {
+            div.insertAdjacentHTML('beforeend', `
+                <div class="player-token" data-color="${color}"></div>
+            `);
+        } else {
+            console.warn('no objective marker for', letter[0], color);
+        }
     }
 
     private seasonToLumens(season: string) {        

@@ -3237,7 +3237,13 @@ var Lumen = /** @class */ (function () {
     };
     Lumen.prototype.markRealizedObjective = function (letter, realizedBy) {
         var color = this.getPlayerColor(realizedBy);
-        document.getElementById("objective-tokens-legend-".concat(letter[0], "-").concat(color)).insertAdjacentHTML('beforeend', "\n            <div class=\"player-token\" data-color=\"".concat(color, "\"></div>\n        "));
+        var div = document.getElementById("objective-tokens-legend-".concat(letter[0], "-").concat(color));
+        if (div) {
+            div.insertAdjacentHTML('beforeend', "\n                <div class=\"player-token\" data-color=\"".concat(color, "\"></div>\n            "));
+        }
+        else {
+            console.warn('no objective marker for', letter[0], color);
+        }
     };
     Lumen.prototype.seasonToLumens = function (season) {
         switch (season) {
