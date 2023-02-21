@@ -3,6 +3,10 @@
 .player-board {
   &:not(#spectatorbox) {
     color: white;
+
+    .spectator-mode {
+      color: black;
+    }
   }
 
   .player-name {

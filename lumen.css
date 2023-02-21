@@ -915,6 +915,9 @@ body > .card {
 .player-board:not(#spectatorbox) {
   color: white;
 }
+.player-board:not(#spectatorbox) .spectator-mode {
+  color: black;
+}
 .player-board .player-name a {
   color: white !important;
 }
