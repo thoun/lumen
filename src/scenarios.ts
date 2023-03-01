@@ -224,7 +224,7 @@ class Scenario extends ScenarioInfos {
       ];
       case 2: return [
         new ObjectiveDescription(['', ''], ['1'], DURING_GAME, null, _("Each player who manages to empty their colored bag receives 2 Objective tokens (maximum once per player).")),
-        new ObjectiveDescription([''], ['5'],  END_GAME, null, _("The player with the fewest cells on their Command board that aren't part of an Area or a Chain of Orders receives an Objective token*. In case of a tie, neither player receives the Objective token.")),
+        new ObjectiveDescription([''], ['2'],  END_GAME, null, _("The player with the fewest cells on their Command board that aren't part of an Area or a Chain of Orders receives an Objective token*. In case of a tie, neither player receives the Objective token.")),
       ];
       case 3: return [
         new ObjectiveDescription(['A', 'B'], ['A', 'B'],  DURING_GAME, FRONTIERS, _("The first player to seize control of the 3 border Territories marked A or the 3 border Territories marked B immediately receives an Objective token.")),
@@ -239,7 +239,7 @@ class Scenario extends ScenarioInfos {
       ];
       case 6: return [
         new ObjectiveDescription(['A', 'B'], ['A', 'B'], DURING_GAME, FRONTIERS, _("The first player to seize control of the 2 border Territories marked A or the 2 border Territories marked B immediately receives an Objective token.")),
-        new ObjectiveDescription(['', ''], ['5'], END_GAME, null, _("The player with the most Fighters in the Winter Territories receives 2 Objective tokens. In case of a tie, neither player receives the Objective tokens.")),
+        new ObjectiveDescription(['', ''], ['2'], END_GAME, null, _("The player with the most Fighters in the Winter Territories receives 2 Objective tokens. In case of a tie, neither player receives the Objective tokens.")),
       ];
       case 7: return [
         new ObjectiveDescription(['A'], ['A'], DURING_GAME, FRONTIERS, _("The first player to seize control of the 2 border Territories marked A immediately receives an Objective token.")),

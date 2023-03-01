@@ -316,7 +316,7 @@ trait StateTrait {
             case 6:
                 $initiativeMarkerControlledPlayer = $this->getTerritoryControlledPlayer(intval($this->getGameStateValue(INITIATIVE_MARKER_TERRITORY)));
                 $playersIds = $this->getPlayersIds();
-                $monstWinterFighters = null;
+                $mostWinterFighters = null;
                 $winterFightersCountByPlayer = [];
                 foreach ($playersIds as $playerId) {
                     $playerFighters = $this->getCardsByLocation('territory', null, $playerId);
@@ -324,16 +324,16 @@ trait StateTrait {
                 }
 
                 if ($winterFightersCountByPlayer[$playersIds[0]] > $winterFightersCountByPlayer[$playersIds[1]]) {
-                    $monstWinterFighters = $playersIds[0];
+                    $mostWinterFighters = $playersIds[0];
                 } else if ($winterFightersCountByPlayer[$playersIds[1]] > $winterFightersCountByPlayer[$playersIds[0]]) {
-                    $monstWinterFighters = $playersIds[1];
+                    $mostWinterFighters = $playersIds[1];
                 }
 
-                if ($monstWinterFighters !== null) {
-                    $this->takeScenarioObjectiveToken($monstWinterFighters);
-                    $this->setRealizedObjective('2', $monstWinterFighters);
+                if ($mostWinterFighters !== null) {
+                    $this->takeScenarioObjectiveToken($mostWinterFighters, null, 2);
+                    $this->setRealizedObjective('2', $mostWinterFighters);
                     $this->incStat(1, 'completedObjectives');
-                    $this->incStat(1, 'completedObjectives', $monstWinterFighters);
+                    $this->incStat(1, 'completedObjectives', $mostWinterFighters);
                 }
 
                 break;
