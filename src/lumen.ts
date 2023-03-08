@@ -15,6 +15,7 @@ const LOCAL_STORAGE_DISPLAY_KEY = 'Lumen-display';
 class Lumen implements LumenGame {
     public mapZoom: number = 1;
     public zoom: number = 1;
+    public animationManager: AnimationManager;
     public cardsManager: CardsManager;
     public discoverTilesManager: DiscoverTilesManager;
     public objectiveTokensManager: ObjectiveTokensManager;
@@ -61,6 +62,7 @@ class Lumen implements LumenGame {
 
         log('gamedatas', gamedatas);
 
+        this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
         this.discoverTilesManager = new DiscoverTilesManager(this);
         this.objectiveTokensManager = new ObjectiveTokensManager(this);
@@ -1394,11 +1396,11 @@ class Lumen implements LumenGame {
         const destinationId = `first-player-token-wrapper-${notif.args.playerId}`;
         const originId = firstPlayerToken.parentElement.id;
         if (destinationId !== originId) {
-            document.getElementById(destinationId).appendChild(firstPlayerToken);
-            stockSlideAnimation({
-                element: firstPlayerToken,
-                fromElement: document.getElementById(originId),
-            });
+            this.animationManager.attachWithSlideAnimation(
+                firstPlayerToken,
+                document.getElementById(destinationId),
+                { zoom: 1 },
+            );
         }
     } 
 

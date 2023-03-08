@@ -106,6 +106,10 @@ class TableCenter {
             this.territoriesStocks[territoryInfos.id].onAnyClick = () => {
                 if ((this.game as any).gamedatas.gamestate.name == 'chooseTerritory') {
                     this.game.territoryClick(territoryInfos.id);
+                } else {
+                    this.territoriesStocks[territoryInfos.id].addCards([
+                        { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
+                    ]);
                 }
             };
 
@@ -142,11 +146,10 @@ class TableCenter {
     public moveInitiativeMarker(territoryId: number) {
         const previousTerritory = this.initiativeMarker.parentElement.parentElement;
         const territory = document.getElementById(`territory-${territoryId}`);
-        territory.appendChild(this.initiativeMarker);
-        stockSlideAnimation({
-            element: this.initiativeMarker,
-            fromElement: previousTerritory,
-        });
+        this.game.animationManager.attachWithSlideAnimation(
+            this.initiativeMarker,
+            territory,
+        );
         this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
         this.territoriesStocks[territoryId].addInitiativeMarker();
     }

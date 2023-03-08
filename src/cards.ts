@@ -2,6 +2,7 @@ class CardsManager extends CardManager<Card> {
 
     constructor(public game: LumenGame) {
         super(game, {
+            animationManager: game.animationManager,
             getId: card => `card-${card.id}`,
             setupDiv: (card, div) => {
                 div.classList.add('fighter');

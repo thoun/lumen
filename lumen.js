@@ -56,41 +56,101 @@ function slideFromObject(game, object, fromId) {
 /**
  * Linear slide of the card from origin to destination.
  *
+ * @param element the element to animate. The element should be attached to the destination element before the animation starts.
  * @param settings an `AnimationSettings` object
  * @returns a promise when animation ends
  */
-function stockSlideAnimation(settings) {
+function slideAnimation(element, settings) {
     var promise = new Promise(function (success) {
-        var _a;
-        var originBR = settings.fromElement.getBoundingClientRect();
-        var destinationBR = settings.element.getBoundingClientRect();
-        var deltaX = (destinationBR.left + destinationBR.right) / 2 - (originBR.left + originBR.right) / 2;
-        var deltaY = (destinationBR.top + destinationBR.bottom) / 2 - (originBR.top + originBR.bottom) / 2;
-        settings.element.style.zIndex = '10';
-        settings.element.style.transform = "translate(".concat(-deltaX, "px, ").concat(-deltaY, "px) rotate(").concat((_a = settings.rotationDelta) !== null && _a !== void 0 ? _a : 0, "deg)");
-        var side = settings.element.dataset.side;
-        if (settings.originalSide && settings.originalSide != side) {
-            var cardSides_1 = settings.element.getElementsByClassName('card-sides')[0];
-            cardSides_1.style.transition = 'none';
-            settings.element.dataset.side = settings.originalSide;
-            setTimeout(function () {
-                cardSides_1.style.transition = null;
-                settings.element.dataset.side = side;
-            });
+        var _a, _b, _c, _d, _e;
+        // should be checked at the beginning of every animation
+        if (!shouldAnimate(settings)) {
+            success(false);
+            return promise;
         }
-        setTimeout(function () {
-            settings.element.offsetHeight;
-            settings.element.style.transition = "transform 0.5s linear";
-            settings.element.offsetHeight;
-            settings.element.style.transform = null;
-        }, 10);
-        setTimeout(function () {
-            settings.element.style.zIndex = null;
-            settings.element.style.transition = null;
+        var _f = getDeltaCoordinates(element, settings), x = _f.x, y = _f.y;
+        var duration = (_a = settings === null || settings === void 0 ? void 0 : settings.duration) !== null && _a !== void 0 ? _a : 500;
+        var originalZIndex = element.style.zIndex;
+        var originalTransition = element.style.transition;
+        element.style.zIndex = "".concat((_b = settings === null || settings === void 0 ? void 0 : settings.zIndex) !== null && _b !== void 0 ? _b : 10);
+        element.style.transition = null;
+        element.offsetHeight;
+        element.style.transform = "translate(".concat(-x, "px, ").concat(-y, "px) rotate(").concat((_c = settings === null || settings === void 0 ? void 0 : settings.rotationDelta) !== null && _c !== void 0 ? _c : 0, "deg)");
+        (_d = settings.animationStart) === null || _d === void 0 ? void 0 : _d.call(settings, element);
+        var timeoutId = null;
+        var cleanOnTransitionEnd = function () {
+            var _a;
+            element.style.zIndex = originalZIndex;
+            element.style.transition = originalTransition;
+            (_a = settings.animationEnd) === null || _a === void 0 ? void 0 : _a.call(settings, element);
             success(true);
-        }, 600);
+            element.removeEventListener('transitioncancel', cleanOnTransitionEnd);
+            element.removeEventListener('transitionend', cleanOnTransitionEnd);
+            document.removeEventListener('visibilitychange', cleanOnTransitionEnd);
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+        };
+        var cleanOnTransitionCancel = function () {
+            var _a;
+            element.style.transition = "";
+            element.offsetHeight;
+            element.style.transform = (_a = settings === null || settings === void 0 ? void 0 : settings.finalTransform) !== null && _a !== void 0 ? _a : null;
+            element.offsetHeight;
+            cleanOnTransitionEnd();
+        };
+        element.addEventListener('transitioncancel', cleanOnTransitionCancel);
+        element.addEventListener('transitionend', cleanOnTransitionEnd);
+        document.addEventListener('visibilitychange', cleanOnTransitionCancel);
+        element.offsetHeight;
+        element.style.transition = "transform ".concat(duration, "ms linear");
+        element.offsetHeight;
+        element.style.transform = (_e = settings === null || settings === void 0 ? void 0 : settings.finalTransform) !== null && _e !== void 0 ? _e : null;
+        // safety in case transitionend and transitioncancel are not called
+        timeoutId = setTimeout(cleanOnTransitionEnd, duration + 100);
     });
     return promise;
+}
+function shouldAnimate(settings) {
+    var _a;
+    return document.visibilityState !== 'hidden' && !((_a = settings === null || settings === void 0 ? void 0 : settings.game) === null || _a === void 0 ? void 0 : _a.instantaneousMode);
+}
+/**
+ * Return the x and y delta, based on the animation settings;
+ *
+ * @param settings an `AnimationSettings` object
+ * @returns a promise when animation ends
+ */
+function getDeltaCoordinates(element, settings) {
+    var _a;
+    if (!settings.fromDelta && !settings.fromRect && !settings.fromElement) {
+        throw new Error("[bga-animation] fromDelta, fromRect or fromElement need to be set");
+    }
+    var x = 0;
+    var y = 0;
+    if (settings.fromDelta) {
+        x = settings.fromDelta.x;
+        y = settings.fromDelta.y;
+    }
+    else {
+        var originBR = (_a = settings.fromRect) !== null && _a !== void 0 ? _a : settings.fromElement.getBoundingClientRect();
+        // TODO make it an option ?
+        var originalTransform = element.style.transform;
+        element.style.transform = '';
+        var destinationBR = element.getBoundingClientRect();
+        element.style.transform = originalTransform;
+        x = (destinationBR.left + destinationBR.right) / 2 - (originBR.left + originBR.right) / 2;
+        y = (destinationBR.top + destinationBR.bottom) / 2 - (originBR.top + originBR.bottom) / 2;
+    }
+    if (settings.scale) {
+        x /= settings.scale;
+        y /= settings.scale;
+    }
+    return { x: x, y: y };
+}
+function logAnimation(element, settings) {
+    console.log(element, element.getBoundingClientRect(), element.style.transform, settings);
+    return Promise.resolve(false);
 }
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
@@ -103,6 +163,82 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var AnimationManager = /** @class */ (function () {
+    /**
+     * @param game the BGA game class, usually it will be `this`
+     * @param settings: a `AnimationManagerSettings` object
+     */
+    function AnimationManager(game, settings) {
+        this.game = game;
+        this.settings = settings;
+        this.zoomManager = settings === null || settings === void 0 ? void 0 : settings.zoomManager;
+    }
+    /**
+     * Attach an element to a parent, then play animation from element's origin to its new position.
+     *
+     * @param element the element to animate
+     * @param toElement the destination parent
+     * @param fn the animation function
+     * @param settings the animation settings
+     * @returns a promise when animation ends
+     */
+    AnimationManager.prototype.attachWithAnimation = function (element, toElement, fn, settings) {
+        var _a, _b, _c, _d, _e, _f;
+        var fromRect = element.getBoundingClientRect();
+        toElement.appendChild(element);
+        (_a = settings === null || settings === void 0 ? void 0 : settings.afterAttach) === null || _a === void 0 ? void 0 : _a.call(settings, element, toElement);
+        return (_f = fn(element, __assign(__assign({ duration: (_c = (_b = this.settings) === null || _b === void 0 ? void 0 : _b.duration) !== null && _c !== void 0 ? _c : 500, scale: (_e = (_d = this.zoomManager) === null || _d === void 0 ? void 0 : _d.zoom) !== null && _e !== void 0 ? _e : undefined }, settings !== null && settings !== void 0 ? settings : {}), { game: this.game, fromRect: fromRect }))) !== null && _f !== void 0 ? _f : Promise.resolve(false);
+    };
+    /**
+     * Attach an element to a parent with a slide animation.
+     *
+     * @param card the card informations
+     */
+    AnimationManager.prototype.attachWithSlideAnimation = function (element, toElement, settings) {
+        return this.attachWithAnimation(element, toElement, slideAnimation, settings);
+    };
+    /**
+     * Attach an element to a parent with a slide animation.
+     *
+     * @param card the card informations
+     */
+    AnimationManager.prototype.attachWithShowToScreenAnimation = function (element, toElement, settingsOrSettingsArray) {
+        var _this = this;
+        var cumulatedAnimation = function (element, settings) { return cumulatedAnimations(element, [
+            showScreenCenterAnimation,
+            pauseAnimation,
+            function (element) { return _this.attachWithSlideAnimation(element, toElement); },
+        ], settingsOrSettingsArray); };
+        return this.attachWithAnimation(element, toElement, cumulatedAnimation, null);
+    };
+    /**
+     * Slide from an element.
+     *
+     * @param element the element to animate
+     * @param fromElement the origin element
+     * @param settings the animation settings
+     * @returns a promise when animation ends
+     */
+    AnimationManager.prototype.slideFromElement = function (element, fromElement, settings) {
+        var _a, _b, _c, _d, _e;
+        return (_e = slideAnimation(element, __assign(__assign({ duration: (_b = (_a = this.settings) === null || _a === void 0 ? void 0 : _a.duration) !== null && _b !== void 0 ? _b : 500, scale: (_d = (_c = this.zoomManager) === null || _c === void 0 ? void 0 : _c.zoom) !== null && _d !== void 0 ? _d : undefined }, settings !== null && settings !== void 0 ? settings : {}), { game: this.game, fromElement: fromElement }))) !== null && _e !== void 0 ? _e : Promise.resolve(false);
+    };
+    AnimationManager.prototype.getZoomManager = function () {
+        return this.zoomManager;
+    };
+    /**
+     * Set the zoom manager, to get the scale of the current game.
+     *
+     * @param zoomManager the zoom manager
+     */
+    AnimationManager.prototype.setZoomManager = function (zoomManager) {
+        this.zoomManager = zoomManager;
+    };
+    AnimationManager.prototype.getSettings = function () {
+        return this.settings;
+    };
+    return AnimationManager;
+}());
 /**
  * The abstract stock. It shouldn't be used directly, use stocks that extends it.
  */
@@ -164,6 +300,16 @@ var CardStock = /** @class */ (function () {
         return document.getElementById(this.manager.getId(card));
     };
     /**
+     * Checks if the card can be added. By default, only if it isn't already present in the stock.
+     *
+     * @param card the card to add
+     * @param settings the addCard settings
+     * @returns if the card can be added
+     */
+    CardStock.prototype.canAddCard = function (card, settings) {
+        return !this.cardInStock(card);
+    };
+    /**
      * Add a card to the stock.
      *
      * @param card the card to add
@@ -173,7 +319,7 @@ var CardStock = /** @class */ (function () {
      */
     CardStock.prototype.addCard = function (card, animation, settings) {
         var _a, _b;
-        if (this.cardInStock(card)) {
+        if (!this.canAddCard(card, settings)) {
             return Promise.resolve(false);
         }
         var promise;
@@ -200,6 +346,10 @@ var CardStock = /** @class */ (function () {
         }
         else {
             this.cards.push(card);
+        }
+        if (!promise) {
+            console.warn("CardStock.addCard didn't return a Promise");
+            return Promise.resolve(false);
         }
         return promise;
     };
@@ -232,14 +382,19 @@ var CardStock = /** @class */ (function () {
         var promise;
         this.addCardElementToParent(cardElement, settings);
         cardElement.classList.remove('selectable', 'selected', 'disabled');
-        promise = this.animationFromElement({
-            element: cardElement,
-            fromElement: animation.fromStock.element,
+        promise = this.animationFromElement(cardElement, animation.fromStock.element, {
             originalSide: animation.originalSide,
             rotationDelta: animation.rotationDelta,
             animation: animation.animation,
         });
-        animation.fromStock.removeCard(card);
+        // in the case the card was move inside the same stock we don't remove it
+        if (animation.fromStock != this) {
+            animation.fromStock.removeCard(card);
+        }
+        if (!promise) {
+            console.warn("CardStock.moveFromOtherStock didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
         return promise;
     };
     CardStock.prototype.moveFromElement = function (card, cardElement, animation, settings) {
@@ -247,9 +402,7 @@ var CardStock = /** @class */ (function () {
         this.addCardElementToParent(cardElement, settings);
         if (animation) {
             if (animation.fromStock) {
-                promise = this.animationFromElement({
-                    element: cardElement,
-                    fromElement: animation.fromStock.element,
+                promise = this.animationFromElement(cardElement, animation.fromStock.element, {
                     originalSide: animation.originalSide,
                     rotationDelta: animation.rotationDelta,
                     animation: animation.animation,
@@ -257,14 +410,19 @@ var CardStock = /** @class */ (function () {
                 animation.fromStock.removeCard(card);
             }
             else if (animation.fromElement) {
-                promise = this.animationFromElement({
-                    element: cardElement,
-                    fromElement: animation.fromElement,
+                promise = this.animationFromElement(cardElement, animation.fromElement, {
                     originalSide: animation.originalSide,
                     rotationDelta: animation.rotationDelta,
                     animation: animation.animation,
                 });
             }
+        }
+        else {
+            promise = Promise.resolve(false);
+        }
+        if (!promise) {
+            console.warn("CardStock.moveFromElement didn't return a Promise");
+            promise = Promise.resolve(false);
         }
         return promise;
     };
@@ -452,15 +610,24 @@ var CardStock = /** @class */ (function () {
         }
         (_a = this.onCardClick) === null || _a === void 0 ? void 0 : _a.call(this, card);
     };
-    CardStock.prototype.animationFromElement = function (settings) {
-        var _a;
-        if (document.visibilityState !== 'hidden' && !this.manager.game.instantaneousMode) {
-            var animation = (_a = settings.animation) !== null && _a !== void 0 ? _a : stockSlideAnimation;
-            return animation(settings);
+    /**
+     * @param element The element to animate. The element is added to the destination stock before the animation starts.
+     * @param fromElement The HTMLElement to animate from.
+     */
+    CardStock.prototype.animationFromElement = function (element, fromElement, settings) {
+        var _a, _b, _c, _d, _e, _f;
+        var side = element.dataset.side;
+        if (settings.originalSide && settings.originalSide != side) {
+            var cardSides_1 = element.getElementsByClassName('card-sides')[0];
+            cardSides_1.style.transition = 'none';
+            element.dataset.side = settings.originalSide;
+            setTimeout(function () {
+                cardSides_1.style.transition = null;
+                element.dataset.side = side;
+            });
         }
-        else {
-            return Promise.resolve(false);
-        }
+        var animation = (_a = settings.animation) !== null && _a !== void 0 ? _a : slideAnimation;
+        return (_f = animation(element, __assign(__assign({ duration: (_c = (_b = this.manager.animationManager.getSettings()) === null || _b === void 0 ? void 0 : _b.duration) !== null && _c !== void 0 ? _c : 500, scale: (_e = (_d = this.manager.animationManager.getZoomManager()) === null || _d === void 0 ? void 0 : _d.zoom) !== null && _e !== void 0 ? _e : undefined }, settings !== null && settings !== void 0 ? settings : {}), { game: this.manager.game, fromElement: fromElement }))) !== null && _f !== void 0 ? _f : Promise.resolve(false);
     };
     /**
      * Set the card to its front (visible) or back (not visible) side.
@@ -604,6 +771,17 @@ var SlotStock = /** @class */ (function (_super) {
     SlotStock.prototype.cardElementInStock = function (element) {
         return (element === null || element === void 0 ? void 0 : element.parentElement.parentElement) == this.element;
     };
+    SlotStock.prototype.canAddCard = function (card, settings) {
+        var _a, _b;
+        if (!this.cardInStock(card)) {
+            return true;
+        }
+        else {
+            var currentCardSlot = this.getCardElement(card).closest('.slot').dataset.slotId;
+            var slotId = (_a = settings === null || settings === void 0 ? void 0 : settings.slot) !== null && _a !== void 0 ? _a : (_b = this.mapCardToSlot) === null || _b === void 0 ? void 0 : _b.call(this, card);
+            return currentCardSlot != slotId;
+        }
+    };
     return SlotStock;
 }(LineStock));
 /**
@@ -673,6 +851,10 @@ var VoidStock = /** @class */ (function (_super) {
         var cardElement = this.getCardElement(card);
         cardElement.style.left = "".concat((this.element.clientWidth - cardElement.clientWidth) / 2, "px");
         cardElement.style.top = "".concat((this.element.clientHeight - cardElement.clientHeight) / 2, "px");
+        if (!promise) {
+            console.warn("VoidStock.addCard didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
         return promise.then(function (result) {
             _this.removeCard(card);
             return result;
@@ -686,9 +868,11 @@ var CardManager = /** @class */ (function () {
      * @param settings: a `CardManagerSettings` object
      */
     function CardManager(game, settings) {
+        var _a;
         this.game = game;
         this.settings = settings;
         this.stocks = [];
+        this.animationManager = (_a = settings.animationManager) !== null && _a !== void 0 ? _a : new AnimationManager(game);
     }
     CardManager.prototype.addStock = function (stock) {
         this.stocks.push(stock);
@@ -727,11 +911,14 @@ var CardManager = /** @class */ (function () {
         return document.getElementById(this.getId(card));
     };
     CardManager.prototype.removeCard = function (card) {
+        var _a;
         var id = this.getId(card);
         var div = document.getElementById(id);
         if (!div) {
             return;
         }
+        // if the card is in a stock, notify the stock about removal
+        (_a = this.getCardStock(card)) === null || _a === void 0 ? void 0 : _a.cardRemoved(card);
         div.id = "deleted".concat(id);
         // TODO this.removeVisibleInformations(div);
         div.remove();
@@ -788,6 +975,7 @@ var CardsManager = /** @class */ (function (_super) {
     __extends(CardsManager, _super);
     function CardsManager(game) {
         var _this = _super.call(this, game, {
+            animationManager: game.animationManager,
             getId: function (card) { return "card-".concat(card.id); },
             setupDiv: function (card, div) {
                 div.classList.add('fighter');
@@ -1599,6 +1787,11 @@ var TableCenter = /** @class */ (function () {
                 if (_this.game.gamedatas.gamestate.name == 'chooseTerritory') {
                     _this.game.territoryClick(territoryInfos.id);
                 }
+                else {
+                    _this.territoriesStocks[territoryInfos.id].addCards([
+                        { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg: territoryInfos.id },
+                    ]);
+                }
             };
             /*// TODO TEMP
             this.territoriesStocks[territoryInfos.id].addCards([
@@ -1630,11 +1823,7 @@ var TableCenter = /** @class */ (function () {
     TableCenter.prototype.moveInitiativeMarker = function (territoryId) {
         var previousTerritory = this.initiativeMarker.parentElement.parentElement;
         var territory = document.getElementById("territory-".concat(territoryId));
-        territory.appendChild(this.initiativeMarker);
-        stockSlideAnimation({
-            element: this.initiativeMarker,
-            fromElement: previousTerritory,
-        });
+        this.game.animationManager.attachWithSlideAnimation(this.initiativeMarker, territory);
         this.territoriesStocks[Number(previousTerritory.dataset.id)].initiativeMarkerRemoved();
         this.territoriesStocks[territoryId].addInitiativeMarker();
     };
@@ -1860,7 +2049,6 @@ var PlayerTable = /** @class */ (function () {
                 operationNumberDiv.innerHTML = "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
             }
             var bubble = document.getElementById("player-table-".concat(_this.playerId, "-operation").concat(key, "-bubble"));
-            console.log(operation);
             bubble.innerHTML = !operation.disabled ? "<span>".concat(operation.value, "</span>") : "<img src=\"".concat(g_gamethemeurl, "img/mul.gif\"/>");
             bubble.dataset.visible = 'true';
         });
@@ -2022,6 +2210,7 @@ var Lumen = /** @class */ (function () {
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
+        this.animationManager = new AnimationManager(this);
         this.cardsManager = new CardsManager(this);
         this.discoverTilesManager = new DiscoverTilesManager(this);
         this.objectiveTokensManager = new ObjectiveTokensManager(this);
@@ -3092,11 +3281,7 @@ var Lumen = /** @class */ (function () {
         var destinationId = "first-player-token-wrapper-".concat(notif.args.playerId);
         var originId = firstPlayerToken.parentElement.id;
         if (destinationId !== originId) {
-            document.getElementById(destinationId).appendChild(firstPlayerToken);
-            stockSlideAnimation({
-                element: firstPlayerToken,
-                fromElement: document.getElementById(originId),
-            });
+            this.animationManager.attachWithSlideAnimation(firstPlayerToken, document.getElementById(destinationId), { zoom: 1 });
         }
     };
     Lumen.prototype.notif_takeObjectiveTokens = function (notif) {

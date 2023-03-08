@@ -86,6 +86,7 @@ interface LumenGamedatas {
 }
 
 interface LumenGame extends Game {
+    animationManager: AnimationManager;
     cardsManager: CardsManager;
     objectiveTokensManager: ObjectiveTokensManager;
     discoverTilesManager: DiscoverTilesManager;

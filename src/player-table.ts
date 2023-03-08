@@ -182,7 +182,6 @@ class PlayerTable {
             }
 
             const bubble = document.getElementById(`player-table-${this.playerId}-operation${key}-bubble`);
-            console.log(operation);
             bubble.innerHTML = !operation.disabled ? `<span>${operation.value}</span>` : `<img src="${g_gamethemeurl}img/mul.gif"/>`;
             bubble.dataset.visible = 'true';
         });
