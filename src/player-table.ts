@@ -135,9 +135,9 @@ class PlayerTable {
         player.discoverTiles.forEach(discoverTile => this.discoverTiles.addCard(discoverTile, undefined, { visible: Boolean(discoverTile?.type) }));
 
         this.game.setTooltip(`player-table-${this.playerId}-zone-legend`, `<h4>${_('Deploy Reinforcements to the Battlefield')}</h4>
-        When you create or expand a Area on your Command board, you deploy Reinforcements for EACH NEW CELL of the associated Area.`);
+        ${_('When you create or expand a Area on your Command board, you deploy Reinforcements for EACH NEW CELL of the associated Area.')}`);
         this.game.setTooltip(`player-table-${this.playerId}-link-legend`, `<h4>${_('Move Fighters across the Battlefield AND/OR activate the special abilities of Fighters on the Battlefield.')}</h4>
-        Whenever you create or expand a Chain of Orders, you receive 1 action for EACH NEW CELL you added to the Chain of Orders.`);
+        ${_('Whenever you create or expand a Chain of Orders, you receive 1 action for EACH NEW CELL you added to the Chain of Orders.')}`);
         this.game.setTooltip(`player-table-${this.playerId}-check-legend`, _('As soon as all boxes underneath an available slot are crossed off, draw a Bonus token from the neutral bag and place it in this slot'));
     }
 
