@@ -179,6 +179,23 @@ trait ArgsTrait {
         return $canActivate;
     }
 
+    function argConfirmCell() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $place = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_PLACE));
+        $move = intval($this->getGameStateValue(REMAINING_FIGHTERS_TO_MOVE_OR_ACTIVATE));
+        $undo = $this->getGlobalVariable(UNDO_SELECTED_CIRCLE);
+
+        return [
+            'playerId' => $playerId,
+            'undo' => $undo,
+            'place' => $place,
+            'move' => $move,
+            'check' => $undo->value > 6,
+            'circleId' => $undo->circleId,
+        ];
+    }
+
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());
 

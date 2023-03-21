@@ -1,58 +1,3 @@
-function slideToObjectAndAttach(game, object, destinationId, changeSide) {
-    if (changeSide === void 0) { changeSide = false; }
-    var destination = document.getElementById(destinationId);
-    if (destination.contains(object)) {
-        return;
-    }
-    var originBR = object.getBoundingClientRect();
-    destination.appendChild(object);
-    if (document.visibilityState !== 'hidden' && !game.instantaneousMode) {
-        var destinationBR = object.getBoundingClientRect();
-        var deltaX = destinationBR.left - originBR.left;
-        var deltaY = destinationBR.top - originBR.top;
-        object.style.zIndex = '10';
-        object.style.transform = "translate(".concat(-deltaX, "px, ").concat(-deltaY, "px)");
-        if (destination.dataset.currentPlayer == 'false') {
-            object.style.order = null;
-            object.style.position = 'absolute';
-        }
-        setTimeout(function () {
-            object.style.transition = "transform 0.5s linear";
-            object.style.transform = null;
-        });
-        setTimeout(function () {
-            object.style.zIndex = null;
-            object.style.transition = null;
-            object.style.position = null;
-        }, 600);
-    }
-    else {
-        object.style.order = null;
-    }
-}
-function slideFromObject(game, object, fromId) {
-    var from = document.getElementById(fromId);
-    var originBR = from.getBoundingClientRect();
-    if (document.visibilityState !== 'hidden' && !game.instantaneousMode) {
-        var destinationBR = object.getBoundingClientRect();
-        var deltaX = destinationBR.left - originBR.left;
-        var deltaY = destinationBR.top - originBR.top;
-        object.style.zIndex = '10';
-        object.style.transform = "translate(".concat(-deltaX, "px, ").concat(-deltaY, "px)");
-        if (object.parentElement.dataset.currentPlayer == 'false') {
-            object.style.position = 'absolute';
-        }
-        setTimeout(function () {
-            object.style.transition = "transform 0.5s linear";
-            object.style.transform = null;
-        });
-        setTimeout(function () {
-            object.style.zIndex = null;
-            object.style.transition = null;
-            object.style.position = null;
-        }, 600);
-    }
-}
 /**
  * Linear slide of the card from origin to destination.
  *
@@ -1786,12 +1731,11 @@ var TableCenter = /** @class */ (function () {
             _this.territoriesStocks[territoryInfos.id].onAnyClick = function () {
                 if (_this.game.gamedatas.gamestate.name == 'chooseTerritory') {
                     _this.game.territoryClick(territoryInfos.id);
-                }
-                else {
-                    _this.territoriesStocks[territoryInfos.id].addCards([
-                        { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg: territoryInfos.id },
+                } /*// TODO TEMP else {
+                    this.territoriesStocks[territoryInfos.id].addCards([
+                        { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
                     ]);
-                }
+                }*/
             };
             /*// TODO TEMP
             this.territoriesStocks[territoryInfos.id].addCards([
@@ -1987,25 +1931,7 @@ var PlayerTable = /** @class */ (function () {
             }
             document.getElementById("player-table-".concat(_this.playerId, "-operations")).appendChild(bubble);
         });
-        player.circles.forEach(function (circle) {
-            var div = document.createElement('div');
-            div.id = "player-table-".concat(_this.playerId, "-circle").concat(circle.circleId);
-            div.dataset.circle = "".concat(circle.circleId);
-            div.classList.add('circle');
-            div.dataset.zone = '' + circle.zone;
-            div.dataset.value = '' + circle.value;
-            div.innerHTML = "".concat(circle.value !== null && circle.value !== -1 ? circle.value : '');
-            if (circle.value === -1) {
-                div.dataset.jamming = 'true';
-            }
-            document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
-            div.addEventListener('click', function () {
-                if (div.classList.contains('ghost')) {
-                    _this.game.cellClick(circle.circleId);
-                }
-            });
-        });
-        player.links.forEach(function (link) { return _this.setLink(link.index1, link.index2); });
+        this.setBoard(player.circles, player.links);
         this.reserve = new SlotStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-reserve")), {
             slotsIds: [1, 2, 3],
             mapCardToSlot: function (card) { return card.locationArg; }
@@ -2171,6 +2097,36 @@ var PlayerTable = /** @class */ (function () {
         this.objectiveTokens.addCards(tokens);
         tokens.forEach(function (card) { return _this.objectiveTokens.setCardVisible(card, true); });
     };
+    PlayerTable.prototype.setConfirmCell = function (circleId) {
+        var circleDiv = document.getElementById("player-table-".concat(this.playerId, "-circle").concat(circleId));
+        circleDiv.classList.add('to-confirm');
+    };
+    PlayerTable.prototype.resetBoard = function (circles, links) {
+        document.getElementById("player-table-".concat(this.playerId, "-circles")).innerHTML = '';
+        this.setBoard(circles, links);
+    };
+    PlayerTable.prototype.setBoard = function (circles, links) {
+        var _this = this;
+        circles.forEach(function (circle) {
+            var div = document.createElement('div');
+            div.id = "player-table-".concat(_this.playerId, "-circle").concat(circle.circleId);
+            div.dataset.circle = "".concat(circle.circleId);
+            div.classList.add('circle');
+            div.dataset.zone = '' + circle.zone;
+            div.dataset.value = '' + circle.value;
+            div.innerHTML = "".concat(circle.value !== null && circle.value !== -1 ? circle.value : '');
+            if (circle.value === -1) {
+                div.dataset.jamming = 'true';
+            }
+            document.getElementById("player-table-".concat(_this.playerId, "-circles")).appendChild(div);
+            div.addEventListener('click', function () {
+                if (div.classList.contains('ghost')) {
+                    _this.game.cellClick(circle.circleId);
+                }
+            });
+        });
+        links.forEach(function (link) { return _this.setLink(link.index1, link.index2); });
+    };
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
@@ -2285,6 +2241,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseCellInterference':
                 this.onEnteringChooseCellInterference(args.args);
                 break;
+            case 'confirmCell':
+                this.onEnteringConfirmCell(args.args);
+                break;
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
                 break;
@@ -2348,6 +2307,14 @@ var Lumen = /** @class */ (function () {
         args = args !== null && args !== void 0 ? args : this.gamedatas.gamestate.args;
         return args.move ?
             args.possibleTerritoryFighters : __spreadArray(__spreadArray([], args.possibleFightersToMove, true), args.possibleFightersToActivate, true);
+    };
+    Lumen.prototype.onEnteringConfirmCell = function (args) {
+        var subTitle = document.createElement('span');
+        subTitle.classList.add('subtitle');
+        subTitle.innerHTML = "".concat(args.move, " <div class=\"action move\"></div>, ").concat(args.place, " <div class=\"action place\"></div>, ").concat(args.check ? _('1 new check') : _('No new check'));
+        document.getElementById("pagemaintitletext").appendChild(document.createElement('br'));
+        document.getElementById("pagemaintitletext").appendChild(subTitle);
+        this.getPlayerTable(args.playerId).setConfirmCell(args.circleId);
     };
     Lumen.prototype.onEnteringChooseFighter = function (args) {
         var _a;
@@ -2463,6 +2430,9 @@ var Lumen = /** @class */ (function () {
             case 'chooseCellInterference':
                 this.onLeavingChooseCellInterference();
                 break;
+            case 'confirmCell':
+                this.onLeavingConfirmCell();
+                break;
             case 'chooseFighter':
                 this.onLeavingChooseFighter();
                 break;
@@ -2497,6 +2467,9 @@ var Lumen = /** @class */ (function () {
             elem.classList.remove('selectable');
             elem.dataset.jamming = 'false';
         });
+    };
+    Lumen.prototype.onLeavingConfirmCell = function () {
+        document.querySelectorAll('.circle.to-confirm').forEach(function (elem) { return elem.classList.remove('to-confirm'); });
     };
     Lumen.prototype.replacePlaceAndMove = function (text, args) {
         return text
@@ -2535,6 +2508,10 @@ var Lumen = /** @class */ (function () {
                     break;
                 case 'chooseCell':
                     this.addActionButton("cancelOperation_button", _('Cancel'), function () { return _this.cancelOperation(); }, null, null, 'gray');
+                    break;
+                case 'confirmCell':
+                    this.addActionButton("confirmCell_button", _('Confirm'), function () { return _this.confirmCell(); });
+                    this.addActionButton("cancelCell_button", _('Cancel'), function () { return _this.cancelCell(); }, null, null, 'gray');
                     break;
                 case 'chooseAction':
                     var chooseActionArgs = args;
@@ -3066,6 +3043,18 @@ var Lumen = /** @class */ (function () {
             cell: cell
         });
     };
+    Lumen.prototype.confirmCell = function () {
+        if (!this.checkAction('confirmCell')) {
+            return;
+        }
+        this.takeAction('confirmCell');
+    };
+    Lumen.prototype.cancelCell = function () {
+        if (!this.checkAction('cancelCell')) {
+            return;
+        }
+        this.takeAction('cancelCell');
+    };
     Lumen.prototype.startWithAction = function (id) {
         if (!this.checkAction('startWithAction')) {
             return;
@@ -3214,6 +3203,7 @@ var Lumen = /** @class */ (function () {
             ['setRealizedObjective', 1],
             ['elimination', 1],
             ['doubleElimination', 1],
+            ['resetBoard', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -3419,6 +3409,9 @@ var Lumen = /** @class */ (function () {
     Lumen.prototype.notif_doubleElimination = function () {
         var _this = this;
         Object.keys(this.gamedatas.players).forEach(function (playerId) { var _a; return (_a = _this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(0); });
+    };
+    Lumen.prototype.notif_resetBoard = function (notif) {
+        this.getPlayerTable(notif.args.playerId).resetBoard(notif.args.circles, notif.args.links);
     };
     Lumen.prototype.markRealizedObjective = function (letter, realizedBy) {
         var color = this.getPlayerColor(realizedBy);

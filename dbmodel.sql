@@ -55,7 +55,6 @@ CREATE TABLE IF NOT EXISTS `objective_token` (
    `player_id` int(11) NOT NULL,
    `index1` int(5) NOT NULL,
    `index2` int(5) NOT NULL,
-   `middle` int(5) NOT NULL DEFAULT '-1',
    PRIMARY KEY (`link_id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
   

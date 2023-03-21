@@ -124,12 +124,10 @@ trait ActionTrait {
 
         $this->setGameStateValue(PLAYER_CELL, $cellId);
         $value = intval($this->getGameStateValue(PLAYER_NUMBER));
-        self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($playerId, $cellId, $value)");
 
-        if ($value >= 7) {
-            $this->incStat(1, 'figuresOver6', $playerId);
-            $this->addCheck($playerId);
-        }
+        $this->saveBoardCircles($playerId, $cellId, $value);
+
+        self::DbQuery("INSERT INTO circle (player_id, circle_id, value) VALUES ($playerId, $cellId, $value)");
 
         self::notifyAllPlayers('setCircleValue', '', [
             'playerId' => $playerId,
@@ -242,6 +240,51 @@ trait ActionTrait {
         }
 
         $this->gamestate->nextState($nextState);
+    }
+
+    public function confirmCell() {
+        $this->checkAction('confirmCell'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        $undo = $this->getGlobalVariable(UNDO_SELECTED_CIRCLE);
+        $value = $undo->value;
+
+        if ($value >= 7) {
+            $this->incStat(1, 'figuresOver6', $playerId);
+            $this->addCheck($playerId);
+        }
+
+        $this->deleteGlobalVariable(UNDO_SELECTED_CIRCLE);
+
+        $this->gamestate->nextState('chooseAction');
+    }
+
+    public function cancelCell() {
+        $this->checkAction('cancelCell'); 
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        $undo = $this->getGlobalVariable(UNDO_SELECTED_CIRCLE);
+        $this->DbQuery("DELETE FROM `link` where `player_id` = $playerId");
+        $this->DbQuery("DELETE FROM `circle` where `player_id` = $playerId");
+
+        foreach($undo->circles as $circle) {
+            self::DbQuery("INSERT INTO `circle` (`player_id`, `circle_id`, `value`, `zone`) VALUES ($circle->player_id, $circle->circle_id, $circle->value, $circle->zone)");
+        }
+        foreach($undo->links as $link) {
+            self::DbQuery("INSERT INTO `link` (`player_id`, `link_id`, `index1`, `index2`) VALUES ($link->player_id, $link->link_id, $link->index1, $link->index2)");
+        }
+
+        self::notifyAllPlayers('resetBoard', '', [
+            'playerId' => $playerId,
+            'circles' => $this->getCircles($playerId),
+            'links' => $this->getLinks($playerId),
+        ]);        
+
+        $this->deleteGlobalVariable(UNDO_SELECTED_CIRCLE);
+
+        $this->gamestate->nextState('cancel');
     }
 
     public function startWithAction(int $id) {
@@ -570,7 +613,7 @@ trait ActionTrait {
         
         $remainingActions = $this->getRemainingActions();
         $remainingActions->currentFoulPlayId = $tiles[0]->id;
-        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+        $this->setGlobalVariable(REMAINING_ACTIONS, $remainingActions);
 
         $this->gamestate->nextState('useFoulPlay');
     }
@@ -580,7 +623,7 @@ trait ActionTrait {
 
         $remainingActions = $this->getRemainingActions();
         $remainingActions->currentFoulPlayId = null;
-        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+        $this->setGlobalVariable(REMAINING_ACTIONS, $remainingActions);
 
         $this->gamestate->nextState('nextMove');
     }

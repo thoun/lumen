@@ -147,6 +147,9 @@ class Lumen implements LumenGame {
             case 'chooseCellInterference':
                 this.onEnteringChooseCellInterference(args.args);
                 break;
+            case 'confirmCell':
+                this.onEnteringConfirmCell(args.args);
+                break;   
             case 'chooseFighter':
                 this.onEnteringChooseFighter(args.args);
                 break;   
@@ -220,6 +223,18 @@ class Lumen implements LumenGame {
         return args.move ? 
             args.possibleTerritoryFighters : 
             [...args.possibleFightersToMove, ...args.possibleFightersToActivate];
+    }
+    
+    private onEnteringConfirmCell(args: EnteringConfirmCellArgs) {
+        const subTitle = document.createElement('span');
+        subTitle.classList.add('subtitle');
+
+        subTitle.innerHTML = `${args.move} <div class="action move"></div>, ${args.place} <div class="action place"></div>, ${args.check ? _('1 new check') : _('No new check')}`;
+
+        document.getElementById(`pagemaintitletext`).appendChild(document.createElement('br'));
+        document.getElementById(`pagemaintitletext`).appendChild(subTitle);
+
+        this.getPlayerTable(args.playerId).setConfirmCell(args.circleId);
     }
     
     private onEnteringChooseFighter(args: EnteringChooseFighterArgs) {
@@ -348,6 +363,9 @@ class Lumen implements LumenGame {
             case 'chooseCellInterference':
                 this.onLeavingChooseCellInterference();
                 break;
+            case 'confirmCell':
+                this.onLeavingConfirmCell();
+                break;
             case 'chooseFighter':
                 this.onLeavingChooseFighter();
                 break;
@@ -390,6 +408,10 @@ class Lumen implements LumenGame {
         });
     }
 
+    private onLeavingConfirmCell() {
+        document.querySelectorAll('.circle.to-confirm').forEach(elem => elem.classList.remove('to-confirm'));
+    }
+
     private replacePlaceAndMove(text: string, args: EnteringChooseActionArgs) {
         return text
             .replace('${place}', `<div class="action place"></div>`)
@@ -427,6 +449,10 @@ class Lumen implements LumenGame {
                     break;
                 case 'chooseCell':
                     (this as any).addActionButton(`cancelOperation_button`, _('Cancel'), () => this.cancelOperation(), null, null, 'gray');
+                    break;
+                case 'confirmCell':
+                    (this as any).addActionButton(`confirmCell_button`, _('Confirm'), () => this.confirmCell());
+                    (this as any).addActionButton(`cancelCell_button`, _('Cancel'), () => this.cancelCell(), null, null, 'gray');
                     break;
                 case 'chooseAction':
                     const chooseActionArgs = args as EnteringChooseActionArgs;
@@ -1135,6 +1161,22 @@ class Lumen implements LumenGame {
         });
     }
 
+    private confirmCell() {
+        if(!(this as any).checkAction('confirmCell')) {
+            return;
+        }
+
+        this.takeAction('confirmCell');
+    }
+
+    private cancelCell() {
+        if(!(this as any).checkAction('cancelCell')) {
+            return;
+        }
+
+        this.takeAction('cancelCell');
+    }
+
     public startWithAction(id: number) {
         if(!(this as any).checkAction('startWithAction')) {
             return;
@@ -1314,6 +1356,7 @@ class Lumen implements LumenGame {
             ['setRealizedObjective', 1],
             ['elimination', 1],
             ['doubleElimination', 1],
+            ['resetBoard', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -1555,6 +1598,10 @@ class Lumen implements LumenGame {
 
     notif_doubleElimination() {
         Object.keys(this.gamedatas.players).forEach(playerId => (this as any).scoreCtrl[playerId]?.toValue(0));
+    }
+
+    notif_resetBoard(notif: Notif<NotifResetBoardArgs>) {
+        this.getPlayerTable(notif.args.playerId).resetBoard(notif.args.circles, notif.args.links);
     }
 
     private markRealizedObjective(letter: string, realizedBy: number) {

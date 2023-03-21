@@ -75,7 +75,7 @@ $basicGameStates = [
 
 
 $chooseCellTransitions = [
-    "chooseAction" => ST_PLAYER_CHOOSE_ACTION,
+    "chooseAction" => ST_PLAYER_CONFIRM_CELL,
     "cancel" => ST_PLAYER_CHOOSE_OPERATION,
     "nextPlayer" => ST_NEXT_PLAYER,
 ];
@@ -152,6 +152,21 @@ $playerActionsGameStates = [
         "transitions" => $chooseCellTransitions,
     ],
 
+    ST_PLAYER_CONFIRM_CELL => [
+        "name" => "confirmCell",
+        "description" => clienttranslate('${actplayer} must confirm circle'),
+        "descriptionmyturn" => clienttranslate('${you} must confirm circle'),
+        "type" => "activeplayer",    
+        "args" => "argConfirmCell",
+        "possibleactions" => [ 
+            "confirmCell",
+            "cancelCell",
+        ],
+        "transitions" => [
+            "chooseAction" => ST_PLAYER_CHOOSE_ACTION,
+            "cancel" => ST_PLAYER_CHOOSE_CELL,
+        ]
+    ],
     ST_PLAYER_CHOOSE_ACTION => [
         "name" => "chooseAction",
         "description" => clienttranslate('${actplayer} must choose the order of actions'),

@@ -1293,6 +1293,10 @@ body > .card {
 .player-table .circles .circle[data-value="7"] {
   transform: rotate(14deg);
 }
+.player-table .circles .circle.to-confirm {
+  box-shadow: 0 0 3px 5px red;
+  z-index: 1;
+}
 .player-table .circles .circle[data-zone="0"] {
   background-color: rgba(128, 255, 128, 0.4);
 }

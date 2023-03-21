@@ -106,11 +106,11 @@ class TableCenter {
             this.territoriesStocks[territoryInfos.id].onAnyClick = () => {
                 if ((this.game as any).gamedatas.gamestate.name == 'chooseTerritory') {
                     this.game.territoryClick(territoryInfos.id);
-                } else {
+                }/*// TODO TEMP else {
                     this.territoriesStocks[territoryInfos.id].addCards([
                         { id: 1000 * territoryInfos.id + 1, type: 1, subType: 3, played: false, playerId: 2343492, location: 'territory', locationArg : territoryInfos.id },
                     ]);
-                }
+                }*/
             };
 
             /*// TODO TEMP

@@ -1049,7 +1049,7 @@ trait UtilTrait {
     }
 
     function setActionsCount(int $place, int $move) {
-        $this->setGlobalVariable('REMAINING_ACTIONS', new Actions([
+        $this->setGlobalVariable(REMAINING_ACTIONS, new Actions([
             new Action('PLACE', $place),
             new Action('MOVE', $move),
         ]));
@@ -1062,7 +1062,7 @@ trait UtilTrait {
     }
 
     function getRemainingActions() {
-        return $this->getGlobalVariable('REMAINING_ACTIONS');
+        return $this->getGlobalVariable(REMAINING_ACTIONS);
     }
 
     function getCurrentAction($remainingActions = null) {
@@ -1081,14 +1081,14 @@ trait UtilTrait {
                 $remainingActions->actions[0],
             ];
         }
-        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+        $this->setGlobalVariable(REMAINING_ACTIONS, $remainingActions);
     }
 
     function decPlaceCount(int $dec) {
         $remainingActions = $this->getRemainingActions();
         $index = $this->array_find_key($remainingActions->actions, fn($action) => $action->type == 'PLACE');
         $remainingActions->actions[$index]->remaining -= $dec;
-        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+        $this->setGlobalVariable(REMAINING_ACTIONS, $remainingActions);
     }
 
     function decMoveCount(int $dec) {
@@ -1106,7 +1106,7 @@ trait UtilTrait {
             $remainingActions->actions[$index]->remaining -= $dec;
         }
         
-        $this->setGlobalVariable('REMAINING_ACTIONS', $remainingActions);
+        $this->setGlobalVariable(REMAINING_ACTIONS, $remainingActions);
     }
 
     function updateCurrentVisibleScore(int $playerId) {
@@ -1208,5 +1208,15 @@ trait UtilTrait {
         }
 
         return false;
+    }
+
+    function saveBoardCircles(int $playerId, int $circleId, int $value) {
+        $this->setGlobalVariable(UNDO_SELECTED_CIRCLE, [
+            'checks' => intval(self::getUniqueValueFromDB("SELECT checks from player where player_id = $playerId")),
+            'circles' => $this->getCollectionFromDb( "SELECT * FROM `circle` WHERE player_id = $playerId ORDER BY `circle_id`"),
+            'links' => $this->getCollectionFromDb("SELECT * FROM `link` WHERE player_id = $playerId ORDER BY `index1`, `index2`"),
+            'circleId' => $circleId,
+            'value' => $value,
+        ]);
     }
 }

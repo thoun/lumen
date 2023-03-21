@@ -109,6 +109,22 @@
       self::ajaxResponse();
     }
 
+    public function confirmCell() {
+      self::setAjaxMode();
+
+      $this->game->confirmCell();
+
+      self::ajaxResponse();
+    }
+
+    public function cancelCell() {
+      self::setAjaxMode();
+
+      $this->game->cancelCell();
+
+      self::ajaxResponse();
+    }
+
     public function startWithAction() {
       self::setAjaxMode();
 

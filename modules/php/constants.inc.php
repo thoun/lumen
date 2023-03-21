@@ -21,6 +21,8 @@ define('ST_PLAYER_CHOOSE_OPERATION', 35);
 define('ST_PLAYER_CHOOSE_CELL', 40);
 define('ST_PLAYER_CHOOSE_CELL_LINK', 45);
 
+define('ST_PLAYER_CONFIRM_CELL', 47);
+
 define('ST_PLAYER_CHOOSE_ACTION', 50);
 // Transmit orders
 define('ST_PLAYER_CHOOSE_FIGHTER', 55);
@@ -109,5 +111,11 @@ define('POWER_PLANNING', 2);
 define('POWER_PARATROOPING', 3);
 define('POWER_PRIORITY_MESSAGE', 4);
 define('POWER_FOUL_PLAY', 5);
+
+/*
+ * Globlal variables
+ */
+define('REMAINING_ACTIONS', 'REMAINING_ACTIONS');
+define('UNDO_SELECTED_CIRCLE', 'UNDO_SELECTED_CIRCLE');
 
 ?>

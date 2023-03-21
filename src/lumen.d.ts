@@ -149,6 +149,14 @@ interface Actions {
     startWith: TypeAction;
 }
 
+interface EnteringConfirmCellArgs {
+    playerId: number;
+    place: number;
+    move: number;
+    check: boolean;
+    circleId: number;
+}
+
 interface EnteringChooseActionArgs {
     remainingPlays: number;
     remainingMoves: number;
@@ -296,3 +304,8 @@ interface NotifSetRealizedObjectiveArgs {
     realizedBy: number;
 }
 
+interface NotifResetBoardArgs {
+    playerId: number;
+    circles: Circle[];
+    links: Link[];
+}

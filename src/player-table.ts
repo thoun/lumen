@@ -110,28 +110,9 @@ class PlayerTable {
                 bubble.addEventListener('click', () => this.game.operationClick(operation));
             }
             document.getElementById(`player-table-${this.playerId}-operations`).appendChild(bubble);
-        })
-
-        player.circles.forEach(circle => {
-            const div = document.createElement('div');
-            div.id = `player-table-${this.playerId}-circle${circle.circleId}`;
-            div.dataset.circle = `${circle.circleId}`;
-            div.classList.add('circle');
-            div.dataset.zone = ''+circle.zone;
-            div.dataset.value = ''+circle.value;
-            div.innerHTML = `${circle.value !== null && circle.value !== -1 ? circle.value : ''}`;
-            if (circle.value === -1) {
-                div.dataset.jamming = 'true';
-            }
-            document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
-            div.addEventListener('click', () => {
-                if (div.classList.contains('ghost')) {
-                    this.game.cellClick(circle.circleId);
-                }
-            });
         });
 
-        player.links.forEach(link => this.setLink(link.index1, link.index2));
+        this.setBoard(player.circles, player.links);
 
         this.reserve = new SlotStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-reserve`), {
             slotsIds: [1, 2, 3],
@@ -316,5 +297,38 @@ class PlayerTable {
     public revealObjectiveTokens(tokens: ObjectiveToken[]) {
         this.objectiveTokens.addCards(tokens);
         tokens.forEach(card => this.objectiveTokens.setCardVisible(card, true));
+    }
+    
+    public setConfirmCell(circleId: number) {
+        const circleDiv = document.getElementById(`player-table-${this.playerId}-circle${circleId}`);
+        circleDiv.classList.add('to-confirm');
+    }
+    
+    public resetBoard(circles: Circle[], links: Link[]) {
+        document.getElementById(`player-table-${this.playerId}-circles`).innerHTML = '';
+        this.setBoard(circles, links);
+    }
+    
+    public setBoard(circles: Circle[], links: Link[]) {
+        circles.forEach(circle => {
+            const div = document.createElement('div');
+            div.id = `player-table-${this.playerId}-circle${circle.circleId}`;
+            div.dataset.circle = `${circle.circleId}`;
+            div.classList.add('circle');
+            div.dataset.zone = ''+circle.zone;
+            div.dataset.value = ''+circle.value;
+            div.innerHTML = `${circle.value !== null && circle.value !== -1 ? circle.value : ''}`;
+            if (circle.value === -1) {
+                div.dataset.jamming = 'true';
+            }
+            document.getElementById(`player-table-${this.playerId}-circles`).appendChild(div);
+            div.addEventListener('click', () => {
+                if (div.classList.contains('ghost')) {
+                    this.game.cellClick(circle.circleId);
+                }
+            });
+        });
+
+        links.forEach(link => this.setLink(link.index1, link.index2));
     }
 }
