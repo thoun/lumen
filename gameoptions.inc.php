@@ -59,6 +59,10 @@ $game_options = [
                 'name' => totranslate('G - The great crossing'),
                 'tmdisplay' => totranslate('G - The great crossing'),
             ],
+            0 => [
+                'name' => totranslate('Random'),
+                'tmdisplay' => totranslate('Random'),
+            ],
         ],
         'default' => 1,
     ],

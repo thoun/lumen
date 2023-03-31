@@ -118,7 +118,13 @@ trait UtilTrait {
     }
 
     function getScenarioId() {
-        return intval($this->getGameStateValue(SCENARIO_OPTION));
+        $option = $this->getGameStateValue(SCENARIO_OPTION);
+
+        if ($option == 0) { // random scenario
+            $option = $this->getGameStateValue(RANDOM_SCENARIO);
+        }
+
+        return intval($option);
     }
 
     function getScenario() {
@@ -264,6 +270,10 @@ trait UtilTrait {
     }
 
     function initScenario(array $players) {
+        if ($this->getScenarioId() == 0) { // random scenario
+            $this->setGameStateValue(RANDOM_SCENARIO, bga_rand(1, 7));
+        }
+
         $scenario = $this->getScenario();
         $playersIdsByPlayerColor = [];
         $territoriesWithFighters = [];

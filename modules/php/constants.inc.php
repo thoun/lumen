@@ -45,6 +45,7 @@ define('END_SCORE', 100);
  */
 define('FIRST_PLAYER', 10);
 define('FIRST_PLAYER_OPERATION', 11);
+define('RANDOM_SCENARIO', 12);
 
 define('INITIATIVE_MARKER_TERRITORY', 15);
 
