@@ -270,6 +270,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "nextMove" => ST_NEXT_MOVE,
+            "chooseFighter" => ST_PLAYER_CHOOSE_FIGHTER,
         ]
     ],
 ];
