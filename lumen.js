@@ -2227,7 +2227,7 @@ var Lumen = /** @class */ (function () {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
             case 'newRound':
-                this.onEnteringNewRound();
+                this.onEnteringNewRound(args.args);
                 break;
             case 'chooseOperation':
                 this.onEnteringChooseOperation(args.args);
@@ -2255,9 +2255,9 @@ var Lumen = /** @class */ (function () {
                 break;
         }
     };
-    Lumen.prototype.onEnteringNewRound = function () {
+    Lumen.prototype.onEnteringNewRound = function (args) {
         this.playersTables.forEach(function (playerTable) { return playerTable.removeFirstPlayerToken(); });
-        this.roundNumberCounter.incValue(1);
+        this.roundNumberCounter.toValue(args.roundNumber);
     };
     Lumen.prototype.onEnteringPlanificationChooseFaces = function () {
         var _this = this;

@@ -282,6 +282,7 @@ $gameGameStates = [
         "description" => "",
         "type" => "game",
         "action" => "stNewRound",
+        "args" => "argNewRound",
         "updateGameProgression" => true,
         "transitions" => [
             "askActivatePlanning" => ST_PLAYER_ASK_ACTIVATE_PLANNING,

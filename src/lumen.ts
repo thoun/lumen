@@ -133,7 +133,7 @@ class Lumen implements LumenGame {
 
         switch (stateName) {
             case 'newRound':
-                this.onEnteringNewRound();
+                this.onEnteringNewRound(args.args);
                 break;
             case 'chooseOperation':
                 this.onEnteringChooseOperation(args.args);
@@ -162,9 +162,9 @@ class Lumen implements LumenGame {
         }
     }
 
-    private onEnteringNewRound() {
+    private onEnteringNewRound(args: EnteringNewRoundArgs) {
         this.playersTables.forEach(playerTable => playerTable.removeFirstPlayerToken());
-        this.roundNumberCounter.incValue(1);
+        this.roundNumberCounter.toValue(args.roundNumber);
     }
 
     private onEnteringPlanificationChooseFaces() {

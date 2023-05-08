@@ -149,6 +149,10 @@ interface Actions {
     startWith: TypeAction;
 }
 
+interface EnteringNewRoundArgs {
+    roundNumber: number;
+}
+
 interface EnteringConfirmCellArgs {
     playerId: number;
     place: number;

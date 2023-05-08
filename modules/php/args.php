@@ -11,6 +11,12 @@ trait ArgsTrait {
         These methods function is to return some additional information that is specific to the current
         game state.
     */
+
+    function argNewRound() {
+        return [
+            'roundNumber' => intval($this->getStat('roundNumber')) + 1,
+        ];
+    }
    
     function argChooseOperation() {
         $playerId = intval($this->getActivePlayerId());
