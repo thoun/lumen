@@ -323,13 +323,6 @@ trait ActionTrait {
         $this->setGameStateValue(PLAYER_SELECTED_FIGHTER, $id);
         $this->setGameStateValue(PLAYER_CURRENT_MOVE, MOVE_PLAY);
 
-        if ($this->getScenarioId() == 1 && $fighter->type == 10 && !$this->isRealizedObjective('1')) {
-            $this->takeScenarioObjectiveToken($playerId, '1');
-            $this->setRealizedObjective('1', $playerId);
-            $this->incStat(1, 'completedObjectives');
-            $this->incStat(1, 'completedObjectives', $playerId);
-        }
-
         $this->gamestate->nextState('chooseTerritory');
     }
 
@@ -659,7 +652,14 @@ trait ActionTrait {
                 if ($selectedFighter->type == 10) {                    
                     $this->incStat(1, 'placedMercenaries', $playerId);
                 }
-                $this->checkTerritoriesDiscoverTileControl($playerId);
+                $this->checkTerritoriesDiscoverTileControl($playerId);                
+
+                if ($this->getScenarioId() == 1 && $selectedFighter->type == 10 && !$this->isRealizedObjective('1')) {
+                    $this->takeScenarioObjectiveToken($playerId, '1');
+                    $this->setRealizedObjective('1', $playerId);
+                    $this->incStat(1, 'completedObjectives');
+                    $this->incStat(1, 'completedObjectives', $playerId);
+                }
                 break;
             case MOVE_MOVE:
                 $originTerritoryId = $selectedFighter->locationArg;
