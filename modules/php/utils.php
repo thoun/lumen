@@ -917,6 +917,7 @@ trait UtilTrait {
         foreach($fighters as &$fighter) {
             $bag = $fighter->type != 1 ? 0 : $fighter->playerId;
             $this->cards->moveCard($fighter->id, 'bag'.$bag);
+            self::DbQuery("update card set played = false where card_id = $fighter->id");
             if ($bag == 0) {
                 self::DbQuery("update card set player_id = 0 where card_id = $fighter->id");
             }
