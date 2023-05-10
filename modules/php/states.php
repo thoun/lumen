@@ -237,11 +237,18 @@ trait StateTrait {
                     $links = $this->getLinks($playerId);
 
                     foreach ($circles as $circle) {
-                        if ($circle->value !== null && $circle->value !== -1 && !$this->array_some($links, fn($link) => $link->index1 == $circle->circleId || $link->index2 == $circle->circleId)) {
+                        if ($circle->value !== null && $circle->value !== -1 && $circle->zone == -1 && !$this->array_some($links, fn($link) => $link->index1 == $circle->circleId || $link->index2 == $circle->circleId)) {
                             $orphansByPlayer[$playerId]++;
                         }   
                     }
                 }
+
+                $this->notifyAllPlayers('log', clienttranslate('${player_name} has ${orphan_count} orphan cell(s), ${player_name2} has ${orphan_count2} orphan cell(s)'), [
+                    'player_name' => $this->getPlayerName($playersIds[0]),
+                    'orphan_count' => $orphansByPlayer[$playersIds[0]],
+                    'player_name2' => $this->getPlayerName($playersIds[1]),
+                    'orphan_count2' => $orphansByPlayer[$playersIds[1]],
+                ]);
 
                 if ($orphansByPlayer[$playersIds[0]] < $orphansByPlayer[$playersIds[1]]) {
                     $leastOrphans = $playersIds[0];

@@ -3464,7 +3464,7 @@ var Lumen = /** @class */ (function () {
                         args[field] = "<div class=\"fighter\" data-color=\"".concat(_this.getPlayerColor(fighter.playerId), "\" data-sub-type=\"").concat(fighter.subType, "\"></div>");
                     }
                 });
-                ['cardinalDirection'].forEach(function (field) {
+                ['cardinalDirection', 'orphan_count', 'orphan_count2'].forEach(function (field) {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
                         args[field] = "<strong>".concat(_(args[field]), "</strong>");
                     }

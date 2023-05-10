@@ -1661,7 +1661,7 @@ class Lumen implements LumenGame {
                     }
                 });
 
-                ['cardinalDirection'].forEach(field => {
+                ['cardinalDirection', 'orphan_count', 'orphan_count2'].forEach(field => {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
                         args[field] = `<strong>${_(args[field])}</strong>`;
                     }
