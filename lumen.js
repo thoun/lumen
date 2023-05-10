@@ -3288,7 +3288,11 @@ var Lumen = /** @class */ (function () {
         this.notif_takeObjectiveTokens(notif);
     };
     Lumen.prototype.notif_moveFighter = function (notif) {
-        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId, notif.args.fromBag);
+        var fromBag = notif.args.fromBag;
+        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId, fromBag);
+        if (fromBag) {
+            this.bagCounters[notif.args.playerId].incValue(-1);
+        }
     };
     Lumen.prototype.notif_refillReserve = function (notif) {
         var card = notif.args.fighter;

@@ -11,11 +11,11 @@ trait DebugUtilTrait {
             return;
         } 
 
-        //$this->debugTestZones(2343492);
-        //$this->debugTestLinks(2343493);
+        $this->debugTestZones(2343492);
+        $this->debugTestLinks(2343493);
 
-        $this->debugAddPlayerEverywhere(2343492, 10);
-        $this->debugAddPlayerEverywhere(2343493, 8);
+        //$this->debugAddPlayerEverywhere(2343492, 10);
+        //$this->debugAddPlayerEverywhere(2343493, 8);
 
         //$this->debugAddObjectiveToken(2343492, 1);
         //$this->debugAddDiscoverTile(2343492, 4, 1);
@@ -30,8 +30,8 @@ trait DebugUtilTrait {
         $this->debugAddNeutralFighter(2343492, 11, 'territory', 11);
         $this->debugAddNeutralFighter(2343492, 13, 'territory', 11);
         $this->debugAddNeutralFighter(2343492, 12, 'territory', 41);*/
-        $this->debugAddNeutralFighter(2343492, 13, 'highCommand2343492', 1);
-        $this->debugAddNeutralFighter(2343492, 17, 'highCommand2343492', 2);
+        //$this->debugAddNeutralFighter(2343492, 13, 'highCommand2343492', 1);
+        //$this->debugAddNeutralFighter(2343492, 17, 'highCommand2343492', 2);
         //$this->debugAddNeutralFighter(2343492, 33, 'highCommand2343492', 5);
         /*$this->debugAddNeutralFighter(2343492, 21, 'highCommand2343492', 1);
         $this->debugAddNeutralFighter(2343492, 22, 'highCommand2343492', 2);

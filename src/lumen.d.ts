@@ -246,6 +246,7 @@ interface NotifTakeMissionObjectiveTokensArgs extends NotifObjectiveTokensArgs {
 }
 
 interface NotifMoveFighterArgs {
+    playerId: number;
     fighter: Card;
     territoryId: number;
     fromBag: boolean;

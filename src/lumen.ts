@@ -1464,7 +1464,11 @@ class Lumen implements LumenGame {
     }
 
     notif_moveFighter(notif: Notif<NotifMoveFighterArgs>) {
-        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId, notif.args.fromBag);
+        const fromBag = notif.args.fromBag;
+        this.tableCenter.moveFighter(notif.args.fighter, notif.args.territoryId, fromBag);
+        if (fromBag) {
+            this.bagCounters[notif.args.playerId].incValue(-1);
+        }
     }
 
     notif_refillReserve(notif: Notif<NotifRefillReserveArgs>) {
