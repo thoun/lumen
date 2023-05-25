@@ -227,7 +227,14 @@ trait ArgsTrait {
         $remainingActions = $this->getRemainingActions();
         $currentAction = $this->getCurrentAction($remainingActions);
 
-        $canCancel = $move > 0;
+        $canCancel = $move > 0;        
+        $selectedFighterId = intval($this->getGameStateValue(PLAYER_SELECTED_FIGHTER));
+        if ($selectedFighterId > 0) {
+            $selectedFighter = $this->getCardById($selectedFighterId);
+            if ($selectedFighter && in_array($selectedFighter->subType, [11, 12])) { // super pusher or super assassin, action after move
+                $canCancel = false;
+            }
+        }
         $couldUseFoulPlay = $move == 0 && count($this->getDiscoverTilesByLocation('player', $playerId, null, 2, POWER_FOUL_PLAY)) > 0;
 
         $possibleTerritoryFighters = [];

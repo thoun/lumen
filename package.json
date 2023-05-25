@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bga-animations": "thoun/bga-animations",
-    "bga-cards": "thoun/bga-cards#main"
+    "bga-animations": "thoun/bga-animations#0.1.0",
+    "bga-cards": "thoun/bga-cards#0.1.0"
   },
   "devDependencies": {
     "sass": "^1.32.6",
