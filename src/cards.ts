@@ -125,7 +125,7 @@ class CardsManager extends CardManager<Card> {
             case 18: return _("While it's ACTIVE, the Metamorph cannot move during phase 3 Issuing Orders (but it can still be targeted by a Pusher). When you flip it to its INACTIVE side, it transforms into a Fighter with a Combat Strength of 3 that can move by land.");
 
             case 21: return _("Remove 2 enemy Fighters (Basic or Mercenary) from 2 different Territories of the Battlefield. These Fighters are returned to their colored bag and can rejoin the battle later.");
-            case 22: return _("Choose a Territory: remove all Fighters present there (yours and your opponent’s). These Fighters are returned to their colored bags and can rejoin the battle later.");
+            case 22: return _("Choose one of your Basic or Mercenary Fighters. Remove them from the Battlefield as well as ALL the other opposing and allied Basic Fighters or Mercenaries present, without exception, in the same Sector. These Fighters are returned to their original bag and may eventually come back into play later.");
             case 23: return _("Swap the positions of 2 of your Fighters on the Battlefield.");
 
             case 31: return _("Receive 1 Objective token if you have 2 Discovery tokens at the end of the game, and 1 additional Objective token for each additional Discovery token.");
