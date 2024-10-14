@@ -2643,15 +2643,15 @@ var Lumen = /** @class */ (function () {
         //document.getElementById('zoom-wrapper').style.height = `${document.getElementById('full-table').getBoundingClientRect().height}px`;
         var map = document.getElementById('map');
         var mapFrame = document.getElementById('map-frame');
-        var mapFrameBR = mapFrame.getBoundingClientRect();
         var fullTable = document.getElementById('full-table');
         var scroll = this.display.startsWith('scroll');
-        var spaceBeforeMap = mapFrameBR.top - document.body.getBoundingClientRect().top;
+        var bodyBRtop = document.body.getBoundingClientRect().top;
+        var spaceBeforeMap = mapFrame.getBoundingClientRect().top - bodyBRtop;
         var bgaZoom = 1;
         var bgaZoomStr = document.getElementById('page-content').style.zoom;
         if (bgaZoomStr && bgaZoomStr !== '' && bgaZoomStr !== '1') {
             bgaZoom = Number(bgaZoomStr);
-            spaceBeforeMap = document.getElementById('page-content').getBoundingClientRect().top * bgaZoom - document.body.getBoundingClientRect().top;
+            spaceBeforeMap = document.getElementById('page-content').getBoundingClientRect().top * bgaZoom - bodyBRtop;
         }
         var playAreaViewportHeight = (window.innerHeight - spaceBeforeMap) / bgaZoom;
         mapFrame.style.maxHeight = "".concat(playAreaViewportHeight, "px");
@@ -2713,7 +2713,7 @@ var Lumen = /** @class */ (function () {
             fullTable.style.transform = "scale(".concat(zoom, ")");
             fullTable.style.marginRight = "".concat(-(fullTable.clientWidth / zoom - fullTable.clientWidth), "px");
         }
-        fullTable.style.height = "".concat(fullTable.getBoundingClientRect().height, "px");
+        fullTable.style.height = "".concat(fullTable.offsetHeight, "px");
         document.documentElement.style.setProperty('--cumulative-scale', '' + this.mapZoom * this.zoom);
     };
     Lumen.prototype.scroll = function (direction) {

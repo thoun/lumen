@@ -605,16 +605,16 @@ class Lumen implements LumenGame {
         
         const map = document.getElementById('map');
         const mapFrame = document.getElementById('map-frame');
-        const mapFrameBR = mapFrame.getBoundingClientRect();
         const fullTable = document.getElementById('full-table');
         const scroll = this.display.startsWith('scroll');
+        const bodyBRtop = document.body.getBoundingClientRect().top;
        
-        let spaceBeforeMap = mapFrameBR.top - document.body.getBoundingClientRect().top;
+        let spaceBeforeMap = mapFrame.getBoundingClientRect().top - bodyBRtop;
         let bgaZoom = 1;
         const bgaZoomStr = (document.getElementById('page-content').style as any).zoom;
         if (bgaZoomStr && bgaZoomStr !== '' && bgaZoomStr !== '1') {
             bgaZoom = Number(bgaZoomStr);
-            spaceBeforeMap = document.getElementById('page-content').getBoundingClientRect().top * bgaZoom - document.body.getBoundingClientRect().top;
+            spaceBeforeMap = document.getElementById('page-content').getBoundingClientRect().top * bgaZoom - bodyBRtop;
         }
         const playAreaViewportHeight = (window.innerHeight - spaceBeforeMap) / bgaZoom;
         mapFrame.style.maxHeight = `${playAreaViewportHeight}px`;
@@ -682,7 +682,7 @@ class Lumen implements LumenGame {
             fullTable.style.transform = `scale(${zoom})`;
             fullTable.style.marginRight = `${-(fullTable.clientWidth / zoom - fullTable.clientWidth)}px`;
         }
-        fullTable.style.height = `${fullTable.getBoundingClientRect().height}px`;
+        fullTable.style.height = `${fullTable.offsetHeight}px`;
 
         document.documentElement.style.setProperty('--cumulative-scale', '' + this.mapZoom * this.zoom);
     }
